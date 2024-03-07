@@ -1,31 +1,21 @@
-import { AccountList, Content, DraggableTopBar, RootLayout } from '@/components'
+import { Content, DraggableTopBar, EncryptCard, RootLayout } from '@/components'; // Check this import path
+
+
 const App = () => {
   return (
     <>
-    <DraggableTopBar />
+      <DraggableTopBar />
       <RootLayout>
-        <Content  className="bg-zinc-900/50 flex justify-center items-center "  style={{background:'var()'}}> 
-          <>
-            <div className='shadow-2xl rounded-full flex justify-center items-center ' style={{borderRadius:'20px',background:'#FFF', width:'500px', height: '500px'}} >
-                <div className=' '>
-                  <div className="flex justify-center text-primary mt-3">
-                    <span className="text-primary font-bold text-xl"> Cebu Innosoft Solutions Inc.</span>
-                  </div>
-                  <div className="flex justify-center ">
-                    <span className="text-slate-500 "> Boilerplate © 2024 | v1.0.0</span>
-                  </div>
-                  <div>
-                    <AccountList/>
-                  </div>
-                 
-                </div>
-                
+        <Content className="bg-zinc-900/50 flex justify-center items-center" style={{ background: 'var(--your-variable-here)' }}>
+          <div className='shadow-2xl rounded-full flex justify-center items-center' style={{ borderRadius: '20px', background: '#FFF', width: '500px', height: '500px' }}>
+            <div className=' border-red px-2 py-2'>
+                <EncryptCard/>
             </div>
-          </>
+          </div>
         </Content>
       </RootLayout>
     </>
   )
 }
 
-export default App
+export default App;

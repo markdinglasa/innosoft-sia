@@ -23,9 +23,14 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.0",
     "@mdxeditor/editor": "^2.9.0",
-    "@mui/icons-material": "^5.15.11",
+    "@mui/icons-material": "^5.15.12",
+    "@mui/material": "^5.15.12",
     "@mui/styled-engine": "^5.15.11",
+    "crypto-js": "^4.2.0",
+    "electron-store": "^8.1.0",
     "jotai": "^2.6.5",
     "mssql": "^10.0.2",
     "postcss-import": "^16.0.1"
