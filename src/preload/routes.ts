@@ -1,4 +1,4 @@
-import type { WINDOW_ACTION, WINDOW_API } from "./index.ts";
+import type { WINDOW_ACTION, WINDOW_API } from "./index.js";
 
 declare global {
   interface Window {

@@ -1,4 +1,4 @@
-import { Content, DraggableTopBar, RootLayout, TestButton } from '@/components'
+import { AccountList, Content, DraggableTopBar, RootLayout } from '@/components'
 const App = () => {
   return (
     <>
@@ -15,7 +15,7 @@ const App = () => {
                     <span className="text-slate-500 "> Boilerplate © 2024 | v1.0.0</span>
                   </div>
                   <div>
-                    <TestButton/>
+                    <AccountList/>
                   </div>
                  
                 </div>
