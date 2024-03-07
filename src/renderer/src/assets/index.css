@@ -3,33 +3,32 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-
 @layer base {
   #root {
     height: 100%;
   }
-  
+
   :root {
     --blue: #2d4c70;
     --indigo: #5603ad;
-    --light-blue:#C6D9F1;
+    --light-blue: #c6d9f1;
     --purple: #8965e0;
-    --pink: #D99694;
-    --red: #AF2D24;
-    --light-red:#f02849;
+    --pink: #d99694;
+    --red: #af2d24;
+    --light-red: #f02849;
     --orange: #fb6340;
     --yellow: #ffd600;
     --green: #2dce89;
-    --light-green:#90EE90;
+    --light-green: #90ee90;
     --teal: #11cdef;
     --cyan: #2bffc6;
     --white: #fff;
-    --gray: #BABABA;
+    --gray: #bababa;
     --gray-dark: #32325d;
-    --lighter:   #f0f2f5;
+    --lighter: #f0f2f5;
     --light: #e6e8eb;
-    --primary: #14263E;
-    --secondary: #93CDDD;
+    --primary: #14263e;
+    --secondary: #93cddd;
     --success: #2dce89;
     --info: #11cdef;
     --warning: #fb6340;
@@ -40,14 +39,14 @@
     --white: #fff;
     --neutral: #fff;
     --darker: black;
-    --button: rgb(147,205,221);
+    --button: rgb(147, 205, 221);
     --breakpoint-xs: 0;
     --breakpoint-sm: 576px;
     --breakpoint-md: 768px;
     --breakpoint-lg: 992px;
     --breakpoint-xl: 1200px;
-    --font-montserrat: "Montserrat", serif;
-    --font-raleway: "Open Sans", sans-serif;
+    --font-montserrat: 'Montserrat', serif;
+    --font-raleway: 'Open Sans', sans-serif;
   }
 
   * {
@@ -106,22 +105,30 @@
       margin-top: 2rem;
     }
   }
-
-  .text-primary{
-    color:var(--primary);
+  .btn-primary {
+    background: var(--secondary);
+    width: 150px;
+    height: 40px;
+    color: var(--primary);
+  }
+  .btn-primary:hover {
+    background: var(--pink);
+    transition: 0.3s ease-in-out;
+  }
+  .text-primary {
+    color: var(--primary);
   }
 
-  .text-secondary{
-    color:var(--secondary);
+  .text-secondary {
+    color: var(--secondary);
   }
 
-  .close-app:hover{
-    background:rgba(255, 0, 0, 0.9);
+  .close-app:hover {
+    background: rgba(255, 0, 0, 0.9);
     transition: 0.5 ease-in-out;
   }
 
   .border-red {
-    border:1px solid red !important;
+    border: 1px solid red !important;
   }
-  
 }

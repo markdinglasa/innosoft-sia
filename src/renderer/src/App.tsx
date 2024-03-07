@@ -1,15 +1,20 @@
-import { Content, DraggableTopBar, EncryptCard, RootLayout } from '@/components'; // Check this import path
-
+import { Content, DatabaseConfigCard, DraggableTopBar, RootLayout } from '@/components' // Check this import path
 
 const App = () => {
   return (
     <>
       <DraggableTopBar />
       <RootLayout>
-        <Content className="bg-zinc-900/50 flex justify-center items-center" style={{ background: 'var(--your-variable-here)' }}>
-          <div className='shadow-2xl rounded-full flex justify-center items-center' style={{ borderRadius: '20px', background: '#FFF', width: '500px', height: '500px' }}>
-            <div className=' border-red px-2 py-2'>
-                <EncryptCard/>
+        <Content
+          className="bg-zinc-900/50 flex justify-center items-center"
+          style={{ background: 'var(--your-variable-here)' }}
+        >
+          <div
+            className="shadow-2xl rounded-full flex justify-center items-center"
+            style={{ borderRadius: '20px', background: '#FFF', width: '500px', height: '500px' }}
+          >
+            <div className=" border-red px-2 py-2">
+              <DatabaseConfigCard className="" />
             </div>
           </div>
         </Content>
@@ -18,4 +23,4 @@ const App = () => {
   )
 }
 
-export default App;
+export default App
