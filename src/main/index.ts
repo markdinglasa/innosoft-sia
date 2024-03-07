@@ -65,6 +65,15 @@ app.whenReady().then(() => {
   ipcMain.on('close-app', () => {
     app.quit();
   });
+  
+  ipcMain.on('log-something', () => {
+    console.log('something')
+  });
+
+  ipcMain.handle('do-something', ()=>{
+    return String('fuck yeah')
+  })
+
   createWindow()
 
   app.on('activate', function () {

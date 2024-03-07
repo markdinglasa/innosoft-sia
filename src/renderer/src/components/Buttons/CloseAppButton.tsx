@@ -4,7 +4,7 @@ import { MdClose } from "react-icons/md";
 export const CloseAppButton = () => {
 
   const handleCloseClick = () => {
-    window.api.send('close-app');
+    window.action.send('close-app');
   };
 
   return (

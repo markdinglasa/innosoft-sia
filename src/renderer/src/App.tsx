@@ -1,5 +1,4 @@
-import { Content, DraggableTopBar, RootLayout } from '@/components'
-import Logo from './assets/images/white-icon.jpg'
+import { Content, DraggableTopBar, RootLayout, TestButton } from '@/components'
 const App = () => {
   return (
     <>
@@ -16,10 +15,11 @@ const App = () => {
                     <span className="text-slate-500 "> Boilerplate © 2024 | v1.0.0</span>
                   </div>
                   <div>
-                    <img src={Logo} style={{ width:'400px', height: '400px'}}/>
+                    <TestButton/>
                   </div>
                  
                 </div>
+                
             </div>
           </>
         </Content>

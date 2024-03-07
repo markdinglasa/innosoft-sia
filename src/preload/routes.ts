@@ -7,3 +7,8 @@ declare global {
   }
 }
 
+//export const API = () => { return  window.api };
+//export const ACTION  = () => { return  window.action };
+
+const ipc = window.api;
+export default ipc;
