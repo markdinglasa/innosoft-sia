@@ -1,21 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import App from './App';
+import License from './License';
 import './assets/index.css';
-import { DatabaseConfig, DraggableTopBar, LicenseKeyEntry, LicenseKeyProvider } from './components';
+import { DatabaseConfig, DatabaseConfigProvider, DraggableTopBar } from './components';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <DraggableTopBar />
     <BrowserRouter>
-      <LicenseKeyProvider>
+      <DatabaseConfigProvider>
         <Routes>
-          <Route path='/app' Component={App} />
-          <Route path='/config/database' Component={DatabaseConfig} />
-          <Route path='/' Component={LicenseKeyEntry} />
+          <Route path='/' Component={DatabaseConfig} />
+          <Route path='/license' Component={License} />
         </Routes>
-      </LicenseKeyProvider>
+      </DatabaseConfigProvider>
     </BrowserRouter>
   </React.StrictMode>
 )

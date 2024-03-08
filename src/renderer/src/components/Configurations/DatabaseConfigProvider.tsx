@@ -1,20 +1,14 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiMessage } from './LicenseKeyProvider';
+const DatabaseConfigContext = createContext({} as DatabaseConfigProviderValue);
 
-const LicenseKeyContext = createContext({} as DatabaseConfigProviderValue);
-
-export function useLicenseKey() {
-    return useContext<DatabaseConfigProviderValue>(LicenseKeyContext);
+export function useDatabaseConfig() {
+    return useContext<DatabaseConfigProviderValue>(DatabaseConfigContext);
 }
 
 export interface DatabaseConfigProviderProps {
     children: string | any |React.ReactElement | React.ReactNode;
-}
-
-export interface apiMessage {
-    success: boolean;
-    error: boolean;
-    errorMessage: string;
 }
 
 export interface DatabaseConfigProviderValue {
@@ -100,7 +94,7 @@ export const DatabaseConfigProvider = ({ children }: DatabaseConfigProviderProps
                 console.log(response.errorMessage);
                 navigate('/');
             } else {
-                navigate('/config/database');
+                navigate('/license');
             }
         };
 
@@ -113,8 +107,8 @@ export const DatabaseConfigProvider = ({ children }: DatabaseConfigProviderProps
     };
 
     return (
-        <LicenseKeyContext.Provider value={value}>
+        <DatabaseConfigContext.Provider value={value}>
             {children}
-        </LicenseKeyContext.Provider>
+        </DatabaseConfigContext.Provider>
     );
 };

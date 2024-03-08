@@ -98,9 +98,9 @@ export const LicenseKeyProvider = ({ children }: LicenseKeyProviderProps) => {
             const response = await checkIfLicenseKeyIsActivated();
             if (response.error) {
                 console.log(response.errorMessage);
-                navigate('/');
+                navigate('/license');
             } else {
-                navigate('/config/database');
+                navigate('/app');
             }
         };
 
