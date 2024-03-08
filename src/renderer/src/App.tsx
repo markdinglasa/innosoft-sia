@@ -1,4 +1,4 @@
-import { Content, DatabaseConfigCard, DraggableTopBar, RootLayout } from '@/components' // Check this import path
+import { Content, DraggableTopBar, RootLayout } from '@/components'; // Check this import path
 
 const App = () => {
   return (
@@ -14,7 +14,7 @@ const App = () => {
             style={{ borderRadius: '20px', background: '#FFF', width: '500px', height: '500px' }}
           >
             <div className=" border-red px-2 py-2">
-              <DatabaseConfigCard className="" />
+              <h1 className='text-red border-red'> hellow</h1>
             </div>
           </div>
         </Content>

@@ -29,11 +29,14 @@
     "@mui/icons-material": "^5.15.12",
     "@mui/material": "^5.15.12",
     "@mui/styled-engine": "^5.15.11",
+    "crypto": "^1.0.1",
     "crypto-js": "^4.2.0",
     "electron-store": "^8.1.0",
     "jotai": "^2.6.5",
     "mssql": "^10.0.2",
-    "postcss-import": "^16.0.1"
+    "postcss-import": "^16.0.1",
+    "react-router-dom": "^6.22.3",
+    "util": "^0.12.5"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",

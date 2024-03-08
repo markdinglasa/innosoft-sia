@@ -1,24 +1,35 @@
-import { ipcMain } from 'electron'
-import electronStore from 'electron-store'
+import { ipcMain } from 'electron';
+import electronStore from 'electron-store';
+import { Connection } from '../functions';
 
-ipcMain.handle('set-config', async (_event, config) => {
+ipcMain.handle('get-connected', async () => {
   try {
-    const store = new electronStore()
-    store.set('636E6667', config)
-    return true
+    // Check the connection status
+    const connection = await Connection();
+    if (!connection.isConnected) {
+      return { connected: false };
+    }
+    return { connected: true };
   } catch (error) {
-    console.error('Error setting config:', error)
-    throw error // Rethrow the error to handle it in the renderer process if needed
+    console.error('Error checking connection:', error);
+    throw new Error('Failed to check connection: ' + error);
   }
-})
+});
 
-ipcMain.handle('get-config', async () => {
+ipcMain.handle('set-database-config', async (_event, config) => {
   try {
-    const store = new electronStore()
-    const config = store.get('636E6667')
-    return config
+    const store = new electronStore();
+    store.set('636E6667', config);
+
+    // Check the connection after setting the config
+    const connection = await Connection();
+    if (!connection.isConnected) {
+      return { success: false, error: 'Database connection failed.' };
+    }
+    return { success: true };
   } catch (error) {
-    console.error('Error getting config:', error)
-    throw error // Rethrow the error to handle it in the renderer process if needed
+    console.error('Error setting config:', error);
+    throw new Error('Failed to set config: ' + error);
   }
-})
+});
+

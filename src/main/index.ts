@@ -64,18 +64,11 @@ app.whenReady().then(() => {
   })
 
   // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
   // Handle the close-app message from the renderer process
   ipcMain.on('close-app', () => {
     app.quit();
   });
   
-  ipcMain.on('log-something', () => {
-    console.log('something')
-  });
-
-  
-
   createWindow()
 
   app.on('activate', function () {

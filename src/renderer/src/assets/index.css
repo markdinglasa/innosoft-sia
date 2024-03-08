@@ -105,16 +105,26 @@
       margin-top: 2rem;
     }
   }
+  .border-prymary-1{
+    border:1px solid var(--primary);
+  }
   .btn-primary {
     background: var(--secondary);
     width: 150px;
     height: 40px;
     color: var(--primary);
   }
-  .btn-primary:hover {
+  .btn-primary:hover,.btn-default:hover {
     background: var(--pink);
     transition: 0.3s ease-in-out;
   }
+  .btn-default{
+    background: var(--white);
+    width: 150px;
+    height: 40px;
+    color: var(--primary);
+  }
+
   .text-primary {
     color: var(--primary);
   }
