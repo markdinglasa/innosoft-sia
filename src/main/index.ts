@@ -25,9 +25,7 @@ const createWindow = (url: string): BrowserWindow => {
       contextIsolation: true
     }
   });
-
-  window.webContents.openDevTools();
-
+  
   window.on('ready-to-show', () => {
     window.show();
   });
@@ -62,16 +60,7 @@ app.whenReady().then(async () => {
     app.quit();
   });
 
-  // Determine which window to open based on database connection and licensing
-  const isConnected = false; //await getConnectedStatus();
-  const hasLicenseKey = await getLicenseKey();
-
   let url = '../renderer/index.html';
-  if (!isConnected) {
-    url = '../renderer/connection.html';
-  } else if (!hasLicenseKey) {
-    url = '../renderer/licensing.html';
-  }
 
   createWindow(url);
 
@@ -81,27 +70,3 @@ app.whenReady().then(async () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow('../renderer/index.html');
   });
 });
-
-// Error-handling functions remain unchanged
-/*
-async function getConnectedStatus(): Promise<boolean> {
-  try {
-    // Check the connection status
-    const connection = await Connection()
-    return connection.isConnected;
-  } catch (error) {
-    console.error('Error checking connection status:', error);
-    return false;
-  }
-}*/
-
-async function getLicenseKey(): Promise<boolean> {
-  try {
-    const store = new electronStore()
-    const key = store.get('6B6579')
-    return !!key; // Convert to boolean
-  } catch (error) {
-    console.error('Error getting license key:', error);
-    return false;
-  }
-}
