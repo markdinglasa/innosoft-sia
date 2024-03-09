@@ -50,14 +50,12 @@ ipcMain.handle('get-licenseKey', async () => {
 
 ipcMain.handle('authenticate-licenseKey', async (c64617461: any) => {
     try {
-        if (!c64617461) return {IsLicensed: false, message: 'Unit key is missing', category: 'error'}
+        if (!c64617461) return { isLicensed: false, message: 'Unit key is missing', category: 'error'}
         if (c64617461.length < 1) return { IsLicensed: false, message: 'Unit key is null or undefined', category: 'error' }
-        //if (!(await f6C636E73766C64(c64617461)))  return ({ IsLicensed: false, message: errorData.e00x16, category: 'error' })
-        const check = await f6C636E73766C64(c64617461);
-        if (!check) return { IsLicensed: true, message: 'Chups', category: 'succesful' }
-        return { IsLicensed: true, message: `goods`, category: 'succesful' }
+        const licenseValidation = await f6C636E73766C64(c64617461);
+        if (!licenseValidation.isValidated) return { isLicensed: true, message: licenseValidation.message, category: 'error' }
+        return { isLicensed: true, message: licenseValidation.message, category: 'succesful' }
     } catch (error) {
-        console.error('Error encrypting key:', error)
         throw error; // Rethrow the error to handle it in the renderer process if needed
     }
 });

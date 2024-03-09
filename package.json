@@ -25,6 +25,7 @@
     "@electron-toolkit/utils": "^3.0.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
+    "@mdx-js/rollup": "^3.0.1",
     "@mdxeditor/editor": "^2.9.0",
     "@mui/icons-material": "^5.15.12",
     "@mui/material": "^5.15.12",
@@ -36,6 +37,7 @@
     "mssql": "^10.0.2",
     "postcss-import": "^16.0.1",
     "react-router-dom": "^6.22.3",
+    "rollup-plugin-copy": "^3.5.0",
     "util": "^0.12.5"
   },
   "devDependencies": {

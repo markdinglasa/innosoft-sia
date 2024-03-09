@@ -2,90 +2,106 @@ import { electronApp, is, optimizer } from '@electron-toolkit/utils';
 import { BrowserWindow, app, ipcMain, shell } from 'electron';
 import electronStore from 'electron-store';
 import path, { join } from 'path';
-import icon from '../../resources/icon.png?asset';
 import './controllers';
-
 electronStore.initRenderer();
 
-function createWindow(): void {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
+const createWindow = (url: string): BrowserWindow => {
+  const window = new BrowserWindow({
     width: 900,
     height: 670,
     icon: path.join(__dirname, '../../favicon.ico'),
     show: false,
     autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
     center: true,
     frame: false,
     vibrancy: 'under-window',
     title: 'Note-Mark',
     visualEffectState: 'active',
     titleBarStyle: 'hidden',
-    
     trafficLightPosition: { x: 15, y: 10 },
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: true,
       contextIsolation: true
     }
-  })
+  });
 
-  mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
-  })
+  window.webContents.openDevTools();
 
-  mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
-    return { action: 'deny' }
-  })
+  window.on('ready-to-show', () => {
+    window.show();
+  });
 
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
+  window.webContents.setWindowOpenHandler((details) => {
+    shell.openExternal(details.url);
+    return { action: 'deny' };
+  });
+
+  // Load the URL
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+    window.loadURL(process.env['ELECTRON_RENDERER_URL']);
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    window.loadFile(join(__dirname, url));
   }
-}
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+  return window;
+};
+
+app.whenReady().then(async () => {
   // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron')
+  electronApp.setAppUserModelId('com.innosoft');
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window)
-  })
+    optimizer.watchWindowShortcuts(window);
+  });
 
-  // IPC test
   // Handle the close-app message from the renderer process
   ipcMain.on('close-app', () => {
     app.quit();
   });
-  
-  createWindow()
+
+  // Determine which window to open based on database connection and licensing
+  const isConnected = false; //await getConnectedStatus();
+  const hasLicenseKey = await getLicenseKey();
+
+  let url = '../renderer/index.html';
+  if (!isConnected) {
+    url = '../renderer/connection.html';
+  } else if (!hasLicenseKey) {
+    url = '../renderer/licensing.html';
+  }
+
+  createWindow(url);
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
-})
+    if (BrowserWindow.getAllWindows().length === 0) createWindow('../renderer/index.html');
+  });
+});
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
+// Error-handling functions remain unchanged
+/*
+async function getConnectedStatus(): Promise<boolean> {
+  try {
+    // Check the connection status
+    const connection = await Connection()
+    return connection.isConnected;
+  } catch (error) {
+    console.error('Error checking connection status:', error);
+    return false;
   }
-})
+}*/
 
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.
+async function getLicenseKey(): Promise<boolean> {
+  try {
+    const store = new electronStore()
+    const key = store.get('6B6579')
+    return !!key; // Convert to boolean
+  } catch (error) {
+    console.error('Error getting license key:', error);
+    return false;
+  }
+}

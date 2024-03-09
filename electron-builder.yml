@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: note-mark
+appId: com.innosoft.app
+productName: iPOS
 directories:
   buildResources: build
 files:
@@ -12,7 +12,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: note-mark
+  executableName: iPOS
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

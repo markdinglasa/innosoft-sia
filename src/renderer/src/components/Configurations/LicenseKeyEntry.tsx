@@ -3,6 +3,7 @@ import { useRef, useState } from 'react'
 import { FaCircleXmark, FaKey } from 'react-icons/fa6'
 import { useNavigate } from 'react-router-dom'
 import { useLicenseKey } from './LicenseKeyProvider'
+import { Test } from './Test'
 import { UnitKey } from './UnitKey'
 
 export const LicenseKeyEntry = () => {
@@ -44,6 +45,8 @@ export const LicenseKeyEntry = () => {
       setErrorMessage(error.message)
     }
   }
+
+
 
   return (
     <div className="flex items-center justify-center h-screen">
@@ -96,6 +99,7 @@ export const LicenseKeyEntry = () => {
             <br />
           </>
         )}
+      <Test/>   
       </div>
     </div>
   )

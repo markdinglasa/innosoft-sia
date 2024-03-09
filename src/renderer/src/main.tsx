@@ -1,35 +1,31 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import App from './App'
-import './assets/index.css'
-import {
-  DatabaseConfig,
-  DatabaseConfigProvider,
-  DraggableTopBar,
-  LicenseKeyEntry,
-  LicenseKeyProvider
-} from './components'
+import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './assets/index.css';
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <DraggableTopBar />
-    <BrowserRouter>
-      <Providers>
-        <Routes>
-          <Route path="/" element={<DatabaseConfig />} />
-          <Route path="/app" element={<App />} />
-          <Route path="/license" element={<LicenseKeyEntry />} />
-        </Routes>
-      </Providers>
-    </BrowserRouter>
-  </React.StrictMode>
-)
+const Root = () => {
+  const [isLicensed, setIsLicensed] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
 
-function Providers({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    const checkStatus = async () => {
+      const LICENSE_KEY:any = await window.api.get('get-licenseKey')
+      if (!LICENSE_KEY) setIsLicensed(false)
+      const validate_lk:any =  await window.api.post('authenticate-licenseKey', LICENSE_KEY)
+      setIsLicensed(validate_lk.isLicensed);
+
+      const connection:any = await window.api.get('get-connected');
+      setIsConnected(connection.connected);
+    };
+
+    checkStatus();
+  }, []);
+
   return (
-    <DatabaseConfigProvider>
-      <LicenseKeyProvider>{children}</LicenseKeyProvider>
-    </DatabaseConfigProvider>
-  )
-}
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(<Root />);

@@ -2,6 +2,7 @@ import { TextField } from '@mui/material'
 import { useRef, useState } from 'react'
 import { FaArrowRight, FaCircleXmark, FaDatabase } from 'react-icons/fa6'
 import { useNavigate } from 'react-router-dom'
+import { DBTest } from './DBTest'
 import { useDatabaseConfig } from './DatabaseConfigProvider'
 
 export const DatabaseConfig = () => {
@@ -63,6 +64,7 @@ export const DatabaseConfig = () => {
             Database Configuration{' '}
           </span>
         </h1>
+        <div className='border-red'> <DBTest/></div>
         <div className="border-gray-100 px-2 py-2"></div>
         <form className="space-y-4">
           <div className="w-full md:w-auto">
@@ -151,6 +153,8 @@ export const DatabaseConfig = () => {
           </div>
         </form>
       </div>
+      
     </div>
+    
   )
 }

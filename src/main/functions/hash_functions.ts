@@ -123,10 +123,10 @@ export const f67747374726  = async (): Promise<string> => {
 export const f6C636E73766C64 = async (licenseKey: any) => {
     try {
         // Assuming these values are coming from elsewhere or passed as parameters
-        const serialNumber = await f677462696F73();
-        const diskSerialNumber = await f67747374726();
+        const serialNumber = await f677462696F73()
+        const diskSerialNumber = await f67747374726()
 
-        if (!serialNumber || !diskSerialNumber) return false;
+        if (!serialNumber || !diskSerialNumber) return { isValidated:false, message:'Unit key is null or undefined' }
 
         const concatenatedString = `${tableData.na00x02}${tableData.na00x01}`;
         const decryptedLicense: any = await XORDecryption(concatenatedString, String(licenseKey));
@@ -135,7 +135,7 @@ export const f6C636E73766C64 = async (licenseKey: any) => {
         let combinedSerialNumbers = `${diskSerialNumber}${serialNumber}`;
         combinedSerialNumbers = combinedSerialNumbers.replace(/[^\w]/g, '').replace('.', '').replace('_', '').replace('-', '');
 
-        if (String(combinedSerialNumbers) !== String(parts[0])) return false;
+        if (String(combinedSerialNumbers) !== String(parts[0])) return { isValidated:false, message:'Unit key is incorrect' }
 
         let licenseType = (String(parts[1]) === 'retail') ? 'retail' : ((String(parts[1]) === 'restaurant') ? 'restaurant' : ((String(parts[1]) === 'hotel') ? 'hotel' : 'none'));
         let userType = (String(parts[2]) === 'administrator') ? 'administrator' : ((String(parts[2]) === 'cashier') ? 'cashier' : ((String(parts[2]) === 'teller') ? 'teller' : 'none'));
@@ -149,18 +149,14 @@ export const f6C636E73766C64 = async (licenseKey: any) => {
         const [{ value: month }, , { value: day }, , { value: year }] = formatter.formatToParts(startDate);
         const formattedDate = `${year}/${month}/${day}`;
 
-        if (currentDate >= expiryDate) {
-            console.log('License expired');
-            return false;
-        }
+        if (currentDate >= expiryDate) return { isValidated:false, message:'Licensed is already expired' }
 
         let licenseInfo = `${combinedSerialNumbers}.${licenseType}.${userType}.${duration}.${formattedDate}`;
         let encryptedLicense = await XOREncryption(concatenatedString, licenseInfo);
-        console.log(encryptedLicense)
-        return (encryptedLicense === licenseKey);
+
+        return (encryptedLicense === licenseKey)?{ isValidated:true, message:'Licensed key is valid and active' } : { isValidated:false, message:'License key is incorrect' };
     } catch (error) {
-        console.error(error);
-        return false;
+        return { isValidated:false, message:'Something went wrong' }
     }
 };
 
