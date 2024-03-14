@@ -3,20 +3,19 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import App from './App';
 import './assets/index.css';
-import { DatabaseConfig, DraggableTopBar, LicenseKeyEntry } from './components';
+import { AuthProvider } from './context';
 
 const Root = () => {
   return (
     <React.StrictMode>
-      <DraggableTopBar />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={ <App /> } />
-          <Route path="/connection" element={ <DatabaseConfig /> } />
-          <Route path="/license" element={ <LicenseKeyEntry /> } />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/*" element={<App />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
-    </React.StrictMode>
+  </React.StrictMode>
   );
 };
 

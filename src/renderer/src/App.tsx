@@ -1,38 +1,38 @@
-import { Content, DraggableTopBar, RootLayout } from '@/components';
+import { Content, DraggableTopBar, RequireAuth, RootLayout, Unauthorized } from '@/components';
 import { useState } from 'react';
-import { FaDatabase } from 'react-icons/fa6';
+import { Route, Routes } from 'react-router-dom';
+import { Dashboard, Layout, Login, Missing } from './pages';
+
 const App = () => {
   const [display, setDisplay] = useState('')
+
+  const ROLES = {
+    'User': 2001,
+    'Editor': 1984,
+    'Admin': 5150
+
+  }
   
   return (
     <>
-      <DraggableTopBar />
+    <DraggableTopBar className={'z-auto'} />
       <RootLayout>
-        <Content className="bg-zinc-900/50 flex justify-center items-center" style={{ background: 'var(--your-variable-here)' }} >
-          <div  className="shadow-2xl rounded-full flex justify-center items-center" style={{ borderRadius: '20px', background: '#FFF', width: '500px', height: '500px' }} >
-            <div className='w-full px-5 border-red'>
-            <div className=" border-red px-2 py-2">
-                <label className="label  ">
-                  <span className="text-base label-text">Please enter your license key</span>
-                </label>
-                <div className=" py-2 w-full">
-                  <button className='btn btn-primary w-full rounded-md items-center'> 
-                    <span className='flex items-center justify-center'><FaDatabase className="mr-3" /> Connection</span>
-                  </button>
-                </div>
-              </div>
-              <div className=" border-red px-2 py-2">
-                <label className="label  ">
-                  <span className="text-base label-text">Please enter your license key</span>
-                </label>
-                <div className=" py-2 w-full">
-                  <button className='btn btn-primary w-full rounded-md items-center'> 
-                    <span className='flex items-center justify-center'><FaDatabase className="mr-3" /> Connection</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+        <Content  className="bg-zinc-900/50 flex justify-center items-center "  style={{background:'var()'}}> 
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            {/* public routes */}
+            <Route path="login" element={<Login />} />
+            <Route path="unauthorized" element={<Unauthorized />} />
+
+            {/* we want to protect these routes */}
+            <Route element={<RequireAuth allowedRoles={[ROLES.User]} />}>
+              <Route path="/" element={<Dashboard />} />
+            </Route>
+
+            {/* catch all */}
+            <Route path="*" element={<Missing />} />
+          </Route>
+        </Routes>
         </Content>
       </RootLayout>
     </>

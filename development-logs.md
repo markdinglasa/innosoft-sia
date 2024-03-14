@@ -15,3 +15,10 @@ Software Developer : Mark Dinglasa
 
 ## OTHER SOLUTION TO TRY
 * Create another app which its purpose is to set database connection and licensing //for Trial Clients
+
+
+## TRIAL SOFTWARE | 2024-03-11 09:37AM Monday
+- 14 Days Trial
+- On expiration the software won't be accessible anymore
+- The client/user has to buy a licensed software to proceed
+- This trial software is different with the licensed one . hence this version of software has no database configuration and license configuration
