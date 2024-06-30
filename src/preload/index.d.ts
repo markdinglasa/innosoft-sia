@@ -1,9 +1,7 @@
-import type { WINDOW_ACTION, WINDOW_API } from "./index.ts";
+import { ElectronApi } from '../shared/types/window.js'
 
 declare global {
   interface Window {
-    api: typeof WINDOW_API,
-    action: typeof WINDOW_ACTION
+    electron: ElectronApi
   }
 }
-

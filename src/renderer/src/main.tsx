@@ -1,22 +1,17 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import App from './App';
-import './assets/index.css';
-import { AuthProvider } from './context';
+import { Wrapper } from '@shared/containers'
+import store from '@shared/store'
+import { GlobalStyle, ToastifyStyle } from '@shared/styles'
+import ReactDOM from 'react-dom/client'
+import { Provider } from 'react-redux'
 
 const Root = () => {
   return (
-    <React.StrictMode>
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/*" element={<App />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-  </React.StrictMode>
-  );
-};
+    <Provider store={store}>
+      <GlobalStyle />
+      <ToastifyStyle />
+      <Wrapper />
+    </Provider>
+  )
+}
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(<Root />);
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(<Root />)

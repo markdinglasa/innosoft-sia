@@ -1,23 +1,14 @@
-import { contextBridge, ipcRenderer } from 'electron';
+import { ElectronApi } from '@shared/types'
+import { contextBridge } from 'electron'
+import { ipcApi, sqlApi } from './bridges'
 
 if (!process.contextIsolated) {
   throw new Error('contextIsolation must be enabled in the BrowserWindow')
 }
 
-export const WINDOW_ACTION= {
-  send: (channel: string, ...args: any) => ipcRenderer.send(channel, ...args),
+const electronApi: ElectronApi = {
+  ipc: ipcApi,
+  sql: sqlApi
 }
-export const WINDOW_API= {
-  get: (channel: string, ...args: any) => ipcRenderer.invoke(channel, ...args),
-  post: (channel: string, ...args: any) => ipcRenderer.invoke(channel, ...args),
-  delete: (channel: string, ...args: any) => ipcRenderer.invoke(channel, ...args),
-  update: (channel: string, ...args: any) => ipcRenderer.invoke(channel, ...args),
-}
-//
 
-try {
-  contextBridge.exposeInMainWorld('action', WINDOW_ACTION );
-  contextBridge.exposeInMainWorld('api', WINDOW_API );
-} catch (error) {
-  console.error(error)
-}
+contextBridge.exposeInMainWorld('electron', electronApi)

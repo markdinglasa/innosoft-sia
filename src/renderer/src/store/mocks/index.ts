@@ -1,3 +1,0 @@
-/* 
-    DEFAULT DATA HERE
-*/
