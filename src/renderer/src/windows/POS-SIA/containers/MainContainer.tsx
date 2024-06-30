@@ -1,6 +1,7 @@
 import { AppWindow } from '@shared/components'
 import { SFC, WindowProps } from '@shared/types'
 
+import { Dashboard } from '../pages/Dashboard'
 import * as S from './Styles'
 
 export const SIAManager: SFC<WindowProps> = ({ className, display }) => {
@@ -8,7 +9,7 @@ export const SIAManager: SFC<WindowProps> = ({ className, display }) => {
     <>
       <AppWindow className={className} display={display}>
         <S.Container>
-          <h1>Hellow World</h1>
+          <Dashboard />
         </S.Container>
       </AppWindow>
     </>

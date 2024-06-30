@@ -9,7 +9,10 @@
     "src/preload/*.d.ts",
     "src/preload/*.ts",
     "src/preload/**/*.ts",
+    "src/shared/*",
     "src/shared/**/*",
+    "src/shared/**/**/*",
+    "src/shared/**/**/**/*",
   ],
   "compilerOptions": {
     "composite": true,

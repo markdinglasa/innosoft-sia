@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { toast } from 'react-toastify'
 
-import Toast from '../components/Toast'
+import { Toast } from '../components'
 import { ToastType } from '../types'
 
 export const displayErrorToast = (error: any) => {

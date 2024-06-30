@@ -1,5 +1,5 @@
-import { Windows } from '@renderer/registry'
 import { SFC } from '@shared/types'
+import { Windows } from '../../../../renderer/src/registry'
 import * as S from './Styles'
 
 export const MainArea: SFC = ({ className }) => {

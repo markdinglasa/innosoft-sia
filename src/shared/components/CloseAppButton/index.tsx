@@ -1,16 +1,15 @@
 import { mdiClose } from '@mdi/js'
-import * as S from './Styles'
+import { IpcChannel, SFC } from '../../types'
+import { Button, Icon } from './styles'
 
-export const CloseAppButton = () => {
+export const CloseAppButton: SFC = ({ className }) => {
   const handleCloseClick = () => {
-    window.electron.ipc.send('close-app')
+    window.electron.ipc.send(IpcChannel.closeApp)
   }
 
   return (
-    <>
-      <S.Button onClick={handleCloseClick}>
-        <S.Icon path={mdiClose} size="18px" />
-      </S.Button>
-    </>
+    <Button className={className} onClick={handleCloseClick}>
+      <Icon path={mdiClose} size="16px" />
+    </Button>
   )
 }

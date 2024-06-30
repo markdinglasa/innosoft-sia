@@ -1,9 +1,41 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { BrowserWindow, app, ipcMain, screen, shell } from 'electron'
+import { isDevelopment } from '@shared/utils/environment'
+import { BrowserWindow, app, screen, session, shell } from 'electron'
 import electronStore from 'electron-store'
 import path, { join } from 'path'
+import './controllers'
+import './ipcMain'
 
 electronStore.initRenderer()
+require('electron-debug')()
+
+const installExtensions = async () => {
+  const installer = require('electron-devtools-installer')
+  const forceDownload = !!process.env.UPGRADE_EXTENSIONS
+  const extensions = ['REACT_DEVELOPER_TOOLS', 'REDUX_DEVTOOLS']
+
+  // Custom extension path
+  const extensionPath = path.join(__dirname, '../../shared/extentions/mv3.json')
+  try {
+    const name = await session.defaultSession.loadExtension(extensionPath, {
+      allowFileAccess: true
+    })
+    console.log(`Loaded custom extension: ${name}`)
+  } catch (err) {
+    console.log('Failed to load custom extension:', err)
+  }
+
+  // Install default extensions
+  try {
+    await installer.default(
+      extensions.map((name) => installer[name]),
+      forceDownload
+    )
+    console.log('Installed default extensions:', extensions)
+  } catch (err) {
+    console.log('Failed to install default extensions:', err)
+  }
+}
 
 const createWindow = (url: string): BrowserWindow => {
   const primaryDisplay = screen.getPrimaryDisplay()
@@ -27,8 +59,10 @@ const createWindow = (url: string): BrowserWindow => {
     trafficLightPosition: { x: 15, y: 10 },
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: true,
-      contextIsolation: true
+      sandbox: false,
+      nodeIntegration: true,
+      contextIsolation: true,
+      devTools: true
     }
   })
 
@@ -61,10 +95,9 @@ app.whenReady().then(async () => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // Handle the close-app message from the renderer process
-  ipcMain.on('close-app', () => {
-    app.quit()
-  })
+  if (isDevelopment) {
+    await installExtensions()
+  }
 
   let url = '../renderer/index.html'
 

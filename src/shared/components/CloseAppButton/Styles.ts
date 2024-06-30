@@ -3,7 +3,6 @@ import styled from 'styled-components'
 
 export const Icon = styled(UMdiIcon)`
   color: gray;
-  margin-right: 3px;
   transition: color 0.1s;
 `
 
