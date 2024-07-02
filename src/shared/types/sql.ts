@@ -6,5 +6,6 @@ export interface SqlApi {
 }
 
 export enum SqlChannel {
-  getAllAccounts = 'get-all-accounts'
+  getAllAccounts = 'get-all-accounts',
+  getKey = 'get-key'
 }

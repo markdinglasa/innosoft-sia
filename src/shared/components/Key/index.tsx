@@ -1,5 +1,7 @@
 import { mdiClipboardCheckMultipleOutline, mdiContentCopy } from '@mdi/js';
+import { setActiveKey } from '@shared/store/manager';
 import { ButtonColor, ButtonType, SFC, WindowDispatch } from '@shared/types';
+import { SqlChannel } from '@shared/types/sql';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import * as S from './Styles';
@@ -10,13 +12,16 @@ export const Key: SFC = ({ className }) => {
     useEffect(() => {
         const fetchKey = async () => {
             try {
-                /*const response = await axios.get(`${baseUrl}/license/key`, {
-                    withCredentials: true,
-                });
-                if (response.data) {
-                    setKey(response.data.key);
-                    dispatch(setActiveKey(response.data.key));
-                };*/
+                const response = await window.electron.sql.get(SqlChannel.getKey);
+                console.log('KEY', response)
+                if (response.key === null) {
+                    setKey('none');
+                    dispatch(setActiveKey(null));
+                }
+                else {
+                    setKey(response.key);
+                    dispatch(setActiveKey(response.key));
+                }
             } catch (error) {
                 setKey('');
             }
