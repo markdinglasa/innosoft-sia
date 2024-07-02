@@ -2,8 +2,8 @@ import { combineReducers } from '@reduxjs/toolkit'
 
 import managerReducer from './manager'
 
-const databaseManagerReducer = combineReducers({
+const siaManagerReducer = combineReducers({
   manager: managerReducer
 })
 
-export default databaseManagerReducer
+export default siaManagerReducer

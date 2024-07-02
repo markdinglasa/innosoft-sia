@@ -2,6 +2,7 @@ import { WelcomeModal } from '@shared/modals'
 import { setStoreLoadedTrue } from '@shared/store/internal'
 import { IpcChannel, LocalElectronStore, WindowDispatch } from '@shared/types'
 import { loadStoreFailToast } from '@shared/utils/toast'
+import { License } from '@shared/window/License'
 import { FC, useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Flip, ToastContainer } from 'react-toastify'
@@ -9,7 +10,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import { useReadIpc, useToggle } from '../../hooks'
 import { loadWindowData } from '../../internal'
 import { getStoreLoaded } from '../../selectors'
-import { Layout } from '../Layout'
+import * as S from './Styles'
 
 export const Wrapper: FC = () => {
   const [welcomeModalIsOpen, toggleWelcomeModal] = useToggle(false)
@@ -44,7 +45,8 @@ export const Wrapper: FC = () => {
 
   return (
     <>
-      <Layout />
+    <S.Wrapper>
+      <License />
       <ToastContainer
         autoClose={3000}
         closeOnClick
@@ -57,8 +59,8 @@ export const Wrapper: FC = () => {
         rtl={false}
         transition={Flip}
       />
-
       {welcomeModalIsOpen ? <WelcomeModal close={toggleWelcomeModal} /> : null}
+    </S.Wrapper>
     </>
   )
 }

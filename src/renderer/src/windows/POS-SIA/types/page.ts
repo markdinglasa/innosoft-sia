@@ -1,7 +1,7 @@
 export enum Page {
-  database_configuration = 'database-configuration',
-  license = 'license',
   login = 'login',
   dashboard = 'dashboard',
-  reseter = 'reseter'
+  reports = 'reports',
+  sia_table = 'sia-table',
+  test = 'test'
 }

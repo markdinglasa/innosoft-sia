@@ -1,6 +1,6 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { isDevelopment } from '@shared/utils/environment'
-import { BrowserWindow, app, screen, session, shell } from 'electron'
+import { BrowserWindow, app, screen, shell } from 'electron'
+import installer, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import electronStore from 'electron-store'
 import path, { join } from 'path'
 import './controllers'
@@ -8,24 +8,12 @@ import './ipcMain'
 
 electronStore.initRenderer()
 require('electron-debug')()
-
+/*
 const installExtensions = async () => {
   const installer = require('electron-devtools-installer')
   const forceDownload = !!process.env.UPGRADE_EXTENSIONS
   const extensions = ['REACT_DEVELOPER_TOOLS', 'REDUX_DEVTOOLS']
 
-  // Custom extension path
-  const extensionPath = path.join(__dirname, '../../shared/extentions/mv3.json')
-  try {
-    const name = await session.defaultSession.loadExtension(extensionPath, {
-      allowFileAccess: true
-    })
-    console.log(`Loaded custom extension: ${name}`)
-  } catch (err) {
-    console.log('Failed to load custom extension:', err)
-  }
-
-  // Install default extensions
   try {
     await installer.default(
       extensions.map((name) => installer[name]),
@@ -35,7 +23,7 @@ const installExtensions = async () => {
   } catch (err) {
     console.log('Failed to install default extensions:', err)
   }
-}
+}*/
 
 const createWindow = (url: string): BrowserWindow => {
   const primaryDisplay = screen.getPrimaryDisplay()
@@ -45,18 +33,18 @@ const createWindow = (url: string): BrowserWindow => {
     width: width - 100,
     height: height - 100,
     icon: path.join(__dirname, '../shared/assetsfavicon.ico'),
-    show: false,
-    autoHideMenuBar: true,
+    //show: false,
+    //autoHideMenuBar: true,
     center: true,
-    frame: false,
+    //frame: false,
     resizable: false,
-    fullscreenable: true,
-    fullscreen: false,
-    vibrancy: 'under-window',
+    //fullscreenable: true,
+    //fullscreen: false,
+    //vibrancy: 'under-window',
     title: 'Innsoft SIA',
-    visualEffectState: 'active',
-    titleBarStyle: 'hidden',
-    trafficLightPosition: { x: 15, y: 10 },
+    //visualEffectState: 'active',
+    //titleBarStyle: 'hidden',
+    //trafficLightPosition: { x: 15, y: 10 },
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
@@ -95,9 +83,8 @@ app.whenReady().then(async () => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  if (isDevelopment) {
-    await installExtensions()
-  }
+  await installer(REDUX_DEVTOOLS)
+  await installer(REACT_DEVELOPER_TOOLS)
 
   let url = '../renderer/index.html'
 

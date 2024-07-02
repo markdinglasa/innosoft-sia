@@ -14,7 +14,7 @@ import {
 export interface WindowElectronStore extends SIAElectronStore {}
 
 export const windowReducers = {
-  SIAManager: SIAManagerRegistration.reducer!
+  SIA: SIAManagerRegistration.reducer!
 }
 
 export const windowRegistration: WindowRegistration[] = [SIAManagerRegistration]

@@ -1,9 +1,19 @@
 export const colors = {
   background: '#f1f6fa',
-  primary: '#2c3967',
-  red: '#dd060f',
+  primary: '#14263E',
+  red: '#AF2D24',
+  secondary: '#93CDDD',
   white: '#fff',
+  pink: '#D99694',
+  warning: '#fb6340',
   palette: {
+    black: {
+      '100': '#394041',
+      '200': 'rgba(39, 40, 41, 0.18)',
+      '300': 'rgba(39, 40, 41, 0.28)',
+      '400': 'rgba(39, 40, 41, 0.38)',
+      '500': 'rgba(39, 40, 41, 0.48)',
+    },
     blue: {
       '050': '#f5fbff',
       '100': '#d6ecff',

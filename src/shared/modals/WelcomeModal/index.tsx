@@ -2,7 +2,6 @@ import { mdiQrcodeScan } from '@mdi/js'
 import { Icon, Modal } from '../../components'
 import { SFC } from '../../types'
 import * as S from './Styles'
-import Arrow from './assets/arrow.png'
 
 interface WelcomeModalProps {
   close(): void
@@ -15,7 +14,7 @@ export const WelcomeModal: SFC<WelcomeModalProps> = ({ className, close }) => {
         You can always view your account number by clicking this icon on your toolbar.
       </S.FooterLeft>
       <S.FooterRight>
-        <S.Arrow alt="arrow" src={Arrow} />
+        <S.Arrow alt="arrow" src={''} />
         <Icon icon={mdiQrcodeScan} unfocusable />
       </S.FooterRight>
     </S.Footer>

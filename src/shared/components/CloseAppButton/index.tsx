@@ -1,6 +1,6 @@
 import { mdiClose } from '@mdi/js'
 import { IpcChannel, SFC } from '../../types'
-import { Button, Icon } from './styles'
+import { Button, Icon } from './Styles'
 
 export const CloseAppButton: SFC = ({ className }) => {
   const handleCloseClick = () => {

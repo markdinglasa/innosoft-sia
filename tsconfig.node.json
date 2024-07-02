@@ -5,7 +5,7 @@
     "src/main/**/*",
     "src/preload/*",
     "src/shared/**/*","src/shared/**/**/*","src/shared/**/**/**/*"
-  ],
+, "src/declaration.d.ts"  ],
   "compilerOptions": {
     "composite": true,
     "types": [

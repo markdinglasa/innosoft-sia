@@ -1,4 +1,6 @@
 export * from './blocks'
+export * from './button'
+export * from './dbConfig'
 export * from './electronStore'
 export * from './generic'
 export * from './internal'
