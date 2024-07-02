@@ -3,7 +3,7 @@ import { BrowserWindow, app, screen, shell } from 'electron'
 import installer, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import electronStore from 'electron-store'
 import path, { join } from 'path'
-import './controllers'
+import './controllers/configuration'
 import './ipcMain'
 
 electronStore.initRenderer()
