@@ -26,7 +26,7 @@ ipcMain.handle(SqlChannel.login, async (_event: any, {UserName, Password}: LogDa
     if (!isPasswordValid) return ({ IsLogin: false, Message: Error.e00x19 })
     const accessToken = await generateToken(user.Data[0].Id)
     return ({ IsLogin: true, User: user.Data, AccessToken: accessToken, Message: Success.s00x00})
-    } catch (Error:any) {
+    } catch (err:any) {
         return ({ IsLogin: false, Message: Error.e00x02 });
     }
 })

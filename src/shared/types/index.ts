@@ -26,6 +26,7 @@ export * from './socketDataStandard'
 export * from './socketStatuses'
 export * from './store'
 export * from './toast'
+export * from './user'
 export * from './window'
 export * from './windows'
 

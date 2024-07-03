@@ -1,5 +1,5 @@
 import { createSlice, current, PayloadAction } from '@reduxjs/toolkit'
-import { DBConfig, IpcChannel } from '@shared/types'
+import { DBConfig, IpcChannel, User } from '@shared/types'
 import { SYSTEM_MANAGER } from '../constants'
 import { Manager } from '../interfaces/manager'
 import { setLocalAndStateReducer } from '../utils/ipc'
@@ -9,6 +9,8 @@ export const initialState: Manager = {
   activeLicense: null,
   activeDBConfig: null,
   activeKey: null,
+  activeToken: null,
+  activeUser: null,
 }
 
 const manager = createSlice({
@@ -42,6 +44,20 @@ const manager = createSlice({
         state: current(state)
       })
     },
+    setActiveToken: (state: Manager, { payload: activeToken }: PayloadAction<string | null>) => {
+      state.activeToken = activeToken
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: SYSTEM_MANAGER,
+        state: current(state)
+      })
+    },
+    setActiveUser: (state: Manager, { payload: activeUser }: PayloadAction<User | null>) => {
+      state.activeUser = activeUser
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: SYSTEM_MANAGER,
+        state: current(state)
+      })
+    },
     setActiveWindow: (state: Manager, { payload: windowId }: PayloadAction<string>) => {
       state.activeWindow = windowId === state.activeWindow ? null : windowId
       window.electron.ipc.send(IpcChannel.setStoreValue, {
@@ -53,5 +69,5 @@ const manager = createSlice({
   }
 })
 
-export const { setActiveWindow, setActiveDatabaseConfig, setActiveKey, setActiveLicense,  setManager } = manager.actions
+export const { setActiveWindow, setActiveDatabaseConfig, setActiveKey, setActiveLicense, setActiveToken, setActiveUser, setManager } = manager.actions
 export default manager.reducer

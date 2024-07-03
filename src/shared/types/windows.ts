@@ -30,4 +30,5 @@ export enum Windows {
   dbConfig = 'database-configuration',
   license = 'license',
   login = 'login',
+  sia = 'sia',
 }

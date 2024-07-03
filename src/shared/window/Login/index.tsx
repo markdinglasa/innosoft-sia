@@ -1,14 +1,16 @@
 import { Input } from '@shared/components'
-import { ButtonColor, ButtonType, SFC, ToastType } from '@shared/types'
+import { setActiveToken, setActiveUser, setActiveWindow } from '@shared/store/manager'
+import { ButtonColor, ButtonType, SFC, ToastType, WindowDispatch, Windows } from '@shared/types'
+import { SqlChannel } from '@shared/types/sql'
 import { displayToast } from '@shared/utils/toast'
 import { Form, Formik } from 'formik'
 import { useMemo } from 'react'
-//import { useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import * as yup from 'yup'
 import * as S from './Styles'
 
 export const Login: SFC = ({ className }) => {
-  //const dispatch = useDispatch<WindowDispatch>()
+  const dispatch = useDispatch<WindowDispatch>()
 
   const initialValues = {
     UserName: '',
@@ -17,25 +19,28 @@ export const Login: SFC = ({ className }) => {
 
   type FormValues = typeof initialValues
 
-  const handleSubmit = async (_values: FormValues) => {
-    /*const data = {
+  const handleSubmit = async (values: FormValues) => {
+    const data = {
       UserName: values.UserName,
       Password: values.Password
-    }*/
+    }
 
     try {
-      /*
-      if (response.data.isLogin) {
-        dispatch(setActiveUser(response.data.user))
-        dispatch(setActiveToken(response.data.accessToken))
-        dispatch(setActivePage(Page.reseter))
-      } else {
+        let UserName = data.UserName, Password = data.Password
+        const response = await window.electron.sql.post(SqlChannel.login, {UserName, Password});
+        if (response.IsLogin) {
+          dispatch(setActiveUser(response.User))
+          dispatch(setActiveToken(response.AccessToken))
+          dispatch(setActiveWindow(Windows.sia))
+        }
+      else {
         dispatch(setActiveUser(null))
         dispatch(setActiveToken(null))
-        displayToast(response.data.message, ToastType.error)
-      }*/
+        dispatch(setActiveWindow(Windows.login))
+        displayToast(response.Message, ToastType.error)
+      }
     } catch (error: any) {
-      displayToast('Something went wrong!', ToastType.error)
+      displayToast(`${error}`, ToastType.error)
     }
   }
   const validationSchema = useMemo(() => {
@@ -102,3 +107,4 @@ export const Login: SFC = ({ className }) => {
     </>
   )
 }
+

@@ -15,24 +15,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Layout } from '../Layout';
 import * as S from './Styles';
 export const Wrapper: FC = () => {
-  /*
-  const [loading, setLoading] = useState(true);
-  useWindowInitialize();
-  
-  const activeWindow = useSelector(getActiveWindow);
-
-  const renderContent = (): ReactNode => {
-    switch (activeWindow) {
-      case Windows.dbConfig:
-        return <DBConfig />;
-      case Windows.license:
-        return <License />;
-      case Windows.login:
-        return <Login />;
-      default:
-        return Windows.dbConfig;
-    }
-  };*/
   const [welcomeModalIsOpen, toggleWelcomeModal] = useToggle(false);
   const dispatch = useDispatch<WindowDispatch>();
   const self = useSelector(getSelf);

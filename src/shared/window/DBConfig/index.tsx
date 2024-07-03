@@ -45,8 +45,8 @@ export const DBConfig: SFC = ({ className }) => {
       console.log('setConenction', response.Data)
       console.log('isConnected', isConnected)
       if (response.Data && isConnected) {
-        displayToast('Database Connected', ToastType.success)
         dispatch(setActiveDatabaseConfig(config))
+        displayToast('Database Connected', ToastType.success)
       }
       else {
         displayToast('Connection failed', ToastType.error)
