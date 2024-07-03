@@ -5,7 +5,7 @@ import { SIA_MANAGER } from '../constants'
 import { Manager, Page, User } from '../types'
 
 export const initialState: Manager = {
-  activePage: Page.login,
+  activePage: Page.dashboard,
   activeUser: null,
   activeToken: null
 }

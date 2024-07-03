@@ -1,23 +1,23 @@
-import { Connection } from '../../../config/database';
-import { Config } from '../../../config/database';
+import { Error, Success } from '@shared/messages';
+import { Response } from '@shared/types';
+import { Connection } from '../../../functions';
 
 /**
  * Retrieves all records from a given Table.
  * @param {string} Table
  * @returns {Promise<Array>}
 */
-//
 
-export const  recordsByTable = async (Config: Config, Table: string = ''): Promise<Array<any>> => {
+export const  recordsByTable = async (Table: string = ''): Promise<Response> => {
     try {
-        if (typeof Table !== 'string' || !Table) return Promise.reject(new Error('Table must be a string'));
-        const pool = (await Connection(Config)).pool;
-        if (!pool)  return Promise.reject(new Error(`Connection failed`));
+        if (typeof Table !== 'string' || !Table) return ({Data: null, Message: Error.e00x28})
+        const pool = (await Connection()).pool;
+        if (!pool)  return ({Data: null, Message: Error.e00x14})
         const request = pool.request();
         const result = await request.query(`SELECT * FROM [${Table}]`);
-        if (!result.recordset || result.recordset.length < 1) return Promise.reject(new Error('Database query returned no results.'));
-        return result.recordset;
+        if (!result.recordset || result.recordset.length < 1) return ({Data: null, Message: Error.e00x30})
+        return ({Data: result.recordset, Message: Success.s00x00})
     } catch (error:any) {
-        throw new Error(`Error fetching all records from ${Table}: ${error.message}`);
+        return ({Data: null, Message: Error.e00x02})
     } 
 };

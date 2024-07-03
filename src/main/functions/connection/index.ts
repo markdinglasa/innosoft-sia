@@ -1,4 +1,5 @@
-import { ConnectionPool } from 'mssql'
+import { ConnectionPool } from 'mssql';
+import { getConnection } from '..';
 
 export interface DatabaseConnection {
   pool: ConnectionPool
@@ -7,17 +8,18 @@ export interface DatabaseConnection {
 
 export const Connection = async (): Promise<DatabaseConnection> => {
   try {
+    const data = getConnection().Data
     const config = {
-      user: 'sa',
-      password: 'innosoft',
-      server: 'localhost',
-      database: 'pos13',
-      port: 1433, // Corrected the port parsing
+      user: data.user,
+      password: data.password,
+      server: data.server,
+      database: data.name,
+      port: parseInt(data.port, 10),
       options: {
         encrypt: false
       }
     }
-
+    
     const pool = await new ConnectionPool(config).connect()
     pool.setMaxListeners(15)
 

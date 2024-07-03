@@ -1,11 +1,7 @@
 import { Error, Success } from '@shared/messages'
+import { Response } from '@shared/types'
 import { Int } from 'mssql'
 import { Connection } from '../../../functions'
-
-interface Response {
-  Data: Array<any> | null
-  Message: string
-}
 
 /**
  * Retrieves 1 specific record from a given Id & Table.
@@ -13,10 +9,10 @@ interface Response {
  * @param {string} Table
  * @returns {Promise<Array>}
  */
+
 export const recordById = async (Id: number = 0, Table: string = ''): Promise<Response> => {
   try {
     if (isNaN(Id) || typeof Id !== 'number') return { Data: null, Message: Error.e00x07 }
-
     if (!Table || typeof Table !== 'string') return { Data: null, Message: Error.e00x28 }
     if (Id < 1) return { Data: null, Message: Error.e00x29 }
     const pool: any = (await Connection()).pool

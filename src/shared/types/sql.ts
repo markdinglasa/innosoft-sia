@@ -6,10 +6,14 @@ export interface SqlApi {
 }
 
 export enum SqlChannel {
-  getAllAccounts = 'get-all-accounts',
   getKey = 'get-key',
-  isConnected = 'validate-database-connection',
+  isLicense = 'is-license-valid',
+  accessToken = 'access-token',
   login = 'log-in-user',
   logout = 'log-out-user',
-  accessToken = 'access-token'
+  isConnected = 'validate-database-connection',
+  dbConfig = 'database-configuration',
+  setConnection = 'set-database-connection',
+  getConnection = 'get-database-connection',
+  getAllAccounts = 'get-all-accounts',
 }

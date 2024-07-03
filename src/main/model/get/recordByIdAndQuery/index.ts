@@ -1,10 +1,12 @@
-import { Error } from '@shared/messages'
+import { Error, Success } from '@shared/messages'
 import { Int } from 'mssql'
+import { Connection } from '../../../functions'
 
 interface Response {
   Data: Array<any> | null
   Message: string
 }
+
 /**
  * Retrieves records from a given Id & Query.
  * @param {number} Id
@@ -13,21 +15,18 @@ interface Response {
  */
 export const recordByIdAndQuery = async (Id: number = 0, Query: string = ''): Promise<Response> => {
   try {
-    if (isNaN(Id) || typeof Id !== 'number')
-      return Promise.reject(new Error('Id must be a valid number'))
-    if (!Query || typeof Query !== 'string')
-      return Promise.reject(new Error('Query must be provided as a non-empty string'))
-    if (Id < 1) return Promise.reject(new Error('Id must be a positive non-zero number'))
-    const pool: any = (await conn(config)).pool
-    if (!pool) return Promise.reject(new Error('Connection failed'))
+    if (isNaN(Id) || typeof Id !== 'number') return ({Data: null , Message: Error.e00x07})
+    if (!Query || typeof Query !== 'string') return ({Data: null, Message: Error.e00x31})
+    if (Id < 1) return ({ Data: null, Message:Error.e00x29 })
+    const pool: any = (await Connection()).pool
+    if (!pool) return ({ Data: null, Message: Error.e00x14 })
     pool.setMaxListeners(15)
     const request = pool.request()
     request.input('Id', Int, Id)
     const result = await request.query(Query)
-    if (!result.recordset || result.recordset.length < 1)
-      return Promise.reject(new Error('Database query returned no results'))
-    return result.recordset
+    if (!result.recordset || result.recordset.length < 1) return ({ Data: null, Message: Error.e00x30})
+    return  ({Data:result.recordset, Message: Success.s00x00})
   } catch (error) {
-    throw new Error(`Error function recordByIdAndQuery: Internal Server Error`)
+    return ({Data: null, Message: Error.e00x02})
   }
 }

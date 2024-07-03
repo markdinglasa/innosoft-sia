@@ -1,6 +1,11 @@
+export * from './XORDecryption'
 export * from './XOREncrption'
 export * from './connection'
+export * from './findByFields'
+export * from './generateToken'
 export * from './getBiosSerialNo'
+export * from './getConnection'
 export * from './getDataByTable'
 export * from './getStorageSerialNo'
-
+export * from './getUserByUsername'
+export * from './isLicenseValid'

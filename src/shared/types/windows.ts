@@ -25,3 +25,9 @@ export interface WindowRegistration {
 export interface SystemWindowRegistration extends WindowRegistration {
   isSystemWindow: true
 }
+
+export enum Windows {
+  dbConfig = 'database-configuration',
+  license = 'license',
+  login = 'login',
+}

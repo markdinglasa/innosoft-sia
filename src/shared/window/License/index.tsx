@@ -1,6 +1,8 @@
 import { mdiKey } from '@mdi/js'
 import { Input, Key } from '@shared/components'
-import { ButtonColor, ButtonType, SFC, ToastType, WindowDispatch } from '@shared/types'
+import { setActiveLicense, setActiveWindow } from '@shared/store/manager'
+import { ButtonColor, ButtonType, SFC, ToastType, WindowDispatch, Windows } from '@shared/types'
+import { SqlChannel } from '@shared/types/sql'
 import { displayToast } from '@shared/utils/toast'
 import { Form, Formik } from 'formik'
 import { useMemo } from 'react'
@@ -10,31 +12,27 @@ import * as S from './Styles'
 
 export const License: SFC = ({ className }) => {
   const dispatch = useDispatch<WindowDispatch>()
-
   const initialValues = {
     license: ''
   }
-
   type FormValues = typeof initialValues
 
   const handleSubmit = async (values: FormValues) => {
-    // make the function async
     const data = {
       license: values.license
     }
 
     try {
-      displayToast('Success', ToastType.success)
-      /*
-            if (response.data.isLicense) {
-                dispatch(setActivePage(Page.dashboard));
-                dispatch(setActiveLicense(data.license));
-                displayToast(response.data.message, ToastType.success);
-            } else {
-                displayToast(response.data.message, ToastType.error);
-            }*/
+      const response = await window.electron.sql.post(SqlChannel.isLicense, data.license)
+      console.log('resonse', response);
+      if (response.IsLicense) {
+        dispatch(setActiveLicense(data.license));
+        dispatch(setActiveWindow(Windows.login));
+        displayToast('Success', ToastType.success)
+      } else {
+        displayToast(response.Message, ToastType.error);
+      }
     } catch (error) {
-      //dispatch(setActiveLicense(null));
       displayToast('License Error!', ToastType.error)
     }
   }

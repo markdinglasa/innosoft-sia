@@ -9,11 +9,12 @@ import {
   ToastType,
   WindowDispatch
 } from '@shared/types'
+import { SqlChannel } from '@shared/types/sql'
 import { displayToast } from '@shared/utils/toast'
 import { Form, Formik } from 'formik'
 import { useMemo } from 'react'
 import { useDispatch } from 'react-redux'
-import * as yup from 'yup' // corrected import
+import * as yup from 'yup'; // corrected import
 import * as S from './Styles'
 
 export const DBConfig: SFC = ({ className }) => {
@@ -29,7 +30,7 @@ export const DBConfig: SFC = ({ className }) => {
 
   type FormValues = typeof initialValues
 
-  const handleSubmit = (values: FormValues) => {
+  const handleSubmit = async (values: FormValues) => {
     // make the function async
     const config: Config = {
       server: values.server,
@@ -39,16 +40,18 @@ export const DBConfig: SFC = ({ className }) => {
       port: values.port
     }
     try {
-      displayToast('Database Connected', ToastType.success)
-      /*
-            //console.log('CONNECTED: '+ response);
-            if (response){
-                displayToast('Connected', ToastType.success);
-            } else {
-                displayToast('Connection failed', ToastType.error);
-            }*/
+      const response = await window.electron.sql.post(SqlChannel.setConnection, config)
+      const isConnected: boolean = await window.electron.sql.get(SqlChannel.isConnected);
+      console.log('setConenction', response.Data)
+      console.log('isConnected', isConnected)
+      if (response.Data && isConnected) {
+        displayToast('Database Connected', ToastType.success)
+        dispatch(setActiveDatabaseConfig(config))
+      }
+      else {
+        displayToast('Connection failed', ToastType.error)
+      }
     } catch (error: any) {
-      dispatch(setActiveDatabaseConfig(null))
       displayToast(`${error}`, ToastType.error)
     }
   }

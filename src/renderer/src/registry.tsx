@@ -1,6 +1,6 @@
 import { getManager } from '@shared/selectors'
 import { SFC, WindowDispatch } from '@shared/types'
-import { WindowRegistration } from '@shared/types/windows'
+import { WindowDataHandlers, WindowRegistration } from '@shared/types/windows'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { setActiveWindow } from '@shared/store/manager'
@@ -16,6 +16,7 @@ export interface WindowElectronStore extends SIAElectronStore {}
 export const windowReducers = {
   SIA: SIAManagerRegistration.reducer!
 }
+export const windowRouters: WindowDataHandlers = { }
 
 export const windowRegistration: WindowRegistration[] = [SIAManagerRegistration]
 

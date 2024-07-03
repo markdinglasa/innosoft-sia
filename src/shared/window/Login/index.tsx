@@ -1,14 +1,14 @@
 import { Input } from '@shared/components'
-import { ButtonColor, ButtonType, SFC, ToastType, WindowDispatch } from '@shared/types'
+import { ButtonColor, ButtonType, SFC, ToastType } from '@shared/types'
 import { displayToast } from '@shared/utils/toast'
 import { Form, Formik } from 'formik'
 import { useMemo } from 'react'
-import { useDispatch } from 'react-redux'
+//import { useDispatch } from 'react-redux'
 import * as yup from 'yup'
 import * as S from './Styles'
 
 export const Login: SFC = ({ className }) => {
-  const dispatch = useDispatch<WindowDispatch>()
+  //const dispatch = useDispatch<WindowDispatch>()
 
   const initialValues = {
     UserName: '',
@@ -17,11 +17,11 @@ export const Login: SFC = ({ className }) => {
 
   type FormValues = typeof initialValues
 
-  const handleSubmit = async (values: FormValues) => {
-    const data = {
+  const handleSubmit = async (_values: FormValues) => {
+    /*const data = {
       UserName: values.UserName,
       Password: values.Password
-    }
+    }*/
 
     try {
       /*

@@ -1,6 +1,6 @@
 import { SqlChannel } from '@shared/types/sql'
 import { ipcMain } from 'electron'
-import { getDataByTable } from '../../functions'
+import { getDataByTable } from '../../../functions'
 
 ipcMain.handle(
   SqlChannel.getAllAccounts,
