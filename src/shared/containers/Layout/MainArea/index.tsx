@@ -30,7 +30,7 @@ export const MainArea: SFC = ({ className }) => {
 
   return (
     <S.Container className={className}>
-      {renderContent()}
+      <App />
     </S.Container>
   )
 }

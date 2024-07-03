@@ -1,4 +1,5 @@
 export * from './AppWindow'
+export * from './Avatar'
 export * from './Button'
 export * from './CardsContainer'
 export * from './CloseAppButton'

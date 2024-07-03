@@ -7,7 +7,7 @@ export interface AvatarProps {
   accountNumber: string;
 }
 
-const Avatar: SFC<AvatarProps> = ({accountNumber, className}) => {
+export const Avatar: SFC<AvatarProps> = ({accountNumber, className}) => {
   const displayImage = useAccountDisplayImage(accountNumber);
   const onlineStatus = useAccountOnlineStatus(accountNumber);
 
@@ -27,5 +27,3 @@ const Avatar: SFC<AvatarProps> = ({accountNumber, className}) => {
     </S.Container>
   );
 };
-
-export default Avatar;

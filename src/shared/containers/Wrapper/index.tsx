@@ -1,9 +1,8 @@
 import { Flip, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 //import { Windows as App } from '../../../renderer/src/registry'
-import { useReadIpc, useToggle } from '@shared/hooks';
+import { useReadIpc } from '@shared/hooks';
 import { loadSystemData, loadWindowData } from '@shared/internal';
-import { WelcomeModal } from '@shared/modals';
 import { getSelf, getStoreLoaded } from '@shared/selectors/state';
 import { setStoreLoadedTrue } from '@shared/store/internal';
 import { setSelf } from '@shared/store/self';
@@ -15,7 +14,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Layout } from '../Layout';
 import * as S from './Styles';
 export const Wrapper: FC = () => {
-  const [welcomeModalIsOpen, toggleWelcomeModal] = useToggle(false);
+  //const [welcomeModalIsOpen, toggleWelcomeModal] = useToggle(false);
   const dispatch = useDispatch<WindowDispatch>();
   const self = useSelector(getSelf);
   const storeLoaded = useSelector(getStoreLoaded);
@@ -31,10 +30,10 @@ export const Wrapper: FC = () => {
       if (!storeSelf.accountNumber) {
         const {publicKeyHex, signingKeyHex} = generateAccount();
         dispatch(setSelf({accountNumber: publicKeyHex, displayImage: '', displayName: '', signingKey: signingKeyHex}));
-        toggleWelcomeModal();
+        //toggleWelcomeModal();
       }
     },
-    [dispatch, storeLoaded, toggleWelcomeModal],
+    [dispatch, storeLoaded, ],//toggleWelcomeModal
   );
 
   const loadStoreData = useReadIpc({
@@ -69,7 +68,8 @@ export const Wrapper: FC = () => {
           transition={Flip}
         />
       </S.Wrapper>
-      {welcomeModalIsOpen ? <WelcomeModal close={toggleWelcomeModal} /> : null}
+      
     </>
   );
 };
+/*{welcomeModalIsOpen ? <WelcomeModal close={toggleWelcomeModal} /> : null}*/
