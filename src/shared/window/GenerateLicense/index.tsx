@@ -1,67 +1,91 @@
-import { mdiKey } from '@mdi/js'
-import { Input, Key } from '@shared/components'
-import { setActiveLicense, setActiveWindow } from '@shared/store/manager'
+import { mdiKey } from '@mdi/js';
+import { GeneratedLicense, Input, SelectInput } from '@shared/components';
 import {
   ButtonColor,
   ButtonType,
+  GenerateLicense as IGenerateLicense,
   SFC,
   SqlChannel,
-  ToastType,
-  WindowDispatch,
-  Windows
-} from '@shared/types'
-import { displayToast } from '@shared/utils/toast'
-import { Form, Formik } from 'formik'
-import { useMemo } from 'react'
-import { useDispatch } from 'react-redux'
-import * as yup from 'yup'
-import * as S from './Styles'
+  ToastType
+} from '@shared/types';
+import { displayToast } from '@shared/utils';
+import yup from '@shared/utils/yup';
+import { Form, Formik } from 'formik';
+import { useState } from 'react';
+import * as S from './Styles';
 
-export const License: SFC = ({ className }) => {
-  const dispatch = useDispatch<WindowDispatch>()
-  const initialValues = {
-    license: ''
+export const GenerateLicense: SFC = ({ className }) => {
+  //const dispatch = useDispatch<WindowDispatch>()
+  const [licenseKey, setLicenseKey] = useState('')
+  const initialValues = { 
+    Key: '',
+    BusinessType: '',
+    LicenseType: '',
+    Duration: 0,
   }
   type FormValues = typeof initialValues
 
   const handleSubmit = async (values: FormValues) => {
-    const data = {
-      license: values.license
+    const data: IGenerateLicense = {
+      Key: values.Key,
+      BusinessType: values.BusinessType,
+      LicenseType: values.LicenseType,
+      Duration: values.Duration,
     }
 
     try {
-      const response = await window.electron.sql.post(SqlChannel.isLicense, data.license)
-      console.log('resonse', response)
-      if (response.IsLicense) {
-        dispatch(setActiveLicense(data.license))
-        dispatch(setActiveWindow(Windows.login))
+      const response = await window.electron.sql.post(SqlChannel.generateLicense, data)
+      //console.log('resonse', response.Data)
+      if (response.Data) {
+        setLicenseKey(response.Data)
         displayToast('Success', ToastType.success)
       } else {
         displayToast(response.Message, ToastType.error)
       }
-    } catch (error) {
+    } catch (error) {1
       displayToast('License Error!', ToastType.error)
     }
   }
 
-  const validationSchema = useMemo(() => {
-    return yup.object().shape({
-      license: yup.string().required('Server is required')
-    })
-  }, [])
 
+  const businessType = [
+    { value: '', label: 'Choose an option' },
+    { value: 'retail', label: 'Retail' },
+    { value: 'restaurant', label: 'Restaurant' },
+    { value: 'hotel', label: 'Hotel' },
+  ];
+  const licenseType = [
+    { value: '', label: 'Choose an option' },
+    { value: 'administrator', label: 'Administrator' },
+    { value: 'cashier', label: 'Cashier' },
+    { value: 'teller', label: 'Teller' },
+  ];
+  const durationOps = [
+    { value: '', label: 'Choose an option' },
+    { value: '365', label: 'Annual' },
+    { value: '90', label: 'Quarter' },
+    { value: '30', label: 'Monthly' },
+    { value: '14', label: 'Trial' },
+  ];
+  const validationSchema = yup.object({
+    Key: yup.string().required('Required'),
+    BusinessType: yup.string().required('Required'),
+    LicenseType: yup.string().required('Required'),
+    Duration: yup.string().required('Required'),
+  });
+  
   return (
     <>
       <S.Container>
         <S.CardContainer>
           <S.CardHeader className={className}>
             <S.Icon path={mdiKey} size="40px" />
-            <S.CardTitle> License Key</S.CardTitle>
+            <S.CardTitle> Generate License</S.CardTitle>
           </S.CardHeader>
           <S.CardBody className={className}>
-            <Key />
+            <GeneratedLicense license={licenseKey} />
             <Formik
-              initialValues={initialValues}
+             initialValues={initialValues}
               onSubmit={handleSubmit}
               validateOnMount={false}
               validationSchema={validationSchema}
@@ -71,8 +95,29 @@ export const License: SFC = ({ className }) => {
                   <Input
                     errors={errors}
                     type="text"
-                    label="License"
-                    name="license"
+                    label="Key"
+                    name="Key"
+                    touched={touched}
+                  />
+                  <SelectInput
+                    label="Business Type"
+                    name="BusinessType"
+                    options={businessType}
+                    errors={errors}
+                    touched={touched}
+                  />
+                  <SelectInput
+                    label="License Type"
+                    name="LicenseType"
+                    options={licenseType}
+                    errors={errors}
+                    touched={touched}
+                  />
+                  <SelectInput
+                    label="Duration"
+                    name="Duration"
+                    options={durationOps}
+                    errors={errors}
                     touched={touched}
                   />
                   <S.Button

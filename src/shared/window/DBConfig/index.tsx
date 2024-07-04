@@ -42,9 +42,9 @@ export const DBConfig: SFC = ({ className }) => {
     try {
       const response = await window.electron.sql.post(SqlChannel.setConnection, config)
       const isConnected: boolean = await window.electron.sql.get(SqlChannel.isConnected)
-      console.log('setConenction', response.Data)
-      console.log('isConnected', isConnected)
-      if (response.Data && isConnected) {
+      //console.log('setConenction', response.IsSomething)
+      //console.log('isConnected', isConnected)
+      if (response.IsSomething && isConnected) {
         dispatch(setActiveDatabaseConfig(config))
         displayToast('Database Connected', ToastType.success)
       } else {

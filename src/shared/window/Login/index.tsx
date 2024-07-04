@@ -36,9 +36,10 @@ export const Login: SFC = ({ className }) => {
       let UserName = data.UserName,
         Password = data.Password
       const response = await window.electron.sql.post(SqlChannel.login, { UserName, Password })
-      if (response.IsLogin) {
-        dispatch(setActiveUser(response.User))
-        dispatch(setActiveToken(response.AccessToken))
+      if (response.IsSomething) {
+        const user: any = JSON.stringify(response.Data)
+        dispatch(setActiveUser(user))
+        dispatch(setActiveToken(response.Option))
         dispatch(setActiveWindow(Windows.sia))
       } else {
         dispatch(setActiveUser(null))

@@ -8,22 +8,6 @@ import './ipcMain'
 
 electronStore.initRenderer()
 require('electron-debug')()
-/*
-const installExtensions = async () => {
-  const installer = require('electron-devtools-installer')
-  const forceDownload = !!process.env.UPGRADE_EXTENSIONS
-  const extensions = ['REACT_DEVELOPER_TOOLS', 'REDUX_DEVTOOLS']
-
-  try {
-    await installer.default(
-      extensions.map((name) => installer[name]),
-      forceDownload
-    )
-    console.log('Installed default extensions:', extensions)
-  } catch (err) {
-    console.log('Failed to install default extensions:', err)
-  }
-}*/
 
 const createWindow = (url: string): BrowserWindow => {
   const primaryDisplay = screen.getPrimaryDisplay()

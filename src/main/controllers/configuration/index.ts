@@ -1,6 +1,6 @@
-export * from '../master'
+export * from './generateLicense'
 export * from './isConnected'
 export * from './isLicense'
-export * from './key'
+export * from './licenseKey'
 export * from './setConnection'
 

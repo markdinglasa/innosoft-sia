@@ -3,6 +3,9 @@
   "include": [
     "src/main/loader/*.html",
     "src/main/*.ts",
+    "src/main/**/*",
+    "src/main/**/**/*",
+    "src/main/**/**/**/*",
     "src/renderer/src/env.d.ts",
     "src/renderer/*.html",
     "src/renderer/src/**/*.tsx",

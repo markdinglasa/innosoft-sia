@@ -9,6 +9,10 @@ export const Container = styled.div`
   align-items: center;
   justify-content: center;
   background: ${colors.palette.neutral['050']};
+
+  @media (max-width: 1050px) {
+    flex-direction: column;
+  }
 `
 
 export const H1 = styled.h1`
@@ -33,13 +37,19 @@ export const SpanSub = styled.span`
 `
 
 export const Left = styled.div`
-  padding: 10px 10px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: end;
+  justify-content: flex-end;
   width: 35%;
-`
+  border: 1px solid red;
+
+  @media (max-width: 1050px) {
+    justify-content: center;
+    text-align: center;
+  }
+`;
 
 export const Right = styled.div`
   padding: 10px 10px;
@@ -48,6 +58,7 @@ export const Right = styled.div`
   align-items: center;
   justify-content: center;
   width: 40%;
+  border: 1px solid red;
 `
 
 export const LoginCon = styled.div`

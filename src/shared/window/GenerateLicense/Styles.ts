@@ -11,7 +11,7 @@ export const Container = styled.div`
   justify-content: center;
 `
 export const CardContainer = styled.div`
-  height: 410px;
+  height: 710px;
   width: 40%;
   background: ${colors.white};
   display: flex;

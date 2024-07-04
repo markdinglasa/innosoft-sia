@@ -65,7 +65,8 @@ const manager = createSlice({
       })
     },
     setManager: setLocalAndStateReducer<Manager>(SYSTEM_MANAGER)
-  }
+  },
+  
 })
 
 export const {

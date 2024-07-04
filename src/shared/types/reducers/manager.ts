@@ -1,4 +1,4 @@
-import { DBConfig, User } from '@shared/types'
+import { DBConfig } from '@shared/types'
 
 export interface Manager {
   activeWindow: string | null
@@ -6,5 +6,5 @@ export interface Manager {
   activeDBConfig: DBConfig | null
   activeKey: string | null
   activeToken: string | null
-  activeUser: User | null
+  activeUser: any | null
 }
