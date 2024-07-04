@@ -1,6 +1,6 @@
-import { Error, Success } from '@shared/messages'
-import { Response } from '@shared/types'
 import { Int } from 'mssql'
+import { Error, Success } from '../../../../shared/messages'
+import { Response } from '../../../../shared/types'
 import { Connection } from '../../../functions'
 
 /**

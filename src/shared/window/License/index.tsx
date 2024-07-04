@@ -32,7 +32,7 @@ export const License: SFC = ({ className }) => {
     try {
       const response = await window.electron.sql.post(SqlChannel.isLicense, data.license)
       console.log('resonse', response)
-      if (response.IsLicense) {
+      if (response.IsSomething) {
         dispatch(setActiveLicense(data.license))
         dispatch(setActiveWindow(Windows.login))
         displayToast('Success', ToastType.success)

@@ -1,5 +1,5 @@
-import { Error, Success } from '@shared/messages'
-import { Response } from '@shared/types'
+import { Error, Success } from '../../../../shared/messages'
+import { Response } from '../../../../shared/types'
 import { Connection } from '../../../functions'
 
 /**

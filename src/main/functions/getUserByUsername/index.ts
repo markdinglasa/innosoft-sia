@@ -12,11 +12,11 @@ import { recordByFields } from '../../model'
 
 export const getUserByUsername = async (Username: string = ''): Promise<Response> => {
   try {
-    if (typeof Username !== 'string' || !Username) return ({Data: null, Message: Error.e00x36})
-    const user = (await recordByFields(QueryFn.q00x001, ['Username'], [NVarChar(255)], [Username]))
-    if (!user.Data) return ({Data: null, Message: user.Message})
-    return  ({Data: user.Data, Message: user.Message})
+    if (typeof Username !== 'string' || !Username) return { Data: null, Message: Error.e00x36 }
+    const user = await recordByFields(QueryFn.q00x001, ['Username'], [NVarChar(255)], [Username])
+    if (!user.Data) return { Data: null, Message: user.Message }
+    return { Data: user.Data, Message: user.Message }
   } catch (error) {
-    return  ({Data: null, Message: Error.e00x02})
+    return { Data: null, Message: Error.e00x02 }
   }
 }

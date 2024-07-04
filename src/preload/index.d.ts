@@ -1,4 +1,4 @@
-import { ElectronApi } from '../shared/types/window.js'
+import { ElectronApi } from '../shared/types'
 
 declare global {
   interface Window {
