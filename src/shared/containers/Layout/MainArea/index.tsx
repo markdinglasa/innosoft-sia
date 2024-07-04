@@ -2,6 +2,8 @@ import { useWindowInitialize } from '@shared/hooks'
 //import { getActiveWindow } from '@shared/selectors'
 import { SFC } from '@shared/types'
 //import { useSelector } from 'react-redux'
+//import { Windows } from '@renderer/registry'
+//import { License } from '@shared/window'
 import { GenerateLicense } from '@shared/window'
 import * as S from './Styles'
 

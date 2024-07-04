@@ -1,5 +1,6 @@
-import { mdiKey } from '@mdi/js';
-import { GeneratedLicense, Input, SelectInput } from '@shared/components';
+import { mdiKey } from '@mdi/js'
+import { Input, SelectInput } from '@shared/components'
+import { CopyClip } from '@shared/components/CopyClip'
 import {
   ButtonColor,
   ButtonType,
@@ -7,21 +8,21 @@ import {
   SFC,
   SqlChannel,
   ToastType
-} from '@shared/types';
-import { displayToast } from '@shared/utils';
-import yup from '@shared/utils/yup';
-import { Form, Formik } from 'formik';
-import { useState } from 'react';
-import * as S from './Styles';
+} from '@shared/types'
+import { displayToast } from '@shared/utils'
+import yup from '@shared/utils/yup'
+import { Form, Formik } from 'formik'
+import { useState } from 'react'
+import * as S from './Styles'
 
 export const GenerateLicense: SFC = ({ className }) => {
   //const dispatch = useDispatch<WindowDispatch>()
   const [licenseKey, setLicenseKey] = useState('')
-  const initialValues = { 
+  const initialValues = {
     Key: '',
     BusinessType: '',
     LicenseType: '',
-    Duration: 0,
+    Duration: 0
   }
   type FormValues = typeof initialValues
 
@@ -30,7 +31,7 @@ export const GenerateLicense: SFC = ({ className }) => {
       Key: values.Key,
       BusinessType: values.BusinessType,
       LicenseType: values.LicenseType,
-      Duration: values.Duration,
+      Duration: values.Duration
     }
 
     try {
@@ -42,38 +43,38 @@ export const GenerateLicense: SFC = ({ className }) => {
       } else {
         displayToast(response.Message, ToastType.error)
       }
-    } catch (error) {1
+    } catch (error) {
+      1
       displayToast('License Error!', ToastType.error)
     }
   }
-
 
   const businessType = [
     { value: '', label: 'Choose an option' },
     { value: 'retail', label: 'Retail' },
     { value: 'restaurant', label: 'Restaurant' },
-    { value: 'hotel', label: 'Hotel' },
-  ];
+    { value: 'hotel', label: 'Hotel' }
+  ]
   const licenseType = [
     { value: '', label: 'Choose an option' },
     { value: 'administrator', label: 'Administrator' },
     { value: 'cashier', label: 'Cashier' },
-    { value: 'teller', label: 'Teller' },
-  ];
+    { value: 'teller', label: 'Teller' }
+  ]
   const durationOps = [
     { value: '', label: 'Choose an option' },
     { value: '365', label: 'Annual' },
     { value: '90', label: 'Quarter' },
     { value: '30', label: 'Monthly' },
-    { value: '14', label: 'Trial' },
-  ];
+    { value: '14', label: 'Trial' }
+  ]
   const validationSchema = yup.object({
     Key: yup.string().required('Required'),
     BusinessType: yup.string().required('Required'),
     LicenseType: yup.string().required('Required'),
-    Duration: yup.string().required('Required'),
-  });
-  
+    Duration: yup.string().required('Required')
+  })
+
   return (
     <>
       <S.Container>
@@ -83,22 +84,16 @@ export const GenerateLicense: SFC = ({ className }) => {
             <S.CardTitle> Generate License</S.CardTitle>
           </S.CardHeader>
           <S.CardBody className={className}>
-            <GeneratedLicense license={licenseKey} />
+            <CopyClip Value={licenseKey} Label="License" />
             <Formik
-             initialValues={initialValues}
+              initialValues={initialValues}
               onSubmit={handleSubmit}
               validateOnMount={false}
               validationSchema={validationSchema}
             >
               {({ dirty, errors, isSubmitting, touched, isValid }) => (
                 <Form>
-                  <Input
-                    errors={errors}
-                    type="text"
-                    label="Key"
-                    name="Key"
-                    touched={touched}
-                  />
+                  <Input errors={errors} type="text" label="Key" name="Key" touched={touched} />
                   <SelectInput
                     label="Business Type"
                     name="BusinessType"
