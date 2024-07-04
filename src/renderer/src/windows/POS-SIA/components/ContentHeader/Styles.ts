@@ -7,11 +7,11 @@ export const Container = styled.div`
   height: 50px;
   padding: 10px 10px;
   border-radius: 8px;
-  border: 1px solid ${colors.palette.gray[300]};
   align-items: center;
   display: flex;
   justify-content: space-between;
   background: ${colors.white};
+  margin: 10px 0px;
 `
 export const Left = styled.div`
   width: 50%;

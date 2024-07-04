@@ -1,4 +1,3 @@
-import { colors } from '@shared/styles'
 import styled from 'styled-components'
 
 export const Container = styled.div`
@@ -8,6 +7,5 @@ export const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: flex-center;
-  background: ${colors.palette.gray[100]};
-  padding: 10px 10px;
+  padding: 10px 10px 10px 10px;
 `
