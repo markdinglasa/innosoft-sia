@@ -1,3 +1,5 @@
+import { ConnectionPool } from 'mssql'
+
 export interface DBConfig {
   server: string
   name: string
@@ -12,4 +14,9 @@ export const initialValues: DBConfig = {
   user: '',
   password: '',
   port: 0
+}
+
+export interface DatabaseConnection {
+  pool: ConnectionPool
+  isConnected: boolean
 }

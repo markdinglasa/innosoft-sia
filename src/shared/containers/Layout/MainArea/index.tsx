@@ -1,18 +1,17 @@
-import { useWindowInitialize } from '@shared/hooks';
-import { getActiveWindow } from '@shared/selectors';
-import { SFC, Windows } from '@shared/types';
-import { DBConfig, License, Login } from '@shared/window';
-import { ReactNode } from 'react';
-import { useSelector } from 'react-redux';
-import { Windows as App } from '../../../../renderer/src/registry';
-import * as S from './Styles';
+import { useWindowInitialize } from '@shared/hooks'
+//import { getActiveWindow } from '@shared/selectors'
+import { SFC } from '@shared/types'
+//import { useSelector } from 'react-redux'
+import { Windows as App } from '../../../../renderer/src/registry'
+import * as S from './Styles'
 
 export const MainArea: SFC = ({ className }) => {
   //const [loading, setLoading] = useState(true);
-  useWindowInitialize();
-  
-  const activeWindow = useSelector(getActiveWindow);
+  useWindowInitialize()
 
+  //const activeWindow = useSelector(getActiveWindow)
+
+  /*
   const renderContent = (): ReactNode => {
     switch (activeWindow) {
       case Windows.dbConfig:
@@ -27,6 +26,7 @@ export const MainArea: SFC = ({ className }) => {
         return Windows.dbConfig;
     }
   };
+  */
 
   return (
     <S.Container className={className}>

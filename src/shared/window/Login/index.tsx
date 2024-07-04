@@ -1,8 +1,15 @@
 import { Input } from '@shared/components'
 import { setActiveToken, setActiveUser, setActiveWindow } from '@shared/store/manager'
-import { ButtonColor, ButtonType, SFC, ToastType, WindowDispatch, Windows } from '@shared/types'
-import { SqlChannel } from '@shared/types/sql'
-import { displayToast } from '@shared/utils/toast'
+import {
+  ButtonColor,
+  ButtonType,
+  SFC,
+  SqlChannel,
+  ToastType,
+  WindowDispatch,
+  Windows
+} from '@shared/types'
+import { displayToast } from '@shared/utils'
 import { Form, Formik } from 'formik'
 import { useMemo } from 'react'
 import { useDispatch } from 'react-redux'
@@ -26,14 +33,14 @@ export const Login: SFC = ({ className }) => {
     }
 
     try {
-        let UserName = data.UserName, Password = data.Password
-        const response = await window.electron.sql.post(SqlChannel.login, {UserName, Password});
-        if (response.IsLogin) {
-          dispatch(setActiveUser(response.User))
-          dispatch(setActiveToken(response.AccessToken))
-          dispatch(setActiveWindow(Windows.sia))
-        }
-      else {
+      let UserName = data.UserName,
+        Password = data.Password
+      const response = await window.electron.sql.post(SqlChannel.login, { UserName, Password })
+      if (response.IsLogin) {
+        dispatch(setActiveUser(response.User))
+        dispatch(setActiveToken(response.AccessToken))
+        dispatch(setActiveWindow(Windows.sia))
+      } else {
         dispatch(setActiveUser(null))
         dispatch(setActiveToken(null))
         dispatch(setActiveWindow(Windows.login))
@@ -107,4 +114,3 @@ export const Login: SFC = ({ className }) => {
     </>
   )
 }
-

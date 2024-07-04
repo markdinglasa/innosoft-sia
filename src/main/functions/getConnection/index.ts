@@ -1,5 +1,5 @@
 import { Error, Success } from '@shared/messages';
-import { SqlChannel } from '@shared/types/sql';
+import { SqlChannel } from '@shared/types';
 import Store from 'electron-store';
 
 interface Response {

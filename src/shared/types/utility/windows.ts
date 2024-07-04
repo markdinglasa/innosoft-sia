@@ -1,5 +1,5 @@
 import { Reducer } from '@reduxjs/toolkit'
-import { Block, Dict, LocalElectronStore, WindowDispatch } from '.'
+import { Block, Dict, LocalElectronStore, WindowDispatch } from '..'
 
 export type WindowDataHandler = (block: Block, dispatch: WindowDispatch, networkId: string) => void
 export type WindowDataHandlers = Dict<WindowDataHandler>
@@ -30,5 +30,5 @@ export enum Windows {
   dbConfig = 'database-configuration',
   license = 'license',
   login = 'login',
-  sia = 'sia',
+  sia = 'sia'
 }

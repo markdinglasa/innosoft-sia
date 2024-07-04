@@ -1,5 +1,5 @@
 import { CODE_KEY } from '@shared/constants'
-import { SqlChannel } from '@shared/types/sql'
+import { SqlChannel } from '@shared/types'
 import { ipcMain } from 'electron'
 import { getBiosSerialNumber, getStorageSerialNumber, XOREncryption } from '../../../functions'
 

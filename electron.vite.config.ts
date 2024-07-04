@@ -7,27 +7,30 @@ export default defineConfig({
     plugins: [externalizeDepsPlugin()],
     resolve: {
       alias: {
-        '@lib': resolve('src/main/lib'),
-        '@shared': resolve('src/shared')
+        '@main': resolve(__dirname, 'src/main'),
+        '@shared': resolve(__dirname, 'src/shared')
       }
     }
   },
   preload: {
-    plugins: [externalizeDepsPlugin()]
+    plugins: [externalizeDepsPlugin()],
+    resolve: {
+      alias: {
+        '@shared': resolve(__dirname, 'src/shared')
+      }
+    }
   },
   renderer: {
     assetsInclude: ['src/renderer/assets/**', 'src/shared/assets/**'],
-
     resolve: {
       alias: {
-        '@renderer': resolve('src/renderer/src'),
-        '@renderers': resolve('src/renderer'),
-        '@shared': resolve('src/shared'),
-        '@/hooks': resolve('src/renderer/src/hooks'),
-        '@/asset': resolve('src/renderer/src/assets'),
-        '@/store': resolve('src/renderer/src/store'),
-        '@/components': resolve('src/renderer/src/components'),
-        '@/mocks': resolve('src/renderer/src/mocks')
+        '@renderer': resolve(__dirname, 'src/renderer/src'),
+        '@renderers': resolve(__dirname, 'src/renderer'),
+        '@windows': resolve(__dirname, 'src/renderer/src/windows'),
+        '@shared': resolve(__dirname, 'src/shared'),
+        '@/asset': resolve(__dirname, 'src/renderer/assets'),
+        '@/registry': resolve(__dirname, 'src/renderer/src/registry'),
+        '@/components': resolve(__dirname, 'src/renderer/src/components')
       }
     },
     plugins: [react()]

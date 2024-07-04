@@ -1,5 +1,4 @@
-
-export * from '../../../../../shared/types/user'
+export * from './electronStore'
 export * from './manager'
 export * from './page'
 

@@ -1,5 +1,4 @@
-import { SFC } from '@shared/types'
-import { SqlChannel } from '@shared/types/sql'
+import { SFC, SqlChannel } from '@shared/types'
 import { useEffect, useState } from 'react'
 import * as S from './Styles'
 

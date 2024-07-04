@@ -1,8 +1,7 @@
 import { createSlice, current, PayloadAction } from '@reduxjs/toolkit'
-import { DBConfig, IpcChannel, User } from '@shared/types'
-import { SYSTEM_MANAGER } from '../constants'
-import { Manager } from '../interfaces/manager'
-import { setLocalAndStateReducer } from '../utils/ipc'
+import { SYSTEM_MANAGER } from '@shared/constants'
+import { DBConfig, IpcChannel, Manager, User } from '@shared/types'
+import { setLocalAndStateReducer } from '@shared/utils'
 
 export const initialState: Manager = {
   activeWindow: null,
@@ -10,7 +9,7 @@ export const initialState: Manager = {
   activeDBConfig: null,
   activeKey: null,
   activeToken: null,
-  activeUser: null,
+  activeUser: null
 }
 
 const manager = createSlice({
@@ -69,5 +68,13 @@ const manager = createSlice({
   }
 })
 
-export const { setActiveWindow, setActiveDatabaseConfig, setActiveKey, setActiveLicense, setActiveToken, setActiveUser, setManager } = manager.actions
+export const {
+  setActiveWindow,
+  setActiveDatabaseConfig,
+  setActiveKey,
+  setActiveLicense,
+  setActiveToken,
+  setActiveUser,
+  setManager
+} = manager.actions
 export default manager.reducer

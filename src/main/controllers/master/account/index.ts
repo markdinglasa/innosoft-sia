@@ -1,4 +1,4 @@
-import { SqlChannel } from '@shared/types/sql'
+import { SqlChannel } from '@shared/types'
 import { ipcMain } from 'electron'
 import { getDataByTable } from '../../../functions'
 

@@ -6,15 +6,15 @@ import {
   ButtonType,
   DBConfig as Config,
   SFC,
+  SqlChannel,
   ToastType,
   WindowDispatch
 } from '@shared/types'
-import { SqlChannel } from '@shared/types/sql'
-import { displayToast } from '@shared/utils/toast'
+import { displayToast } from '@shared/utils'
+import yup from '@shared/utils/yup'
 import { Form, Formik } from 'formik'
 import { useMemo } from 'react'
 import { useDispatch } from 'react-redux'
-import * as yup from 'yup'; // corrected import
 import * as S from './Styles'
 
 export const DBConfig: SFC = ({ className }) => {
@@ -41,14 +41,13 @@ export const DBConfig: SFC = ({ className }) => {
     }
     try {
       const response = await window.electron.sql.post(SqlChannel.setConnection, config)
-      const isConnected: boolean = await window.electron.sql.get(SqlChannel.isConnected);
+      const isConnected: boolean = await window.electron.sql.get(SqlChannel.isConnected)
       console.log('setConenction', response.Data)
       console.log('isConnected', isConnected)
       if (response.Data && isConnected) {
         dispatch(setActiveDatabaseConfig(config))
         displayToast('Database Connected', ToastType.success)
-      }
-      else {
+      } else {
         displayToast('Connection failed', ToastType.error)
       }
     } catch (error: any) {

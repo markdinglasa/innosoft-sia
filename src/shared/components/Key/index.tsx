@@ -1,7 +1,6 @@
 import { mdiClipboardCheckMultipleOutline, mdiContentCopy } from '@mdi/js'
 import { setActiveKey } from '@shared/store/manager'
-import { ButtonColor, ButtonType, SFC, WindowDispatch } from '@shared/types'
-import { SqlChannel } from '@shared/types/sql'
+import { ButtonColor, ButtonType, SFC, SqlChannel, WindowDispatch } from '@shared/types'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import * as S from './Styles'

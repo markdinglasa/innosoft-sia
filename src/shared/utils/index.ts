@@ -1,6 +1,7 @@
 export * from './environment'
 export * from './func'
 export * from './ipc'
+export * from './license'
 export * from './networks'
 export * from './strings'
 export * from './toast'

@@ -1,7 +1,5 @@
-import { Page, User } from '.'
+import { Page } from '.'
 
 export interface Manager {
   activePage: Page
-  activeUser: User | null
-  activeToken: string | null
 }

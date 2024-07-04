@@ -9,3 +9,8 @@ export interface User {
   UpdateDateTime: Date
   IsLocked: number
 }
+
+export interface LogData {
+  UserName: string
+  Password: string
+}

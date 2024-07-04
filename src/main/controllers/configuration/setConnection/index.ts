@@ -1,6 +1,5 @@
 import { Error, Success } from '@shared/messages';
-import { DBConfig } from '@shared/types';
-import { SqlChannel } from '@shared/types/sql';
+import { DBConfig, SqlChannel } from '@shared/types';
 import { ipcMain } from 'electron';
 import Store from 'electron-store';
 
