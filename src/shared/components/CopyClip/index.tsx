@@ -1,6 +1,6 @@
 import { mdiClipboardCheckMultipleOutline, mdiContentCopy } from '@mdi/js'
 import { ButtonColor, ButtonType, SFC } from '@shared/types'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import * as S from './Styles'
 
 export interface CopyClipProps {
@@ -10,7 +10,11 @@ export interface CopyClipProps {
 
 export const CopyClip: SFC<CopyClipProps> = ({ className, Value, Label }) => {
   const [value, setValue] = useState('')
-  setValue(Value)
+
+  useEffect(() => {
+    setValue(Value)
+  }, [Value])
+
   const [copyStatus, setCopyStatus] = useState('Copy')
   const copyToClipboard = () => {
     navigator.clipboard

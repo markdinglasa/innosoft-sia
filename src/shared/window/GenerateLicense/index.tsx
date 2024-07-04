@@ -16,7 +16,6 @@ import { useState } from 'react'
 import * as S from './Styles'
 
 export const GenerateLicense: SFC = ({ className }) => {
-  //const dispatch = useDispatch<WindowDispatch>()
   const [licenseKey, setLicenseKey] = useState('')
   const initialValues = {
     Key: '',
@@ -24,6 +23,7 @@ export const GenerateLicense: SFC = ({ className }) => {
     LicenseType: '',
     Duration: 0
   }
+
   type FormValues = typeof initialValues
 
   const handleSubmit = async (values: FormValues) => {
@@ -36,7 +36,6 @@ export const GenerateLicense: SFC = ({ className }) => {
 
     try {
       const response = await window.electron.sql.post(SqlChannel.generateLicense, data)
-      //console.log('resonse', response.Data)
       if (response.Data) {
         setLicenseKey(response.Data)
         displayToast('Success', ToastType.success)
@@ -44,7 +43,6 @@ export const GenerateLicense: SFC = ({ className }) => {
         displayToast(response.Message, ToastType.error)
       }
     } catch (error) {
-      1
       displayToast('License Error!', ToastType.error)
     }
   }
@@ -68,6 +66,7 @@ export const GenerateLicense: SFC = ({ className }) => {
     { value: '30', label: 'Monthly' },
     { value: '14', label: 'Trial' }
   ]
+
   const validationSchema = yup.object({
     Key: yup.string().required('Required'),
     BusinessType: yup.string().required('Required'),
@@ -76,64 +75,62 @@ export const GenerateLicense: SFC = ({ className }) => {
   })
 
   return (
-    <>
-      <S.Container>
-        <S.CardContainer>
-          <S.CardHeader className={className}>
-            <S.Icon path={mdiKey} size="40px" />
-            <S.CardTitle> Generate License</S.CardTitle>
-          </S.CardHeader>
-          <S.CardBody className={className}>
-            <CopyClip Value={licenseKey} Label="License" />
-            <Formik
-              initialValues={initialValues}
-              onSubmit={handleSubmit}
-              validateOnMount={false}
-              validationSchema={validationSchema}
-            >
-              {({ dirty, errors, isSubmitting, touched, isValid }) => (
-                <Form>
-                  <Input errors={errors} type="text" label="Key" name="Key" touched={touched} />
-                  <SelectInput
-                    label="Business Type"
-                    name="BusinessType"
-                    options={businessType}
-                    errors={errors}
-                    touched={touched}
-                  />
-                  <SelectInput
-                    label="License Type"
-                    name="LicenseType"
-                    options={licenseType}
-                    errors={errors}
-                    touched={touched}
-                  />
-                  <SelectInput
-                    label="Duration"
-                    name="Duration"
-                    options={durationOps}
-                    errors={errors}
-                    touched={touched}
-                  />
-                  <S.Button
-                    dirty={dirty}
-                    disabled={isSubmitting}
-                    isSubmitting={isSubmitting}
-                    isValid={isValid}
-                    text="Submit"
-                    color={ButtonColor.blue}
-                    type={ButtonType.submit}
-                  />
-                </Form>
-              )}
-            </Formik>
-          </S.CardBody>
-          <S.CardFooter>
-            <S.Span> 2024 @ Cebu Innosoft Solution Services Inc.</S.Span>
-            <S.Span> Innosoft SIA v1.0</S.Span>
-          </S.CardFooter>
-        </S.CardContainer>
-      </S.Container>
-    </>
+    <S.Container>
+      <S.CardContainer>
+        <S.CardHeader className={className}>
+          <S.Icon path={mdiKey} size="40px" />
+          <S.CardTitle>Generate License</S.CardTitle>
+        </S.CardHeader>
+        <S.CardBody className={className}>
+          {licenseKey && <CopyClip Value={licenseKey} Label="License" />}
+          <Formik
+            initialValues={initialValues}
+            onSubmit={handleSubmit}
+            validateOnMount={false}
+            validationSchema={validationSchema}
+          >
+            {({ dirty, errors, isSubmitting, touched, isValid }) => (
+              <Form>
+                <Input errors={errors} type="text" label="Key" name="Key" touched={touched} />
+                <SelectInput
+                  label="Business Type"
+                  name="BusinessType"
+                  options={businessType}
+                  errors={errors}
+                  touched={touched}
+                />
+                <SelectInput
+                  label="License Type"
+                  name="LicenseType"
+                  options={licenseType}
+                  errors={errors}
+                  touched={touched}
+                />
+                <SelectInput
+                  label="Duration"
+                  name="Duration"
+                  options={durationOps}
+                  errors={errors}
+                  touched={touched}
+                />
+                <S.Button
+                  dirty={dirty}
+                  disabled={isSubmitting}
+                  isSubmitting={isSubmitting}
+                  isValid={isValid}
+                  text="Submit"
+                  color={ButtonColor.blue}
+                  type={ButtonType.submit}
+                />
+              </Form>
+            )}
+          </Formik>
+        </S.CardBody>
+        <S.CardFooter>
+          <S.Span>2024 @ Cebu Innosoft Solution Services Inc.</S.Span>
+          <S.Span>Innosoft SIA v1.0</S.Span>
+        </S.CardFooter>
+      </S.CardContainer>
+    </S.Container>
   )
 }
