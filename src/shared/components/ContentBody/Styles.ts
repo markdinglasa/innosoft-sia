@@ -6,8 +6,6 @@ export const Container = styled.div`
   height: calc(100% - 120px);
   background: ${colors.white};
   border-radius: 6px;
+  overflow: auto;
   margin-bottom: 10px;
-  align-items: center;
-  display: flex;
-  justify-content: center;
 `

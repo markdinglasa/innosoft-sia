@@ -3,6 +3,11 @@ import { createGlobalStyle } from 'styled-components'
 import { colors, fonts } from '../'
 
 export const GlobalStyle = createGlobalStyle`
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.1);
+  }
+
   * {
     box-sizing: border-box;
   }
@@ -55,4 +60,22 @@ export const GlobalStyle = createGlobalStyle`
     margin: 0 0 20px 0;
   }
 
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+  }
 `
