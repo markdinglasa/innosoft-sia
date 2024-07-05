@@ -126,7 +126,7 @@ export const GenerateLicense: SFC = ({ className }) => {
                     isSubmitting={isSubmitting}
                     isValid={isValid}
                     text="Submit"
-                    color={ButtonColor.blue}
+                    color={ButtonColor.red}
                     type={ButtonType.submit}
                   />
                 </Form>
