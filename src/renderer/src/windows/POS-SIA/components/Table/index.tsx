@@ -195,7 +195,7 @@ export default function EnhancedTable() {
   const [orderBy, setOrderBy] = React.useState<keyof Data>('calories');
   const [selected, setSelected] = React.useState<readonly number[]>([]);
   const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(true);
+  const [dense, _setDense] = React.useState(true);
   const [rowsPerPage, setRowsPerPage] = React.useState(50);
 
   const handleRequestSort = (
@@ -239,14 +239,14 @@ export default function EnhancedTable() {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  /*const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
-  };
+  };*/
 
-  const handleChangeDense = (event: React.ChangeEvent<HTMLInputElement>) => {
+  /*const handleChangeDense = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDense(event.target.checked);
-  };
+  };*/
 
   const isSelected = (id: number) => selected.indexOf(id) !== -1;
 
@@ -302,7 +302,7 @@ export default function EnhancedTable() {
           <Table
             sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+            size='small'
           >
             <EnhancedTableHead
               numSelected={selected.length}

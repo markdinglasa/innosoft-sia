@@ -1,7 +1,7 @@
-import { recordsByTable } from '@main/model'
 import { Error, Success } from '@shared/messages'
 import { Response, SqlChannel } from '@shared/types'
 import { ipcMain } from 'electron'
+import { recordsByTable } from '../../../model'
 
 ipcMain.handle(SqlChannel.getAllAccounts, async (_event: any, table: string): Promise<Response> => {
   try {
