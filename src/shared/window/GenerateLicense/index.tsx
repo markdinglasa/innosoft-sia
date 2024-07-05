@@ -75,6 +75,7 @@ export const GenerateLicense: SFC = ({ className }) => {
   })
 
   return (
+    <>
     <S.Container>
       <S.CardContainer>
         <S.CardHeader className={className}>
@@ -132,70 +133,6 @@ export const GenerateLicense: SFC = ({ className }) => {
         </S.CardFooter>
       </S.CardContainer>
     </S.Container>
-    <>
-      <S.Container>
-        <S.CardContainer>
-          <S.CardHeader className={className}>
-            <S.Icon path={mdiKey} size="40px" />
-            <S.CardTitle> Generate License</S.CardTitle>
-          </S.CardHeader>
-          <S.CardBody className={className}>
-            <GeneratedLicense license={licenseKey} />
-            <Formik
-             initialValues={initialValues}
-              onSubmit={handleSubmit}
-              validateOnMount={false}
-              validationSchema={validationSchema}
-            >
-              {({ dirty, errors, isSubmitting, touched, isValid }) => (
-                <Form>
-                  <Input
-                    errors={errors}
-                    type="text"
-                    label="Key"
-                    name="Key"
-                    touched={touched}
-                  />
-                  <SelectInput
-                    label="Business Type"
-                    name="BusinessType"
-                    options={businessType}
-                    errors={errors}
-                    touched={touched}
-                  />
-                  <SelectInput
-                    label="License Type"
-                    name="LicenseType"
-                    options={licenseType}
-                    errors={errors}
-                    touched={touched}
-                  />
-                  <SelectInput
-                    label="Duration"
-                    name="Duration"
-                    options={durationOps}
-                    errors={errors}
-                    touched={touched}
-                  />
-                  <S.Button
-                    dirty={dirty}
-                    disabled={isSubmitting}
-                    isSubmitting={isSubmitting}
-                    isValid={isValid}
-                    text="Submit"
-                    color={ButtonColor.red}
-                    type={ButtonType.submit}
-                  />
-                </Form>
-              )}
-            </Formik>
-          </S.CardBody>
-          <S.CardFooter>
-            <S.Span> 2024 @ Cebu Innosoft Solution Services Inc.</S.Span>
-            <S.Span> Innosoft SIA v1.0</S.Span>
-          </S.CardFooter>
-        </S.CardContainer>
-      </S.Container>
     </>
   )
 }

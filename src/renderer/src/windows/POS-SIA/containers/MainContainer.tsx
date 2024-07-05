@@ -7,8 +7,10 @@ export const SIAManager: SFC<WindowProps> = ({ className, display }) => {
     <>
       <AppWindow className={className} display={display}>
         <S.Container>
+          <S.TopBar />
           <S.ContentWrapper>
             <S.Wrapper>
+              <S.SideBar />
               <S.Content />
             </S.Wrapper>
           </S.ContentWrapper>

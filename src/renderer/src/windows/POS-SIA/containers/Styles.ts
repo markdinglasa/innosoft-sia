@@ -7,13 +7,6 @@ export const Container = styled.div`
   height: 100vh;
   width: 100vw;
   display: flex;
-  > div {
-    bottom: 0;
-    left: 0;
-    position: fixed;
-    right: 0;
-    top: 0;
-  }
 `
 export const Wrapper = styled.div`
   height: 100vh;
@@ -49,7 +42,6 @@ export const Content = styled(UContent)`
   justify-content: end;
   width: calc(100% - 250px);
   height: calc(100% - 50px);
-  border: 1px solid red;
 `
 
 export const Test = styled.div`

@@ -6,9 +6,15 @@ export const Container = styled.div`
   color: ${colors.primary};
   display: flex;
   flex-direction: column;
-  border: 1px solid blue;
+  
 `
 
 export const MainContent = styled.div`
-  flex: auto;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-center;
+  padding: 10px 10px 10px 10px;
 `
