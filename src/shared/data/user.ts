@@ -21,7 +21,7 @@ export const userHeadCells: UserHeadCell[] = [
     },
     {
       Id: 'EntryDateTime',
-      numeric: false,
+      numeric: true,
       disablePadding: false,
       label: 'Date Created',
     },

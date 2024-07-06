@@ -1,3 +1,4 @@
+export * from './date'
 export * from './environment'
 export * from './func'
 export * from './ipc'
@@ -7,3 +8,4 @@ export * from './strings'
 export * from './table'
 export * from './toast'
 export * from './yup'
+

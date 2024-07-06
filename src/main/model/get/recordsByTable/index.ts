@@ -10,14 +10,14 @@ import { Connection } from '../../../functions';
 
 export const  recordsByTable = async (Table: string = ''): Promise<Response> => {
     try {
-        if (typeof Table !== 'string' || !Table) return ({Data: null, Message: Error.e00x28})
+        if (typeof Table !== 'string' || !Table) return ({List: null, Message: Error.e00x28})
         const pool = (await Connection()).pool;
-        if (!pool)  return ({Data: null, Message: Error.e00x14})
+        if (!pool)  return ({List: null, Message: Error.e00x14})
         const request = pool.request();
         const result = await request.query(`SELECT * FROM [${Table}]`);
-        if (!result.recordset || result.recordset.length < 1) return ({Data: null, Message: Error.e00x30})
-        return ({Data: result.recordset, Message: Success.s00x00})
+        if (!result.recordset || result.recordset.length < 1) return ({List: null, Message: Error.e00x30})
+        return ({List: result.recordset, Message: Success.s00x00})
     } catch (error:any) {
-        return ({Data: null, Message: Error.e00x02})
+        return ({List: null, Message: Error.e00x02})
     } 
 };

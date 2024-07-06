@@ -1,10 +1,10 @@
 import { Box, TableCell, TableHead, TableRow, TableSortLabel } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
-import { HeadCell, SFC, THProps, User } from "@shared/types";
+import { SFC, THProps, User, UserHeadCell } from "@shared/types";
 
 export interface TableHeaderProps {
     props: THProps
-    headCells: HeadCell[]
+    headCells: UserHeadCell[]
 }
 
 export const TableHeader: SFC<TableHeaderProps> = ({className, props, headCells}) => {

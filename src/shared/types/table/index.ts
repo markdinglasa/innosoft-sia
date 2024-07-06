@@ -4,7 +4,6 @@ export type Order = 'asc' | 'desc';
 
 export interface HeadCell {
     disablePadding: boolean;
-    Id: keyof User;
     label: string;
     numeric: boolean;
 }
@@ -17,3 +16,7 @@ export interface THProps {
     orderBy: string;
     rowCount?: number;
   }
+
+export interface UserHeadCell extends HeadCell {
+    Id: keyof User;
+}

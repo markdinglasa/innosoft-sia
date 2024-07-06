@@ -3,11 +3,11 @@ export interface User {
   UserName: string
   Password?: string
   FullName?: string
-  UserCardNumber?: string
+  UserCardNumber?: string | null
   EntryUserId?: number
-  EntryDateTime?: Date
-  UpdateUserId?: number
-  UpdateDateTime?: Date
+  EntryDateTime?: string
+  UpdateUserId?: number | null
+  UpdateDateTime?: string | null
   IsLocked?: number
 }
 
