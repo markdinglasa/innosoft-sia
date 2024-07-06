@@ -78,4 +78,30 @@ export const GlobalStyle = createGlobalStyle`
     background: rgba(0, 0, 0, 0.1);
     border-radius: 10px;
   }
+
+  .TablePagination {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    height: 30px;
+    text-align: center;
+    overflow: hidden; 
+
+    &::-webkit-scrollbar: {
+        display: none;
+    };
+
+    & .MuiTablePagination-toolbar: {
+        justify-content: center;
+    };
+    & .MuiTablePagination-actions: {
+        margin-left: auto; 
+    };
+    & .MuiTablePagination-spacer: {
+        flex: none;
+    };
+    & .MuiTablePagination-selectLabel; & .MuiTablePagination-displayedRows: {
+        margin-bottom:-0px;
+    };
+  }
 `

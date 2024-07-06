@@ -1,13 +1,14 @@
 export interface User {
+  Id: number
   UserName: string
-  Password: string
-  FullName: string
-  UserCardNumber: string
-  EntryUserId: number
-  EntryDateTime: Date
-  UpdateUserId: number
-  UpdateDateTime: Date
-  IsLocked: number
+  Password?: string
+  FullName?: string
+  UserCardNumber?: string
+  EntryUserId?: number
+  EntryDateTime?: Date
+  UpdateUserId?: number
+  UpdateDateTime?: Date
+  IsLocked?: number
 }
 
 export interface LogData {
