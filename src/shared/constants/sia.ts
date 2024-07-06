@@ -1,0 +1,1 @@
+export const POS_SIA = 'PosSalesInsightsAnalytics'

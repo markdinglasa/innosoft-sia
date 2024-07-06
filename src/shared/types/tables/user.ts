@@ -15,3 +15,7 @@ export interface LogData {
   UserName: string
   Password: string
 }
+
+export interface UserManager {
+    UserTable: Array<User> | []
+}
