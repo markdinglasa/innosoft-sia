@@ -6,6 +6,7 @@ export interface ElectronApi {
   ipc: IpcApi
   sql: SqlApi
   fn: FnApi
+  dialog: any
 }
 
 declare global {

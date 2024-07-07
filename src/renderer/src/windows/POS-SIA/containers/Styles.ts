@@ -1,3 +1,4 @@
+import { colors } from '@shared/styles'
 import styled from 'styled-components'
 
 export const Container = styled.div`
@@ -29,6 +30,20 @@ export const Footer = styled.div`
 `
 
 export const Configuration = styled.div`
-  height: 150px;
-  border: 1px solid red;
+  height: 130px;
+  padding: 10px 10px;
+  background: ${colors.palette.gray[500]};
+  border-radius: 10px;
+  margin-bottom: 10px;
+`
+export const Title = styled.div`
+  height: 50px;
+  border-radius: 8px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+`
+export const H2 = styled.h2`
+  color: ${colors.palette.gray[300]};
 `

@@ -1,5 +1,5 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { BrowserWindow, app, screen, shell } from 'electron'
+import { BrowserWindow, OpenDialogOptions, app, dialog, ipcMain, screen, shell } from 'electron'
 import installer, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import electronStore from 'electron-store'
 import path, { join } from 'path'
@@ -36,6 +36,11 @@ const createWindow = (url: string): BrowserWindow => {
       contextIsolation: true,
       devTools: true
     }
+  })
+
+  ipcMain.handle('show-open-dialog', async (_event, options: OpenDialogOptions) => {
+    const result = await dialog.showOpenDialog(options)
+    return result
   })
 
   window.on('ready-to-show', () => {

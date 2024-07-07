@@ -16,7 +16,6 @@ export const Identification: SFC<IdentificationProps> = ({
   return (
     <S.Container className={className}>
       <S.Icon path={displayImage} />
-
       <S.Text>
         <S.TopText>{topText}</S.TopText>
         <S.BottomText>{bottomText}</S.BottomText>
