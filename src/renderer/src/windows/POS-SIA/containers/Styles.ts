@@ -27,3 +27,8 @@ export const Footer = styled.div`
   height: 70px;
   background: orange;
 `
+
+export const Configuration = styled.div`
+  height: 150px;
+  border: 1px solid red;
+`
