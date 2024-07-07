@@ -1,38 +1,45 @@
-import { useWindowInitialize } from '@shared/hooks'
-//import { getActiveWindow } from '@shared/selectors'
-import { SFC } from '@shared/types'
-//import { useSelector } from 'react-redux'
-import { Windows } from '../../../../renderer/src/registry'
-//import { License } from '@shared/window'
-//import { GenerateLicense } from '@shared/window'
+import { Windows as App } from '@renderer/registry'
+import { getActiveLicense } from '@shared/selectors'
+import { SFC, SqlChannel, ToastType } from '@shared/types'
+import { displayToast } from '@shared/utils'
+import { License } from '@shared/window'
+import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import * as S from './Styles'
 
 export const MainArea: SFC = ({ className }) => {
-  //const [loading, setLoading] = useState(true);
-  useWindowInitialize()
+  const license = useSelector(getActiveLicense)
+  const [isLicenseValid, setIsLicenseValid] = useState<boolean | null>(null)
 
-  //const activeWindow = useSelector(getActiveWindow)
-
-  /*
-  const renderContent = (): ReactNode => {
-    switch (activeWindow) {
-      case Windows.dbConfig:
-        return <DBConfig />;
-      case Windows.license:
-        return <License />;
-      case Windows.login:
-        return <Login />;
-      case Windows.sia:
-        return <App />;
-      default:
-        return Windows.dbConfig;
+  useEffect(() => {
+    const checkLicense = async () => {
+      try {
+        const response = await window.electron.sql.post(SqlChannel.isLicense, license)
+        if (response.IsSomething) {
+          setIsLicenseValid(true)
+        } else {
+          setIsLicenseValid(false)
+          displayToast(response.Message, ToastType.error)
+        }
+      } catch (err) {
+        setIsLicenseValid(false)
+        displayToast(`${err}`, ToastType.error)
+      }
     }
-  };
-  */
+    checkLicense()
+  }, [license])
+
+  const renderContent = () => {
+    if (isLicenseValid === null) {
+      return <div>Loading...</div>
+    }
+    return isLicenseValid ? <App /> : <License />
+  }
 
   return (
     <S.Container className={className}>
-      <Windows />
+      {' '}
+      <App />
     </S.Container>
   )
 }

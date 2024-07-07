@@ -5,27 +5,34 @@ FORMAT([TrnSales].[EntryDateTime], 'yyyy-MM-dd HH:mm:ss') AS [Check Open],
 FORMAT([TrnSales].[UpdateDateTime], 'yyyy-MM-dd HH:mm:ss') AS [Check Close], 
 [SysCurrent].[SMSaleType] AS [Sales Type], 
 IIf([MstTable].[TableCode] IS NULL Or [MstTable].[TableCode] = "", "Walk-In",  [MstTable].[TableCode])  
-
-
-IIF([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL, 0, 1) AS Void, 
+IIF([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL, 0, 1) AS [Void], 
 IIf([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL, 0, FORMAT(((([GrossSales].[GrossSalesAmount])) + [TotalDiscount].[TotalDiscountAmount]), '0.00')) AS [Void Amount], 
-IIF([TrnCollection].[IsReturn] = 2, 1, 0) AS Refund, IIF([TrnCollection].[IsReturn] = 2, FORMAT([TrnCollection].[Amount],'0.00'), 0) AS [Refund Amount],
-MAX(IIF([TrnSales].[Pax] IS NULL, 0, [TrnSales].[Pax])) AS [Guest Count], MAX(IIF(([TrnSalesLine].[DiscountId] = 7), [ItemsPurchase].[DiscountedPax], 0)) AS [Guest Count (Senior)], 
+IIF([TrnCollection].[IsReturn] = 2, 1, 0) AS Refund, 
+IIF([TrnCollection].[IsReturn] = 2, FORMAT([TrnCollection].[Amount],'0.00'), 0) AS [Refund Amount],
+MAX(IIF([TrnSales].[Pax] IS NULL, 0, [TrnSales].[Pax])) AS [Guest Count],
+
+
+MAX(IIF(([TrnSalesLine].[DiscountId] = 7), [ItemsPurchase].[DiscountedPax], 0)) AS [Guest Count (Senior)], 
+
+
 MAX(IIF(([TrnSalesLine].[DiscountId] = 16), [ItemsPurchase].[DiscountedPax], 0)) AS [Guest Count (PWD)], 
 IIF([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL, FORMAT(((([GrossSales].[GrossSalesAmount])) + [TotalDiscount].[TotalDiscountAmount]), '0.00'),'0.00') AS [Gross Sales Amount], 
 IIF([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL, FORMAT(([GrossSales].[GrossSalesAmount]), '0.00'),'0.00') AS [Net Sales Amount], 
 IIF([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL, FORMAT(([TotalTax].[TotalTaxAmount]), '0.00'),'0.00') AS [Total Tax], 
-IIF([MstTax].[Tax] = 'LOCAL TAX', FORMAT(([TotalTax].[TotalTaxAmount]), '0.00'), '0.00') AS [Other / Local Tax], MAX(IIf(([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL), FORMAT([TotalServiceCharge].[ServiceCharge], '0.00'), '0.00')) AS [Total Service Charge], MAX(FORMAT (0, '0.00')) AS [Total Tip], 
-IIF([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL, FORMAT(([TotalDiscount].[TotalDiscountAmount]), '0.00'),'0.00') AS [Total Discount], 
+IIF([MstTax].[Tax] = 'LOCAL TAX', FORMAT(([TotalTax].[TotalTaxAmount]), '0.00'), '0.00') AS [Other / Local Tax],
+MAX(IIf(([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL), FORMAT([TotalServiceCharge].[ServiceCharge], '0.00'), '0.00')) AS [Total Service Charge], 
+ MAX(FORMAT (0, '0.00')) AS [Total Tip],
+IIF([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL, FORMAT(([TotalDiscount].[TotalDiscountAmount]), '0.00'),'0.00') AS [Total Discount],
 IIF([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL, FORMAT(([GrossSales].[GrossSalesAmount] - [TotalTax].[TotalTaxAmount]), '0.00'),'0.00') AS [Less Tax Amount], 
-
 MAX(IIF(([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'Employee Discount' OR [MstDiscount].[Discount] = 'Employee Meal'), FORMAT([TotalDiscount], [TotalDiscountAmount],'0.00'), 0)) AS [Employee Discount Amount], 
+MAX(IIF(([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'Senior Citizen Discount'), FORMAT([TotalDiscount].[TotalDiscountAmount], '0.00'), 0)) AS [Senior Citizen Discount Amount], 
+MAX(IIF(([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'VIP Discount'), FORMAT([TotalDiscount].[TotalDiscountAmount], '0.00'), 0)) AS [VIP Discount Amount], 
+MAX(IIF(([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'PWD'), FORMAT([TotalDiscount].[TotalDiscountAmount], '0.00'), 0)) AS [PWD Discount Amount], 
+MAX(IIF(([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'National Athlete Representative'), FORMAT([TotalDiscount].[TotalDiscountAmount], '0.00'), 0)) AS [National Coach / Athlete / Medal of Valor Discount Amount], 
+MAX(IIF(([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'SMAC'), FORMAT([TotalDiscount].[TotalDiscountAmount], '0.00'), 0)) AS [SMAC Discount Amount],
 
-MAX(IIF(([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'Senior Citizen Discount'), FORMAT([TotalDiscount].[TotalDiscountAmount], '0.00'), 0)) AS [Senior Citizen Discount Amount], MAX(IIF(([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'VIP Discount'), FORMAT([TotalDiscount].[TotalDiscountAmount], '0.00'), 0)) AS [VIP Discount Amount], 
 
-MAX(IIF(([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'PWD'), FORMAT([TotalDiscount].[TotalDiscountAmount], '0.00'), 0)) AS [PWD Discount Amount], MAX(IIF(([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'National Athlete Representative'), FORMAT([TotalDiscount].[TotalDiscountAmount], '0.00'), 0)) AS [National Coach / Athlete / Medal of Valor Discount Amount], 
 
-MAX(IIF(([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'SMAC'), FORMAT([TotalDiscount].[TotalDiscountAmount], '0.00'), 0)) AS [SMAC Discount Amount], 
 'Discount F1' AS [Discount Field 1 Name], 
 'Discount F2' AS [Discount Field 2 Name], 
 'Discount F3' AS [Discount Field 3 Name], 
@@ -37,7 +44,9 @@ MAX(IIF(([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS N
 0 AS [Discount Field 3 Amount], 
 0 AS [Discount Field 4 Amount], 
 0 AS [Discount Field 5 Amount], 
-0 AS [Discount Field 6 Amount], [
+0 AS [Discount Field 6 Amount], 
+[
+
 TmpSM2].[Total Cash Sales Amount], 
 [TmpSM2].[Total Gift Certificate Sales Amount], 
 [TmpSM2].[Total E-wallet / Online Sales Amount], 
@@ -77,12 +86,15 @@ IIf([MstTable].[TableCode] IS NULL Or [MstTable].[TableCode] = "", "Walk-In",
 [MstTable].[TableCode]), IIF([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL, 0, 1),
 IIf([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL, 0, FORMAT(((([GrossSales].[GrossSalesAmount])) + [TotalDiscount].[TotalDiscountAmount]), '0.00')),
 IIF([TrnCollection].[IsReturn] = 2, 1, 0), IIF([TrnCollection].[IsReturn] = 2, FORMAT([TrnCollection].[Amount],'0.00'), 0), 
-IIF([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL, FORMAT(((([GrossSales].[GrossSalesAmount])) + [TotalDiscount].[TotalDiscountAmount]), '0.00'),'0.00'), 
+IIF([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL, FORMAT(((([GrossSales].
+[GrossSalesAmount])) + [TotalDiscount].[TotalDiscountAmount]), '0.00'),'0.00'), 
+
 IIF([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL, FORMAT(([GrossSales].[GrossSalesAmount]), '0.00'),'0.00'), 
 IIF([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL, FORMAT(([TotalTax].[TotalTaxAmount]), '0.00'),'0.00'), 
 IIF([MstTax].[Tax] = 'LOCAL TAX', FORMAT(([TotalTax].[TotalTaxAmount]), '0.00'), '0.00'), 
 IIF([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL, FORMAT(([TotalDiscount].[TotalDiscountAmount]), '0.00'),'0.00'), 
 IIF([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL, FORMAT(([GrossSales].[GrossSalesAmount] - [TotalTax].[TotalTaxAmount]), '0.00'),'0.00'), 
+
 [TmpSM2].[Total Cash Sales Amount], 
 [TmpSM2].[Total Gift Certificate Sales Amount], 
 [TmpSM2].[Total E-wallet / Online Sales Amount], 
@@ -93,3 +105,63 @@ IIF([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL, 
 [TmpSM2].[Total Credit Card Sales Amount], 
 [MstTerminal].[Terminal], 
 [SysCurrent].[SMPOSSerialNumber];
+
+
+
+=======================================================
+
+
+SELECT 
+[TrnSales].[Id] AS SalesNo, 
+SUM(IIF( ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Cash'), FORMAT([TrnCollectionLine].[Amount] ,'0.00'), 0)) AS [Total Cash Sales Amount], 
+
+SUM(IIF( ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Gift Certificate'), FORMAT([TrnCollectionLine].[Amount] ,'0.00'), 0)) AS [Total Gift Certificate Sales Amount], 
+
+SUM(IIF( ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Gcash' OR [MstPayType].[PayType] = 'PayMaya' OR [MstPayType].[PayType] = 'GrabPay' OR [MstPayType].[PayType] = 'FoodPanda') , FORMAT([TrnCollectionLine].[Amount] ,'0.00'), 0)) AS [Total E-wallet / Online Sales Amount], 
+
+SUM(IIF( ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Mastercard'), FORMAT([TrnCollectionLine].[Amount] ,'0.00'), 0)) AS [Total Mastercard Sales Amount], 
+
+SUM(IIF( ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Visa'), FORMAT([TrnCollectionLine].[Amount] ,'0.00'), 0)) AS [Total Visa Sales Amount], 
+
+SUM(IIF( ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Diners'), FORMAT([TrnCollectionLine].[Amount] ,'0.00'), 0)) AS [Total Diners Sales Amount], 
+
+SUM(IIF( ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'JCB'), FORMAT([TrnCollectionLine].[Amount] ,'0.00'), 0)) AS [Total JCB Sales Amount],
+
+ SUM(IIF( ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Credit Card'), FORMAT([TrnCollectionLine].[Amount] ,'0.00'), 0)) AS [Total Credit Card Sales Amount], 
+ 
+ [MstTerminal].[Terminal] AS [Terminal Number], 
+ [SysCurrent].[SMPOSSerialNumber] AS [Serial Number] 
+ 
+INTO TmpSM2
+FROM ((((
+    TrnSales 
+LEFT JOIN TrnCollection ON [TrnSales].[Id] = [TrnCollection].[SalesId]) 
+LEFT JOIN TrnCollectionLine ON [TrnCollectionLine].[CollectionId] = [TrnCollection].[Id]) 
+LEFT JOIN SysCurrent ON [TrnSales].[TerminalId] = [SysCurrent].[TerminalId]) 
+LEFT JOIN MstPayType ON MstPayType.Id = TrnCollectionLine.PayTypeId) 
+LEFT JOIN MstTerminal ON SysCurrent.TerminalId = [MstTerminal].[Id]
+
+GROUP BY 
+[TrnSales].[Id], 
+[MstTerminal].[Terminal], 
+[SysCurrent].[SMPOSSerialNumber]
+
+HAVING 
+SUM(IIF(([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL), [TrnCollectionLine].[Amount], 0));
+
+
+================================
+ItemPurchase QUERY
+
+SELECT 
+    TrnSalesLine.ItemId, 
+    TrnSalesLine.SalesId, 
+    TrnSalesLine.Price, 
+    IIf([TrnSalesLine].[ItemId]=1,0,[TrnSalesLine].[Quantity]) AS Quantity, 
+    TrnSalesLine.Amount, 
+    PaxTable.TotalPax, 
+    PaxTable.DiscountedPax
+FROM 
+    TrnSalesLine INNER JOIN 
+    PaxTable ON 
+    TrnSalesLine.SalesId = PaxTable.SaleId;

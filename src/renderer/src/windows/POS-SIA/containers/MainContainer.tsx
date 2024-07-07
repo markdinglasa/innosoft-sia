@@ -1,35 +1,21 @@
-import { AppWindow } from '@shared/components'
+import { AppWindow, DraggableTopBar } from '@shared/components'
+import { AppFooter } from '@shared/components/AppFooter'
 import { SFC, WindowProps } from '@shared/types'
 import * as S from './Styles'
 
-export const SIAManager: SFC<WindowProps> = ({ className, display }) => {
+export const SIAManager: SFC<WindowProps> = ({ className }) => {
   return (
     <>
-      <AppWindow className={className} display={display}>
+      <AppWindow className={className} display={true}>
         <S.Container>
-          <S.TopBar />
-          <S.ContentWrapper>
-            <S.Wrapper>
-              <S.SideBar />
-              <S.Content />
-            </S.Wrapper>
-          </S.ContentWrapper>
+          <DraggableTopBar />
+          <S.Header> header</S.Header>
+          <S.Body></S.Body>
+          <S.Footer>
+            <AppFooter />
+          </S.Footer>
         </S.Container>
       </AppWindow>
     </>
   )
 }
-/*   
-<AppWindow className={className} display={display}>
-        <S.Container>
-          <S.TopBar />
-          <S.ContentWrapper>
-            <S.Wrapper>
-              <S.SideBar />
-              <S.Content />
-            </S.Wrapper>
-          </S.ContentWrapper>
-        </S.Container>
-      </AppWindow>
-
-*/

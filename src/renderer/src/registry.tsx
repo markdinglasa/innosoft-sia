@@ -15,7 +15,7 @@ export interface WindowElectronStore extends SIAElectronStore {}
 export const windowReducers = {
   SIA: SIAManagerRegistration.reducer!
 }
-export const windowRouters: WindowDataHandlers = { }
+export const windowRouters: WindowDataHandlers = {}
 
 export const windowRegistration: WindowRegistration[] = [SIAManagerRegistration]
 

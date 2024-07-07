@@ -6,7 +6,7 @@ export const Header = styled.header`
   position: absolute;
   height: 2rem;
   inset: 0px;
-  background: #32394e;
+  background: #566272;
 `
 
 export const Container = styled.div`
