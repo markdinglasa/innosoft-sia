@@ -1,4 +1,4 @@
-import { Loader2 } from '@shared/components'
+
 import styled from 'styled-components'
 
 export const Container = styled.div`
@@ -12,11 +12,4 @@ export const Container = styled.div`
     justify-content: center;
     top:0;
     left:0;
-`
-
-export const Loader = styled(Loader2)`
-    background: #FFF;
-    width: 350px;
-    height: 500px;
-    border: 1px solid red;
 `
