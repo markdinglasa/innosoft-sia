@@ -3,9 +3,11 @@ export interface Manager {
   tenant: Tenant | null;
   path: string | null;
   isConnected: boolean;
+  initialize: boolean;
 }
 
 export interface Tenant {
+  TerminalId?:number;
   BranchCode: string;
   TenantCode: string;
   SMClassCode?: string;
@@ -14,5 +16,5 @@ export interface Tenant {
   POSMachineNumber?: string;
   POSSerialNumber?: string;
   SMCoinDirectory?: string;
-  Terminal: string;
+  Terminal?: string;
 }

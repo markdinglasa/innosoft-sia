@@ -22,7 +22,8 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close }) => {
     BranchCode: '',
     TenantCode: '',
     SMSalesType: '',
-    Terminal: ''
+    TerminalId: 0,
+    POSSerialNumber: '',
   }
   type FormValues = typeof initialValues
 
@@ -32,7 +33,8 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close }) => {
         BranchCode: values.BranchCode,
         TenantCode: values.TenantCode,
         SMSalesType: values.SMSalesType,
-        Terminal: values.Terminal
+        TerminalId: values.TerminalId,
+        POSSerialNumber: values.POSSerialNumber,
       }
       dispatch(setTenant(data))
       displayToast('Successful', ToastType.success)
@@ -47,7 +49,7 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close }) => {
       BranchCode: yup.string().required('Required'),
       TenantCode: yup.string().required('Required'),
       SMSalesType: yup.string().required('Required'),
-      Terminal: yup.string().required('Required'),
+      TerminalId: yup.string().required('Required'),
     })
   }, [])
   
@@ -64,13 +66,14 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close }) => {
                 <Input errors={errors} type="text" label="Branch Code" name="BranchCode" touched={touched} value={tenant?.BranchCode}/>
                 <Input errors={errors} type="text" label="Tenant Code" name="TenantCode" touched={touched} value={tenant?.TenantCode}/>
                 <Input errors={errors} type="text" label="Sales Type" name="SMSalesType" touched={touched} value={tenant?.SMSalesType}/>
+                <Input errors={errors} type="text" label="POS Serial Number" name="POSSerialNumber" touched={touched} value={tenant?.POSSerialNumber}/>
                 <Input
                   errors={errors}
                   type="text"
                   label="Terminal"
-                  name="Terminal"
+                  name="TerminalId"
                   touched={touched}
-                  value={tenant?.Terminal}
+                  value={tenant?.TerminalId}
                 />
                 <S.Button
                   className={'width:100% !important;'}

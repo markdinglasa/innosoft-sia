@@ -8,6 +8,7 @@ export const initialState: Manager = {
   tenant: null,
   path: null,
   isConnected: false,
+  initialize: false,
 }
 
 const manager = createSlice({
@@ -35,6 +36,13 @@ const manager = createSlice({
         state: current(state)
       })
     },
+    setInitialize: (state: Manager, { payload: initialize }: PayloadAction<boolean>) => {
+      state.initialize = initialize
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: SIA_MANAGER,
+        state: current(state)
+      })
+    },
     setManager: setLocalAndStateReducer<Manager>(SIA_MANAGER)
   }
 })
@@ -43,6 +51,7 @@ export const {
   setTenant,
   setPath,
   setIsConnected,
+  setInitialize,
   setManager
 } = manager.actions
 

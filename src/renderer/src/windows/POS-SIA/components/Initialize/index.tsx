@@ -1,5 +1,5 @@
 import { mdiInformation, mdiPlay } from '@mdi/js'
-
+import { SIA_QUERY } from '@shared/query/SIAQuery'
 import { SFC, SqlChannel } from '@shared/types'
 import { useSelector } from 'react-redux'
 import { getIsConnected, getPath, getTenant } from '../../selectors'
@@ -26,21 +26,16 @@ export const Initialize: SFC = ({className}) => {
         else return false
     }
     
-    const handleInitialize = () => {
+    const handleInitialize = async () => {
         if (!checkFields || !isConnected || !tenant) {
             alert('Error')
         } else {
             alert('Initializing...')
-            const SIATransactions = window.electron.sql.get(SqlChannel.getSIA).then(
-                (response: any) => {
-                    console.log(response.List)
-                }
-            ).catch(
-                (error: any) => {
-                    console.log(error)
-                }
-            )
-            //create a CSV
+            let TerminalId =tenant.TerminalId, SMPOSSerialNumber = tenant.POSSerialNumber
+            const query = SIA_QUERY({TerminalId, SMPOSSerialNumber});
+            console.log(query)
+            const SIATransactions:Response = await window.electron.sql.get(SqlChannel.getSIA, `${path}/${'SIA'}`, query);
+            console.log(SIATransactions)
         }
 
     }
