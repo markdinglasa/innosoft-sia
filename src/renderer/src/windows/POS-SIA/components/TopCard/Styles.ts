@@ -10,7 +10,6 @@ export const Container = styled.div`
   flex: 1;
   flex-direction: column;
   padding: 10px 14px;
-  margin-bottom: 10px;
 `
 
 export const Content = styled.div`

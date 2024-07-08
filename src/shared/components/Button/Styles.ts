@@ -51,7 +51,7 @@ export const Button = styled.button<{$color?: ButtonColor; hasIcon: boolean}>`
   background: ${colors.palette.blue['200']};
   border-radius: ${`${BUTTON_HEIGHT / 2}px`};
   border: 1px solid transparent;
-  color: #fff;
+  color: ${colors.primary};
   cursor: pointer;
   display: block;
   height: ${`${BUTTON_HEIGHT}px`};

@@ -29,7 +29,7 @@ export const Header = styled.div`
 `
 
 export const Icon = styled(UIcon)`
-  color: ${colors.palette.gray[100]};
+  color: ${colors.primary};
 
   &:hover {
     background: ${colors.pink};

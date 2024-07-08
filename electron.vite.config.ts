@@ -4,6 +4,7 @@ import { resolve } from 'path'
 
 export default defineConfig({
   main: {
+    assetsInclude: ['src/renderer/assets/**', 'src/shared/assets/**'],
     plugins: [externalizeDepsPlugin()],
     resolve: {
       alias: {

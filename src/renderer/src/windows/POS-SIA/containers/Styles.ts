@@ -14,27 +14,26 @@ export const Wrapper = styled.div`
   display: flex;
 `
 export const Header = styled.div`
-  height: 40px;
+  height: 2rem;
   width: 100%;
   background: red;
 `
 export const Body = styled.div`
   width: 100%;
-  height: 790px;
+  height: 800px;
   padding: 10px 10px;
 `
-
 export const Footer = styled.div`
   height: 70px;
-  background: orange;
 `
-
-export const Configuration = styled.div`
-  height: 130px;
+export const Card = styled.div`
   padding: 10px 10px;
   background: ${colors.palette.gray[500]};
   border-radius: 10px;
   margin-bottom: 10px;
+  &:last-child {
+    margin-bottom: 0px;
+  }
 `
 export const Title = styled.div`
   height: 50px;
@@ -42,7 +41,6 @@ export const Title = styled.div`
   align-items: center;
   display: flex;
   justify-content: center;
-  margin-bottom: 10px;
 `
 export const H2 = styled.h2`
   color: ${colors.palette.gray[300]};

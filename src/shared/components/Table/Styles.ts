@@ -1,4 +1,6 @@
+/*
 import { Paper as P } from '@mui/material';
+import styled from 'styled-components';
 import styled from 'styled-components';
 
 export const Container = styled.div`
@@ -9,3 +11,4 @@ export const Paper = styled(P)`
     box-shadow:none;
     border:none;
 `
+*/

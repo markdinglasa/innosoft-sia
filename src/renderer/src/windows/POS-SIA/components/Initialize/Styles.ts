@@ -1,15 +1,10 @@
+import UIcon from '@mdi/react'
 import { Button as UButton } from '@shared/components'
 import { colors } from '@shared/styles'
 import styled from 'styled-components'
-import { DatabaseIdentification as UDatabaseIdentification } from '../../components'
 
 export const Container = styled.div`
-  width: 100%:
-  height: 200px;
-  display:flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+
 `
 export const Button = styled(UButton)`
   background: ${colors.secondary};
@@ -25,6 +20,21 @@ export const Button = styled(UButton)`
     cursor: pointer;
   }
 `
-export const DatabaseIdentification = styled(UDatabaseIdentification)`
-  margin-right: 10px;
-`
+export const Span = styled.span`
+  color: ${colors.palette.neutral[200]};
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  margin-left: 10px;
+ `
+ export const Text = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+ `
+ export const Icon = styled(UIcon)`
+ color: ${colors.palette.neutral[200]};
+ `

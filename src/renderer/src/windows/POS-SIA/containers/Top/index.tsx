@@ -1,3 +1,4 @@
+import { mdiDatabase } from '@mdi/js'
 import { useToggle } from '@shared/hooks'
 import { getActiveDBConfig } from '@shared/selectors'
 import { SFC } from '@shared/types'
@@ -11,17 +12,17 @@ export const Top: SFC = ({ className }) => {
   const [modalIsOpen, toggleModal] = useToggle(false)
   const databaseName = activeDatabase?.name
 
-  const renderAccountContent = () => {
-    if (!databaseName) return <S.Button onClick={toggleModal}>Select Database</S.Button>
-    return renderActiveAccount()
+  const renderContent = () => {
+    if (!databaseName) return <S.Button iconLeft={mdiDatabase} onClick={toggleModal}  text="Select Database" />
+    return renderConfig()
   }
 
-  const renderAccountModal = () => {
+  const renderModal = () => {
     if (!modalIsOpen) return null
     return <DatabaseModal close={toggleModal} />
   }
 
-  const renderActiveAccount = () => {
+  const renderConfig = () => {
     return (
       <SpacedItems
         leftContent={<S.DatabaseIdentification database={databaseName!} server="localhost" />}
@@ -33,10 +34,10 @@ export const Top: SFC = ({ className }) => {
   return (
     <>
       <S.Container className={className}>
-        <TopCard heading="Database Configuration">{renderAccountContent()}</TopCard>
         <ConnectionStatus />
+        <TopCard heading="Database Configuration">{renderContent()}</TopCard>
       </S.Container>
-      {renderAccountModal()}
+      {renderModal()}
     </>
   )
 }

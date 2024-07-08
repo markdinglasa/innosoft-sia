@@ -2,18 +2,26 @@ import { createSlice, current, PayloadAction } from '@reduxjs/toolkit'
 import { IpcChannel } from '@shared/types'
 import { setLocalAndStateReducer } from '@shared/utils'
 import { SIA_MANAGER } from '../constants'
-import { Manager, Page } from '../types'
+import { Manager, Tenant } from '../types'
 
 export const initialState: Manager = {
-  activePage: Page.dashboard
+  tenant: null,
+  path: null
 }
 
 const manager = createSlice({
   name: SIA_MANAGER,
   initialState,
   reducers: {
-    setActivePage: (state: Manager, { payload: activePage }: PayloadAction<Page>) => {
-      state.activePage = activePage
+    setTenant: (state: Manager, { payload: tenant }: PayloadAction<Tenant | null>) => {
+      state.tenant = tenant
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: SIA_MANAGER,
+        state: current(state)
+      })
+    },
+    setPath: (state: Manager, { payload: path }: PayloadAction<string | null>) => {
+      state.path = path
       window.electron.ipc.send(IpcChannel.setStoreValue, {
         key: SIA_MANAGER,
         state: current(state)
@@ -24,7 +32,8 @@ const manager = createSlice({
 })
 
 export const {
-  setActivePage,
+  setTenant,
+  setPath,
   setManager
 } = manager.actions
 

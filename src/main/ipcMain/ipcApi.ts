@@ -1,6 +1,6 @@
 import { IpcChannel, LocalElectronStore, SetStoreValuePayload } from '@shared/types'
 import { getFailChannel, getSuccessChannel } from '@shared/utils/ipc'
-import { OpenDialogOptions, SaveDialogOptions, app, dialog, ipcMain } from 'electron'
+import { OpenDialogOptions, SaveDialogOptions, dialog, ipcMain } from 'electron'
 import fs from 'fs'
 import Store from '../store/Store'
 import MainWindow from '../window/MainWindow'
@@ -112,7 +112,7 @@ ipcMain.on(
     }
   }
 )
-
+/*
 ipcMain.on(IpcChannel.closeApp, (event) => {
   try {
     app.quit()
@@ -123,3 +123,4 @@ ipcMain.on(IpcChannel.closeApp, (event) => {
     }, 1000)
   }
 })
+*/

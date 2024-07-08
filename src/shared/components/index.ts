@@ -18,8 +18,6 @@ export * from './PageContainer'
 export * from './SelectInput'
 export * from './SideBar'
 export * from './Splash'
-export * from './Table'
-export * from './TableHeader'
 export * from './Toast'
 export * from './TopBar'
 

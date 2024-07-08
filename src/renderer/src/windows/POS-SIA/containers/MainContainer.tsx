@@ -1,7 +1,8 @@
-import { AppWindow, DraggableTopBar } from '@shared/components'
+import { AppWindow } from '@shared/components'
 import { AppFooter } from '@shared/components/AppFooter'
 import { SFC, WindowProps } from '@shared/types'
-import { SelectPathButton } from '../components'
+import { SelectPathButton, SysCurrent } from '../components'
+import { Initialize } from '../components/Initialize'
 import * as S from './Styles'
 import { Top } from './Top'
 
@@ -13,22 +14,22 @@ export const SIAManager: SFC<WindowProps> = ({ className }) => {
     <>
       <AppWindow className={className} display={true}>
         <S.Container>
-          <DraggableTopBar />
-          <S.Header></S.Header>
           <S.Body>
             <S.Title>
               <S.H2> Innosoft Sales Insights and Analytics</S.H2>
             </S.Title>
-            <S.Configuration>
+            <S.Card>
               <Top />
-            </S.Configuration>
-            <S.Configuration>
-              Select SIA Location
-              <div>
-                <h1>Select Path Example</h1>
+            </S.Card>
+            <S.Card>
                 <SelectPathButton onSelect={handlePathSelect} />
-              </div>
-            </S.Configuration>
+            </S.Card>
+            <S.Card>
+              <SysCurrent />
+            </S.Card>
+            <S.Card>
+              <Initialize />
+            </S.Card>
           </S.Body>
           <S.Footer>
             <AppFooter />

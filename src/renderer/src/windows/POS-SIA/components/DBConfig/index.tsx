@@ -1,4 +1,5 @@
 import { Input } from '@shared/components'
+import { getActiveDBConfig } from '@shared/selectors'
 import { setActiveDatabaseConfig } from '@shared/store/manager'
 import {
   ButtonColor,
@@ -13,12 +14,12 @@ import { displayToast } from '@shared/utils'
 import yup from '@shared/utils/yup'
 import { Form, Formik } from 'formik'
 import { useMemo } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import * as S from './Styles'
 
 export const DBConfig: SFC = ({ className }) => {
   const dispatch = useDispatch<WindowDispatch>()
-
+  const config = useSelector(getActiveDBConfig)
   const initialValues: Config = {
     server: '',
     name: '',
@@ -76,17 +77,18 @@ export const DBConfig: SFC = ({ className }) => {
           >
             {({ dirty, errors, isSubmitting, touched, isValid }) => (
               <Form>
-                <Input errors={errors} type="text" label="Server" name="server" touched={touched} />
-                <Input errors={errors} type="text" label="Name" name="name" touched={touched} />
-                <Input errors={errors} type="text" label="User" name="user" touched={touched} />
+                <Input errors={errors} type="text" label="Server" name="server" value={config?.server} touched={touched} />
+                <Input errors={errors} type="text" label="Name" name="name" value={config?.name} touched={touched} />
+                <Input errors={errors} type="text" label="User" name="user" value={config?.user}  touched={touched} />
                 <Input
                   errors={errors}
                   type="password"
                   label="Password"
                   name="password"
+                  value={config?.password} 
                   touched={touched}
                 />
-                <Input errors={errors} type="number" label="Port" name="port" touched={touched} />
+                <Input errors={errors} type="number" label="Port" name="port" value={`${config?.port}`}  touched={touched} />
                 <S.Button
                   className={'width:100% !important;'}
                   dirty={dirty}

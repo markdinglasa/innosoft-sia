@@ -1,34 +1,38 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { BrowserWindow, OpenDialogOptions, app, dialog, ipcMain, screen, shell } from 'electron'
+import AutoLaunch from 'auto-launch'
+import { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, OpenDialogOptions, shell, Tray } from 'electron'
 import installer, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import electronStore from 'electron-store'
 import path, { join } from 'path'
 import './controllers'
 import './ipcMain'
-
 electronStore.initRenderer()
 require('electron-debug')()
 
-const createWindow = (url: string): BrowserWindow => {
-  const primaryDisplay = screen.getPrimaryDisplay()
-  const { width, height } = primaryDisplay.size
+let mainWindow: BrowserWindow | null = null
+let tray: Tray | null = null
+let isQuitting = false
 
-  const window = new BrowserWindow({
+const createWindow = (url: string): BrowserWindow => {
+  //const primaryDisplay = screen.getPrimaryDisplay()
+  //const { width, height } = primaryDisplay.size
+
+  mainWindow = new BrowserWindow({
     width: 400,
-    height: 700,
-    icon: path.join(__dirname, '../shared/assetsfavicon.ico'),
+    height: 715,
+    icon: path.join(__dirname, '../shared/assets/favicon.ico'),
     show: false,
     autoHideMenuBar: true,
     center: true,
-    frame: false,
+    //frame: false,
     resizable: false,
     fullscreenable: true,
     fullscreen: false,
-    vibrancy: 'under-window',
+    //vibrancy: 'under-window',
     title: 'Innsoft SIA',
-    visualEffectState: 'active',
-    titleBarStyle: 'hidden',
-    trafficLightPosition: { x: 15, y: 10 },
+    //visualEffectState: 'active',
+    //titleBarStyle: 'hidden',
+    //trafficLightPosition: { x: 15, y: 10 },
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
@@ -43,23 +47,35 @@ const createWindow = (url: string): BrowserWindow => {
     return result
   })
 
-  window.on('ready-to-show', () => {
-    window.show()
+  mainWindow.on('ready-to-show', () => {
+    mainWindow?.show()
   })
 
-  window.webContents.setWindowOpenHandler((details) => {
+  mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
 
+  mainWindow.on('minimize', (event) => {
+    event.preventDefault()
+    mainWindow?.hide()
+  })
+
+  mainWindow.on('close', (event) => {
+    if (!isQuitting) {
+      event.preventDefault()
+      mainWindow?.hide()
+    }
+  })
+
   // Load the URL
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    window.loadURL(process.env['ELECTRON_RENDERER_URL'])
+    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
-    window.loadFile(join(__dirname, url))
+    mainWindow.loadFile(join(__dirname, url))
   }
 
-  return window
+  return mainWindow
 }
 
 app.whenReady().then(async () => {
@@ -75,13 +91,58 @@ app.whenReady().then(async () => {
   await installer(REDUX_DEVTOOLS)
   await installer(REACT_DEVELOPER_TOOLS)
 
-  let url = '../renderer/index.html'
+  const url = '../renderer/index.html'
+  mainWindow = createWindow(url)
+  tray = new Tray(nativeImage.createFromPath(path.join(__dirname, '../../resources/favicon.ico')))
 
-  createWindow(url)
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Show App', click: function () {
+        mainWindow?.show()
+      }
+    },
+    {
+      label: 'Quit', click: function () {
+        isQuitting = true
+        app.quit()
+      }
+    }
+  ])
+
+  tray.setToolTip('My Electron App')
+  tray.setContextMenu(contextMenu)
+
+  tray.on('click', function () {
+    if (mainWindow?.isVisible()) {
+      mainWindow.hide()
+    } else {
+      mainWindow?.show()
+    }
+  })
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow('../renderer/index.html')
   })
+
+  // Auto-launch configuration
+  const autoLaunch = new AutoLaunch({
+    name: 'Innsoft SIA',
+    path: app.getPath('exe'),
+  })
+
+  autoLaunch.isEnabled().then((isEnabled) => {
+    if (!isEnabled) autoLaunch.enable()
+  })
+})
+
+app.on('before-quit', () => {
+  isQuitting = true
+})
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
 })

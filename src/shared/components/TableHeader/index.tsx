@@ -1,4 +1,4 @@
-import { Box, TableCell, TableHead, TableRow, TableSortLabel } from '@mui/material';
+/*import { Box, TableCell, TableHead, TableRow, TableSortLabel } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { SFC, THProps, User, UserHeadCell } from "@shared/types";
 
@@ -42,4 +42,4 @@ export const TableHeader: SFC<TableHeaderProps> = ({className, props, headCells}
             </TableHead>
         </>
     )
-}
+}*/

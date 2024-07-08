@@ -1,4 +1,4 @@
-import { Table, TableBody, TableCell, TableContainer, TablePagination, TableRow } from '@mui/material';
+/*import { Table, TableBody, TableCell, TableContainer, TablePagination, TableRow } from '@mui/material';
 import { TableHeader } from '@shared/components';
 import { userHeadCells } from '@shared/data/user';
 import { useStyles } from '@shared/styles/useStyles';
@@ -102,3 +102,4 @@ export const OnlyReadTable: SFC<OnlyReadTableProps> = ({className, Rows}) => {
         </>
     );
 }
+*/
