@@ -17,6 +17,7 @@ export const Container = styled.div<{ type: ToastType }>`
   }};
   display: flex;
   padding: 12px;
+  width: 100vw;
 `
 
 export const Text = styled.span`

@@ -29,10 +29,12 @@ export const displayToast = (message: ReactNode, type: ToastType, className?: st
   toast(
     <Toast className={className} type={type}>
       {message}
-    </Toast>
+    </Toast>,
+    {
+      position: 'top-center'
+    }
   )
 }
-
 export const loadStoreFailToast = (_: any, errorMessage: string) => {
   displayErrorToast(`Could not load store data: ${errorMessage}`)
 }

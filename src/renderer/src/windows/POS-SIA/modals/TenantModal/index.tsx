@@ -14,34 +14,33 @@ interface TenantModalProps {
   close(): void
 }
 
-
 export const TenantModal: SFC<TenantModalProps> = ({ className, close }) => {
-  const dispatch = useDispatch<WindowDispatch>();
-  const tenant = useSelector(getTenant);
-  const initialValues = {
-    BranchCode: '',
-    TenantCode: '',
-    SMSalesType: '',
-    TerminalId: 0,
-    POSSerialNumber: '',
+  const dispatch = useDispatch<WindowDispatch>()
+  const tenant = useSelector(getTenant)
+
+  const initialValues: Tenant = {
+    BranchCode: tenant?.BranchCode || '',
+    TenantCode: tenant?.TenantCode || '',
+    SMSalesType: tenant?.SMSalesType || '',
+    Terminal: tenant?.Terminal || 0,
+    POSSerialNumber: tenant?.POSSerialNumber || ''
   }
   type FormValues = typeof initialValues
 
   const handleSubmit = (values: FormValues) => {
-    try{
+    try {
       const data: Tenant = {
         BranchCode: values.BranchCode,
         TenantCode: values.TenantCode,
         SMSalesType: values.SMSalesType,
-        TerminalId: values.TerminalId,
-        POSSerialNumber: values.POSSerialNumber,
+        Terminal: values.Terminal,
+        POSSerialNumber: values.POSSerialNumber
       }
       dispatch(setTenant(data))
       displayToast('Successful', ToastType.success)
     } catch (error: any) {
       displayToast('Something went wrong', ToastType.error)
     }
-    
   }
 
   const validationSchema = useMemo(() => {
@@ -49,45 +48,79 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close }) => {
       BranchCode: yup.string().required('Required'),
       TenantCode: yup.string().required('Required'),
       SMSalesType: yup.string().required('Required'),
-      TerminalId: yup.string().required('Required'),
+      Terminal: yup.number().integer().required('Required').notOneOf([0], 'Terminal cannot be 0')
     })
   }, [])
-  
+
   return (
     <S.UModal className={className} close={close} header="Select Tenant">
       <Formik
-            initialValues={initialValues}
-            onSubmit={handleSubmit}
-            validateOnMount={false}
-            validationSchema={validationSchema}
-          >
-            {({ dirty, errors, isSubmitting, touched, isValid }) => (
-              <Form>
-                <Input errors={errors} type="text" label="Branch Code" name="BranchCode" touched={touched} value={tenant?.BranchCode}/>
-                <Input errors={errors} type="text" label="Tenant Code" name="TenantCode" touched={touched} value={tenant?.TenantCode}/>
-                <Input errors={errors} type="text" label="Sales Type" name="SMSalesType" touched={touched} value={tenant?.SMSalesType}/>
-                <Input errors={errors} type="text" label="POS Serial Number" name="POSSerialNumber" touched={touched} value={tenant?.POSSerialNumber}/>
-                <Input
-                  errors={errors}
-                  type="text"
-                  label="Terminal"
-                  name="TerminalId"
-                  touched={touched}
-                  value={tenant?.TerminalId}
-                />
-                <S.Button
-                  className={'width:100% !important;'}
-                  dirty={dirty}
-                  disabled={isSubmitting}
-                  isSubmitting={isSubmitting}
-                  isValid={isValid}
-                  text="Submit"
-                  color={ButtonColor.blue}
-                  type={ButtonType.submit}
-                />
-              </Form>
-            )}
-          </Formik>
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
+        validateOnMount={false}
+        validationSchema={validationSchema}
+        enableReinitialize={true} // Add this line
+      >
+        {({ dirty, errors, isSubmitting, touched, isValid, values, handleChange }) => (
+          <Form>
+            <Input
+              errors={errors}
+              type="text"
+              label="Branch Code"
+              name="BranchCode"
+              touched={touched}
+              value={values.BranchCode}
+              onChange={handleChange}
+            />
+            <Input
+              errors={errors}
+              type="text"
+              label="Tenant Code"
+              name="TenantCode"
+              touched={touched}
+              value={values.TenantCode}
+              onChange={handleChange}
+            />
+            <Input
+              errors={errors}
+              type="text"
+              label="Sales Type"
+              name="SMSalesType"
+              touched={touched}
+              value={values.SMSalesType}
+              onChange={handleChange}
+            />
+            <Input
+              errors={errors}
+              type="text"
+              label="POS Serial Number"
+              name="POSSerialNumber"
+              touched={touched}
+              value={values.POSSerialNumber}
+              onChange={handleChange}
+            />
+            <Input
+              errors={errors}
+              type="number"
+              label="Terminal"
+              name="Terminal"
+              touched={touched}
+              value={String(values.Terminal)} // Ensure value is a string
+              onChange={handleChange}
+            />
+            <S.Button
+              className={'width:100% !important;'}
+              dirty={dirty}
+              disabled={isSubmitting}
+              isSubmitting={isSubmitting}
+              isValid={isValid}
+              text="Submit"
+              color={ButtonColor.blue}
+              type={ButtonType.submit}
+            />
+          </Form>
+        )}
+      </Formik>
     </S.UModal>
   )
 }

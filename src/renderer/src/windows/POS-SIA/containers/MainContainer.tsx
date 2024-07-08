@@ -10,6 +10,7 @@ export const SIAManager: SFC<WindowProps> = ({ className }) => {
   const handlePathSelect = (path: string) => {
     console.log('Selected path:', path)
   }
+
   return (
     <>
       <AppWindow className={className} display={true}>
@@ -22,7 +23,7 @@ export const SIAManager: SFC<WindowProps> = ({ className }) => {
               <Top />
             </S.Card>
             <S.Card>
-                <SelectPathButton onSelect={handlePathSelect} />
+              <SelectPathButton onSelect={handlePathSelect} />
             </S.Card>
             <S.Card>
               <SysCurrent />
