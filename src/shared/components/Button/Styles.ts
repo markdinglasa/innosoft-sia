@@ -29,7 +29,12 @@ const redMixin = css`
     background: ${colors.palette.red['300']};
   }
 `;
-
+const greenMixin = css`
+  background-color: ${colors.palette.green['200']};
+  &:hover {
+    background: ${colors.palette.green['300']};
+  }
+`;
 const disabledMixin = css`
   background: ${colors.palette.black['500']};
   color:#FFF;
@@ -65,6 +70,7 @@ export const Button = styled.button<{$color?: ButtonColor; hasIcon: boolean}>`
     if ($color === ButtonColor.blue) return blueMixin;
     if ($color === ButtonColor.gray) return grayMixin;
     if ($color === ButtonColor.red) return redMixin;
+    if ($color === ButtonColor.green) return greenMixin;
     return;
   }}
 

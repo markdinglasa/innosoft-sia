@@ -7,7 +7,6 @@ export const Container = styled.div`
 
 `
 export const Button = styled(UButton)`
-  background: ${colors.secondary};
   border: none;
   border-radius: 8px;
   color: ${colors.primary};
@@ -15,10 +14,6 @@ export const Button = styled(UButton)`
   transition: all 0.15s;
   width: 100%;
 
-  &:hover {
-    background: ${colors.pink};
-    cursor: pointer;
-  }
 `
 export const Span = styled.span`
   color: ${colors.palette.neutral[200]};

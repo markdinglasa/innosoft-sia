@@ -7,5 +7,6 @@ export enum ButtonType {
     blue = 'blue',
     gray = 'gray',
     red = 'red',
+    green = 'green'
   }
   
