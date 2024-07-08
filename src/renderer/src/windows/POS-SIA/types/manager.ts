@@ -2,6 +2,7 @@
 export interface Manager {
   tenant: Tenant | null;
   path: string | null;
+  isConnected: boolean;
 }
 
 export interface Tenant {

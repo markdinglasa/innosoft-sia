@@ -1,7 +1,8 @@
 import { colors } from '@shared/styles'
+import { DatabaseConnection } from '@shared/types'
 import styled from 'styled-components'
 
-export const Container = styled.div`
+export const Container = styled.div<{ type: DatabaseConnection }>`
   width: 100%;
   color: ${colors.primary};
   background: ${colors.palette.green[300]};

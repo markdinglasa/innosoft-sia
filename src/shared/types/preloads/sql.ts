@@ -1,4 +1,4 @@
-import { Auth, Database, License, MstAccount, MstUser } from './sqlChannels'
+import { Auth, Database, License, MstAccount, MstUser, SIA } from './sqlChannels'
 
 export interface SqlApi {
   get(channel: string, ...args: any): any
@@ -11,6 +11,7 @@ export const SqlChannel = {
   ...License,
   ...Auth,
   ...Database,
+  ...SIA,
   ...MstAccount,
   ...MstUser,
 } as const

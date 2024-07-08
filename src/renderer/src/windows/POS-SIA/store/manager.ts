@@ -6,7 +6,8 @@ import { Manager, Tenant } from '../types'
 
 export const initialState: Manager = {
   tenant: null,
-  path: null
+  path: null,
+  isConnected: false,
 }
 
 const manager = createSlice({
@@ -27,6 +28,13 @@ const manager = createSlice({
         state: current(state)
       })
     },
+    setIsConnected: (state: Manager, { payload: isConnected }: PayloadAction<boolean>) => {
+      state.isConnected = isConnected
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: SIA_MANAGER,
+        state: current(state)
+      })
+    },
     setManager: setLocalAndStateReducer<Manager>(SIA_MANAGER)
   }
 })
@@ -34,6 +42,7 @@ const manager = createSlice({
 export const {
   setTenant,
   setPath,
+  setIsConnected,
   setManager
 } = manager.actions
 
