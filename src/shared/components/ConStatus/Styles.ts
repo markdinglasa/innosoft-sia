@@ -6,7 +6,7 @@ import { colors } from '../../styles'
 export const Container = styled.div<{ type: ConnectionStatus }>`
   background-color: ${({ type }) => {
     if (type === ConnectionStatus.connected) {
-      return colors.palette.green['400']
+      return colors.palette.green['300']
     }
     if (type === ConnectionStatus.invalid) {
       return colors.palette.yellow['400']
@@ -21,6 +21,18 @@ export const Container = styled.div<{ type: ConnectionStatus }>`
   justify-content: center;
   margin-bottom: 10px;
   border-radius: 8px;
+  transition: all 0.3s;
+  &:hover {
+    background-color: ${({ type }) => {
+      if (type === ConnectionStatus.connected) {
+        return colors.palette.green['400']
+      }
+      if (type === ConnectionStatus.invalid) {
+        return colors.palette.yellow['500']
+      }
+      return colors.palette.red['500']
+    }};
+  }
 `
 
 export const Text = styled.span`
