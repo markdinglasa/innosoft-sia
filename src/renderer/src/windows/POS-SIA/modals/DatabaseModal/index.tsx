@@ -17,16 +17,13 @@ import { Form, Formik } from 'formik'
 import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import * as S from './Styles'
-
 interface DatabaseModalProps {
   close(): void
   theme?: Theme
 }
-
 export const DatabaseModal: SFC<DatabaseModalProps> = ({ className, close, theme }) => {
   const dispatch = useDispatch<WindowDispatch>()
   const config = useSelector(getActiveDBConfig)
-
   const initialValues: Config = {
     server: config?.server || '',
     name: config?.name || '',
@@ -34,11 +31,8 @@ export const DatabaseModal: SFC<DatabaseModalProps> = ({ className, close, theme
     password: config?.password || '',
     port: config?.port || 0
   }
-
   type FormValues = typeof initialValues
-
   const handleSubmit = async (values: FormValues) => {
-    // make the function async
     const config: Config = {
       server: values.server,
       name: values.name,

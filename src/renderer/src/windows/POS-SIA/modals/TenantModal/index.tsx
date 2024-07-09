@@ -9,16 +9,13 @@ import { getTenant } from '../../selectors'
 import { setTenant } from '../../store/manager'
 import { Tenant } from '../../types'
 import * as S from './Styles'
-
 interface TenantModalProps {
   close(): void
   theme?: Theme
 }
-
 export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme}) => {
   const dispatch = useDispatch<WindowDispatch>()
   const tenant = useSelector(getTenant)
-
   const initialValues: Tenant = {
     BranchCode: tenant?.BranchCode || '',
     TenantCode: tenant?.TenantCode || '',
@@ -27,7 +24,6 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme}) =
     POSSerialNumber: tenant?.POSSerialNumber || ''
   }
   type FormValues = typeof initialValues
-
   const handleSubmit = (values: FormValues) => {
     try {
       const data: Tenant = {
@@ -43,7 +39,6 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme}) =
       displayToast('Something went wrong', ToastType.error)
     }
   }
-
   const validationSchema = useMemo(() => {
     return yup.object().shape({
       BranchCode: yup.string().required('Required'),
