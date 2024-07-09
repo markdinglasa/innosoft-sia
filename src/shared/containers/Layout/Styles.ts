@@ -1,11 +1,8 @@
 import styled from 'styled-components'
-
 import { MainArea as UMainArea } from './MainArea'
-
 export const Container = styled.div`
   overflow: hidden;
 `
-
 export const MainArea = styled(UMainArea)`
   display: flex;
   align-items: center;

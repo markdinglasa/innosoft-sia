@@ -1,13 +1,12 @@
 import styled from 'styled-components'
-
 export const Container = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0;
     background: #FFF;
     width: 100vw;
     height: 100vh;
+    flex-direction: column;
 `
 export const DotSpinner = styled.div`
     --uib-size: 12.8rem;
@@ -20,7 +19,6 @@ export const DotSpinner = styled.div`
     height: var(--uib-size);
     width: var(--uib-size);
 `
-
 export const DotSpinner__Dot = styled.div`
     position: absolute;
     top: 0;
@@ -112,14 +110,26 @@ export const DotSpinner__Dot = styled.div`
         }
     }
 `
-
 export const Logo = styled.div`
     width: 130px;
     height: 130px;
     position: absolute;
+    
 `
 export const Image = styled.img`
     width: 130px;
     height: 130px;
     border-radius: 50%;
+`
+export const Message = styled.div`
+    padding: 10px 10px;
+    margin-top: 30px;
+`
+export const SpinnerContainer = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`
+export const Wrapper = styled.div`
+    margin-top:50px;
 `

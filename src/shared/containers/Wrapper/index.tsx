@@ -28,22 +28,18 @@ export const Wrapper: FC = () => {
     },
     [dispatch, storeLoaded, ],
   )
-
   const loadStoreData = useReadIpc({
     channel: IpcChannel.loadStore,
     failCallback: loadStoreFailToast,
     successCallback: loadStoreSuccessCallback,
   })
-
   useEffect(() => {
     loadStoreData()
   }, [loadStoreData])
-
   const renderLayout = (): ReactNode => {
     if (!self.accountNumber || !storeLoaded) return null
     return <Layout />
   }
-
   return (
     <>
       <S.Wrapper>

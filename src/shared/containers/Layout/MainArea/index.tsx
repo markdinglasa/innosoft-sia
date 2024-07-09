@@ -1,4 +1,4 @@
-import { DraggableTopBar } from '@shared/components'
+import { DraggableTopBar, Splash } from '@shared/components'
 import { getActiveLicense } from '@shared/selectors'
 import { SFC, SqlChannel, ToastType } from '@shared/types'
 import { displayToast } from '@shared/utils'
@@ -7,11 +7,9 @@ import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Windows as App } from '../../../../renderer/src/registry'
 import * as S from './Styles'
-
 export const MainArea: SFC = ({ className }) => {
   const license = useSelector(getActiveLicense)
   const [isLicenseValid, setIsLicenseValid] = useState<boolean | null>(null)
-
   useEffect(() => {
     const checkLicense = async () => {
       try {
@@ -29,10 +27,9 @@ export const MainArea: SFC = ({ className }) => {
     }
     checkLicense()
   }, [license])
-
   const renderContent = () => {
     if (isLicenseValid === null) {
-      return <div>Loading...</div>
+      return <Splash message={'Please wait...'}/>
     }
     return isLicenseValid ? <App /> : <License />
   }

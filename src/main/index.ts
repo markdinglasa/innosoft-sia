@@ -14,9 +14,6 @@ let tray: Tray | null = null
 export let isQuitting = false
 
 const createWindow = (url: string): BrowserWindow => {
-  //const primaryDisplay = screen.getPrimaryDisplay()
-  //const { width, height } = primaryDisplay.size
-
   mainWindow = new BrowserWindow({
     width: 400,
     height: 715,
@@ -56,10 +53,6 @@ const createWindow = (url: string): BrowserWindow => {
     return { action: 'deny' }
   })
   
-  
-
-
-  // Load the URL
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
@@ -70,11 +63,7 @@ const createWindow = (url: string): BrowserWindow => {
 }
 
 app.whenReady().then(async () => {
-  // Set app user model id for windows
   electronApp.setAppUserModelId('com.innosoft')
-
-  // Default open or close DevTools by F12 in development
-  // and ignore CommandOrControl + R in production.
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })

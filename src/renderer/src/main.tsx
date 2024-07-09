@@ -3,7 +3,6 @@ import store from '@shared/store'
 import { GlobalStyle, ToastifyStyle } from '@shared/styles'
 import ReactDOM from 'react-dom/client'
 import { Provider } from 'react-redux'
-
 const Root = () => {
   return (
     <Provider store={store}>
@@ -13,5 +12,4 @@ const Root = () => {
     </Provider>
   )
 }
-
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(<Root />)
