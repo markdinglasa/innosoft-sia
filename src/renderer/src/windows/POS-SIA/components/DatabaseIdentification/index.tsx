@@ -7,14 +7,12 @@ export interface DatabaseIdentificationProps {
   database: string
   server: string
 }
-
 export const DatabaseIdentification: SFC<DatabaseIdentificationProps> = ({
   database,
   server,
   className
 }) => {
   const displayName = useAccountDisplayName(database, 16)
-
   return (
     <Identification
       bottomText={truncate(server, 16)}

@@ -7,23 +7,19 @@ import { Card, ConnectionStatus, EditButton, SpacedItems } from '..'
 import { DatabaseModal } from '../../modals'
 import { getInitialize } from '../../selectors'
 import * as S from './Styles'
-
 export const DatabaseCard: SFC = ({ className }) => {
   const activeDatabase = useSelector(getActiveDBConfig)
   const initialized = useSelector(getInitialize)
   const [modalIsOpen, toggleModal] = useToggle(false)
   const databaseName = activeDatabase?.name
-
   const renderContent = () => {
     if (!databaseName) return <S.Button iconLeft={mdiDatabase} onClick={toggleModal}  text="Select Database" />
     return renderConfig()
   }
-
   const renderModal = () => {
     if (!modalIsOpen) return null
     return <DatabaseModal close={toggleModal} theme={Theme.dark}/>
   }
-
   const renderConfig = () => {
     return (
       <SpacedItems
@@ -32,7 +28,6 @@ export const DatabaseCard: SFC = ({ className }) => {
       />
     )
   }
-
   return (
     <>
       <S.Container className={className}>
