@@ -14,5 +14,4 @@ export * from './SelectInput'
 export * from './SideBar'
 export * from './Splash'
 export * from './Toast'
-export * from './TopBar'
 
