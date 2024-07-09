@@ -1,7 +1,5 @@
-import styled from 'styled-components'
-
 import { colors } from '@shared/styles'
-
+import styled from 'styled-components'
 export const Container = styled.div`
   background: ${colors.secondary};
   width: 100%;
@@ -11,11 +9,9 @@ export const Container = styled.div`
   flex-direction: column;
   padding: 10px 14px;
 `
-
 export const Content = styled.div`
   margin-top: 12px;
 `
-
 export const Heading = styled.div`
   color: ${colors.primary}  
   font-size: 13px;
