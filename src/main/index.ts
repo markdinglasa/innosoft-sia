@@ -9,9 +9,9 @@ import './ipcMain'
 electronStore.initRenderer()
 require('electron-debug')()
 
-let mainWindow: BrowserWindow | null = null
+export let mainWindow: BrowserWindow | null = null
 let tray: Tray | null = null
-let isQuitting = false
+export let isQuitting = false
 
 const createWindow = (url: string): BrowserWindow => {
   //const primaryDisplay = screen.getPrimaryDisplay()
@@ -57,17 +57,7 @@ const createWindow = (url: string): BrowserWindow => {
   })
   
   
-  mainWindow.on('minimize', (event: { preventDefault: () => void }) => {
-    event.preventDefault()
-    mainWindow?.minimize()
-  })
 
-  mainWindow.on('close', (event) => {
-    if (!isQuitting) {
-      event.preventDefault()
-      mainWindow?.hide()
-    }
-  })
 
   // Load the URL
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {

@@ -2,8 +2,8 @@ import { IpcChannel, LocalElectronStore, SetStoreValuePayload } from '@shared/ty
 import { getFailChannel, getSuccessChannel } from '@shared/utils/ipc'
 import { OpenDialogOptions, SaveDialogOptions, dialog, ipcMain } from 'electron'
 import fs from 'fs'
+import { isQuitting, mainWindow } from '../'
 import Store from '../store/Store'
-import MainWindow from '../window/MainWindow'
 
 ipcMain.on(IpcChannel.clearStore, (event) => {
   try {
@@ -25,7 +25,6 @@ ipcMain.on(IpcChannel.exportStore, async (event) => {
     ],
     title: 'Export Store Data'
   }
-
   try {
     const { canceled, filePath } = await dialog.showSaveDialog(options)
     if (canceled || !filePath) return
@@ -47,26 +46,21 @@ ipcMain.on(IpcChannel.importStore, async (event) => {
     ],
     title: 'Import Store Data'
   }
-
   try {
     const { canceled, filePaths } = await dialog.showOpenDialog(options)
     if (canceled || !filePaths.length) return
     const filePath = filePaths[0]
-
     fs.readFile(filePath, 'utf-8', (err, jsonData) => {
       if (err) {
         throw err
       }
 
       const data = JSON.parse(jsonData)
-
       if (data.__internal__) {
         delete data.__internal__
       }
-
       Store.clear()
       Store.setStore(data)
-
       event.reply(getSuccessChannel(IpcChannel.importStore), data)
     })
   } catch (error: any) {
@@ -74,7 +68,6 @@ ipcMain.on(IpcChannel.importStore, async (event) => {
     event.reply(getFailChannel(IpcChannel.importStore), error.toString())
   }
 })
-
 ipcMain.on(IpcChannel.loadStore, (event) => {
   try {
     const state = Store.getStore()
@@ -84,22 +77,6 @@ ipcMain.on(IpcChannel.loadStore, (event) => {
     event.reply(getFailChannel(IpcChannel.loadStore), error.toString())
   }
 })
-
-ipcMain.on(IpcChannel.restartApp, (event) => {
-  try {
-    console.log('Trying to restart app')
-    MainWindow.getWebContents()?.reloadIgnoringCache()
-    setTimeout(() => {
-      event.reply(getSuccessChannel(IpcChannel.restartApp))
-    }, 1000)
-  } catch (error: any) {
-    console.log('Failed to restart app', error)
-    setTimeout(() => {
-      event.reply(getFailChannel(IpcChannel.restartApp), error.toString())
-    }, 1000)
-  }
-})
-
 ipcMain.on(
   IpcChannel.setStoreValue,
   (event, { key, state }: SetStoreValuePayload<keyof LocalElectronStore>) => {
@@ -112,10 +89,12 @@ ipcMain.on(
     }
   }
 )
-/*
 ipcMain.on(IpcChannel.closeApp, (event) => {
   try {
-    app.quit()
+    if (!isQuitting) {
+      event.preventDefault()
+      mainWindow?.hide()
+    }
   } catch (error: any) {
     console.log('Failed to restart app', error)
     setTimeout(() => {
@@ -123,4 +102,3 @@ ipcMain.on(IpcChannel.closeApp, (event) => {
     }, 1000)
   }
 })
-*/
