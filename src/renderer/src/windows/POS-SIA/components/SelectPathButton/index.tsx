@@ -3,7 +3,7 @@ import { ButtonColor, ButtonType, SFC, WindowDispatch } from '@shared/types'
 import { truncate } from '@shared/utils'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { getPath } from '../../selectors'
+import { getInitialize, getPath } from '../../selectors'
 import { setPath } from '../../store/manager'
 import * as S from './Styles'
 
@@ -15,7 +15,7 @@ export const SelectPathButton: SFC<SelectPathButtonProps> = ({ className, onSele
   const dispatch = useDispatch<WindowDispatch>()
   const pathSelector = useSelector(getPath)
   const [path, setPaths] = useState<string | null>(pathSelector)
-
+  const initialized = useSelector(getInitialize)
   const handleSelectPath = async () => {
     const result = await window.electron.dialog.showOpenDialog({
       properties: ['openFile', 'openDirectory']
@@ -41,7 +41,7 @@ export const SelectPathButton: SFC<SelectPathButtonProps> = ({ className, onSele
           <S.Icon path={mdiInformation} size="30px"/> 
           <S.Span> Select a location where to save the SIA transactions</S.Span>
         </S.Text>
-      <S.UButton iconLeft={mdiFolder} onClick={handleSelectPath} text="Select Path" color={ButtonColor.blue} type={ButtonType.button}/>
+      <S.UButton iconLeft={mdiFolder} onClick={handleSelectPath} text="Select Path" color={ButtonColor.blue} type={ButtonType.button} disabled={initialized}/>
       {path && <S.PathDisplay>{truncate(path, 40)}</S.PathDisplay>}
     </S.Container>
   )

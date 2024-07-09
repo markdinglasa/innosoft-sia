@@ -1,14 +1,16 @@
 import { mdiDatabase } from '@mdi/js'
 import { useToggle } from '@shared/hooks'
 import { getActiveDBConfig } from '@shared/selectors'
-import { SFC } from '@shared/types'
+import { SFC, Theme } from '@shared/types'
 import { useSelector } from 'react-redux'
-import { ConnectionStatus, EditButton, SpacedItems, TopCard } from '../../components'
+import { Card, ConnectionStatus, EditButton, SpacedItems } from '..'
 import { DatabaseModal } from '../../modals'
+import { getInitialize } from '../../selectors'
 import * as S from './Styles'
 
-export const Top: SFC = ({ className }) => {
+export const DatabaseCard: SFC = ({ className }) => {
   const activeDatabase = useSelector(getActiveDBConfig)
+  const initialized = useSelector(getInitialize)
   const [modalIsOpen, toggleModal] = useToggle(false)
   const databaseName = activeDatabase?.name
 
@@ -19,14 +21,14 @@ export const Top: SFC = ({ className }) => {
 
   const renderModal = () => {
     if (!modalIsOpen) return null
-    return <DatabaseModal close={toggleModal} />
+    return <DatabaseModal close={toggleModal} theme={Theme.dark}/>
   }
 
   const renderConfig = () => {
     return (
       <SpacedItems
         leftContent={<S.DatabaseIdentification database={databaseName!} server="localhost" />}
-        rightContent={<EditButton onClick={toggleModal} />}
+        rightContent={!initialized && <EditButton onClick={toggleModal} />}
       />
     )
   }
@@ -35,7 +37,7 @@ export const Top: SFC = ({ className }) => {
     <>
       <S.Container className={className}>
         <ConnectionStatus />
-        <TopCard heading="Database Configuration">{renderContent()}</TopCard>
+        <Card heading="Database Configuration">{renderContent()}</Card>
       </S.Container>
       {renderModal()}
     </>

@@ -1,10 +1,10 @@
 {
-  "name": "innosoft-boilerplate",
+  "name": "innosoft-sia",
   "version": "1.0.0",
-  "description": "Innosoft software boilerplate",
+  "description": "Innosoft Sales Insights and Analytics",
   "main": "./out/main/index.js",
   "author": "Mark Dinglasa",
-  "homepage": "https://electron-vite.org",
+  "homepage": "https://github.com/ryanmarkdinglasa/innosoft-electron-boilerplate",
   "license": "INNOSOFT",
   "scripts": {
     "format": "prettier --write .",

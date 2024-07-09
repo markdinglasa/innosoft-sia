@@ -1,6 +1,8 @@
 import { mdiInformation, mdiPause, mdiPlay } from '@mdi/js'
-import { ButtonColor, SFC, SqlChannel, WindowDispatch } from '@shared/types'
-import { useState } from 'react'
+import { SIA_QUERY } from '@shared/query/SIAQuery'
+import { ButtonColor, SFC, SqlChannel, ToastType, WindowDispatch } from '@shared/types'
+import { displayToast } from '@shared/utils'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getInitialize, getIsConnected, getPath, getTenant } from '../../selectors'
 import { setInitialize } from '../../store/manager'
@@ -17,42 +19,35 @@ export const Initialize: SFC = ({ className }) => {
 
   const checkFields = async (): Promise<boolean> => {
     try {
+      if (!path) return false;
       const response: any = await window.electron.sql.get(SqlChannel.checkFields, path)
-      if (response.IsSomething) {
-        console.log('SucResponse: ' + response.Message)
-        return true
-      } else {
-        console.log('ErrResponse: ' + response.Message)
-        return false
-      }
+      if (!response.IsSomething)  return false
+      return true
     } catch (error: any) {
-      console.log('ErrResponse: ' + error)
+      console.log('Check Fields & Path: ' + error)
       return false
     }
   }
 
   const renderLoadingScreen = () => {
-    if (loading) {
-      return <LoadingScreen />
-    } else {
-      return null
-    }
+    if (loading) return <LoadingScreen />
+    return null
   }
 
   const handleInitialize = async () => {
+    if (!isConnected) displayToast('Path is missing', ToastType.error)
     const fieldsValid = await checkFields()
-    if (!fieldsValid || !isConnected || !tenant) {
-      if (!fieldsValid) alert('Something went wrong, setting Path and Database fields')
-      if (!isConnected) alert('Something went wrong, connecting to Database')
-      if (!tenant) alert('Tenant details are required')
-    } else {
+    if (!fieldsValid) displayToast('Database is not connected', ToastType.error)
+    if (!tenant) displayToast('Tenant details are missing', ToastType.error)
+    if (tenant && fieldsValid && isConnected) {
       dispatch(setInitialize(true))
       setLoading(true)
       setTimeout(() => {
         setLoading(false)
-      }, 9000)
+    }, 9000)
     }
   }
+
   const handlePause = () => {
     if (initialized) {
       dispatch(setInitialize(false))
@@ -64,6 +59,32 @@ export const Initialize: SFC = ({ className }) => {
       alert('Sonething went wrong')
     }
   }
+  
+  useEffect(() => {
+    if (!initialized) return;
+    const loadData = async () => {
+      try {
+        let Terminal: number = parseInt(tenant.Terminal, 10), SMPOSSerialNumber = tenant.POSSerialNumber;
+        const query = SIA_QUERY({ Terminal, SMPOSSerialNumber });
+        console.log(query);
+        const SIATransactions: Response = await window.electron.sql.get(SqlChannel.getSIA, `${path}/SIA`, query);
+        console.log(SIATransactions);
+      } catch (error: any) {
+        displayToast(`${error}`, ToastType.error);
+      }
+    };
+
+    // Load data initially
+    loadData();
+
+    const interval = setInterval(() => {
+      loadData();
+    }, 60000 * 5); // 5 minutes
+
+    // Clear interval on component unmount
+    return () => clearInterval(interval);
+  }, [initialized, tenant, path]);
+
   return (
     <>
       <S.Container className={className}>
@@ -93,11 +114,3 @@ export const Initialize: SFC = ({ className }) => {
   )
 }
 
-//import { SIA_QUERY } from '@shared/query/SIAQuery'
-//c
-/*    let TerminalId =tenant.TerminalId, SMPOSSerialNumber = tenant.POSSerialNumber
-            const query = SIA_QUERY({TerminalId, SMPOSSerialNumber});
-            console.log(query)
-            const SIATransactions:Response = await window.electron.sql.get(SqlChannel.getSIA, `${path}/${'SIA'}`, query);
-            console.log(SIATransactions)
-             */

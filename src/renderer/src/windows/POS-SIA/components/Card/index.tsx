@@ -8,7 +8,7 @@ export interface TopCardProps {
   heading: string
 }
 
-export const TopCard: SFC<TopCardProps> = ({ children, className, heading }) => {
+export const Card: SFC<TopCardProps> = ({ children, className, heading }) => {
   return (
     <S.Container className={className}>
       <S.Heading>{heading}</S.Heading>

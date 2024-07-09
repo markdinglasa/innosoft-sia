@@ -1,5 +1,5 @@
 import { Input } from '@shared/components'
-import { ButtonColor, ButtonType, SFC, ToastType, WindowDispatch } from '@shared/types'
+import { ButtonColor, ButtonType, SFC, Theme, ToastType, WindowDispatch } from '@shared/types'
 import { displayToast } from '@shared/utils'
 import yup from '@shared/utils/yup'
 import { Form, Formik } from 'formik'
@@ -12,9 +12,10 @@ import * as S from './Styles'
 
 interface TenantModalProps {
   close(): void
+  theme?: Theme
 }
 
-export const TenantModal: SFC<TenantModalProps> = ({ className, close }) => {
+export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme}) => {
   const dispatch = useDispatch<WindowDispatch>()
   const tenant = useSelector(getTenant)
 
@@ -48,12 +49,13 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close }) => {
       BranchCode: yup.string().required('Required'),
       TenantCode: yup.string().required('Required'),
       SMSalesType: yup.string().required('Required'),
+      POSSerialNumber: yup.string().required('Required'),
       Terminal: yup.number().integer().required('Required').notOneOf([0], 'Terminal cannot be 0')
     })
   }, [])
 
   return (
-    <S.UModal className={className} close={close} header="Select Tenant">
+    <S.UModal className={className} close={close} header="Select Tenant" theme={theme}>
       <Formik
         initialValues={initialValues}
         onSubmit={handleSubmit}
@@ -64,6 +66,7 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close }) => {
         {({ dirty, errors, isSubmitting, touched, isValid, values, handleChange }) => (
           <Form>
             <Input
+              theme={theme}
               errors={errors}
               type="text"
               label="Branch Code"
@@ -73,6 +76,7 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close }) => {
               onChange={handleChange}
             />
             <Input
+              theme={theme}
               errors={errors}
               type="text"
               label="Tenant Code"
@@ -82,6 +86,7 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close }) => {
               onChange={handleChange}
             />
             <Input
+              theme={theme}
               errors={errors}
               type="text"
               label="Sales Type"
@@ -91,6 +96,7 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close }) => {
               onChange={handleChange}
             />
             <Input
+              theme={theme}
               errors={errors}
               type="text"
               label="POS Serial Number"
@@ -100,6 +106,7 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close }) => {
               onChange={handleChange}
             />
             <Input
+              theme={theme}
               errors={errors}
               type="number"
               label="Terminal"

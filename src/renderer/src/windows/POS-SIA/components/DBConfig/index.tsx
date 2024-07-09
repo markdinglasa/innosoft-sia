@@ -7,6 +7,7 @@ import {
   DBConfig as Config,
   SFC,
   SqlChannel,
+  Theme,
   ToastType,
   WindowDispatch
 } from '@shared/types'
@@ -17,7 +18,11 @@ import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import * as S from './Styles'
 
-export const DBConfig: SFC = ({ className }) => {
+interface DBConfigProps {
+  theme?: Theme
+}
+
+export const DBConfig: SFC<DBConfigProps> = ({ className, theme }) => {
   const dispatch = useDispatch<WindowDispatch>()
   const config = useSelector(getActiveDBConfig)
 
@@ -80,6 +85,7 @@ export const DBConfig: SFC = ({ className }) => {
             {({ dirty, errors, isSubmitting, touched, isValid, values, handleChange }) => (
               <Form>
                 <Input
+                  theme={theme}
                   errors={errors}
                   type="text"
                   label="Server"
@@ -89,6 +95,7 @@ export const DBConfig: SFC = ({ className }) => {
                   touched={touched}
                 />
                 <Input
+                  theme={theme}
                   errors={errors}
                   type="text"
                   label="Name"
@@ -98,6 +105,7 @@ export const DBConfig: SFC = ({ className }) => {
                   touched={touched}
                 />
                 <Input
+                  theme={theme}
                   errors={errors}
                   type="text"
                   label="User"
@@ -107,6 +115,7 @@ export const DBConfig: SFC = ({ className }) => {
                   touched={touched}
                 />
                 <Input
+                  theme={theme}
                   errors={errors}
                   type="password"
                   label="Password"
@@ -116,6 +125,7 @@ export const DBConfig: SFC = ({ className }) => {
                   touched={touched}
                 />
                 <Input
+                  theme={theme}
                   errors={errors}
                   type="number"
                   label="Port"

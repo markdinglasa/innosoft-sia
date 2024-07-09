@@ -1,4 +1,4 @@
-import { SFC } from '@shared/types'
+import { SFC, Theme } from '@shared/types'
 import * as S from './Styles'
 
 export interface InputProps {
@@ -9,9 +9,11 @@ export interface InputProps {
   type?: string
   value?: string
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+  theme?: Theme
 }
 
 export const Input: SFC<InputProps> = ({
+  theme,
   className,
   errors,
   label,
@@ -23,7 +25,7 @@ export const Input: SFC<InputProps> = ({
 }) => {
   return (
     <>
-      <S.Label>{label}</S.Label>
+      <S.Label theme={theme}> {label}</S.Label>
       <S.Field
         $error={errors[name] && touched[name]}
         className={className}
@@ -31,6 +33,7 @@ export const Input: SFC<InputProps> = ({
         type={type}
         value={value}
         onChange={onChange}
+        theme={theme}
       />
       <S.SecondaryContainer>
         {errors[name] && touched[name] ? <S.ErrorMessage>{errors[name]}</S.ErrorMessage> : null}

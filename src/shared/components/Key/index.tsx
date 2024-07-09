@@ -1,10 +1,14 @@
 import { setActiveKey } from '@shared/store/manager'
-import { SFC, SqlChannel, WindowDispatch } from '@shared/types'
+import { SFC, SqlChannel, Theme, WindowDispatch } from '@shared/types'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { CopyClip } from '../CopyClip'
 
-export const Key: SFC = ({ className }) => {
+export interface KeyProps {
+  theme: Theme
+}
+
+export const Key: SFC<KeyProps> = ({ className, theme }) => {
   const [key, setKey] = useState('')
   const dispatch = useDispatch<WindowDispatch>()
   useEffect(() => {
@@ -25,5 +29,5 @@ export const Key: SFC = ({ className }) => {
     fetchKey()
   }, [])
 
-  return <CopyClip Value={key} className={className} Label="Key" />
+  return <CopyClip Value={key} className={className} Label="Key" Theme={theme}/>
 }

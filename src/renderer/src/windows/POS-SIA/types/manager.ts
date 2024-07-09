@@ -4,6 +4,7 @@ export interface Manager {
   path: string | null;
   isConnected: boolean;
   initialize: boolean;
+  snackbar: boolean;
 }
 
 export interface Tenant {

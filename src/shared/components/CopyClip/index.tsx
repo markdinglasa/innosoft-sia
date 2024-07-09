@@ -1,14 +1,15 @@
 import { mdiClipboardCheckMultipleOutline, mdiContentCopy } from '@mdi/js'
-import { ButtonColor, ButtonType, SFC } from '@shared/types'
+import { ButtonColor, ButtonType, SFC, Theme } from '@shared/types'
 import { useEffect, useState } from 'react'
 import * as S from './Styles'
 
 export interface CopyClipProps {
   Value: string
-  Label: string
+  Label: string 
+  Theme?: Theme
 }
 
-export const CopyClip: SFC<CopyClipProps> = ({ className, Value, Label }) => {
+export const CopyClip: SFC<CopyClipProps> = ({ className, Value, Label, Theme }) => {
   const [value, setValue] = useState('')
 
   useEffect(() => {
@@ -28,8 +29,8 @@ export const CopyClip: SFC<CopyClipProps> = ({ className, Value, Label }) => {
   return (
     <S.Container className={className}>
       <S.ButtonCon>
-        <S.Label>{Label}</S.Label>
-        <S.Button
+        <S.Label theme={Theme}>{Label}</S.Label>
+        <S.Button theme={Theme}
           onClick={copyToClipboard}
           iconLeft={copyStatus === 'Copy' ? mdiContentCopy : mdiClipboardCheckMultipleOutline}
           color={ButtonColor.blue}
@@ -37,7 +38,7 @@ export const CopyClip: SFC<CopyClipProps> = ({ className, Value, Label }) => {
           text={copyStatus}
         />
       </S.ButtonCon>
-      <S.Input type="text" value={value} readOnly />
+      <S.Input type="text" value={value} readOnly theme={Theme}/>
     </S.Container>
   )
 }

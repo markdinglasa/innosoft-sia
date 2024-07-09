@@ -12,12 +12,15 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: iPOS
+  executableName: iSIA
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  license: build/LICENSE
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
@@ -39,5 +42,5 @@ appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
 publish:
-  provider: generic
-  url: https://example.com/auto-updates
+  provider: innosoft
+  url: https://github.com/ryanmarkdinglasa/innosoft-electron-boilerplate

@@ -1,14 +1,14 @@
 import { mdiKey } from '@mdi/js'
 import { Input, Key } from '@shared/components'
-import { setActiveLicense, setActiveWindow } from '@shared/store/manager'
+import { setActiveLicense } from '@shared/store/manager'
 import {
   ButtonColor,
   ButtonType,
   SFC,
   SqlChannel,
+  Theme,
   ToastType,
-  WindowDispatch,
-  Windows
+  WindowDispatch
 } from '@shared/types'
 import { displayToast } from '@shared/utils/toast'
 import { Form, Formik } from 'formik'
@@ -20,21 +20,20 @@ import * as S from './Styles'
 export const License: SFC = ({ className }) => {
   const dispatch = useDispatch<WindowDispatch>()
   const initialValues = {
-    license: ''
+    licenseKey: ''
   }
   type FormValues = typeof initialValues
 
   const handleSubmit = async (values: FormValues) => {
     const data = {
-      license: values.license
+      licenseKey: values.licenseKey
     }
 
     try {
-      const response = await window.electron.sql.post(SqlChannel.isLicense, data.license)
+      const response = await window.electron.sql.post(SqlChannel.isLicense, data.licenseKey)
       console.log('resonse', response)
       if (response.IsSomething) {
-        dispatch(setActiveLicense(data.license))
-        dispatch(setActiveWindow(Windows.login))
+        dispatch(setActiveLicense(data.licenseKey))
         displayToast('Success', ToastType.success)
       } else {
         displayToast(response.Message, ToastType.error)
@@ -46,7 +45,7 @@ export const License: SFC = ({ className }) => {
 
   const validationSchema = useMemo(() => {
     return yup.object().shape({
-      license: yup.string().required('Server is required')
+      licenseKey: yup.string().required('Required')
     })
   }, [])
 
@@ -59,21 +58,23 @@ export const License: SFC = ({ className }) => {
             <S.CardTitle> License Key</S.CardTitle>
           </S.CardHeader>
           <S.CardBody className={className}>
-            <Key />
+            <Key theme={Theme.dark} />
             <Formik
               initialValues={initialValues}
               onSubmit={handleSubmit}
               validateOnMount={false}
               validationSchema={validationSchema}
             >
-              {({ dirty, errors, isSubmitting, touched, isValid }) => (
+              {({ dirty, errors, isSubmitting, touched, isValid, handleChange }) => (
                 <Form>
                   <Input
+                    theme={Theme.dark}
                     errors={errors}
                     type="text"
                     label="License"
-                    name="license"
+                    name="licenseKey"
                     touched={touched}
+                    onChange={handleChange}
                   />
                   <S.Button
                     dirty={dirty}

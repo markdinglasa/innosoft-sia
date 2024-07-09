@@ -1,5 +1,6 @@
 import { Button as UButton } from '@shared/components'
 import { colors } from '@shared/styles'
+import { Theme } from '@shared/types'
 import styled from 'styled-components'
 
 export const Container = styled.div`
@@ -16,12 +17,22 @@ export const ButtonCon = styled.div`
   align-items: center;
 `
 
-export const Input = styled.input`
+export const Input = styled.input<{theme: Theme}>`
     width: 100%;
     heigth:55px;
-    background: ${colors.palette.black[300]};
-    border-radius: 6px;
-    color: ${colors.primary}
+    background-color: ${({ theme }) => {
+      if (theme === Theme.dark) {
+        return colors.palette.neutral['100']
+      }
+      return colors.palette.black['300']
+    }};
+    border-radius: 4px;
+    color: ${({ theme }) => {
+      if (theme === Theme.dark) {
+        return colors.palette.gray['75']
+      }
+      return colors.primary
+    }};
     outline: none;
     border:none;
     padding:10px 10px;
@@ -31,20 +42,30 @@ export const Input = styled.input`
     }
 `
 
-export const Label = styled.div`
-  color: ${colors.primary};
+export const Label = styled.div<{theme: Theme}>`
+  color: ${({ theme }) => {
+    if (theme === Theme.dark) {
+      return colors.palette.gray['100']
+    }
+    return colors.primary
+  }};
   font-size: 12px;
   font-weight: 700;
 `
 
-export const Button = styled(UButton)`
+export const Button = styled(UButton)<{theme: Theme}>`
   width: 90px;
   heigth: 30px !important;
   align-items:center;
   display: flex;
   justify-content: center;
   text-align:center;
-  color: ${colors.primary}
+  color: ${({ theme }) => {
+    if (theme === Theme.dark) {
+      return colors.palette.gray['100']
+    }
+    return colors.primary
+  }};
   transition: all 0.3s;
   background: none !important;
   &:hover &:active &:focus{

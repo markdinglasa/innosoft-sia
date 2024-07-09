@@ -1,7 +1,7 @@
 import { Button as UButton } from '@shared/components'
 import { colors } from '@shared/styles'
 import styled from 'styled-components'
-import { DatabaseIdentification as UDatabaseIdentification } from '../../components'
+import { DatabaseIdentification as UDatabaseIdentification } from '..'
 
 export const Container = styled.div`
   width: 100%:

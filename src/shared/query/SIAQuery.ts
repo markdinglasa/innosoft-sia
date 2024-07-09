@@ -1,5 +1,5 @@
 
-export const SIA_QUERY = ({TerminalId, SMPOSSerialNumber}): string => {
+export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
  return (`
     SELECT 
         REPLACE([TrnSales].[SalesNumber], '-', '') AS [OrderNumber],
@@ -172,7 +172,7 @@ export const SIA_QUERY = ({TerminalId, SMPOSSerialNumber}): string => {
                 ELSE	'0.00'
             END
         ) AS [TotalCreditCardSalesAmount],
-        '${TerminalId}' AS [TerminalNumber],
+        '${Terminal}' AS [TerminalNumber],
         '${SMPOSSerialNumber}' AS [SMPOSSerialNumber]
         FROM [TrnSales]
             LEFT JOIN [TrnSalesLine] ON [TrnSalesLine].[SalesId] = [TrnSales].[Id]
@@ -216,7 +216,7 @@ export const SIA_QUERY = ({TerminalId, SMPOSSerialNumber}): string => {
             INNER JOIN [PaxTable] ON [TrnSalesLine].[SalesId] = [PaxTable].[SalesId]
             GROUP BY [TrnSalesLine].[SalesId], [PaxTable].[TotalPax], [PaxTable].[DiscountedPax]
             ) AS [PAX] ON [TrnSales].[Id] = [PAX].[SalesId]
-        WHERE [TrnSales].[TerminalId] = ${parseInt(TerminalId, 10)} AND MONTH([TrnSales].[EntryDateTime]) = MONTH(GETDATE()) AND YEAR([TrnSales].[EntryDateTime]) = YEAR(GETDATE())
+        WHERE [TrnSales].[TerminalId] = ${parseInt(Terminal, 10)} AND MONTH([TrnSales].[EntryDateTime]) = MONTH(GETDATE()) AND YEAR([TrnSales].[EntryDateTime]) = YEAR(GETDATE())
         GROUP BY
         [TrnSales].[SalesNumber],
         [TrnSales].[SalesDate],

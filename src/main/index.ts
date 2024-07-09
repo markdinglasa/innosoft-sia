@@ -1,7 +1,7 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import AutoLaunch from 'auto-launch'
 import { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, OpenDialogOptions, shell, Tray } from 'electron'
-import installer, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
+//import installer, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import electronStore from 'electron-store'
 import path, { join } from 'path'
 import './controllers'
@@ -24,21 +24,21 @@ const createWindow = (url: string): BrowserWindow => {
     show: false,
     autoHideMenuBar: true,
     center: true,
-    //frame: false,
+    frame: false,
     resizable: false,
-    fullscreenable: true,
+    fullscreenable: false,
     fullscreen: false,
-    //vibrancy: 'under-window',
+    vibrancy: 'under-window',
     title: 'Innsoft SIA',
-    //visualEffectState: 'active',
-    //titleBarStyle: 'hidden',
-    //trafficLightPosition: { x: 15, y: 10 },
+    visualEffectState: 'active',
+    titleBarStyle: 'hidden',
+    trafficLightPosition: { x: 15, y: 10 },
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
       nodeIntegration: true,
       contextIsolation: true,
-      devTools: true
+      devTools: false
     }
   })
 
@@ -55,10 +55,11 @@ const createWindow = (url: string): BrowserWindow => {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
-
-  mainWindow.on('minimize', (event) => {
+  
+  
+  mainWindow.on('minimize', (event: { preventDefault: () => void }) => {
     event.preventDefault()
-    mainWindow?.hide()
+    mainWindow?.minimize()
   })
 
   mainWindow.on('close', (event) => {
@@ -88,8 +89,8 @@ app.whenReady().then(async () => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  await installer(REDUX_DEVTOOLS)
-  await installer(REACT_DEVELOPER_TOOLS)
+  //await installer(REDUX_DEVTOOLS)
+  //await installer(REACT_DEVELOPER_TOOLS)
 
   const url = '../renderer/index.html'
   mainWindow = createWindow(url)
@@ -121,8 +122,6 @@ app.whenReady().then(async () => {
   })
 
   app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow('../renderer/index.html')
   })
 

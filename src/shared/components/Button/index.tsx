@@ -1,5 +1,4 @@
 import { Loader } from '@shared/components';
-import { colors } from '@shared/styles';
 import { ButtonColor, ButtonType, SFC } from '@shared/types';
 import React, { useMemo } from 'react';
 import * as S from './Styles';
@@ -41,9 +40,9 @@ export const Button: SFC<ButtonProps> = ({
 
   const renderButtonContent = () => (
     <>
-      {iconLeft ? <S.IconLeft color={colors.primary} path={iconLeft} size="20px" /> : null}
+      {iconLeft ? <S.IconLeft path={iconLeft} size="20px" /> : null}
       {text}
-      {iconRight ? <S.IconRight color="white" path={iconRight} size="18px" /> : null}
+      {iconRight ? <S.IconRight path={iconRight} size="18px" /> : null}
     </>
   );
 

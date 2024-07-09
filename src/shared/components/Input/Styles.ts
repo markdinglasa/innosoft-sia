@@ -2,6 +2,7 @@ import { Field as UField } from 'formik';
 import styled from 'styled-components';
 
 import { colors } from '@shared/styles';
+import { Theme } from '@shared/types';
 
 export const ErrorMessage = styled.div`
   color: ${colors.palette.red['500']};
@@ -10,7 +11,12 @@ export const ErrorMessage = styled.div`
 `;
 
 export const Field = styled(UField)`
-  background: ${colors.palette.neutral['075']};
+  background-color:  ${({ theme }) => {
+    if (theme === Theme.dark) {
+      return colors.palette.neutral[75]
+    }
+    return colors.palette.neutral[75]
+  }};
   border-radius: 3px;
   border: 1px solid ${({$error}) => ($error ? colors.palette.red['500'] : 'transparent')};
   display: block;
@@ -25,10 +31,15 @@ export const Field = styled(UField)`
   }
 `;
 
-export const Label = styled.div`
+export const Label = styled.div<{theme : Theme}>`
   font-size: 10px;
   margin-bottom: 8px;
-  color: ${colors.primary}
+  color: ${({ theme }) => {
+    if (theme === Theme.dark) {
+      return colors.palette.neutral['100']
+    }
+    return colors.primary
+  }};
 `;
 
 export const SecondaryContainer = styled.div`

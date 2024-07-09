@@ -1,2 +1,3 @@
+export * from '../components/DatabaseCard'
 export * from './MainContainer'
-export * from './Top'
+

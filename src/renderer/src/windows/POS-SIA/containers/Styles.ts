@@ -43,5 +43,9 @@ export const Title = styled.div`
   justify-content: center;
 `
 export const H2 = styled.h2`
-  color: ${colors.palette.gray[300]};
+  color: ${colors.palette.neutral['100']};
+`
+export const Filler = styled.div`
+  height: 2rem !important;
+  width:100%;
 `
