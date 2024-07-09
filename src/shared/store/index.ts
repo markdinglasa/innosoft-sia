@@ -12,13 +12,8 @@ import networkCorrelationIdsReducer from './networkCorrelationIds'
 import networksReducer from './networks'
 import notificationCountsReducer from './notificationCounts'
 import peerRequestManagerReducer from './peerRequestManager'
-import posUserReducer from './pos/user'
 import selfReducer from './self'
 import socketStatusesReducer from './socketStatuses'
-
-const posReducer = combineReducers({
-    posUser: posUserReducer
-})
 
 const systemReducer = combineReducers({
   socketStatuses: socketStatusesReducer,
@@ -39,7 +34,6 @@ const systemReducer = combineReducers({
 const store = configureStore({
   reducer: {
     ...windowReducers,
-    pos: posReducer,
     system: systemReducer
   }
 })
