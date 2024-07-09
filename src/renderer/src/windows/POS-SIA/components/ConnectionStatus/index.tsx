@@ -4,12 +4,10 @@ import { SFC, SqlChannel, ConnectionStatus as Status, WindowDispatch } from '@sh
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setIsConnected } from '../../store/manager'
-
 export const ConnectionStatus: SFC = () => {
   const dispatch = useDispatch<WindowDispatch>()
   const config = useSelector(getActiveDBConfig)
   const [status, setStatus] = useState(Status.disconnected)
-
   useEffect(() => {
     const checkConnection = async () => {
       try {
@@ -26,13 +24,7 @@ export const ConnectionStatus: SFC = () => {
         dispatch(setIsConnected(false))
       }
     }
-
     checkConnection()
   }, [config])
-
-  return (
-    <>
-      <ConStatus type={status}>{status}</ConStatus>
-    </>
-  )
+  return (<><ConStatus type={status}>{status}</ConStatus></>)
 }
