@@ -42,5 +42,5 @@ appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
 publish:
-  provider: innosoft
-  url: https://github.com/ryanmarkdinglasa/innosoft-electron-boilerplate
+  provider: generic
+  url: https://example.com/auto-updates
