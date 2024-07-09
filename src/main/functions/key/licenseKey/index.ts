@@ -1,6 +1,5 @@
-import { CODE_KEY } from '@shared/constants';
-import { alphanumeric, getBiosSerialNumber, getStorageSerialNumber, XOREncryption } from '../..';
-
+import { CODE_KEY } from '@shared/constants'
+import { alphanumeric, getBiosSerialNumber, getStorageSerialNumber, XOREncryption } from '../..'
 export const licenseKey = async (): Promise<string> => {
   try {
     const bios: string = await getBiosSerialNumber()

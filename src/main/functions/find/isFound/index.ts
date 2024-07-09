@@ -1,22 +1,6 @@
-/**
- * AUTHOR       : Mark Dinglasa
- * COMMENT/S    : N/A
- * CHANGES      : N/A
- * LOG-DATE     : 2024-05-27 11:48PM
-*/
-
 import { Error, Success } from '@shared/messages';
 import { Response } from '@shared/types';
 import { recordByFields } from '../../../model';
-
-/**
- * Check if the record already exists
- * @param {string} Table - The name of the table
- * @param {Array<string>} Field - The array of field names
- * @param {Array<string>} Type - The array of SQL data types corresponding to the fields
- * @param {Array<any>} Data - The array of data values corresponding to the fields
- * @returns {Promise<boolean>} - Returns true if the record exists, otherwise false
- */
 export const isFound = async (
   Table: string = '',
   Field: Array<string> = [],
@@ -39,4 +23,4 @@ export const isFound = async (
   } catch (error: any) {
     return { IsSomething: false, Message: Error.e00x02 }
   }
-} // END HERE
+}
