@@ -1,7 +1,6 @@
-import ElectronStore from 'electron-store';
-import { Error, Success } from '../../../../shared/messages';
-import { Response, SqlChannel } from '../../../../shared/types';
-
+import ElectronStore from 'electron-store'
+import { Error, Success } from '../../../../shared/messages'
+import { Response, SqlChannel } from '../../../../shared/types'
 export const getConnection = (): Response => {
     try {
       const store = new ElectronStore()

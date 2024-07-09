@@ -1,7 +1,6 @@
-import { ConnectionPool } from 'mssql';
-import { getConnection } from '../..';
-import { DatabaseConnection } from '../../../../shared/types';
-
+import { ConnectionPool } from 'mssql'
+import { getConnection } from '../..'
+import { DatabaseConnection } from '../../../../shared/types'
 export const Connection = async (): Promise<DatabaseConnection> => {
   try {
     const data = getConnection().Data
