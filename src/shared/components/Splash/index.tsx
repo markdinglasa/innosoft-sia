@@ -1,7 +1,7 @@
 import { SFC } from "@shared/types";
 import { ReactNode } from "react";
+import logo from '../../../../resources/icon.png';
 import * as S from './Styles';
-
 interface SplashProps {
     message?: ReactNode;
 }
@@ -12,7 +12,7 @@ export const Splash: SFC<SplashProps> = ({className, message}) => {
                 <S.Wrapper>
                     <S.SpinnerContainer >
                         <S.Logo>
-                            <S.Image src="../../assets/logo.jpg"/>
+                            <S.Image src={logo}/>
                         </S.Logo>
                         <S.Message>{message}</S.Message>
                         <S.LineWooble></S.LineWooble>
