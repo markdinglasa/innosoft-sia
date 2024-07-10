@@ -1,6 +1,8 @@
 import { mdiInformation, mdiPause, mdiPlay } from '@mdi/js'
+import { Error } from '@shared/messages'
 import { SIA_QUERY } from '@shared/query/SIAQuery'
-import { ButtonColor, SFC, SqlChannel, ToastType, WindowDispatch } from '@shared/types'
+import { setSnackbar } from '@shared/store/manager'
+import { ButtonColor, SFC, Snackbar, SqlChannel, ToastType, WindowDispatch } from '@shared/types'
 import { displayToast } from '@shared/utils'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -16,7 +18,7 @@ export const Initialize: SFC = ({ className }) => {
   const initialized = useSelector(getInitialize)
   const dispatch = useDispatch<WindowDispatch>()
   const [loading, setLoading] = useState<boolean>(false)
-
+  let sb: Snackbar
   const checkFields = async (): Promise<boolean> => {
     try {
       if (!path) return false;
@@ -56,7 +58,8 @@ export const Initialize: SFC = ({ className }) => {
         setLoading(false)
       }, 9000)
     } else {
-      alert('Sonething went wrong')
+      sb = {display: true, message: Error.e00x01, type: ToastType.error}
+      dispatch(setSnackbar(sb))
     }
   }
   
@@ -66,11 +69,11 @@ export const Initialize: SFC = ({ className }) => {
       try {
         let Terminal: number = parseInt(tenant.Terminal, 10), SMPOSSerialNumber = tenant.POSSerialNumber;
         const query = SIA_QUERY({ Terminal, SMPOSSerialNumber });
-        console.log(query);
         const SIATransactions: Response = await window.electron.sql.get(SqlChannel.getSIA, `${path}/SIA`, query);
-        console.log(SIATransactions);
+        console.log(SIATransactions)
       } catch (error: any) {
-        displayToast(`${error}`, ToastType.error);
+        sb = {display: true, message: Error.e00x01, type: ToastType.error}
+        dispatch(setSnackbar(sb))
       }
     };
     loadData();

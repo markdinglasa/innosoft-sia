@@ -21,3 +21,6 @@ export const getPeerRequestManager = (state: RootState) => state.system.peerRequ
 export const getSelf = (state: RootState) => state.system.self;
 export const getSocketStatuses = (state: RootState) => state.system.socketStatuses;
 export const getStoreLoaded = (state: RootState) => state.system.internal.storeLoaded;
+
+//UTILITY
+export const getSnackbar = (state: RootState) => state.system.manager.activeSnackbar

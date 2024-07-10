@@ -1,6 +1,6 @@
 import { createSlice, current, PayloadAction } from '@reduxjs/toolkit'
 import { SYSTEM_MANAGER } from '@shared/constants'
-import { DBConfig, IpcChannel, Manager, User } from '@shared/types'
+import { DBConfig, IpcChannel, Manager, Snackbar } from '@shared/types'
 import { setLocalAndStateReducer } from '@shared/utils'
 
 export const initialState: Manager = {
@@ -8,8 +8,7 @@ export const initialState: Manager = {
   activeLicense: null,
   activeDBConfig: null,
   activeKey: null,
-  activeToken: null,
-  activeUser: null
+  activeSnackbar: null,
 }
 
 const manager = createSlice({
@@ -43,22 +42,15 @@ const manager = createSlice({
         state: current(state)
       })
     },
-    setActiveToken: (state: Manager, { payload: activeToken }: PayloadAction<string | null>) => {
-      state.activeToken = activeToken
-      window.electron.ipc.send(IpcChannel.setStoreValue, {
-        key: SYSTEM_MANAGER,
-        state: current(state)
-      })
-    },
-    setActiveUser: (state: Manager, { payload: activeUser }: PayloadAction<User | null>) => {
-      state.activeUser = activeUser
-      window.electron.ipc.send(IpcChannel.setStoreValue, {
-        key: SYSTEM_MANAGER,
-        state: current(state)
-      })
-    },
     setActiveWindow: (state: Manager, { payload: windowId }: PayloadAction<string>) => {
       state.activeWindow = windowId === state.activeWindow ? null : windowId
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: SYSTEM_MANAGER,
+        state: current(state)
+      })
+    },
+    setSnackbar: (state: Manager, { payload: activeSnackbar }: PayloadAction<Snackbar | null>) => {
+      state.activeSnackbar = activeSnackbar === state.activeSnackbar ? null : activeSnackbar
       window.electron.ipc.send(IpcChannel.setStoreValue, {
         key: SYSTEM_MANAGER,
         state: current(state)
@@ -74,8 +66,7 @@ export const {
   setActiveDatabaseConfig,
   setActiveKey,
   setActiveLicense,
-  setActiveToken,
-  setActiveUser,
+  setSnackbar,
   setManager
 } = manager.actions
 export default manager.reducer

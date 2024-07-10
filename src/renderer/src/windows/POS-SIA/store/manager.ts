@@ -44,13 +44,6 @@ const manager = createSlice({
         state: current(state)
       })
     },
-    setSnackbar: (state: Manager, { payload: snackbar }: PayloadAction<boolean>) => {
-      state.snackbar = snackbar
-      window.electron.ipc.send(IpcChannel.setStoreValue, {
-        key: SIA_MANAGER,
-        state: current(state)
-      })
-    },
     setManager: setLocalAndStateReducer<Manager>(SIA_MANAGER)
   }
 })
@@ -60,7 +53,6 @@ export const {
   setPath,
   setIsConnected,
   setInitialize,
-  setSnackbar,
   setManager
 } = manager.actions
 

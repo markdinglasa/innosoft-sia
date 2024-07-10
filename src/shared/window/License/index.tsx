@@ -1,16 +1,17 @@
 import { mdiKey } from '@mdi/js'
 import { Input, Key } from '@shared/components'
-import { setActiveLicense } from '@shared/store/manager'
+import { Error, Success } from '@shared/messages'
+import { setActiveLicense, setSnackbar } from '@shared/store/manager'
 import {
   ButtonColor,
   ButtonType,
   SFC,
+  Snackbar,
   SqlChannel,
   Theme,
   ToastType,
   WindowDispatch
 } from '@shared/types'
-import { displayToast } from '@shared/utils/toast'
 import { Form, Formik } from 'formik'
 import { useMemo } from 'react'
 import { useDispatch } from 'react-redux'
@@ -23,24 +24,28 @@ export const License: SFC = ({ className }) => {
     licenseKey: ''
   }
   type FormValues = typeof initialValues
-
+  let sb: Snackbar, message: string, type: ToastType
   const handleSubmit = async (values: FormValues) => {
     const data = {
       licenseKey: values.licenseKey
     }
-
     try {
       const response = await window.electron.sql.post(SqlChannel.isLicense, data.licenseKey)
       console.log('resonse', response)
       if (response.IsSomething) {
         dispatch(setActiveLicense(data.licenseKey))
-        displayToast('Success', ToastType.success)
+        message = Success.s00x00
+        type = ToastType.success
       } else {
-        displayToast(response.Message, ToastType.error)
+        message = response.Message
+        type = ToastType.error
       }
-    } catch (error) {
-      displayToast('License Error!', ToastType.error)
+    } catch (error: any) {
+      message = Error.e00x02
+      type = ToastType.error
     }
+    sb = { display: true, message:message, type: type}
+    dispatch(setSnackbar(sb))
   }
 
   const validationSchema = useMemo(() => {

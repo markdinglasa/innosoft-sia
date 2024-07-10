@@ -53,6 +53,7 @@ const createWindow = (url: string): BrowserWindow => {
     return { action: 'deny' }
   })
   
+  
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
@@ -89,7 +90,7 @@ app.whenReady().then(async () => {
     }
   ])
 
-  tray.setToolTip('My Electron App')
+  tray.setToolTip('Innosoft SIA')
   tray.setContextMenu(contextMenu)
 
   tray.on('click', function () {
@@ -101,12 +102,12 @@ app.whenReady().then(async () => {
   })
 
   app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow('../renderer/index.html')
+    if (mainWindow === null) createWindow('../renderer/index.html')
   })
 
   // Auto-launch configuration
   const autoLaunch = new AutoLaunch({
-    name: 'Innsoft SIA',
+    name: 'Innosoft SIA',
     path: app.getPath('exe'),
   })
 

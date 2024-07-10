@@ -1,6 +1,5 @@
 import { ReactNode } from 'react'
 import { toast } from 'react-toastify'
-
 import { Toast } from '../components'
 import { ToastType } from '../types'
 
@@ -35,6 +34,9 @@ export const displayToast = (message: ReactNode, type: ToastType, className?: st
     }
   )
 }
+
+
+
 export const loadStoreFailToast = (_: any, errorMessage: string) => {
   displayErrorToast(`Could not load store data: ${errorMessage}`)
 }

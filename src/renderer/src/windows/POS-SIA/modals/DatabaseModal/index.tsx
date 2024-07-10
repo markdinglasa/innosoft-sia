@@ -1,22 +1,24 @@
 import { Input } from '@shared/components'
+import { Error, Success } from '@shared/messages'
 import { getActiveDBConfig } from '@shared/selectors'
-import { setActiveDatabaseConfig } from '@shared/store/manager'
+import { setActiveDatabaseConfig, setSnackbar } from '@shared/store/manager'
 import {
   ButtonColor,
   ButtonType,
   DBConfig as Config,
   SFC,
+  Snackbar,
   SqlChannel,
   Theme,
   ToastType,
   WindowDispatch
 } from '@shared/types'
-import { displayToast } from '@shared/utils'
 import yup from '@shared/utils/yup'
 import { Form, Formik } from 'formik'
 import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import * as S from './Styles'
+
 
 interface DatabaseModalProps {
   close(): void
@@ -34,6 +36,7 @@ export const DatabaseModal: SFC<DatabaseModalProps> = ({ className, close, theme
     port: config?.port || 0
   }
   type FormValues = typeof initialValues
+  let sb: Snackbar, message: string, type: ToastType;
   const handleSubmit = async (values: FormValues) => {
 
     const config: Config = {
@@ -48,15 +51,23 @@ export const DatabaseModal: SFC<DatabaseModalProps> = ({ className, close, theme
       const isConnected: boolean = await window.electron.sql.get(SqlChannel.isConnected)
       if (response.IsSomething && isConnected) {
         dispatch(setActiveDatabaseConfig(config))
-        displayToast('Database Connected', ToastType.success)
+        close();
+        message=Success.s00x00
+        type=ToastType.success
       } else {
         dispatch(setActiveDatabaseConfig(null))
-        displayToast('Connection failed', ToastType.error)
+        close();
+        message=Error.e00x01
+        type=ToastType.error
       }
     } catch (error: any) {
       dispatch(setActiveDatabaseConfig(null))
-      displayToast(`${error}`, ToastType.error)
+      close();
+      message=Error.e00x02
+      type=ToastType.error
     }
+    sb = {display: true, message: message, type: type}
+    dispatch(setSnackbar(sb))
   }
 
   const validationSchema = useMemo(() => {

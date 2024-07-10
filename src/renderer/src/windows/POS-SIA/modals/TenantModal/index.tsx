@@ -1,6 +1,7 @@
 import { Input } from '@shared/components'
-import { ButtonColor, ButtonType, SFC, Theme, ToastType, WindowDispatch } from '@shared/types'
-import { displayToast } from '@shared/utils'
+import { Error, Success } from '@shared/messages'
+import { setSnackbar } from '@shared/store/manager'
+import { ButtonColor, ButtonType, SFC, Snackbar, Theme, ToastType, WindowDispatch } from '@shared/types'
 import yup from '@shared/utils/yup'
 import { Formik } from 'formik'
 import { useMemo } from 'react'
@@ -9,10 +10,12 @@ import { getTenant } from '../../selectors'
 import { setTenant } from '../../store/manager'
 import { Tenant } from '../../types'
 import * as S from './Styles'
+
 interface TenantModalProps {
   close(): void
   theme?: Theme
 }
+
 export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme}) => {
   const dispatch = useDispatch<WindowDispatch>()
   const tenant = useSelector(getTenant)
@@ -27,6 +30,7 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme}) =
     POSMachineNumber:  tenant?.POSMachineNumber || ''
   }
   type FormValues = typeof initialValues
+  let sb: Snackbar, message: string, type: ToastType
   const handleSubmit = (values: FormValues) => {
     try {
       const data: Tenant = {
@@ -40,10 +44,15 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme}) =
         Terminal: values.Terminal,
       }
       dispatch(setTenant(data))
-      displayToast('Successful', ToastType.success)
+      close();
+      message=Success.s00x00
+      type=ToastType.success
     } catch (error: any) {
-      displayToast('Something went wrong', ToastType.error)
+      message=Error.e00x01
+      type=ToastType.error
     }
+    sb = {display: true, message: message, type: type}
+    dispatch(setSnackbar(sb))
   }
   const validationSchema = useMemo(() => {
     return yup.object().shape({

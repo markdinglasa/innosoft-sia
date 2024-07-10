@@ -1,5 +1,7 @@
 import { mdiFolder, mdiInformation } from '@mdi/js'
-import { ButtonColor, ButtonType, SFC, WindowDispatch } from '@shared/types'
+import { Error } from '@shared/messages'
+import { setSnackbar } from '@shared/store/manager'
+import { ButtonColor, ButtonType, SFC, Snackbar, ToastType, WindowDispatch } from '@shared/types'
 import { truncate } from '@shared/utils'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -16,16 +18,22 @@ export const SelectPathButton: SFC<SelectPathButtonProps> = ({ className, onSele
   const pathSelector = useSelector(getPath)
   const [path, setPaths] = useState<string | null>(pathSelector)
   const initialized = useSelector(getInitialize)
+  let sb: Snackbar
   const handleSelectPath = async () => {
-    const result = await window.electron.dialog.showOpenDialog({
-      properties: ['openFile', 'openDirectory']
-    })
+    try {
+      const result = await window.electron.dialog.showOpenDialog({
+        properties: ['openFile', 'openDirectory']
+      })
 
-    if (!result.canceled && result.filePaths.length > 0) {
-      const selectedPath = result.filePaths[0]
-      dispatch(setPath(`${selectedPath}`)) // Update with the correct action type and payload
-      onSelect(selectedPath)
-      setPaths(selectedPath)
+      if (!result.canceled && result.filePaths.length > 0) {
+        const selectedPath = result.filePaths[0]
+        dispatch(setPath(`${selectedPath}`)) // Update with the correct action type and payload
+        onSelect(selectedPath)
+        setPaths(selectedPath)
+      }
+    } catch (error: any) {
+      sb = {display: true, message: Error.e00x01, type: ToastType.error}
+      dispatch(setSnackbar(sb))
     }
   }
 
