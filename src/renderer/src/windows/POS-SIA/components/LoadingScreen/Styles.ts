@@ -12,4 +12,5 @@ export const Container = styled.div`
     justify-content: center;
     top:0;
     left:0;
+    transition: all 0.5s;
 `

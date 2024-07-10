@@ -8,27 +8,17 @@ interface SplashProps {
 export const Splash: SFC<SplashProps> = ({className, message}) => {
     return (
         <>
-        <S.Container className={className}>
-            <S.Logo >
-                <S.Image src="../../assets/logo.jpg"/>
-            </S.Logo>
-            <S.Wrapper>
-                <S.SpinnerContainer>
-                    <S.DotSpinner>
-                        <S.DotSpinner__Dot></S.DotSpinner__Dot>
-                        <S.DotSpinner__Dot></S.DotSpinner__Dot>
-                        <S.DotSpinner__Dot></S.DotSpinner__Dot>
-                        <S.DotSpinner__Dot></S.DotSpinner__Dot>
-                        <S.DotSpinner__Dot></S.DotSpinner__Dot>
-                        <S.DotSpinner__Dot></S.DotSpinner__Dot>
-                        <S.DotSpinner__Dot></S.DotSpinner__Dot>
-                        <S.DotSpinner__Dot></S.DotSpinner__Dot>
-                    </S.DotSpinner>
-                </S.SpinnerContainer>
-                <S.Message>{message}</S.Message>
-            </S.Wrapper>
-        </S.Container>
-           
+            <S.Container className={className}>
+                <S.Wrapper>
+                    <S.SpinnerContainer >
+                        <S.Logo>
+                            <S.Image src="../../assets/logo.jpg"/>
+                        </S.Logo>
+                        <S.Message>{message}</S.Message>
+                        <S.LineWooble></S.LineWooble>
+                    </S.SpinnerContainer>
+                </S.Wrapper>
+            </S.Container>
         </>
     )
 }

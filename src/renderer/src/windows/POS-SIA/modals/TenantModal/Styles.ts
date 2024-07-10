@@ -1,4 +1,5 @@
 import { Button as UButton } from '@shared/components'
+import { Form as F } from 'formik'
 import styled from 'styled-components'
 import { Modal } from '../../components'
 export const UModal = styled(Modal)`
@@ -9,4 +10,8 @@ export const UModal = styled(Modal)`
 `
 export const Button = styled(UButton)`
   width: 100%;
+`
+export const Form = styled(F)`
+  height:500px;
+  overflow: auto;
 `

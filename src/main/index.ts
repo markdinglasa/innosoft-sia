@@ -1,7 +1,7 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import AutoLaunch from 'auto-launch'
 import { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, OpenDialogOptions, shell, Tray } from 'electron'
-//import installer, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
+import installer, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import electronStore from 'electron-store'
 import path, { join } from 'path'
 import './controllers'
@@ -68,8 +68,8 @@ app.whenReady().then(async () => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  //await installer(REDUX_DEVTOOLS)
-  //await installer(REACT_DEVELOPER_TOOLS)
+  await installer(REDUX_DEVTOOLS)
+  await installer(REACT_DEVELOPER_TOOLS)
 
   const url = '../renderer/index.html'
   mainWindow = createWindow(url)

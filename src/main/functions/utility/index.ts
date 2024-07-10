@@ -27,3 +27,10 @@ export const businessType = async (T: string): Promise<string> => {
 export const alphanumeric = (input: string): string => {
   return input.replace(/[^a-zA-Z0-9]/g, '')
 }
+
+export const generateFileName = () => {
+  const date = new Date();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${month}_${year}_Transactions.csv`;
+};

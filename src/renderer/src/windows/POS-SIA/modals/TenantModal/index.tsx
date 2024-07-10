@@ -2,7 +2,7 @@ import { Input } from '@shared/components'
 import { ButtonColor, ButtonType, SFC, Theme, ToastType, WindowDispatch } from '@shared/types'
 import { displayToast } from '@shared/utils'
 import yup from '@shared/utils/yup'
-import { Form, Formik } from 'formik'
+import { Formik } from 'formik'
 import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getTenant } from '../../selectors'
@@ -21,7 +21,10 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme}) =
     TenantCode: tenant?.TenantCode || '',
     SMSalesType: tenant?.SMSalesType || '',
     Terminal: tenant?.Terminal || 0,
-    POSSerialNumber: tenant?.POSSerialNumber || ''
+    POSSerialNumber: tenant?.POSSerialNumber || '',
+    SMClassCode:  tenant?.SMClassCode || '',
+    StoreNumber:  tenant?.StoreNumber || '',
+    POSMachineNumber:  tenant?.POSMachineNumber || ''
   }
   type FormValues = typeof initialValues
   const handleSubmit = (values: FormValues) => {
@@ -29,9 +32,12 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme}) =
       const data: Tenant = {
         BranchCode: values.BranchCode,
         TenantCode: values.TenantCode,
+        SMClassCode: values.SMClassCode,
+        StoreNumber: values.StoreNumber,
         SMSalesType: values.SMSalesType,
+        POSMachineNumber: values.POSMachineNumber,
+        POSSerialNumber: values.POSSerialNumber,
         Terminal: values.Terminal,
-        POSSerialNumber: values.POSSerialNumber
       }
       dispatch(setTenant(data))
       displayToast('Successful', ToastType.success)
@@ -43,7 +49,10 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme}) =
     return yup.object().shape({
       BranchCode: yup.string().required('Required'),
       TenantCode: yup.string().required('Required'),
+      SMClassCode: yup.string().required('Required'),
+      StoreNumber: yup.string().required('Required'),
       SMSalesType: yup.string().required('Required'),
+      POSMachineNumber: yup.string().required('Required'),
       POSSerialNumber: yup.string().required('Required'),
       Terminal: yup.number().integer().required('Required').notOneOf([0], 'Terminal cannot be 0')
     })
@@ -59,7 +68,7 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme}) =
         enableReinitialize={true} // Add this line
       >
         {({ dirty, errors, isSubmitting, touched, isValid, values, handleChange }) => (
-          <Form>
+          <S.Form>
             <Input
               theme={theme}
               errors={errors}
@@ -84,10 +93,40 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme}) =
               theme={theme}
               errors={errors}
               type="text"
+              label="Class Code"
+              name="SMClassCode"
+              touched={touched}
+              value={values.SMClassCode}
+              onChange={handleChange}
+            />
+            <Input
+              theme={theme}
+              errors={errors}
+              type="text"
+              label="Store Number"
+              name="StoreNumber"
+              touched={touched}
+              value={values.StoreNumber}
+              onChange={handleChange}
+            />
+            <Input
+              theme={theme}
+              errors={errors}
+              type="text"
               label="Sales Type"
               name="SMSalesType"
               touched={touched}
               value={values.SMSalesType}
+              onChange={handleChange}
+            />
+            <Input
+              theme={theme}
+              errors={errors}
+              type="text"
+              label="POS Machine Number"
+              name="POSMachineNumber"
+              touched={touched}
+              value={values.POSMachineNumber}
               onChange={handleChange}
             />
             <Input
@@ -120,7 +159,7 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme}) =
               color={ButtonColor.blue}
               type={ButtonType.submit}
             />
-          </Form>
+          </S.Form>
         )}
       </Formik>
     </S.UModal>

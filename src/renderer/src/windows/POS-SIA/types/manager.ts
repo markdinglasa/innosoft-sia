@@ -11,11 +11,11 @@ export interface Tenant {
   TerminalId?:number;
   BranchCode: string;
   TenantCode: string;
-  SMClassCode?: string;
-  StoreNumber?: string;
+  SMClassCode: string;
+  StoreNumber: string;
   SMSalesType: string;
-  POSMachineNumber?: string;
-  POSSerialNumber?: string;
+  POSMachineNumber: string;
+  POSSerialNumber: string;
   SMCoinDirectory?: string;
-  Terminal?: string;
+  Terminal: string;
 }

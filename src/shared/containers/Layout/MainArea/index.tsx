@@ -35,7 +35,7 @@ export const MainArea: SFC = ({ className }) => {
   }
   return (
     <S.Container className={className}>
-      <DraggableTopBar/>
+      <DraggableTopBar />
       {renderContent()}
     </S.Container>
   )

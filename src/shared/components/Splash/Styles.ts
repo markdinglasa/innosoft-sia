@@ -1,3 +1,4 @@
+import { colors } from '@shared/styles'
 import styled from 'styled-components'
 export const Container = styled.div`
     display: flex;
@@ -7,6 +8,7 @@ export const Container = styled.div`
     width: 100vw;
     height: 100vh;
     flex-direction: column;
+    transition: ease-in-out 0.5s;
 `
 export const DotSpinner = styled.div`
     --uib-size: 12.8rem;
@@ -113,23 +115,74 @@ export const DotSpinner__Dot = styled.div`
 export const Logo = styled.div`
     width: 130px;
     height: 130px;
-    position: absolute;
-    
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content: center;
 `
 export const Image = styled.img`
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
+    width: 165px;
+    height: 165px;
 `
 export const Message = styled.div`
-    padding: 10px 10px;
-    margin-top: 30px;
+    padding: 5px 0px;
+    text-align: center;
 `
 export const SpinnerContainer = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 `
 export const Wrapper = styled.div`
-    margin-top:50px;
+    margin-top: -30px;
 `
+export const LineWooble = styled.div`
+  --uib-size: 80px;
+  --uib-speed: 1.55s;
+  --uib-color: black;
+  --uib-line-weight: 5px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--uib-line-weight);
+  width: 130px;
+  border-radius: calc(var(--uib-line-weight) / 2);
+  overflow: hidden;
+  transform: translate3d(0, 0, 0);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: ${colors.primary};
+    opacity: 0.1;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    border-radius: calc(var(--uib-line-weight) / 2);
+    animation: wobble var(--uib-speed) ease-in-out infinite;
+    transform: translateX(-90%);
+    background-color: ${colors.primary};
+  }
+
+  @keyframes wobble {
+    0%,
+    100% {
+      transform: translateX(-90%);
+    }
+    50% {
+      transform: translateX(90%);
+    }
+  }
+`;

@@ -73,15 +73,10 @@ export const Initialize: SFC = ({ className }) => {
         displayToast(`${error}`, ToastType.error);
       }
     };
-
-    // Load data initially
     loadData();
-
     const interval = setInterval(() => {
       loadData();
-    }, 60000 * 5); // 5 minutes
-
-    // Clear interval on component unmount
+    }, 60000 * 5);
     return () => clearInterval(interval);
   }, [initialized, tenant, path]);
 
