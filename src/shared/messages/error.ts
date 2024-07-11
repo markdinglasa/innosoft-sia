@@ -43,5 +43,6 @@ export enum Error {
   e00x42 = 'License is null or undefined',
   e00x43 = 'Database configuration is null or undefined',
   e00x44 = 'User must be provided as an non zero integer',
-  e00x45 = 'Path must be provided as a non-empty string'
+  e00x45 = 'Path must be provided as a non-empty string',
+  e00x46 = 'Tenant details are missing'
 }

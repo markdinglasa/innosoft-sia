@@ -3,7 +3,6 @@ import { Error } from '@shared/messages'
 import { SIA_QUERY } from '@shared/query/SIAQuery'
 import { setSnackbar } from '@shared/store/manager'
 import { ButtonColor, SFC, Snackbar, SqlChannel, ToastType, WindowDispatch } from '@shared/types'
-import { displayToast } from '@shared/utils'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getInitialize, getIsConnected, getPath, getTenant } from '../../selectors'
@@ -37,10 +36,19 @@ export const Initialize: SFC = ({ className }) => {
   }
 
   const handleInitialize = async () => {
-    if (!isConnected) displayToast('Path is missing', ToastType.error)
+    if (!isConnected) {
+      sb = {display: true, message: Error.e00x45, type: ToastType.error}
+      dispatch(setSnackbar(sb))
+    }
     const fieldsValid = await checkFields()
-    if (!fieldsValid) displayToast('Database is not connected', ToastType.error)
-    if (!tenant) displayToast('Tenant details are missing', ToastType.error)
+    if (!fieldsValid){ 
+      sb = {display: true, message: Error.e00x14, type: ToastType.error}
+      dispatch(setSnackbar(sb))
+    }
+    if (!tenant) {
+      sb = {display: true, message: Error.e00x46, type: ToastType.error}
+      dispatch(setSnackbar(sb))
+    }
     if (tenant && fieldsValid && isConnected) {
       dispatch(setInitialize(true))
       setLoading(true)

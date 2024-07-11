@@ -15,6 +15,7 @@ export const LogoContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
 `
 export const TextContainer = styled.div`
   width: 80%;
@@ -26,7 +27,8 @@ export const TextContainer = styled.div`
   padding: 5px 5px;
 `
 export const Image = styled.img`
-  height: 60px;
+  height: 75px;
+  width: 75px;
 `
 export const Span = styled.span`
   color: ${colors.palette.gray[200]};
