@@ -1,5 +1,5 @@
-import logo from '@shared/assets/logo.svg'
 import { SFC } from '@shared/types'
+import logo from '../../../../resources/logo.svg'
 import * as S from './Styles'
 
 export const AppFooter: SFC = ({ className }) => {

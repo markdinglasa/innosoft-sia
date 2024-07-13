@@ -24,6 +24,7 @@ export const License: SFC = ({ className }) => {
     licenseKey: ''
   }
   type FormValues = typeof initialValues
+  
   let sb: Snackbar, message: string, type: ToastType
   const handleSubmit = async (values: FormValues) => {
     const data = {

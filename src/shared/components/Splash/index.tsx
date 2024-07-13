@@ -1,6 +1,6 @@
-import logo from '@shared/assets/logo.svg';
 import { SFC } from "@shared/types";
 import { ReactNode } from "react";
+import logo from '../../../../resources/logo.svg';
 import * as S from './Styles';
 interface SplashProps {
     message?: ReactNode;

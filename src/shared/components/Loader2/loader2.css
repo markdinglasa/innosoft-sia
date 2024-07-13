@@ -52,7 +52,7 @@ body {
     border-radius: 50%;
     position: absolute;
     top: -2px; /* Adjust to center the circle */
-    background-image: url('@shared/assets/rica.png');
+    /*background-image: url('@shared/assets/rica.png');*/
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;

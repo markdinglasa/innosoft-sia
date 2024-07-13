@@ -1,6 +1,7 @@
 
 export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
  return (`
+    
     SELECT 
         REPLACE([TrnSales].[SalesNumber], '-', '') AS [OrderNumber],
         CONVERT(varchar, [TrnSales].[SalesDate], 23) AS [BusinessDay],
@@ -30,7 +31,13 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
             THEN COALESCE(CONVERT(VARCHAR(20), ([TrnCollection].[Amount]), 1), '0.00')
             ELSE '0.00'
         END AS [RefundAmount],
-
+        MAX(
+            CASE
+                WHEN [TrnSales].[Pax] IS NULL
+                THEN 0
+                ELSE COALESCE(CONVERT(VARCHAR(20), ([TrnSales].[Pax]), 1), '0')
+            END
+        ) AS [GuessCount],
         MAX(
             CASE
                 WHEN [TrnSalesLine].[DiscountId] = [MstDiscount].[Id] AND [MstDiscount].[Discount] = 'Senior Citizen Discount'
@@ -77,6 +84,7 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
                 ELSE    '0.00'
             END
         ) AS [TotalServiceCharge],
+
         '0.00' AS [TotalTip],
         
         CASE
@@ -89,6 +97,13 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
             THEN    COALESCE(CONVERT(VARCHAR(20), (([GrossSales].[GrossSalesAmount] - [TotalTax].[TotalTaxAmount])), 1), '0.00')
             ELSE    '0.00'
         END AS [LessTaxAmount],
+        CASE 
+            WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL 
+            THEN COALESCE(CONVERT(VARCHAR(20), ([GrossSales].[GrossSalesAmount]/ 1.12), 1), '0.00')
+            ELSE '0.00'
+        END AS [TotalExemptSales],
+        ' ' AS [Regular/OtherDiscountName],
+		'0.00' AS [Regular/OtherDiscountAmount],
         MAX(
             CASE
                 WHEN    ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'Employee Discount' OR [MstDiscount].[Discount] = 'Employee Meal')
@@ -98,11 +113,41 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
         ) AS [EmployeeDiscountAmount],
         MAX(
             CASE
+                WHEN    ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'Senior Citizen Discount')
+                THEN    COALESCE(CONVERT(VARCHAR(20), (([TotalDiscount].[TotalDiscountAmount])), 1), '0.00')
+                ELSE    '0.00'
+            END 
+        ) AS [SeniorCitizenDiscountAmount],
+        MAX(
+            CASE
                 WHEN    ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'VIP Discount')
                 THEN    COALESCE(CONVERT(VARCHAR, (([TotalDiscount].[TotalDiscountAmount])), 1), '0.00')
                 ELSE    '0.00'
             END
         ) AS [VIPDiscountAmount],
+        MAX(
+            CASE
+                WHEN    ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'PWD')
+                THEN    COALESCE(CONVERT(VARCHAR(20), (([TotalDiscount].[TotalDiscountAmount])), 1), '0.00')
+                ELSE    '0.00'
+            END 
+        ) AS [PWDDiscountAmount],
+        MAX(
+            CASE
+                WHEN    ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'National Coach' OR [MstDiscount].[Discount] = 'National Athlete' OR [MstDiscount].[Discount] = 'Medal of Valor Discount')
+                THEN    COALESCE(CONVERT(VARCHAR(20), (([TotalDiscount].[TotalDiscountAmount])), 1), '0.00')
+                ELSE    '0.00'
+            END 
+        ) AS [NationalCoach/Athlete/MedalofValorDiscountamount],
+        MAX(
+            CASE
+                WHEN    ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'SMAC Discount' OR [MstDiscount].[Discount] = 'SMAC')
+                THEN    COALESCE(CONVERT(VARCHAR(20), (([TotalDiscount].[TotalDiscountAmount])), 1), '0.00')
+                ELSE    '0.00'
+            END 
+        ) AS [SMAC Discount],
+		' ' AS [OnlineDealsDiscountName],
+		'0.00' AS [OnlineDealsDiscountAmount],
         ' ' AS [DiscountField1Name], 
         ' ' AS [DiscountField2Name], 
         ' ' AS [DiscountField3Name], 
@@ -263,6 +308,11 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
             WHEN    [TrnSalesLine].[TaxId] = [MstTax].[Id] AND [MstTax].[Tax]  = 'LOCAL TAX'
             THEN    COALESCE(CONVERT(VARCHAR(20), (([TotalTax].[TotalTaxAmount])), 1), '0.00')
             ELSE    '0.00'
+        END,
+        CASE 
+            WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL 
+            THEN COALESCE(CONVERT(VARCHAR(20), ([GrossSales].[GrossSalesAmount]/ 1.12), 1), '0.00')
+            ELSE '0.00'
         END,
         CASE
             WHEN    [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL

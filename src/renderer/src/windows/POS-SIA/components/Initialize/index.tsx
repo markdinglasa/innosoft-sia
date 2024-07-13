@@ -37,12 +37,12 @@ export const Initialize: SFC = ({ className }) => {
 
   const handleInitialize = async () => {
     if (!isConnected) {
-      sb = {display: true, message: Error.e00x45, type: ToastType.error}
+      sb = {display: true, message: Error.e00x14, type: ToastType.error}
       dispatch(setSnackbar(sb))
     }
     const fieldsValid = await checkFields()
     if (!fieldsValid){ 
-      sb = {display: true, message: Error.e00x14, type: ToastType.error}
+      sb = {display: true, message: Error.e00x44, type: ToastType.error}
       dispatch(setSnackbar(sb))
     }
     if (!tenant) {
