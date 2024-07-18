@@ -10,7 +10,7 @@ const baseValidChannels = [
   IpcChannel.loadStore,
   IpcChannel.restartApp,
   IpcChannel.setStoreValue,
-  IpcChannel.closeApp
+  IpcChannel.closeApp,
 ]
 
 const failValidChannels = baseValidChannels.map(getFailChannel)
@@ -30,9 +30,7 @@ const removeListener = (channel: string, func: any) => {
 }
 
 const send = (channel: string, payload: any) => {
-  if (validChannels.includes(channel)) {
     ipcRenderer.send(channel, payload)
-  }
 }
 
 export const ipcApi: IpcApi = {

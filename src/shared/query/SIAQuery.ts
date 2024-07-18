@@ -1,7 +1,8 @@
 
 export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
  return (`
-    SELECT 
+    
+  SELECT 
         REPLACE([TrnSales].[SalesNumber], '-', '') AS [OrderNumber],
         CONVERT(varchar, [TrnSales].[SalesDate], 23) AS [BusinessDay],
         CONVERT(varchar, [TrnSales].[EntryDateTime], 21) AS [CheckOpen],
@@ -32,22 +33,22 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
         END AS [RefundAmount],
         MAX(
             CASE
-                WHEN [TrnSales].[Pax] IS NULL
-                THEN 0
-                ELSE COALESCE(([TrnSales].[Pax]), 0)
+                WHEN [TrnSales].[Pax] <> 0 OR [TrnSales].[Pax] IS NOT NULL
+                THEN COALESCE(CONVERT(VARCHAR(20), ([TrnPaxTable].[TotalPax]), 1), '0')
+                ELSE '0'
             END
         ) AS [GuestCount],
         MAX(
             CASE
                 WHEN [TrnSalesLine].[DiscountId] = [MstDiscount].[Id] AND [MstDiscount].[Discount] = 'Senior Citizen Discount'
-                THEN COALESCE(CONVERT(VARCHAR(20), ([PaxTable].[DiscountedPax]), 1), '0.00')
+                THEN COALESCE(CONVERT(VARCHAR(20), ([TrnPaxTable].[DiscountedPax]), 1), '0.00')
                 ELSE '0.00'
             END
         ) AS [GuestCountSenior],
         MAX(
             CASE
                 WHEN [TrnSalesLine].[DiscountId] = [MstDiscount].[Id] AND [MstDiscount].[Discount] = 'PWD'
-                THEN COALESCE(CONVERT(VARCHAR(20), ([PaxTable].[DiscountedPax]), 1), '0.00')
+                THEN COALESCE(CONVERT(VARCHAR(20), ([TrnPaxTable].[DiscountedPax]), 1), '0.00')
                 ELSE '0.00'
             END
         ) AS [GuestCountPWD],
@@ -95,11 +96,15 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
             THEN    COALESCE(CONVERT(VARCHAR(20), (([GrossSales].[GrossSalesAmount] - [TotalTax].[TotalTaxAmount])), 1), '0.00')
             ELSE    '0.00'
         END AS [LessTaxAmount],
-        CASE 
-            WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL 
-            THEN COALESCE(CONVERT(VARCHAR(20), ([GrossSales].[GrossSalesAmount]/ 1.12), 1), '0.00')
-            ELSE '0.00'
-        END AS [TotalExemptSales],
+
+MAX(
+			CASE 
+				WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL AND ([MstDiscount].[Discount] = 'Senior Citizen Discount' OR [MstDiscount].[Discount] = 'PWD Discount')
+				THEN COALESCE(CONVERT(VARCHAR(20), (((([GrossSales].[TotalAmount]/[TrnPaxTable].[TotalPax])*[TrnPaxTable].[DiscountedPax])/1.12) - ((((([GrossSales].[TotalAmount]/[TrnPaxTable].[TotalPax])*[TrnPaxTable].[DiscountedPax])/1.12))*0.2)), 1), '0.00')
+				ELSE '0.00'
+			END
+        ) AS [TotalExemptSales],
+
         ' ' AS [RegularOtherDiscountName],
 		'0.00' AS [RegularOtherDiscountAmount],
         MAX(
@@ -144,6 +149,7 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
                 ELSE    '0.00'
             END 
         ) AS [SMACDiscountAmount],
+
 		' ' AS [OnlineDealsDiscountName],
 		'0.00' AS [OnlineDealsDiscountAmount],
         ' ' AS [DiscountField1Name], 
@@ -166,6 +172,7 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
                 ELSE	'0.00'
             END
         ) AS [TotalCashSalesAmount],
+
         MAX(
             CASE
                 WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Gift Certificate')
@@ -173,6 +180,7 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
                 ELSE	'0.00'
             END
         ) AS [TotalGiftCertificateSalesAmount],
+
         MAX(
             CASE
                 WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Gcash' OR [MstPayType].[PayType] = 'PayMaya' OR [MstPayType].[PayType] = 'GrabPay' OR [MstPayType].[PayType] = 'FoodPanda')
@@ -180,6 +188,7 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
                 ELSE	'0.00'
             END
         ) AS [TotalEwalletOnlineSalesAmount],
+
         MAX(
             CASE
                 WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Mastercard')
@@ -187,6 +196,7 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
                 ELSE	'0.00'
             END
         ) AS [TotalMastercardSalesAmount],
+
         MAX(
             CASE
                 WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Visa')
@@ -194,6 +204,7 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
                 ELSE	'0.00'
             END
         ) AS [TotalVisaSalesAmount],
+
         MAX(
             CASE
                 WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Diners')
@@ -208,6 +219,7 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
                 ELSE	'0.00'
             END
         ) AS [TotalJCBSalesAmount],
+
         MAX(
             CASE
                 WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Credit Card')
@@ -215,6 +227,7 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
                 ELSE	'0.00'
             END
         ) AS [TotalCreditCardSalesAmount],
+
         '${Terminal}' AS [TerminalNumber],
         '${SMPOSSerialNumber}' AS [SMPOSSerialNumber]
         FROM [TrnSales]
@@ -226,9 +239,11 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
             LEFT JOIN [MstItem] ON [MstItem].[Id] = [TrnSalesLine].[ItemId]
             LEFT JOIN [MstPayType] ON [MstPayType].[Id] = [TrnCollectionLine].[PayTypeId]
             LEFT JOIN [MstDiscount] ON [MstDiscount].[Id] = [TrnSalesLine].[DiscountId]
-            LEFT JOIN [PaxTable] ON [PaxTable].[SalesId] = [TrnSalesLine].[SalesId]
+            LEFT JOIN [TrnPaxTable] ON [TrnPaxTable].[SaleId] = [TrnSalesLine].[SalesId]
             LEFT JOIN (
-                SELECT [SalesId], SUM([Amount]) AS [GrossSalesAmount]
+                SELECT [SalesId], SUM([Amount]) AS [GrossSalesAmount],
+                SUM([Price]*[Quantity]) AS [TotalAmount]
+
                 FROM [TrnSalesLine]
                 GROUP BY [SalesId]
             ) AS [GrossSales] ON [TrnSales].[Id] = [GrossSales].[SalesId]
@@ -253,13 +268,13 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
                 [TrnSalesLine].[SalesId],
                 SUM(CASE WHEN [TrnSalesLine].[ItemId] = 1 THEN 0 ELSE [TrnSalesLine].[Quantity] END) AS [Quantity],
                 SUM([TrnSalesLine].[Amount]) AS [Amount],
-                [PaxTable].[TotalPax],
-                [PaxTable].[DiscountedPax]
+                [TrnPaxTable].[TotalPax],
+                [TrnPaxTable].[DiscountedPax]
             FROM [TrnSalesLine]
-            INNER JOIN [PaxTable] ON [TrnSalesLine].[SalesId] = [PaxTable].[SalesId]
-            GROUP BY [TrnSalesLine].[SalesId], [PaxTable].[TotalPax], [PaxTable].[DiscountedPax]
+            INNER JOIN [TrnPaxTable] ON [TrnSalesLine].[SalesId] = [TrnPaxTable].[SaleId]
+            GROUP BY [TrnSalesLine].[SalesId], [TrnPaxTable].[TotalPax], [TrnPaxTable].[DiscountedPax]
             ) AS [PAX] ON [TrnSales].[Id] = [PAX].[SalesId]
-        WHERE [TrnSales].[TerminalId] = ${parseInt(Terminal, 10)} AND MONTH([TrnSales].[EntryDateTime]) = MONTH(GETDATE()) AND YEAR([TrnSales].[EntryDateTime]) = YEAR(GETDATE())
+        WHERE [TrnSales].[TerminalId] = ${Terminal} AND [TrnSales].[IsLocked] = 1 AND MONTH([TrnSales].[EntryDateTime]) = MONTH(GETDATE()) AND YEAR([TrnSales].[EntryDateTime]) = YEAR(GETDATE())
         GROUP BY
         [TrnSales].[SalesNumber],
         [TrnSales].[SalesDate],
@@ -322,5 +337,7 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
             THEN    COALESCE(CONVERT(VARCHAR(20), (([GrossSales].[GrossSalesAmount] - [TotalTax].[TotalTaxAmount])), 1), '0.00')
             ELSE    '0.00'
         END
+
+
     `)
 }

@@ -38,6 +38,7 @@ export const License: SFC = ({ className }) => {
         message = Success.s00x00
         type = ToastType.success
       } else {
+        dispatch(setActiveLicense(null))
         message = response.Message
         type = ToastType.error
       }

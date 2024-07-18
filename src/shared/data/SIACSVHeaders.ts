@@ -8,7 +8,7 @@ export const csvHeaders = [
     { id: 'VoidAmount', title: 'Void Amount' },
     { id: 'Refund', title: 'Refund' },
     { id: 'RefundAmount', title: 'Refund Amount' },
-    { id: 'GuestCount', title: 'Guess Count' },
+    { id: 'GuestCount', title: 'Guest Count' },
     { id: 'GuestCountSenior', title: 'Guest Count Senior' },
     { id: 'GuestCountPWD', title: 'Guest Count PWD' },
     { id: 'GrossSalesAmount', title: 'Gross Sales Amount' },

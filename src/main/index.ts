@@ -1,7 +1,7 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import AutoLaunch from 'auto-launch'
 import { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, OpenDialogOptions, shell, Tray } from 'electron'
-import installer, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
+//import installer, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import electronStore from 'electron-store'
 import path, { join } from 'path'
 import './controllers'
@@ -63,65 +63,75 @@ const createWindow = (url: string): BrowserWindow => {
   return mainWindow
 }
 
-app.whenReady().then(async () => {
-  electronApp.setAppUserModelId('com.innosoft')
-  app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window)
+
+const gotTheLock = app.requestSingleInstanceLock()
+if (!gotTheLock) {
+  app.quit()
+} else {
+  app.on('second-instance', (_event, _commandLine, _workingDirectory) => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.focus()
+    }
   })
-
-  await installer(REDUX_DEVTOOLS)
-  await installer(REACT_DEVELOPER_TOOLS)
-
-  const url = '../renderer/index.html'
-  mainWindow = createWindow(url)
-  tray = new Tray(nativeImage.createFromPath(path.join(__dirname, '../../resources/favicon.ico')))
-
-  const contextMenu = Menu.buildFromTemplate([
-    {
-      label: 'Show App', click: function () {
+  app.whenReady().then(async () => {
+    electronApp.setAppUserModelId('com.innosoft')
+    app.on('browser-window-created', (_, window) => {
+      optimizer.watchWindowShortcuts(window)
+    })
+    //await installer(REDUX_DEVTOOLS)
+    //await installer(REACT_DEVELOPER_TOOLS)
+    const url = '../renderer/index.html'
+    mainWindow = createWindow(url)
+    tray = new Tray(nativeImage.createFromPath(path.join(__dirname, '../../resources/favicon.ico')))
+  
+    const contextMenu = Menu.buildFromTemplate([
+      {
+        label: 'Show App', click: function () {
+          mainWindow?.show()
+        }
+      },
+      {
+        label: 'Quit', click: function () {
+          isQuitting = true
+          app.quit()
+        }
+      }
+    ])
+  
+    tray.setToolTip('Innosoft SIA')
+    tray.setContextMenu(contextMenu)
+  
+    tray.on('click', function () {
+      if (mainWindow?.isVisible()) {
+        mainWindow.hide()
+      } else {
         mainWindow?.show()
       }
-    },
-    {
-      label: 'Quit', click: function () {
-        isQuitting = true
-        app.quit()
-      }
+    })
+  
+    app.on('activate', function () {
+      if (mainWindow === null) createWindow('../renderer/index.html')
+    })
+  
+    // Auto-launch configuration
+    const autoLaunch = new AutoLaunch({
+      name: 'Innosoft SIA',
+      path: app.getPath('exe'),
+    })
+  
+    autoLaunch.isEnabled().then((isEnabled) => {
+      if (!isEnabled) autoLaunch.enable()
+    })
+  })
+
+  app.on('before-quit', () => {
+    isQuitting = true
+  })
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit()
     }
-  ])
-
-  tray.setToolTip('Innosoft SIA')
-  tray.setContextMenu(contextMenu)
-
-  tray.on('click', function () {
-    if (mainWindow?.isVisible()) {
-      mainWindow.hide()
-    } else {
-      mainWindow?.show()
-    }
   })
 
-  app.on('activate', function () {
-    if (mainWindow === null) createWindow('../renderer/index.html')
-  })
-
-  // Auto-launch configuration
-  const autoLaunch = new AutoLaunch({
-    name: 'Innosoft SIA',
-    path: app.getPath('exe'),
-  })
-
-  autoLaunch.isEnabled().then((isEnabled) => {
-    if (!isEnabled) autoLaunch.enable()
-  })
-})
-
-app.on('before-quit', () => {
-  isQuitting = true
-})
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
+}

@@ -1,3 +1,4 @@
+import { DraggableTopBar } from '@shared/components';
 import { Snackbar as CSnackbar } from '@shared/components/Snackbar';
 import { useReadIpc } from '@shared/hooks';
 import { loadSystemData, loadWindowData } from '@shared/internal';
@@ -57,6 +58,7 @@ export const Wrapper: FC = () => {
 
   return (
     <S.Wrapper>
+      <DraggableTopBar/>
       <Layout />
       {renderSnackbar()}
     </S.Wrapper>

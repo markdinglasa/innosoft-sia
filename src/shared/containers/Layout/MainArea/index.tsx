@@ -1,4 +1,4 @@
-import { DraggableTopBar, Splash } from '@shared/components';
+import { Splash } from '@shared/components';
 import { Error } from '@shared/messages';
 import { getActiveLicense } from '@shared/selectors';
 import { setSnackbar } from '@shared/store/manager';
@@ -18,13 +18,16 @@ export const MainArea: SFC = ({ className }) => {
     const checkLicense = async () => {
       try {
         const response: Response = await window.electron.sql.post(SqlChannel.isLicense, license);
-        setIsLicenseValid(response.IsSomething!);
-        if(!response.IsSomething && response.IsSomething === false) {
+        const flag = response.IsSomething ? true : false;
+        console.log(flag);
+        setIsLicenseValid(flag);
+        if (!response.IsSomething) {
           const snackbar: Snackbar = {
             display: true,
             message: response.Message,
             type: ToastType.error,
           };
+
           dispatch(setSnackbar(snackbar));
         }
       } catch (error: any) {
@@ -49,7 +52,6 @@ export const MainArea: SFC = ({ className }) => {
 
   return (
     <S.Container className={className}>
-      <DraggableTopBar />
       {renderContent()}
     </S.Container>
   );

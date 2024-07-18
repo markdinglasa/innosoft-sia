@@ -26,7 +26,7 @@ ipcMain.handle(SqlChannel.getSIA, async (_event: any, path: string, query: strin
             item.VoidAmount,
             item.Refund,
             item.RefundAmount,
-            item.GuessCount,
+            item.GuestCount,
             item.GuestCountSenior,
             item.GuestCountPWD,
             item.GrossSalesAmount,

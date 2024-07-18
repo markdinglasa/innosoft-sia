@@ -26,12 +26,10 @@ ipcMain.handle(SqlChannel.checkFields, async (_event: any, path: string): Promis
       validatePax = await recordByQuery(QueryFn.q00x004)
       if (!validatePax.List) {
         response = await executeQuery(QueryFn.q00x005)
-        response = await executeQuery(QueryFn.q00x006)
         console.log(response)
       }
     } catch (error: any) {
       response = await executeQuery(QueryFn.q00x005)
-      response = await executeQuery(QueryFn.q00x006)
       console.log(response)
     }
     const cf: Response = createFolder(`${path}/${folderName}`)

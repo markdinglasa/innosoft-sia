@@ -8,10 +8,12 @@ export const ConnectionStatus: SFC = () => {
   const dispatch = useDispatch<WindowDispatch>()
   const config = useSelector(getActiveDBConfig)
   const [status, setStatus] = useState(Status.disconnected)
+
   useEffect(() => {
     const checkConnection = async () => {
       try {
         const response = await window.electron.sql.post(SqlChannel.isConnected, config)
+        console.log('Connection-Status: ' + response)
         if (response) {
           setStatus(Status.connected)
           dispatch(setIsConnected(true))
