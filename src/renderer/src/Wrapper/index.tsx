@@ -1,3 +1,4 @@
+import { MainWindow } from '@renderer/windows/MainWindow';
 import { DraggableTopBar } from '@shared/components';
 import { Snackbar as CSnackbar } from '@shared/components/Snackbar';
 import { useReadIpc } from '@shared/hooks';
@@ -10,7 +11,6 @@ import { loadStoreFailToast } from '@shared/utils';
 import { FC, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import 'react-toastify/dist/ReactToastify.css';
-import { Layout } from '../Layout';
 import * as S from './Styles';
 
 export const Wrapper: FC = () => {
@@ -22,8 +22,10 @@ export const Wrapper: FC = () => {
     (store: LocalElectronStore) => {
       if (storeLoaded) return;
       loadSystemData(dispatch, store);
-      loadWindowData(dispatch, store);
-      dispatch(setStoreLoadedTrue());
+      setTimeout(() => {
+        loadWindowData(dispatch, store);
+        dispatch(setStoreLoadedTrue());
+      }, 0);
     },
     [dispatch, storeLoaded]
   );
@@ -35,31 +37,26 @@ export const Wrapper: FC = () => {
   });
 
   useEffect(() => {
-    if (!storeLoaded) {
-      loadStoreData();
-    }
+    if (!storeLoaded) loadStoreData();
   }, [loadStoreData, storeLoaded]);
 
-    const handleCloseSnackbar = () => {
-      const sb: TSnackbar = {
-          display: false,
-          message: '',
-          type: ToastType.error,
-      };
-      dispatch(setSnackbar(sb));
+  const handleCloseSnackbar = () => {
+    const sb: TSnackbar = {
+        display: false,
+        message: '',
+        type: ToastType.error,
+    }; dispatch(setSnackbar(sb));
   };
 
   const renderSnackbar = () => {
-    if (snackbar && snackbar.display) {
-        return <CSnackbar message={snackbar.message} type={snackbar.type} onClose={handleCloseSnackbar} />;
-    }
+    if (snackbar && snackbar.display) return <CSnackbar message={snackbar.message} type={snackbar.type} onClose={handleCloseSnackbar} />;
     return null;
   };
 
   return (
     <S.Wrapper>
       <DraggableTopBar/>
-      <Layout />
+      <MainWindow />
       {renderSnackbar()}
     </S.Wrapper>
   );

@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-import { SFC } from '../../types';
+import { SFC } from '@shared/types';
 import * as S from './Styles';
 
 export interface CardsContainerProps {

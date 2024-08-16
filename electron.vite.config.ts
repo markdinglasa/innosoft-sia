@@ -31,7 +31,6 @@ export default defineConfig({
         '@shared': resolve(__dirname, 'src/shared'),
         '@/asset': resolve(__dirname, 'src/renderer/assets'),
         '@/registry': resolve(__dirname, 'src/renderer/src/registry'),
-        '@/components': resolve(__dirname, 'src/renderer/src/components')
       }
     },
     plugins: [react()]

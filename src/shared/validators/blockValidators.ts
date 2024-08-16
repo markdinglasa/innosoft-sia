@@ -1,7 +1,7 @@
 import { Block } from '@shared/types';
 import { verifyBlockSignature } from '@shared/utils/';
 import yup, { accountNumberSchema } from '@shared/utils/yup';
-import { windowRouters } from '../../renderer/src/registry';
+import { windowRouters } from '../../renderer/src/windows/registry';
 
 const blockSchema: yup.SchemaOf<Block> = yup
   .object({

@@ -1,4 +1,4 @@
-import { windowRegistration } from '../../renderer/src/registry'
+import { windowRegistration } from '../../renderer/src/windows/registry'
 import { LocalElectronStore } from '../../shared/types'
 import { WindowDispatch } from '../types'
 

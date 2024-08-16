@@ -1,7 +1,7 @@
-import { DBConfig, Snackbar } from '@shared/types'
+import { App, DBConfig, Snackbar } from '@shared/types'
 
 export interface Manager {
-  activeWindow: string | null
+  activeWindow: App | null
   activeLicense: string | null
   activeDBConfig: DBConfig | null
   activeKey: string | null

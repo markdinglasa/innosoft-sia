@@ -1,10 +1,10 @@
 import { createSlice, current, PayloadAction } from '@reduxjs/toolkit'
 import { SYSTEM_MANAGER } from '@shared/constants'
-import { DBConfig, IpcChannel, Manager, Snackbar } from '@shared/types'
+import { App, DBConfig, IpcChannel, Manager, Snackbar } from '@shared/types'
 import { setLocalAndStateReducer } from '@shared/utils'
 
 export const initialState: Manager = {
-  activeWindow: null,
+  activeWindow: App.default,
   activeLicense: null,
   activeDBConfig: null,
   activeKey: null,
@@ -42,7 +42,7 @@ const manager = createSlice({
         state: current(state)
       })
     },
-    setActiveWindow: (state: Manager, { payload: windowId }: PayloadAction<string>) => {
+    setActiveWindow: (state: Manager, { payload: windowId }: PayloadAction<App | null>) => {
       state.activeWindow = windowId === state.activeWindow ? null : windowId
       window.electron.ipc.send(IpcChannel.setStoreValue, {
         key: SYSTEM_MANAGER,

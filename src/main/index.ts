@@ -1,7 +1,7 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import AutoLaunch from 'auto-launch'
 import { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, OpenDialogOptions, shell, Tray } from 'electron'
-//import installer, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
+import installer, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import electronStore from 'electron-store'
 import path, { join } from 'path'
 import './controllers'
@@ -15,27 +15,27 @@ export let isQuitting = false
 
 const createWindow = (url: string): BrowserWindow => {
   mainWindow = new BrowserWindow({
-    width: 400,
+    width: 500,
     height: 715,
     icon: path.join(__dirname, '../shared/assets/favicon.ico'),
-    show: false,
-    autoHideMenuBar: true,
+    //show: false,
+    //autoHideMenuBar: true,
     center: true,
-    frame: false,
-    resizable: false,
-    fullscreenable: false,
-    fullscreen: false,
-    vibrancy: 'under-window',
-    title: 'Innsoft SIA',
-    visualEffectState: 'active',
-    titleBarStyle: 'hidden',
-    trafficLightPosition: { x: 15, y: 10 },
+    //frame: false,
+    //resizable: false,
+    //fullscreenable: false,
+    //fullscreen: false,
+    //vibrancy: 'under-window',
+    //title: 'Innsoft SIA',
+    //visualEffectState: 'active',
+    //titleBarStyle: 'hidden',
+    //trafficLightPosition: { x: 15, y: 10 },
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
       nodeIntegration: true,
       contextIsolation: true,
-      devTools: false
+      devTools: true
     }
   })
 
@@ -52,7 +52,6 @@ const createWindow = (url: string): BrowserWindow => {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
-  
   
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
@@ -79,8 +78,8 @@ if (!gotTheLock) {
     app.on('browser-window-created', (_, window) => {
       optimizer.watchWindowShortcuts(window)
     })
-    //await installer(REDUX_DEVTOOLS)
-    //await installer(REACT_DEVELOPER_TOOLS)
+    await installer(REDUX_DEVTOOLS)
+    await installer(REACT_DEVELOPER_TOOLS)
     const url = '../renderer/index.html'
     mainWindow = createWindow(url)
     tray = new Tray(nativeImage.createFromPath(path.join(__dirname, '../../resources/favicon.ico')))

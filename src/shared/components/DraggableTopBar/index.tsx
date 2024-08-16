@@ -6,7 +6,7 @@ export const DraggableTopBar: SFC = ({ className }) => {
   return (
     <S.Header className={className}>
       <S.Container>
-        <S.Title>Innosoft SIA</S.Title>
+        <S.Title>Innosoft</S.Title>
         <S.ButtonBar>
           <CloseAppButton />
         </S.ButtonBar>

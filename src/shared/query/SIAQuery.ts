@@ -1,4 +1,3 @@
-
 export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
  return (`
     SELECT 
@@ -7,19 +6,16 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
         CONVERT(varchar, [TrnSales].[EntryDateTime], 21) AS [CheckOpen],
         CONVERT(varchar, [TrnSales].[UpdateDateTime], 21) AS [CheckClose],
         COALESCE(NULLIF([MstTable].[TableCode], ''), 'Walk-In') AS [TransactionType],
-
         CASE 
             WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL 
             THEN 0 
             ELSE 1 
         END AS [Void],
-
         CASE 
             WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
             THEN '0.00'
             ELSE COALESCE(CONVERT(VARCHAR(20), ([GrossSales].[GrossSalesAmount] + [TotalDiscount].[TotalDiscountAmount]), 1), '0.00')
         END AS [VoidAmount],
-
         CASE 
             WHEN [TrnCollection].[IsReturn] = 2 
             THEN 1 
@@ -51,25 +47,21 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
                 ELSE '0'
             END
         ) AS [GuestCountPWD],
-
         CASE 
             WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL 
             THEN COALESCE(CONVERT(VARCHAR(20), ([GrossSales].[GrossSalesAmount] + [TotalDiscount].[TotalDiscountAmount]), 1), '0.00')
             ELSE '0.00'
         END AS [GrossSalesAmount],
-
         CASE 
             WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL 
             THEN COALESCE(CONVERT(VARCHAR(20), (([GrossSales].[GrossSalesAmount])), 1), '0.00')
             ELSE '0.00'
         END AS [NetSalesAmount],
-
         CASE
             WHEN    [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
             THEN    COALESCE(CONVERT(VARCHAR(20), (([TotalTax].[TotalTaxAmount])), 1), '0.00')
             ELSE    '0.00'
         END AS [TotalTax],
-
         CASE
             WHEN    [TrnSalesLine].[TaxId] = [MstTax].[Id] AND [MstTax].[Tax]  = 'LOCAL TAX'
             THEN    COALESCE(CONVERT(VARCHAR(20), (([TotalTax].[TotalTaxAmount])), 1), '0.00')
@@ -82,9 +74,7 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
                 ELSE    '0.00'
             END
         ) AS [TotalServiceCharge],
-
         '0.00' AS [TotalTip],
-        
         CASE
             WHEN    [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
             THEN    COALESCE(CONVERT(VARCHAR(20), (([TotalDiscount].[TotalDiscountAmount])), 1), '0.00')
@@ -95,20 +85,18 @@ export const SIA_QUERY = ({Terminal, SMPOSSerialNumber}): string => {
             THEN    COALESCE(CONVERT(VARCHAR(20), (([GrossSales].[GrossSalesAmount] - [TotalTax].[TotalTaxAmount])), 1), '0.00')
             ELSE    '0.00'
         END AS [LessTaxAmount],
-    
-MAX(
+        MAX(
 			CASE 
 				WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL AND ([MstDiscount].[Discount] = 'Senior Citizen Discount' OR [MstDiscount].[Discount] = 'PWD Discount')
 				THEN COALESCE(CONVERT(VARCHAR(20), (((([GrossSales].[TotalAmount]/[TrnPaxTable].[TotalPax])*[TrnPaxTable].[DiscountedPax])/1.12) - ((((([GrossSales].[TotalAmount]/[TrnPaxTable].[TotalPax])*[TrnPaxTable].[DiscountedPax])/1.12))*0.2)), 1), '0.00')
 				ELSE '0.00'
 			END
         ) AS [TotalExemptSales],
-
         MAX(
 			CASE
 				WHEN ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL)
 					AND [MstDiscount].[Discount] NOT IN (
-						'SMAC Discount', 'SMAC',
+						'SMAC Discount', 'SMAC', 'Zero Discount',
 						'Employee Discount', 'Employee Meal',
 						'Senior Citizen Discount',
 						'PWD Discount', 'PWD',
@@ -123,7 +111,7 @@ MAX(
 			CASE
 				WHEN ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL)
 					AND [MstDiscount].[Discount] NOT IN (
-						'SMAC Discount', 'SMAC',
+						'SMAC Discount', 'SMAC', 'Zero Discount',
 						'Employee Discount', 'Employee Meal',
 						'Senior Citizen Discount',
 						'PWD Discount', 'PWD',
@@ -176,7 +164,6 @@ MAX(
                 ELSE    '0.00'
             END 
         ) AS [SMACDiscountAmount],
-
 		' ' AS [OnlineDealsDiscountName],
 		'0.00' AS [OnlineDealsDiscountAmount],
         ' ' AS [DiscountField1Name], 
@@ -191,7 +178,6 @@ MAX(
         '0.00'  AS [DiscountField4Amount], 
         '0.00'  AS [DiscountField5Amount], 
         '0.00'  AS [DiscountField6Amount],
-        
         MAX(
             CASE
                 WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Cash')
@@ -199,7 +185,6 @@ MAX(
                 ELSE	'0.00'
             END
         ) AS [TotalCashSalesAmount],
-
         MAX(
             CASE
                 WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Gift Certificate')
@@ -207,7 +192,6 @@ MAX(
                 ELSE	'0.00'
             END
         ) AS [TotalGiftCertificateSalesAmount],
-
         MAX(
             CASE
                 WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Gcash' OR [MstPayType].[PayType] = 'PayMaya' OR [MstPayType].[PayType] = 'GrabPay' OR [MstPayType].[PayType] = 'FoodPanda')
@@ -215,7 +199,6 @@ MAX(
                 ELSE	'0.00'
             END
         ) AS [TotalEwalletOnlineSalesAmount],
-
         MAX(
             CASE
                 WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Mastercard')
@@ -223,7 +206,6 @@ MAX(
                 ELSE	'0.00'
             END
         ) AS [TotalMastercardSalesAmount],
-
         MAX(
             CASE
                 WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Visa')
@@ -231,7 +213,6 @@ MAX(
                 ELSE	'0.00'
             END
         ) AS [TotalVisaSalesAmount],
-
         MAX(
             CASE
                 WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Diners')
@@ -246,7 +227,6 @@ MAX(
                 ELSE	'0.00'
             END
         ) AS [TotalJCBSalesAmount],
-
         MAX(
             CASE
                 WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Credit Card')
@@ -254,7 +234,6 @@ MAX(
                 ELSE	'0.00'
             END
         ) AS [TotalCreditCardSalesAmount],
-
         '${Terminal}' AS [TerminalNumber],
         '${SMPOSSerialNumber}' AS [SMPOSSerialNumber]
         FROM [TrnSales]
@@ -364,6 +343,5 @@ MAX(
             THEN    COALESCE(CONVERT(VARCHAR(20), (([GrossSales].[GrossSalesAmount] - [TotalTax].[TotalTaxAmount])), 1), '0.00')
             ELSE    '0.00'
         END
-
     `)
 }

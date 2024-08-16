@@ -4,7 +4,7 @@
   "description": "Innosoft Sales Insights and Analytics",
   "main": "./out/main/index.js",
   "author": "Mark Dinglasa",
-  "homepage": "https://github.com/ryanmarkdinglasa/innosoft-electron-boilerplate",
+  "homepage": "https://github.com/ryanmarkdinglasa/innosoft-sia",
   "license": "INNOSOFT",
   "scripts": {
     "format": "prettier --write .",

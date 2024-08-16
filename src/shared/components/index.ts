@@ -1,6 +1,6 @@
 export * from './AppWindow'
 export * from './Button'
-export * from './CardsContainer'
+export * from './Card'
 export * from './CloseAppButton'
 export * from './ConStatus'
 export * from './DraggableTopBar'
