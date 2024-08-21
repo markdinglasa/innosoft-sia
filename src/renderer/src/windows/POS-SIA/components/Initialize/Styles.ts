@@ -4,7 +4,6 @@ import { colors } from '@shared/styles'
 import styled from 'styled-components'
 
 export const Container = styled.div`
-
 `
 export const Button = styled(UButton)`
   border: none;
@@ -27,7 +26,7 @@ export const Span = styled.span`
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
   margin-bottom: 10px;
  `
  export const Icon = styled(UIcon)`

@@ -16,7 +16,7 @@ export let isQuitting = false
 const createWindow = (url: string): BrowserWindow => {
   mainWindow = new BrowserWindow({
     width: 500,
-    height: 715,
+    height: 750,
     icon: path.join(__dirname, '../shared/assets/favicon.ico'),
     //show: false,
     //autoHideMenuBar: true,

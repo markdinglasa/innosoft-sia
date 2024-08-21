@@ -10,7 +10,7 @@ export const Container = styled.div`
   padding: 10px 14px;
 `
 export const Content = styled.div`
-  margin-top: 12px;
+  margin-top: 10px;
 `
 export const Heading = styled.div`
   color: ${colors.primary}  

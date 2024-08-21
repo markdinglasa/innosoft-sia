@@ -10,7 +10,7 @@ export const Container = styled.div<{theme: Theme}>`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${colors.palette.neutral['100']};
+  background: ${colors.palette.neutral['075']};
 `
 export const CardContainer = styled.div<{theme: Theme}>`
   display: flex;

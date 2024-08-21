@@ -1,13 +1,10 @@
-import { Button as UButton } from '@shared/components'
+import { Button as UButton, Pager as UPager } from '@shared/components'
 import { colors } from '@shared/styles'
 import styled from 'styled-components'
-import { Modal } from '../../components'
-export const UModal = styled(Modal)`
+export const UModal = styled(UPager)`
   display: flex;
   flex-direction: column;
-  max-width: 400px;
-  min-width: 380px;
-  background: ${colors.primary}
+  background: ${colors.white}
 `
 export const Container = styled.div`
   display: flex;

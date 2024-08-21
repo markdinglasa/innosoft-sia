@@ -13,9 +13,9 @@ export const ErrorMessage = styled.div`
 export const Field = styled(UField)`
   background-color:  ${({ theme }) => {
     if (theme === Theme.dark) {
-      return colors.palette.neutral[75]
+      return colors.palette.neutral['100']
     }
-    return colors.palette.neutral[75]
+    return colors.palette.neutral['100']
   }};
   border-radius: 3px;
   border: 1px solid ${({$error}) => ($error ? colors.palette.red['500'] : 'transparent')};

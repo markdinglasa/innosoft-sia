@@ -5,8 +5,9 @@ export const Container = styled.div`
   height: 100vh;
   width: 100vw;
   display: flex;
-  background: #0e2036;
+  background: ${colors.palette.neutral['075']};
   flex-direction: column;
+  overflow:hidden;
 `
 export const Wrapper = styled.div`
   height: 100vh;
@@ -20,7 +21,6 @@ export const Header = styled.div`
 `
 export const Body = styled.div`
   width: 100%;
-  height: 800px;
   padding: 10px 10px;
 `
 export const Footer = styled.div`
@@ -43,7 +43,7 @@ export const Title = styled.div`
   justify-content: center;
 `
 export const H2 = styled.h2`
-  color: ${colors.palette.neutral['100']};
+  color: ${colors.primary};
 `
 export const Filler = styled.div`
   height: 2rem !important;

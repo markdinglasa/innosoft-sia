@@ -5,6 +5,7 @@
     "src/main/*.ts",
     "src/main/**/*",
     "src/renderer/src/env.d.ts",
+    "./*.ts",
     "src/renderer/*.html",
     "src/renderer/src/**/*",
     "src/preload/**/*",

@@ -68,7 +68,7 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme}) =
   }, [])
 
   return (
-    <S.UModal className={className} close={close} header="Select Tenant" theme={theme}>
+    <S.UModal className={className} back={close} header="Select Tenant" theme={theme}>
       <Formik
         initialValues={initialValues}
         onSubmit={handleSubmit}
@@ -78,88 +78,109 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme}) =
       >
         {({ dirty, errors, isSubmitting, touched, isValid, values, handleChange }) => (
           <S.Form>
-            <Input
-              theme={theme}
-              errors={errors}
-              type="text"
-              label="Branch Code"
-              name="BranchCode"
-              touched={touched}
-              value={values.BranchCode}
-              onChange={handleChange}
-            />
-            <Input
-              theme={theme}
-              errors={errors}
-              type="text"
-              label="Tenant Code"
-              name="TenantCode"
-              touched={touched}
-              value={values.TenantCode}
-              onChange={handleChange}
-            />
-            <Input
-              theme={theme}
-              errors={errors}
-              type="text"
-              label="Class Code"
-              name="SMClassCode"
-              touched={touched}
-              value={values.SMClassCode}
-              onChange={handleChange}
-            />
-            <Input
-              theme={theme}
-              errors={errors}
-              type="text"
-              label="Store Number"
-              name="StoreNumber"
-              touched={touched}
-              value={values.StoreNumber}
-              onChange={handleChange}
-            />
-            <Input
-              theme={theme}
-              errors={errors}
-              type="text"
-              label="Sales Type"
-              name="SMSalesType"
-              touched={touched}
-              value={values.SMSalesType}
-              onChange={handleChange}
-            />
-            <Input
-              theme={theme}
-              errors={errors}
-              type="text"
-              label="POS Machine Number"
-              name="POSMachineNumber"
-              touched={touched}
-              value={values.POSMachineNumber}
-              onChange={handleChange}
-            />
-            <Input
-              theme={theme}
-              errors={errors}
-              type="text"
-              label="POS Serial Number"
-              name="POSSerialNumber"
-              touched={touched}
-              value={values.POSSerialNumber}
-              onChange={handleChange}
-            />
-            <Input
-              theme={theme}
-              errors={errors}
-              type="number"
-              label="Terminal"
-              name="Terminal"
-              touched={touched}
-              value={String(values.Terminal)} // Ensure value is a string
-              onChange={handleChange}
-            />
+            <S.FormControl>
+              <S.FormInput>
+                  <Input
+                    errors={errors}
+                    type="text"
+                    label="Branch Code"
+                    name="BranchCode"
+                    touched={touched}
+                    value={values.BranchCode}
+                    onChange={handleChange}
+                  />
+              </S.FormInput>
+              <S.FormInput>
+                <Input
+                  errors={errors}
+                  type="text"
+                  label="Tenant Code"
+                  name="TenantCode"
+                  touched={touched}
+                  value={values.TenantCode}
+                  onChange={handleChange}
+                />
+              </S.FormInput>
+            </S.FormControl>
+            <S.FormControl>
+              <S.FormInput>
+                <Input
+                  errors={errors}
+                  type="text"
+                  label="Class Code"
+                  name="SMClassCode"
+                  touched={touched}
+                  value={values.SMClassCode}
+                  onChange={handleChange}
+                />
+              </S.FormInput>
+              <S.FormInput>
+                <Input
+                  errors={errors}
+                  type="text"
+                  label="Store Number"
+                  name="StoreNumber"
+                  touched={touched}
+                  value={values.StoreNumber}
+                  onChange={handleChange}
+                />
+              </S.FormInput>
+            </S.FormControl>
+            
+            <S.FormControl>
+              <S.FormInput>
+                <Input
+                  errors={errors}
+                  type="text"
+                  label="Sales Type"
+                  name="SMSalesType"
+                  touched={touched}
+                  value={values.SMSalesType}
+                  onChange={handleChange}
+                />
+              </S.FormInput>
+              <S.FormInput>
+                <Input
+                  errors={errors}
+                  type="text"
+                  label="POS Machine Number"
+                  name="POSMachineNumber"
+                  touched={touched}
+                  value={values.POSMachineNumber}
+                  onChange={handleChange}
+                />
+              </S.FormInput>
+            </S.FormControl>
+            <S.FormControl>
+              <S.FormInput>
+                <Input
+                  errors={errors}
+                  type="text"
+                  label="POS Serial Number"
+                  name="POSSerialNumber"
+                  touched={touched}
+                  value={values.POSSerialNumber}
+                  onChange={handleChange}
+                />
+              </S.FormInput>
+              <S.FormInput>
+                <Input
+                  errors={errors}
+                  type="number"
+                  label="Terminal"
+                  name="Terminal"
+                  touched={touched}
+                  value={String(values.Terminal)} // Ensure value is a string
+                  onChange={handleChange}
+                />
+              </S.FormInput>
+            </S.FormControl>
+            
+            
+            
+            
+            
             <S.Button
-              className={'width:100% !important;'}
               dirty={dirty}
               disabled={isSubmitting}
               isSubmitting={isSubmitting}

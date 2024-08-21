@@ -42,5 +42,5 @@ export const MainWindow: SFC = ({ className }) => {
     dispatch(setActiveLicense(null))
     dispatch(setActiveDatabaseConfig(null))
   }
-  return <div className={className}><DBConfigWindow /></div>;
+  return <div className={className}>{renderContent()}</div>;
 };

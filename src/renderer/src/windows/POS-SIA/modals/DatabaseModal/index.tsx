@@ -81,7 +81,7 @@ export const DatabaseModal: SFC<DatabaseModalProps> = ({ className, close, theme
   }, [])
   return (
     <>
-      <S.UModal className={className} close={close} header="Select Database" theme={theme}>
+      <S.UModal className={className} back={close} header="Select Database" theme={Theme.dark}>
       <S.Container className={className}>
         <S.CardBody>
           <Formik

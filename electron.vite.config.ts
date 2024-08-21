@@ -4,7 +4,7 @@ import { resolve } from 'path'
 
 export default defineConfig({
   main: {
-    assetsInclude: ['src/renderer/assets/**', 'src/shared/assets/**'],
+    assetsInclude: ['src/renderer/assets/**', 'src/shared/assets/**', '.'],
     plugins: [externalizeDepsPlugin()],
     resolve: {
       alias: {
@@ -22,7 +22,7 @@ export default defineConfig({
     }
   },
   renderer: {
-    assetsInclude: ['src/renderer/assets/**', 'src/shared/assets/**'],
+    assetsInclude: ['src/renderer/assets/**', 'src/shared/assets/**', '.'],
     resolve: {
       alias: {
         '@renderer': resolve(__dirname, 'src/renderer/src'),

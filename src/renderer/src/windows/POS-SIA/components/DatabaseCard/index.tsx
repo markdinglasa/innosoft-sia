@@ -18,7 +18,7 @@ export const DatabaseCard: SFC = ({ className }) => {
   }
   const renderModal = () => {
     if (!modalIsOpen) return null
-    return <DatabaseModal close={toggleModal} theme={Theme.dark}/>
+    return <DatabaseModal close={toggleModal} theme={Theme.light}/>
   }
   const renderConfig = () => {
     return (

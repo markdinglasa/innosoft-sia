@@ -1,0 +1,1 @@
+export const ALLIANCE_MANAGER = 'alliance-manager'
