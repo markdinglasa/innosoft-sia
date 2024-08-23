@@ -4,14 +4,13 @@ import { setSnackbar } from '@shared/store/manager'
 import { ButtonColor, SFC, Snackbar, SqlChannel, ToastType, WindowDispatch } from '@shared/types'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { getInitialize, getIsConnected, getPath, getTenant } from '../../selectors'
+import { LoadingScreen } from '../../../POS-SIA/components/LoadingScreen'
+import { getInitialize, getPath, getTenant } from '../../selectors'
 import { setInitialize } from '../../store/manager'
-import { LoadingScreen } from '../LoadingScreen'
 import * as S from './Styles'
 
 export const Initialize: SFC = ({ className }) => {
   const path = useSelector(getPath)
-  const isConnected = useSelector(getIsConnected)
   const tenant = useSelector(getTenant)
   const initialized = useSelector(getInitialize)
   const dispatch = useDispatch<WindowDispatch>()
@@ -35,10 +34,6 @@ export const Initialize: SFC = ({ className }) => {
   }
 
   const handleInitialize = async () => {
-    if (!isConnected) {
-      sb = {display: true, message: Error.e00x14, type: ToastType.error}
-      dispatch(setSnackbar(sb))
-    }
     const fieldsValid = await checkFields()
     if (!fieldsValid){ 
       sb = {display: true, message: Error.e00x44, type: ToastType.error}
@@ -48,7 +43,7 @@ export const Initialize: SFC = ({ className }) => {
       sb = {display: true, message: Error.e00x46, type: ToastType.error}
       dispatch(setSnackbar(sb))
     }
-    if (tenant && fieldsValid && isConnected) {
+    if (tenant && fieldsValid) {
       dispatch(setInitialize(true))
       setLoading(true)
       setTimeout(() => {
@@ -74,8 +69,7 @@ export const Initialize: SFC = ({ className }) => {
     if (!initialized) return;
     const loadData = async () => {
       try {
-        /*
-        let Terminal: number = parseInt(tenant.Terminal, 10), SMPOSSerialNumber = tenant.POSSerialNumber;
+        /*let Terminal: number = parseInt(tenant.Terminal, 10), SMPOSSerialNumber = tenant.POSSerialNumber;
         const query = SIA_QUERY({ Terminal, SMPOSSerialNumber });
         const SIATransactions: Response = await window.electron.sql.get(SqlChannel.getSIA, `${path}/SIA`, query);
         console.log(SIATransactions)*/

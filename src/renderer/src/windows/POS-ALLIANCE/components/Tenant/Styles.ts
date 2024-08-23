@@ -12,11 +12,12 @@ export const Container = styled.div`
   justify-content: center;
 `
 export const Button = styled(UButton)`
+  background: ${colors.primary};
   border: none;
   border-radius: 8px;
-  color: ${colors.primary};
+  color: ${colors.white};
   padding: 8px 12px;
-  transition: all 0.3s;
+  transition: all 0.15s;
   width: 100%;
 
   &:hover {
@@ -35,10 +36,10 @@ export const Text = styled.div`
   margin-bottom: 10px;
 `
 export const Icon = styled(UIcon)`
-  color: ${colors.palette.neutral[200]};
+  color: ${colors.palette.neutral['400']};
 `
 export const Span = styled.span`
-  color: ${colors.palette.neutral[200]};
+  color: ${colors.palette.neutral['400']};
   text-align: left;
   display: flex;
   align-items: center;

@@ -7,8 +7,8 @@ import { ButtonColor } from '@shared/types'
 const BUTTON_HEIGHT = 36
 
 const blueMixin = css`
-  background-color: ${colors.secondary};
-  color: ${colors.primary};
+  background-color: ${colors.primary};
+  color: ${colors.white};
   &:hover {
     background: ${colors.pink};
   }
@@ -61,7 +61,8 @@ export const Button = styled.button<{ $color?: ButtonColor; hasIcon: boolean }>`
   display: block;
   height: ${`${BUTTON_HEIGHT}px`};
   padding: 0 12px;
-
+  transition: all 0.3s;
+  
   &:hover {
     background: ${colors.palette.blue['300']};
   }

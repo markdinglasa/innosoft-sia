@@ -8,12 +8,14 @@ export const Container = styled.div`
 export const Button = styled(UButton)`
   border: none;
   border-radius: 8px;
-  color: ${colors.white};
+  color: ${colors.primary};
   padding: 8px 12px;
+  transition: all 0.15s;
   width: 100%;
+
 `
 export const Span = styled.span`
-  color: ${colors.palette.neutral['400']};
+  color: ${colors.palette.neutral[200]};
   text-align: left;
   display: flex;
   align-items: center;
@@ -28,5 +30,5 @@ export const Span = styled.span`
   margin-bottom: 10px;
  `
  export const Icon = styled(UIcon)`
- color: ${colors.palette.neutral['400']};
+ color: ${colors.palette.neutral[200]};
  `

@@ -9,4 +9,5 @@ export interface Manager {
 export interface Tenant {
   tenantId: string
   tenantName: string
+  terminalId: number
 }

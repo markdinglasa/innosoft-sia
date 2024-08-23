@@ -1,16 +1,34 @@
 import UIcon from '@mdi/react'
-import { Button as UButton } from '@shared/components'
+import { Button } from '@shared/components'
 import { colors } from '@shared/styles'
 import styled from 'styled-components'
 
 export const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `
-export const Button = styled(UButton)`
-  border: none;
-  border-radius: 8px;
-  color: ${colors.white};
-  padding: 8px 12px;
+
+export const UButton = styled(Button)`
+  cursor: pointer;
   width: 100%;
+  color: ${colors.white};
+  background: ${colors.primary};
+  transition: all 0.3s;
+  &:hover{
+    background: ${colors.pink};
+  }
+`
+
+export const PathDisplay = styled.div`
+  width: 100%;
+  margin-top: 10px;
+  font-size: 14px;
+  color: ${colors.palette.neutral['400']};
+  word-break: break-all;
+  overflow:hidden;
+  display:flex;
+  justify-content: start;
 `
 export const Span = styled.span`
   color: ${colors.palette.neutral['400']};

@@ -1,0 +1,120 @@
+export interface id {
+    tenantid: number
+    key: string
+    tmid: number
+    doc: string
+}
+export interface sales {
+    date: number
+    zcounter: number
+    previousnrgt: number
+    nrgt: number // natural gas revenue tax = NRGT
+    previoustax: number
+    newtax: number
+    previoustaxsale: number //
+    newnotaxsale: number
+    opentime: number //date without special char (YYYYMMDDHHMMSS)
+    closetime: number // date w/o spcecial char
+    gross: number //total gross sales
+    vat: number // value added tax
+    localtax: number // local tax
+    amusement: number // amusement tax
+    ewt: number //expanded withholding tax
+    taxsale: number // total taxable sales
+    notaxsale: number // non taxable sales
+    zerosale: number // zero rated sales
+    vatexempt: number // Value added tax exemption
+    void: number // total voided amount
+    voidcnt: number // number of voids COUNT(void)
+    disc: number // total discount amount
+    disccnt: number // number of discounts COUNT(discount)
+    refund: number // total refund
+    refundcnt: number // COUNT(refund)
+    senior: number // total senior discount amount
+    seniorcnt: number // COUNT(senior)
+    pwd: number // total PWD discount amount
+    pwdcnt: number // COUNT(pwd)
+    diplomat: number // total diplomat discount amount
+    diplomatcnt: number // COUNT(diplomat)
+    service: number // total service charge amount
+    servicecnt: number // COUNT(service)
+    receiptstart: number // receipt's starting number
+    receiptend: number // receipt's ending number
+    trxcnt: number // COUNT(transactions)
+    cash: number // total cash amount
+    cashcnt: number // COUNT(cash)
+    credit: number // total credit amount
+    creditcnt: number // COUNT(credit)
+    charge: number // total charge amount
+    chargecnt: number // COUNT(charge)
+    giftcheck: number // total gift check amount
+    giftcheckcnt: number// COUNT(giftcheck)
+    othertender: number // total other type amount //all other pay type
+    othertendercnt: number // CONUNT(othertender)
+}
+export interface transactionline {
+    sku: string // barcode
+    qty: number
+    unitprice: number 
+    disc: number
+    senior: number
+    pwd: number
+    diplomat: number
+    tax: number
+    memo: string // MstItem.Remarks
+    total: number // qty * unitprice
+}
+export interface transactions {
+    receiptno: number
+    void: number // 1 voided 0 not-voided
+    cash: number
+    credit: number
+    charge: number
+    giftcheck: number
+    othertender: number
+    linedisc: number // total trx discount amount
+    linesenior: number // total trx senior discount amount
+    evat: number // expanded value added tax
+    linepwd: number //
+    linediplomat: number
+    subtotal: number // total of all line discounts
+    disc: number
+    senior: number
+    pwd: number
+    diplomat: number
+    vat: number
+    exvat: number
+    incvat: number
+    localtax: number
+    amusement: number
+    ewt: number
+    service: number
+    taxsale: number
+    notaxsale: number
+    taxexsale: number //exclusive tax sales
+    taxincsale: number // inclusive tax sales
+    zerosale: number // zero rated sales
+    vatexempt: number
+    customercnt: number
+    gross: number
+    refund: number
+    taxrate: number
+    posted: number // YYYYMMDDHHMMSS
+    qty: number
+    created: number // default = 1
+    memo: string // set as remarks ON TrnSales.Remarks
+    line: transactionline
+    choicetype: string // leave as blank
+}
+export interface product {
+    sku: string // barcode
+    name: string // item description
+    inventory: number
+    unitprice: number
+    category: string
+}
+export interface XMLData {
+    id: id
+    sales: sales
+    master: product
+}

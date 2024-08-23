@@ -3,7 +3,7 @@ import { IpcChannel } from '@shared/types'
 import { setLocalAndStateReducer } from '@shared/utils'
 import { Production } from '../../../../../../production'
 import { ALLIANCE_MANAGER } from '../constants'
-import { Manager } from '../types'
+import { Manager, Tenant } from '../types'
 
 export const initialState: Manager = {
   tenant: null,
@@ -17,6 +17,13 @@ const manager = createSlice({
   name: ALLIANCE_MANAGER,
   initialState,
   reducers: {
+    setTenant: (state: Manager, { payload: tenant }: PayloadAction<Tenant | null>) => {
+      state.tenant = tenant
+      window.electron.ipc.send(`${IpcChannel.setStoreValue}${Production.env}`, {
+        key: ALLIANCE_MANAGER,
+        state: current(state)
+      })
+    },
     setPath: (state: Manager, { payload: path }: PayloadAction<string | null>) => {
       state.path = path
       window.electron.ipc.send(`${IpcChannel.setStoreValue}${Production.env}`, {
@@ -46,6 +53,7 @@ export const {
   setPath,
   setIsConnected,
   setInitialize,
+  setTenant,
   setManager
 } = manager.actions
 
