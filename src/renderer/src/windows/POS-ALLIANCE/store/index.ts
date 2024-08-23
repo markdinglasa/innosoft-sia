@@ -2,8 +2,8 @@ import { combineReducers } from '@reduxjs/toolkit'
 
 import managerReducer from './manager'
 
-const siaManagerReducer = combineReducers({
+const allianceReducer = combineReducers({
   manager: managerReducer
 })
 
-export default siaManagerReducer
+export default allianceReducer

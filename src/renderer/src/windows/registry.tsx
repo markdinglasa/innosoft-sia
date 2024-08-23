@@ -23,7 +23,6 @@ export const windowRouters: WindowDataHandlers = {}
 export const windowRegistration: WindowRegistration[] = [SIAManagerRegistration, AllianceRegistration]
 export const Windows: SFC = () => {
   const activeWindow  = useSelector(getActiveWindow)
-  console.log('active-window: ', activeWindow)
   return (
     <>
       <SelectorForm display={activeWindow === null} />

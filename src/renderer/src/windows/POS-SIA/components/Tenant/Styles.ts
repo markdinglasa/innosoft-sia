@@ -35,10 +35,10 @@ export const Text = styled.div`
   margin-bottom: 10px;
 `
 export const Icon = styled(UIcon)`
-  color: ${colors.palette.neutral[200]};
+  color: ${colors.palette.neutral['400']};
 `
 export const Span = styled.span`
-  color: ${colors.palette.neutral[200]};
+  color: ${colors.palette.neutral['400']};
   text-align: left;
   display: flex;
   align-items: center;

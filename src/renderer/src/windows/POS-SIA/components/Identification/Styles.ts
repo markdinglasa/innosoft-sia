@@ -5,6 +5,7 @@ import styled from 'styled-components'
 export const BottomText = styled.div`
   font-size: 12px;
   margin-top: 2px;
+  color: ${colors.palette.neutral['200']};
 `
 
 export const Container = styled.div`
@@ -21,7 +22,7 @@ export const Img = styled.img`
 export const Text = styled.div``
 
 export const TopText = styled.div`
-  color: ${colors.palette.gray[50]};
+  color: ${colors.white};
   font-size: 14px;
 `
 
@@ -30,5 +31,5 @@ export const Icon = styled(UMdiIcon)`
   height: 36px;
   margin-right: 10px;
   width: 36px;
-  color: ${colors.primary};
+  color: ${colors.white};
 `

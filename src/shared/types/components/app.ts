@@ -1,7 +1,7 @@
 export enum App {
     default = 'default',
-    smsia = 'sm-sia',
-    alliance = 'alliance',
+    smsia = 'sia-manager',
+    alliance = 'alliance-manager',
     robinsons = 'robinsons',
     ayala = 'ayala-malls'
 }

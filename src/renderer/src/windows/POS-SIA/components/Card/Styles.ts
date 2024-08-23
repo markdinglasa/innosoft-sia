@@ -13,7 +13,7 @@ export const Content = styled.div`
   margin-top: 10px;
 `
 export const Heading = styled.div`
-  color: ${colors.white}  
+  color: ${colors.white} ;
   font-size: 13px;
   font-weight: bolder;
 `

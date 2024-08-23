@@ -18,14 +18,14 @@ export const PathDisplay = styled.div`
   width: 100%;
   margin-top: 10px;
   font-size: 14px;
-  color: ${colors.palette.neutral[200]};
+  color: ${colors.palette.neutral['400']};
   word-break: break-all;
   overflow:hidden;
   display:flex;
   justify-content: start;
 `
 export const Span = styled.span`
-  color: ${colors.palette.neutral[200]};
+  color: ${colors.palette.neutral['400']};
   text-align: left;
   display: flex;
   align-items: center;
@@ -40,5 +40,5 @@ export const Span = styled.span`
   margin-bottom: 10px;
  `
  export const Icon = styled(UIcon)`
- color: ${colors.palette.neutral[200]};
+ color: ${colors.palette.neutral['400']};
  `

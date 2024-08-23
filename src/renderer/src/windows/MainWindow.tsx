@@ -5,6 +5,7 @@ import { Response, SFC, SqlChannel, WindowDispatch } from '@shared/types';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DBConfigWindow, LicenseWindow, SelectorWindow } from '.';
+import { setManager } from './POS-SIA/store/manager';
 
 export const MainWindow: SFC = ({ className }) => {
   const license = useSelector(getActiveLicense);
@@ -41,6 +42,13 @@ export const MainWindow: SFC = ({ className }) => {
     dispatch(setActiveWindow(null))
     dispatch(setActiveLicense(null))
     dispatch(setActiveDatabaseConfig(null))
-  }
+    dispatch(setManager({
+      tenant: null,
+      path: null,
+      isConnected: false,
+      initialize: false,
+      snackbar: false
+    }))
+  }/*<button onClick={reset}>reset</button>*/
   return <div className={className}>{renderContent()}</div>;
 };

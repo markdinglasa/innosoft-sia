@@ -1,7 +1,7 @@
 import { mdiInformation, mdiStore } from '@mdi/js'
 
 import { useToggle } from '@shared/hooks'
-import { SFC, Theme } from '@shared/types'
+import { ButtonColor, SFC, Theme } from '@shared/types'
 import { useSelector } from 'react-redux'
 import { Card, EditButton, SpacedItems } from '../../components'
 import { TenantModal } from '../../modals'
@@ -14,7 +14,7 @@ export const Tenant: SFC = ({ className }) => {
   const tenantCode = tenant?.TenantCode
   const initialized = useSelector(getInitialize)
   const renderContent = () => {
-    if (!tenantCode) return <S.Button onClick={toggleModal} iconLeft={mdiStore} text="Select Tenant"/>
+    if (!tenantCode) return <S.Button onClick={toggleModal} iconLeft={mdiStore} color={ButtonColor.blue} text="Select Tenant"/>
     return renderTenant()
   }
 

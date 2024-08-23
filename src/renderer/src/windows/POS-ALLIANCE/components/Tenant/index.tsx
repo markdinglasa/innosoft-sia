@@ -11,10 +11,11 @@ import * as S from './Styles'
 export const Tenant: SFC = ({ className }) => {
   const tenant = useSelector(getTenant)
   const [modalIsOpen, toggleModal] = useToggle(false)
-  const tenantCode = tenant?.TenantCode
+  const tenantName = tenant?.tenantName
   const initialized = useSelector(getInitialize)
+  console.log('tenantName:', tenantName)
   const renderContent = () => {
-    if (!tenantCode) return <S.Button onClick={toggleModal} iconLeft={mdiStore} text="Select Tenant"/>
+    if (!tenantName) return <S.Button onClick={toggleModal} iconLeft={mdiStore} text="Select Tenant"/>
     return renderTenant()
   }
 
@@ -26,7 +27,7 @@ export const Tenant: SFC = ({ className }) => {
   const renderTenant = () => {
     return (
       <SpacedItems
-        leftContent={<S.TenantIdentification tenantCode={tenantCode!} salesType={`${tenant?.SMSalesType}`} />}
+        leftContent={<S.TenantIdentification tenantCode={tenantName!} salesType={`${tenant?.tenantId}`} />}
         rightContent={!initialized && <EditButton onClick={toggleModal} />}
       />
     )

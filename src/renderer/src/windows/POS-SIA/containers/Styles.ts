@@ -28,7 +28,6 @@ export const Footer = styled.div`
 `
 export const Card = styled.div`
   padding: 10px 10px;
-  background: ${colors.palette.gray[500]};
   border-radius: 10px;
   margin-bottom: 10px;
   &:last-child {
