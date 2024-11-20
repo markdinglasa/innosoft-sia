@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Loading...</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #fff;
+        font-family: Arial, sans-serif;
+      }
+      #loading-container {
+        width: 80%;
+        max-width: 400px;
+        text-align: center;
+      }
+      #loading-text {
+        margin-bottom: 20px;
+        font-size: 24px;
+        color: #000;
+      }
+      #loading-bar-container {
+        position: relative;
+        width: 100%;
+        background-color: #ddd;
+        border-radius: 5px;
+        height: 50px;
+      }
+      #loading-bar {
+        height: 100%;
+        background-color: #93cddd;
+        border-radius: 5px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: flex;
+        align-items: center;
+      }
+      #loading-circle {
+        width: 50px;
+        height: 50px;
+        background-color: #fff;
+        border: 2px solid #93cddd;
+        border-radius: 50%;
+        position: absolute;
+        top: -2px; /* Adjust to center the circle */
+        background-image: url('../../../assets/rica.png');
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loading-container">
+      <div id="loading-text">Please wait...</div>
+      <div id="loading-bar-container">
+        <div id="loading-bar">
+          <div id="loading-circle"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const loadingBar = document.getElementById('loading-bar')
+      const loadingCircle = document.getElementById('loading-circle')
+
+      function updateLoadingBar() {
+        let width = 0
+        const interval = setInterval(() => {
+          if (width >= 100) {
+            clearInterval(interval)
+          } else {
+            width += 1
+            loadingBar.style.width = width + '%'
+            loadingCircle.style.left = `calc(${width}% - 10px)` // Adjust circle position
+          }
+        }, 100) // 10 seconds divided by 100 increments (100ms per increment)
+      }
+
+      window.onload = updateLoadingBar
+    </script>
+  </body>
+</html>

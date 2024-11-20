@@ -1,0 +1,57 @@
+export interface SIATable {
+  OrderNumber: string
+  BusinessDay: string
+  CheckOpen: string
+  CheckClose: string
+  TransactionType: string
+  Void: number
+  VoidAmount: number
+  Refund: number
+  RefundAmount: number
+  GuestCount: number
+  GuestCountSenior: number
+  GuestCountPWD: number
+  GrossSalesAmount: number
+  NetSalesAmount: number
+  TotalTax: number
+  OtherLocalTax: number
+  TotalServiceCharge: number
+  TotalTip: number
+  TotalDiscount: number
+  LessTaxAmount: number
+  TotalExemptSales: number
+  RegularOtherDiscountName: string
+  RegularOtherDiscountAmount: number
+  EmployeeDiscountAmount: number
+  SeniorCitizenDiscountAmount: number
+  VIPDiscountAmount: number
+  PWDDiscountAmount: number
+  NationalCoachAthleteMedalofValorDiscountamount: number
+  SMACDiscountAmount: number
+  OnlineDealsDiscountName: number
+  OnlineDealsDiscountAmount: number
+  DiscountField1Name: string
+  DiscountField2Name: string
+  DiscountField3Name: string
+  DiscountField4Name: string
+  DiscountField5Name: string
+  DiscountField6Name: string
+  DiscountField1Amount: number
+  DiscountField2Amount: number
+  DiscountField3Amount: number
+  DiscountField4Amount: number
+  DiscountField5Amount: number
+  DiscountField6Amount: number
+  TotalCashSalesAmount: number
+  TotalGiftCertificateSalesAmount: number
+  TotalEwalletOnlineSalesAmount: number
+  TotalMastercardSalesAmount: number
+  TotalVisaSalesAmount: number
+  TotalDinersSalesAmount: number
+  TotalJCBSalesAmount: number
+  TotalCreditCardSalesAmount: number
+  TerminalNumber: number
+  SMPOSSerialNumber: string
+}
+
+export type SIATables = SIATable[]
