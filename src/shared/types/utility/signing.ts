@@ -1,15 +1,15 @@
 export interface AccountNumber {
-    accountNumber: string;
-  }
-  
+  accountNumber: string
+}
+
 export interface SigningKey {
-  signingKey: string;
+  signingKey: string
 }
 
 export interface KeyPair extends AccountNumber, SigningKey {}
 
 export interface VerifySignatureParams {
-  accountNumber: string;
-  signature: string;
-  unsignedData: any;
+  accountNumber: string
+  signature: string
+  unsignedData: any
 }

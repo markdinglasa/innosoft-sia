@@ -10,8 +10,8 @@ export const getActiveLicense = (state: RootState) => state.system.manager.activ
 export const getActiveKey = (state: RootState) => state.system.manager.activeKey
 
 //UTILITIES
-export const getBalances = (state: RootState) => state.system.balances;
-export const getStoreLoaded = (state: RootState) => state.system.internal.storeLoaded;
+export const getBalances = (state: RootState) => state.system.balances
+export const getStoreLoaded = (state: RootState) => state.system.internal.storeLoaded
 
 //UTILITY
 export const getSnackbar = (state: RootState) => state.system.manager.activeSnackbar

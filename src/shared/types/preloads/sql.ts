@@ -13,7 +13,7 @@ export const SqlChannel = {
   ...Database,
   ...SIA,
   ...MstAccount,
-  ...MstUser,
+  ...MstUser
 } as const
 
 export type SqlChannelType = (typeof SqlChannel)[keyof typeof SqlChannel]

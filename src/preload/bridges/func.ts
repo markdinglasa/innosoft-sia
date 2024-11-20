@@ -16,14 +16,14 @@ const generateSignature = (message: string, signingKey: Uint8Array): string => {
 }
 
 const getKeyPairDetails = (keyPair: SignKeyPair): KeyPairDetails => {
-  const {publicKey, secretKey: signingKey} = keyPair
+  const { publicKey, secretKey: signingKey } = keyPair
   const publicKeyHex = Buffer.from(publicKey).toString('hex')
   const signingKeyHex = Buffer.from(signingKey).toString('hex')
   return {
     publicKey,
     publicKeyHex,
     signingKey,
-    signingKeyHex: signingKeyHex.replace(publicKeyHex, ''),
+    signingKeyHex: signingKeyHex.replace(publicKeyHex, '')
   }
 }
 
@@ -48,17 +48,21 @@ const verifyBlockSignature = (block: any): boolean => {
     payload: block.payload,
     recipient: block.recipient,
     sender: block.sender,
-    transaction_fee: block.transaction_fee,
+    transaction_fee: block.transaction_fee
   }
 
   return verifySignature({
     accountNumber: block.sender,
     signature,
-    unsignedData: unsignedBlock,
+    unsignedData: unsignedBlock
   })
 }
 
-const verifySignature = ({accountNumber, signature, unsignedData}: VerifySignatureParams): boolean => {
+const verifySignature = ({
+  accountNumber,
+  signature,
+  unsignedData
+}: VerifySignatureParams): boolean => {
   const strMessage: string = JSON.stringify(unsignedData)
   const dataUint8Array = stringToUint8Array(strMessage)
   const signatureUint8Array = Uint8Array.from(Buffer.from(signature, 'hex'))
@@ -74,5 +78,5 @@ export const fnApi: FnApi = {
   getKeyPairFromSigningKeyHex,
   stringToUint8Array,
   verifyBlockSignature,
-  verifySignature,
+  verifySignature
 }

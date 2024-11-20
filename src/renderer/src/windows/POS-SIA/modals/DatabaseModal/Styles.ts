@@ -7,7 +7,7 @@ export const UModal = styled(Modal)`
   flex-direction: column;
   max-width: 400px;
   min-width: 380px;
-  background: ${colors.primary}
+  background: ${colors.primary};
 `
 export const Container = styled.div`
   display: flex;

@@ -16,11 +16,26 @@ export const SIAManager: SFC<WindowProps> = ({ className }) => {
         <S.Container>
           <S.Filler> 2024 © Mark Dinglasa </S.Filler>
           <S.Body>
-            <S.Title> <S.H2> Innosoft Sales Insights and Analytics</S.H2> </S.Title>
-            <S.Card> <DatabaseCard /> </S.Card>
-            <S.Card> <SelectPathButton onSelect={handlePathSelect} /></S.Card>
-            <S.Card> <Tenant /> </S.Card>
-            <S.Card> <Initialize /> </S.Card>
+            <S.Title>
+              {' '}
+              <S.H2> Innosoft Sales Insights and Analytics</S.H2>{' '}
+            </S.Title>
+            <S.Card>
+              {' '}
+              <DatabaseCard />{' '}
+            </S.Card>
+            <S.Card>
+              {' '}
+              <SelectPathButton onSelect={handlePathSelect} />
+            </S.Card>
+            <S.Card>
+              {' '}
+              <Tenant />{' '}
+            </S.Card>
+            <S.Card>
+              {' '}
+              <Initialize />{' '}
+            </S.Card>
           </S.Body>
           <S.Footer>
             <AppFooter />

@@ -9,7 +9,7 @@ export const initialState: Manager = {
   path: null,
   isConnected: false,
   initialize: false,
-  snackbar: false,
+  snackbar: false
 }
 
 const manager = createSlice({
@@ -48,12 +48,6 @@ const manager = createSlice({
   }
 })
 
-export const {
-  setTenant,
-  setPath,
-  setIsConnected,
-  setInitialize,
-  setManager
-} = manager.actions
+export const { setTenant, setPath, setIsConnected, setInitialize, setManager } = manager.actions
 
 export default manager.reducer

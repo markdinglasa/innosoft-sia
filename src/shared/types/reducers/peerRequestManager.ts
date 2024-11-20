@@ -1,20 +1,20 @@
-import { Dict } from '@shared/types';
+import { Dict } from '@shared/types'
 
 export interface NetworkPeerRequests {
-  networkId: string;
-  setPeers: PeerRequestDetails;
-  getPeers: PeerRequestDetails;
+  networkId: string
+  setPeers: PeerRequestDetails
+  getPeers: PeerRequestDetails
 }
 
 export interface PeerRequestDetails {
-  lastRequestDate: string | null;
-  lastRequestId: string | null;
-  lastResponseId: string | null;
+  lastRequestDate: string | null
+  lastRequestId: string | null
+  lastResponseId: string | null
 }
 
 export enum PeerRequestMethod {
   setPeers = 'setPeers',
-  getPeers = 'getPeers',
+  getPeers = 'getPeers'
 }
 
-export type PeerRequestManager = Dict<NetworkPeerRequests>;
+export type PeerRequestManager = Dict<NetworkPeerRequests>

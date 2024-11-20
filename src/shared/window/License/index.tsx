@@ -24,7 +24,7 @@ export const License: SFC = ({ className }) => {
     licenseKey: ''
   }
   type FormValues = typeof initialValues
-  
+
   let sb: Snackbar, message: string, type: ToastType
   const handleSubmit = async (values: FormValues) => {
     const data = {
@@ -45,7 +45,7 @@ export const License: SFC = ({ className }) => {
       message = Error.e00x02
       type = ToastType.error
     }
-    sb = { display: true, message:message, type: type}
+    sb = { display: true, message: message, type: type }
     dispatch(setSnackbar(sb))
   }
 

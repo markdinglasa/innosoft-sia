@@ -1,6 +1,6 @@
 import { mdiInformation, mdiPause, mdiPlay } from '@mdi/js'
 import { Error } from '@shared/messages'
-import { SIA_QUERY } from '@shared/query/SIAQuery'
+import { SIATransactionDetailQuery, SIATransactions } from '@shared/query'
 import { setSnackbar } from '@shared/store/manager'
 import { ButtonColor, SFC, Snackbar, SqlChannel, ToastType, WindowDispatch } from '@shared/types'
 import { useEffect, useState } from 'react'
@@ -20,9 +20,9 @@ export const Initialize: SFC = ({ className }) => {
   let sb: Snackbar
   const checkFields = async (): Promise<boolean> => {
     try {
-      if (!path) return false;
+      if (!path) return false
       const response: any = await window.electron.sql.get(SqlChannel.checkFields, path)
-      if (!response.IsSomething)  return false
+      if (!response.IsSomething) return false
       return true
     } catch (error: any) {
       console.log('Check Fields & Path: ' + error)
@@ -37,16 +37,16 @@ export const Initialize: SFC = ({ className }) => {
 
   const handleInitialize = async () => {
     if (!isConnected) {
-      sb = {display: true, message: Error.e00x14, type: ToastType.error}
+      sb = { display: true, message: Error.e00x14, type: ToastType.error }
       dispatch(setSnackbar(sb))
     }
     const fieldsValid = await checkFields()
-    if (!fieldsValid){ 
-      sb = {display: true, message: Error.e00x44, type: ToastType.error}
+    if (!fieldsValid) {
+      sb = { display: true, message: Error.e00x44, type: ToastType.error }
       dispatch(setSnackbar(sb))
     }
     if (!tenant) {
-      sb = {display: true, message: Error.e00x46, type: ToastType.error}
+      sb = { display: true, message: Error.e00x46, type: ToastType.error }
       dispatch(setSnackbar(sb))
     }
     if (tenant && fieldsValid && isConnected) {
@@ -54,7 +54,7 @@ export const Initialize: SFC = ({ className }) => {
       setLoading(true)
       setTimeout(() => {
         setLoading(false)
-    }, 9000)
+      }, 9000)
     }
   }
 
@@ -66,30 +66,45 @@ export const Initialize: SFC = ({ className }) => {
         setLoading(false)
       }, 9000)
     } else {
-      sb = {display: true, message: Error.e00x01, type: ToastType.error}
+      sb = { display: true, message: Error.e00x01, type: ToastType.error }
       dispatch(setSnackbar(sb))
     }
   }
-  
+
   useEffect(() => {
-    if (!initialized) return;
+    if (!initialized) return
     const loadData = async () => {
       try {
-        let Terminal: number = parseInt(tenant.Terminal, 10), SMPOSSerialNumber = tenant.POSSerialNumber;
-        const query = SIA_QUERY({ Terminal, SMPOSSerialNumber });
-        const SIATransactions: Response = await window.electron.sql.get(SqlChannel.getSIA, `${path}/SIA`, query);
-        console.log(SIATransactions)
+        const Terminal: number = parseInt(tenant.Terminal, 10),
+          SMPOSSerialNumber = tenant.POSSerialNumber
+        const transactionsQuery = SIATransactions({ Terminal, SMPOSSerialNumber })
+
+        const transactionsResponse: Response = await window.electron.sql.get(
+          SqlChannel.getSIATransactions,
+          `${path}/SIA`,
+          transactionsQuery
+        )
+
+        const transactionsDetailsQuery = SIATransactionDetailQuery({ Terminal })
+        const transactionDetailsResponse: Response = await window.electron.sql.get(
+          SqlChannel.getSIATransactionDetails,
+          `${path}/SIA`,
+          transactionsDetailsQuery
+        )
+
+        console.log(transactionsResponse)
+        console.log(transactionDetailsResponse)
       } catch (error: any) {
-        sb = {display: true, message: Error.e00x01, type: ToastType.error}
+        sb = { display: true, message: Error.e00x01, type: ToastType.error }
         dispatch(setSnackbar(sb))
       }
-    };
-    loadData();
+    }
+    loadData()
     const interval = setInterval(() => {
-      loadData();
-    }, 60000 * 5);
-    return () => clearInterval(interval);
-  }, [initialized, tenant, path]);
+      loadData()
+    }, 60000 * 5)
+    return () => clearInterval(interval)
+  }, [initialized, tenant, path])
 
   return (
     <>
@@ -119,4 +134,3 @@ export const Initialize: SFC = ({ className }) => {
     </>
   )
 }
-

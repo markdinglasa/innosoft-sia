@@ -1,10 +1,10 @@
-import { Dict, PeerOnlineStatus } from '@shared/types';
-import yup, { accountNumberSchema } from '@shared/utils/yup';
+import { Dict, PeerOnlineStatus } from '@shared/types'
+import yup, { accountNumberSchema } from '@shared/utils/yup'
 
 const accountOnlineStatusValidator = yup.object({
   accountNumber: accountNumberSchema.required(),
-  isOnline: yup.boolean().required(),
-});
+  isOnline: yup.boolean().required()
+})
 
 export const getPeersValidator = yup
   .object({
@@ -19,12 +19,12 @@ export const getPeersValidator = yup
           for (const [key, value] of Object.entries(return_value)) {
             const accountOnlineStatus = {
               accountNumber: key,
-              isOnline: value.is_online,
-            };
-            await accountOnlineStatusValidator.validate(accountOnlineStatus);
+              isOnline: value.is_online
+            }
+            await accountOnlineStatusValidator.validate(accountOnlineStatus)
           }
-          return true;
-        },
-      ),
+          return true
+        }
+      )
   })
-  .noUnknown();
+  .noUnknown()

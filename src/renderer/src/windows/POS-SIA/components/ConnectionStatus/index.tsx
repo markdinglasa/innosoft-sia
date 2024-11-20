@@ -26,5 +26,9 @@ export const ConnectionStatus: SFC = () => {
     }
     checkConnection()
   }, [config])
-  return (<><ConStatus type={status}>{status}</ConStatus></>)
+  return (
+    <>
+      <ConStatus type={status}>{status}</ConStatus>
+    </>
+  )
 }

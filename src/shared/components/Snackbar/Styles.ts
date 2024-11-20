@@ -20,33 +20,33 @@ const fadeOut = keyframes`
   }
 `
 export const Container = styled.div<{ visible: boolean }>`
-    height: 100vh;
-    left: 0;
-    position: fixed;
-    top: 0;
-    width: 100vw;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: ${({ visible }) => (visible ? fadeIn : fadeOut)} 0.3s forwards;
+  height: 100vh;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: ${({ visible }) => (visible ? fadeIn : fadeOut)} 0.3s forwards;
 `
-export const Card = styled.div<{ type: ToastType, visible: boolean }>`
-    width: 70%;
-    padding: 20px 20px;
-    background-color: ${({ type }) => {
-        if (type === ToastType.success) return colors.palette.green['300'];
-        if (type === ToastType.warning) return colors.palette.orange['300'];
-        return colors.palette.red['300'];
-    }};
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 8px;
-    transition: all 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: start;
+export const Card = styled.div<{ type: ToastType; visible: boolean }>`
+  width: 70%;
+  padding: 20px 20px;
+  background-color: ${({ type }) => {
+    if (type === ToastType.success) return colors.palette.green['300']
+    if (type === ToastType.warning) return colors.palette.orange['300']
+    return colors.palette.red['300']
+  }};
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 8px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: start;
 `
 const iconProps = `
     color: #fff;

@@ -1,6 +1,6 @@
-import { Error, Success } from '@shared/messages';
-import { Response } from '@shared/types';
-import { recordByFields } from '../../../model';
+import { Error, Success } from '@shared/messages'
+import { Response } from '@shared/types'
+import { recordByFields } from '../../../model'
 export const isFound = async (
   Table: string = '',
   Field: Array<string> = [],

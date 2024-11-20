@@ -1,1 +1,2 @@
-export * from './getSIA';
+export * from './getSIATransactionDetails'
+export * from './getSIATransactions'

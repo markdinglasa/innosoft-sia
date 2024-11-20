@@ -17,5 +17,5 @@ export interface LogData {
 }
 
 export interface UserManager {
-    UserTable: Array<User> | []
+  UserTable: Array<User> | []
 }

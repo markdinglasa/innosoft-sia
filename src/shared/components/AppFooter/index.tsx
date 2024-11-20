@@ -7,7 +7,7 @@ export const AppFooter: SFC = ({ className }) => {
     <>
       <S.Container className={className}>
         <S.LogoContainer>
-          <S.Image src={logo}  />
+          <S.Image src={logo} />
         </S.LogoContainer>
         <S.TextContainer>
           <S.Span>Innosoft SIA v1.0</S.Span>

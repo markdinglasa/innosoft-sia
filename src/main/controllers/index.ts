@@ -1,3 +1,2 @@
-export * from './configuration';
-export * from './SIA';
-
+export * from './configuration'
+export * from './SIA'

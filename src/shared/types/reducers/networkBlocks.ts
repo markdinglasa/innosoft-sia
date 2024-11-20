@@ -1,7 +1,7 @@
-import { Block, Dict } from '@shared/types';
+import { Block, Dict } from '@shared/types'
 
 export interface NetworkBlock extends Block {
-  date: string;
+  date: string
 }
 
-export type NetworkBlocks = Dict<Dict<NetworkBlock>>;
+export type NetworkBlocks = Dict<Dict<NetworkBlock>>

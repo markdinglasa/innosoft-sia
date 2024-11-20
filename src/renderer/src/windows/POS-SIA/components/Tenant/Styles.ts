@@ -45,4 +45,4 @@ export const Span = styled.span`
   align-items: center;
   justify-content: center;
   margin-left: 10px;
- `
+`

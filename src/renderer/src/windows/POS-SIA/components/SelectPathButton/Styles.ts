@@ -19,7 +19,7 @@ export const PathDisplay = styled.div`
   font-size: 14px;
   color: ${colors.palette.neutral[200]};
   word-break: break-all;
-  overflow:hidden;
+  overflow: hidden;
 `
 export const Span = styled.span`
   color: ${colors.palette.neutral[200]};
@@ -28,14 +28,14 @@ export const Span = styled.span`
   align-items: center;
   justify-content: start;
   margin-left: 10px;
- `
- export const Text = styled.div`
+`
+export const Text = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 10px;
- `
- export const Icon = styled(UIcon)`
- color: ${colors.palette.neutral[200]};
- `
+`
+export const Icon = styled(UIcon)`
+  color: ${colors.palette.neutral[200]};
+`

@@ -1,30 +1,30 @@
-import { Block } from '@shared/types';
+import { Block } from '@shared/types'
 
 export interface CreateBlockData {
-  message: Block;
-  type: SocketDataStandardType.createBlock;
+  message: Block
+  type: SocketDataStandardType.createBlock
 }
 
 export interface TrackOnlineStatusData {
-  account_number: string;
-  is_online: boolean;
-  type: SocketDataStandardType.trackOnlineStatus;
+  account_number: string
+  is_online: boolean
+  type: SocketDataStandardType.trackOnlineStatus
 }
 
 export interface UpdateAccountData {
-  message: UpdateAccountMessage;
-  type: SocketDataStandardType.updateAccount;
+  message: UpdateAccountMessage
+  type: SocketDataStandardType.updateAccount
 }
 
 export interface UpdateAccountMessage {
-  account_number: string;
-  balance: number;
+  account_number: string
+  balance: number
 }
 
 export enum SocketDataStandardType {
   createBlock = 'create.block',
   trackOnlineStatus = 'track.online_status',
-  updateAccount = 'update.account',
+  updateAccount = 'update.account'
 }
 
-export type SocketDataStandard = CreateBlockData | TrackOnlineStatusData | UpdateAccountData;
+export type SocketDataStandard = CreateBlockData | TrackOnlineStatusData | UpdateAccountData

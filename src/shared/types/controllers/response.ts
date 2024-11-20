@@ -1,8 +1,6 @@
-import { SIATables } from '../tables'
-
 export interface Response {
   IsSomething?: boolean
-  List?: SIATables
+  List?: any[]
   Data?: any | null
   Option?: string | null
   Message: string

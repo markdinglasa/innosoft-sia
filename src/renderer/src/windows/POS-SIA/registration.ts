@@ -14,4 +14,3 @@ const SIAManagerRegistration: WindowRegistration = {
 
 export { SIAManager, SIAManagerRegistration }
 export type { SIAElectronStore }
-

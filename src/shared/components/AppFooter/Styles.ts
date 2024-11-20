@@ -15,7 +15,6 @@ export const LogoContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-
 `
 export const TextContainer = styled.div`
   width: 80%;

@@ -1,20 +1,20 @@
-import { Button as UButton } from '@shared/components';
-import { colors } from '@shared/styles';
-import styled from 'styled-components';
+import { Button as UButton } from '@shared/components'
+import { colors } from '@shared/styles'
+import styled from 'styled-components'
 
 export const Container = styled.div`
-    align-items:left;
-    display:flex;
-    justify-content:start;
-    hieght:60px;
-    flex-direction: column; 
-`;
+  align-items: left;
+  display: flex;
+  justify-content: start;
+  hieght: 60px;
+  flex-direction: column;
+`
 
 export const ButtonCon = styled.div`
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-`;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`
 
 export const Input = styled.input`
     width: 100%;
@@ -29,13 +29,13 @@ export const Input = styled.input`
     &:focus{
         outline:none;
     }
-`;
+`
 
 export const Label = styled.div`
   color: ${colors.primary};
   font-size: 12px;
   font-weight: 700;
-`;
+`
 
 export const Button = styled(UButton)`
   width: 90px;
@@ -50,4 +50,4 @@ export const Button = styled(UButton)`
   &:hover &:active &:focus{
     background: ${colors.pink}
   }
-`;
+`

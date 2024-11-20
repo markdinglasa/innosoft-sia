@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
 
 export const useIsTouchDevice = () => {
-    const isTouchDevice = () => {
-        return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.maxTouchPoints > 0;
-    };
-    const [isTouch, setIsTouch] = useState(false);
+  const isTouchDevice = () => {
+    return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.maxTouchPoints > 0
+  }
+  const [isTouch, setIsTouch] = useState(false)
 
-    useEffect(() => {
-        setIsTouch(isTouchDevice());
-    }, []);
+  useEffect(() => {
+    setIsTouch(isTouchDevice())
+  }, [])
 
-    return isTouch;
-};
+  return isTouch
+}
 /**
  * USAGE
     const isTouchDevice = useIsTouchDevice();

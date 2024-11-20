@@ -1,2 +1,1 @@
-export * from './POS-SIA';
-
+export * from './POS-SIA'

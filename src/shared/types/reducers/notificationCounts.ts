@@ -1,3 +1,3 @@
-import { Dict } from '@shared/types';
+import { Dict } from '@shared/types'
 
-export type NotificationCounts = Dict<number>;
+export type NotificationCounts = Dict<number>

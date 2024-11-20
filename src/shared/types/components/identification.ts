@@ -1,5 +1,4 @@
 export interface IdentificationData {
-    displayImage: string;
-    displayName: string;
-  }
-  
+  displayImage: string
+  displayName: string
+}

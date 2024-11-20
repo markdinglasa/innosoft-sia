@@ -29,5 +29,5 @@ export const Key: SFC<KeyProps> = ({ className, theme }) => {
     fetchKey()
   }, [])
 
-  return <CopyClip Value={key} className={className} Label="Key" Theme={theme}/>
+  return <CopyClip Value={key} className={className} Label="Key" Theme={theme} />
 }

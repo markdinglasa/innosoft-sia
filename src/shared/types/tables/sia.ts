@@ -1,4 +1,4 @@
-export interface SIATable {
+export interface SIATransaction {
   OrderNumber: string
   BusinessDay: string
   CheckOpen: string
@@ -54,4 +54,28 @@ export interface SIATable {
   SMPOSSerialNumber: string
 }
 
-export type SIATables = SIATable[]
+export type SIATransactions = SIATransaction[]
+
+export interface SIATransactionDetail {
+  OrderNumber: string
+  ItemId: string
+  ItemName: string
+  ItemParentCategory: string
+  ItemCategory: string
+  ItemSubCategory: string
+  ItemQuantity: number
+  TransactionItemPrice: number
+  MenuItemPrice: number
+  DiscountCode: string
+  DiscountAmount: number
+  Modifier1Name: string
+  Modifier1Quantity: number
+  Modifier2Name: string
+  Modifier2Quantity: number
+  Void: number
+  VoidAmount: number
+  Refund: number
+  RefundAmount: number
+}
+
+export type SIATransactionDetails = SIATransactionDetail[]

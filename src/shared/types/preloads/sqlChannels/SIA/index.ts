@@ -1,3 +1,4 @@
 export enum SIA {
-    getSIA = 'get-SIA-transactions'
+  getSIATransactions = 'get-SIA-transactions',
+  getSIATransactionDetails = 'get-SIA-transaction-details'
 }

@@ -1,4 +1,4 @@
-import yup from '@shared/utils/yup';
+import yup from '@shared/utils/yup'
 
 export const authenticateValidator = yup
   .object({
@@ -6,6 +6,6 @@ export const authenticateValidator = yup
     return_value: yup
       .boolean()
       .required()
-      .test('is-authenticated', 'Authentication failed', (return_value: any) => !!return_value),
+      .test('is-authenticated', 'Authentication failed', (return_value: any) => !!return_value)
   })
-  .noUnknown();
+  .noUnknown()

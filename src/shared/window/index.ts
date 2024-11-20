@@ -1,2 +1,1 @@
-export * from './License';
-
+export * from './License'

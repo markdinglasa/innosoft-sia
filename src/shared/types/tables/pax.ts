@@ -1,6 +1,6 @@
 export interface Pax {
-    Id: number;
-    SalesId: number;
-    TotalPax: number;
-    DiscountedPax: number;
+  Id: number
+  SalesId: number
+  TotalPax: number
+  DiscountedPax: number
 }

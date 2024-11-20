@@ -2,10 +2,10 @@
 
 const fonts = {
   family: {
-    default: 'Inter, sans-serif',
+    default: 'Inter, sans-serif'
   },
   lineHeight: {
-    default: '1.25',
+    default: '1.25'
   },
   weight: {
     black: '900',
@@ -16,8 +16,8 @@ const fonts = {
     regular: '400',
     light: '300',
     extraLight: '200',
-    thin: '100',
-  },
-};
+    thin: '100'
+  }
+}
 
-export default fonts;
+export default fonts

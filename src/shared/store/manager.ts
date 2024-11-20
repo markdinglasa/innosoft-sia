@@ -8,7 +8,7 @@ export const initialState: Manager = {
   activeLicense: null,
   activeDBConfig: null,
   activeKey: null,
-  activeSnackbar: null,
+  activeSnackbar: null
 }
 
 const manager = createSlice({
@@ -57,8 +57,7 @@ const manager = createSlice({
       })
     },
     setManager: setLocalAndStateReducer<Manager>(SYSTEM_MANAGER)
-  },
-  
+  }
 })
 
 export const {

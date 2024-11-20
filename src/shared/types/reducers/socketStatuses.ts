@@ -1,10 +1,10 @@
-import { Dict } from '@shared/types';
+import { Dict } from '@shared/types'
 
 export enum SocketStatus {
   authenticated = 'authenticated',
   connected = 'connected',
   disconnected = 'disconnected',
-  error = 'error',
+  error = 'error'
 }
 
-export type SocketStatuses = Dict<SocketStatus>;
+export type SocketStatuses = Dict<SocketStatus>

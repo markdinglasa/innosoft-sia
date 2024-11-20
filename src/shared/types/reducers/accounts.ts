@@ -1,5 +1,5 @@
-import { AccountNumber, Dict, IdentificationData } from '@shared/types';
+import { AccountNumber, Dict, IdentificationData } from '@shared/types'
 
 export interface Account extends AccountNumber, IdentificationData {}
 
-export type Accounts = Dict<Account>;
+export type Accounts = Dict<Account>

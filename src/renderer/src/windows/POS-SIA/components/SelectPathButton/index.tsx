@@ -32,7 +32,7 @@ export const SelectPathButton: SFC<SelectPathButtonProps> = ({ className, onSele
         setPaths(selectedPath)
       }
     } catch (error: any) {
-      sb = {display: true, message: Error.e00x01, type: ToastType.error}
+      sb = { display: true, message: Error.e00x01, type: ToastType.error }
       dispatch(setSnackbar(sb))
     }
   }
@@ -42,14 +42,21 @@ export const SelectPathButton: SFC<SelectPathButtonProps> = ({ className, onSele
       setPaths(pathSelector)
     }
   }, [pathSelector])
-  
+
   return (
     <S.Container className={className}>
-        <S.Text>
-          <S.Icon path={mdiInformation} size="30px"/> 
-          <S.Span> Select a location where to save the SIA transactions</S.Span>
-        </S.Text>
-      <S.UButton iconLeft={mdiFolder} onClick={handleSelectPath} text="Select Path" color={ButtonColor.blue} type={ButtonType.button} disabled={initialized}/>
+      <S.Text>
+        <S.Icon path={mdiInformation} size="30px" />
+        <S.Span> Select a location where to save the SIA transactions</S.Span>
+      </S.Text>
+      <S.UButton
+        iconLeft={mdiFolder}
+        onClick={handleSelectPath}
+        text="Select Path"
+        color={ButtonColor.blue}
+        type={ButtonType.button}
+        disabled={initialized}
+      />
       {path && <S.PathDisplay>{truncate(path, 40)}</S.PathDisplay>}
     </S.Container>
   )

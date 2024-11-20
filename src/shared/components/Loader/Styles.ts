@@ -1,13 +1,13 @@
-import { mdiLoading } from '@mdi/js';
-import styled, { keyframes } from 'styled-components';
+import { mdiLoading } from '@mdi/js'
+import styled, { keyframes } from 'styled-components'
 
-import { Icon } from '../Icon';
+import { Icon } from '../Icon'
 
 export const Container = styled.div`
   align-items: center;
   display: flex;
   justify-content: center;
-`;
+`
 
 const fade = keyframes`
   0% {
@@ -19,7 +19,7 @@ const fade = keyframes`
   100% {
     opacity: 1;
   }
-`;
+`
 
 const spin = keyframes`
   0% {
@@ -28,9 +28,11 @@ const spin = keyframes`
   100% {
     transform: rotateZ(360deg);
   }
-`;
+`
 
-export const LoadingIcon = styled(Icon).attrs(() => ({icon: mdiLoading}))`
-  animation: ${fade} 1s linear infinite, ${spin} 1s linear infinite;
+export const LoadingIcon = styled(Icon).attrs(() => ({ icon: mdiLoading }))`
+  animation:
+    ${fade} 1s linear infinite,
+    ${spin} 1s linear infinite;
   display: inline;
-`;
+`

@@ -1,7 +1,15 @@
 import { Input } from '@shared/components'
 import { Error, Success } from '@shared/messages'
 import { setSnackbar } from '@shared/store/manager'
-import { ButtonColor, ButtonType, SFC, Snackbar, Theme, ToastType, WindowDispatch } from '@shared/types'
+import {
+  ButtonColor,
+  ButtonType,
+  SFC,
+  Snackbar,
+  Theme,
+  ToastType,
+  WindowDispatch
+} from '@shared/types'
 import yup from '@shared/utils/yup'
 import { Formik } from 'formik'
 import { useMemo } from 'react'
@@ -16,7 +24,7 @@ interface TenantModalProps {
   theme?: Theme
 }
 
-export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme}) => {
+export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme }) => {
   const dispatch = useDispatch<WindowDispatch>()
   const tenant = useSelector(getTenant)
   const initialValues: Tenant = {
@@ -25,9 +33,9 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme}) =
     SMSalesType: tenant?.SMSalesType || '',
     Terminal: tenant?.Terminal || 0,
     POSSerialNumber: tenant?.POSSerialNumber || '',
-    SMClassCode:  tenant?.SMClassCode || '',
-    StoreNumber:  tenant?.StoreNumber || '',
-    POSMachineNumber:  tenant?.POSMachineNumber || ''
+    SMClassCode: tenant?.SMClassCode || '',
+    StoreNumber: tenant?.StoreNumber || '',
+    POSMachineNumber: tenant?.POSMachineNumber || ''
   }
   type FormValues = typeof initialValues
   let sb: Snackbar, message: string, type: ToastType
@@ -41,17 +49,17 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme}) =
         SMSalesType: values.SMSalesType,
         POSMachineNumber: values.POSMachineNumber,
         POSSerialNumber: values.POSSerialNumber,
-        Terminal: values.Terminal,
+        Terminal: values.Terminal
       }
       dispatch(setTenant(data))
-      close();
-      message=Success.s00x00
-      type=ToastType.success
+      close()
+      message = Success.s00x00
+      type = ToastType.success
     } catch (error: any) {
-      message=Error.e00x01
-      type=ToastType.error
+      message = Error.e00x01
+      type = ToastType.error
     }
-    sb = {display: true, message: message, type: type}
+    sb = { display: true, message: message, type: type }
     dispatch(setSnackbar(sb))
   }
   const validationSchema = useMemo(() => {

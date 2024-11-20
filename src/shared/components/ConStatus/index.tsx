@@ -7,7 +7,11 @@ export interface ConStatusProps {
   type: ConnectionStatus
 }
 
-export const ConStatus: SFC<ConStatusProps> = ({ children, className, type = ConnectionStatus.disconnected }) => {
+export const ConStatus: SFC<ConStatusProps> = ({
+  children,
+  className,
+  type = ConnectionStatus.disconnected
+}) => {
   return (
     <S.Container className={className} type={type}>
       <S.Text>{children}</S.Text>

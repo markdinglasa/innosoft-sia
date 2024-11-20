@@ -12,6 +12,6 @@ export const Button = styled(UButton)`
   width: 100%;
 `
 export const Form = styled(F)`
-  height:500px;
+  height: 500px;
   overflow: auto;
 `

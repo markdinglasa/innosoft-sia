@@ -14,7 +14,8 @@ export const Tenant: SFC = ({ className }) => {
   const tenantCode = tenant?.TenantCode
   const initialized = useSelector(getInitialize)
   const renderContent = () => {
-    if (!tenantCode) return <S.Button onClick={toggleModal} iconLeft={mdiStore} text="Select Tenant"/>
+    if (!tenantCode)
+      return <S.Button onClick={toggleModal} iconLeft={mdiStore} text="Select Tenant" />
     return renderTenant()
   }
 
@@ -26,7 +27,9 @@ export const Tenant: SFC = ({ className }) => {
   const renderTenant = () => {
     return (
       <SpacedItems
-        leftContent={<S.TenantIdentification tenantCode={tenantCode!} salesType={`${tenant?.SMSalesType}`} />}
+        leftContent={
+          <S.TenantIdentification tenantCode={tenantCode!} salesType={`${tenant?.SMSalesType}`} />
+        }
         rightContent={!initialized && <EditButton onClick={toggleModal} />}
       />
     )
@@ -36,7 +39,7 @@ export const Tenant: SFC = ({ className }) => {
     <>
       <S.Container className={className}>
         <S.Text>
-          <S.Icon path={mdiInformation} size="30px"/> 
+          <S.Icon path={mdiInformation} size="30px" />
           <S.Span> Please input the SM tenant details</S.Span>
         </S.Text>
         <Card heading="Tenant">{renderContent()}</Card>

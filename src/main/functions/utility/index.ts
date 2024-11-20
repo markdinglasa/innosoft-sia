@@ -1,8 +1,8 @@
 export const roleType = async (T: string): Promise<string> => {
   const types: { [key: string]: string } = {
-    'administrator': 'administrator',
-    'cashier': 'cashier',
-    'teller': 'teller'
+    administrator: 'administrator',
+    cashier: 'cashier',
+    teller: 'teller'
   }
   return types[T] || 'none'
 }
@@ -28,9 +28,9 @@ export const alphanumeric = (input: string): string => {
   return input.replace(/[^a-zA-Z0-9]/g, '')
 }
 
-export const generateFileName = () => {
-  const date = new Date();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  return `${month}_${year}_Transactions.csv`;
-};
+export const generateFileName = (IsDetails: boolean = false) => {
+  const date = new Date()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const year = date.getFullYear()
+  return IsDetails ? `${month}_${year}_TransactionDetails.csv` : `${month}_${year}_Transactions.csv`
+}

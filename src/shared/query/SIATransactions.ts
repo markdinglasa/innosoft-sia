@@ -1,4 +1,4 @@
-export const SIA_QUERY = ({ Terminal, SMPOSSerialNumber }): string => {
+export const SIATransactions = ({ Terminal, SMPOSSerialNumber }): string => {
   return `
        SELECT 
            REPLACE([TrnSales].[SalesNumber], '-', '') AS [OrderNumber],

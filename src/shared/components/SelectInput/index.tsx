@@ -1,12 +1,12 @@
-import { SFC } from '@shared/types';
-import * as S from './Styles';
+import { SFC } from '@shared/types'
+import * as S from './Styles'
 
 export interface SelectInputProps {
-  errors: { [field: string]: string };
-  label: string;
-  name: string;
-  touched: { [field: string]: boolean };
-  options: Array<{ value: string; label: string }>;
+  errors: { [field: string]: string }
+  label: string
+  name: string
+  touched: { [field: string]: boolean }
+  options: Array<{ value: string; label: string }>
 }
 
 export const SelectInput: SFC<SelectInputProps> = ({
@@ -15,7 +15,7 @@ export const SelectInput: SFC<SelectInputProps> = ({
   label,
   name,
   touched,
-  options,
+  options
 }) => {
   return (
     <>
@@ -31,11 +31,13 @@ export const SelectInput: SFC<SelectInputProps> = ({
               ))}
             </S.Field>
             <S.SecondaryContainer>
-              {errors[name] && touched[name] ? <S.ErrorMessage>{errors[name]}</S.ErrorMessage> : null}
+              {errors[name] && touched[name] ? (
+                <S.ErrorMessage>{errors[name]}</S.ErrorMessage>
+              ) : null}
             </S.SecondaryContainer>
           </>
         )}
       </S.Field>
     </>
-  );
-};
+  )
+}

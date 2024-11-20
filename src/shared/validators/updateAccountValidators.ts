@@ -1,12 +1,12 @@
-import yup, { accountNumberSchema } from '@shared/utils/yup';
+import yup, { accountNumberSchema } from '@shared/utils/yup'
 
 const messageSchema = yup
   .object({
     account_number: accountNumberSchema.required(),
-    balance: yup.number().integer().min(0).required(),
+    balance: yup.number().integer().min(0).required()
   })
-  .noUnknown();
+  .noUnknown()
 
 export const updateAccountValidator = yup.object({
-  message: messageSchema.required(),
-});
+  message: messageSchema.required()
+})

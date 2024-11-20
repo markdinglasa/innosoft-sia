@@ -1,6 +1,6 @@
-import { Error } from '@shared/messages';
-import { Response } from '@shared/types';
-import { recordByFields } from '../../../model';
+import { Error } from '@shared/messages'
+import { Response } from '@shared/types'
+import { recordByFields } from '../../../model'
 export const findByFields = async (
   Query: string = '',
   Field: Array<string> = [],

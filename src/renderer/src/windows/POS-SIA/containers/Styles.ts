@@ -47,5 +47,5 @@ export const H2 = styled.h2`
 `
 export const Filler = styled.div`
   height: 2rem !important;
-  width:100%;
+  width: 100%;
 `
