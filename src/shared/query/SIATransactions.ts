@@ -1,5 +1,6 @@
 export const SIATransactions = ({ Terminal, SMPOSSerialNumber }): string => {
   return `
+        
        SELECT 
            REPLACE([TrnSales].[SalesNumber], '-', '') AS [OrderNumber],
            CONVERT(varchar, [TrnSales].[SalesDate], 23) AS [BusinessDay],
@@ -13,8 +14,8 @@ export const SIATransactions = ({ Terminal, SMPOSSerialNumber }): string => {
            END AS [Void],
            CASE 
                WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
-               THEN '0.00'
-               ELSE COALESCE(CONVERT(VARCHAR(20), ([GrossSales].[GrossSalesAmount] + [TotalDiscount].[TotalDiscountAmount]), 1), '0.00')
+               THEN CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
+               ELSE CAST(ROUND(COALESCE([GrossSales].[GrossSalesAmount] + [TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2))
            END AS [VoidAmount],
            CASE 
                WHEN [TrnCollection].[IsReturn] = 2 
@@ -23,73 +24,73 @@ export const SIATransactions = ({ Terminal, SMPOSSerialNumber }): string => {
            END AS [Refund],
            CASE 
                WHEN [TrnCollection].[IsReturn] = 2 
-               THEN COALESCE(CONVERT(VARCHAR(20), ([TrnCollection].[Amount]), 1), '0.00')
-               ELSE '0.00'
+               THEN CAST(ROUND(COALESCE([TrnCollection].[Amount], 0), 2) AS DECIMAL(10, 2)) 
+               ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
            END AS [RefundAmount],
            MAX(
-               CASE
-                   WHEN [TrnSales].[Pax] <> 0 OR [TrnSales].[Pax] IS NOT NULL
-                   THEN COALESCE(CONVERT(VARCHAR(20), ([TrnPaxTable].[TotalPax]), 1), '0')
-                   ELSE '0'
-               END
-           ) AS [GuestCount],
-           MAX(
-               CASE
-                   WHEN [TrnSalesLine].[DiscountId] = [MstDiscount].[Id] AND [MstDiscount].[Discount] = 'Senior Citizen Discount'
-                   THEN COALESCE(CONVERT(VARCHAR(20), ([TrnPaxTable].[DiscountedPax]), 1), '0')
-                   ELSE '0'
-               END
-           ) AS [GuestCountSenior],
-           MAX(
-               CASE
-                   WHEN [TrnSalesLine].[DiscountId] = [MstDiscount].[Id] AND [MstDiscount].[Discount] = 'PWD'
-                   THEN COALESCE(CONVERT(VARCHAR(20), ([TrnPaxTable].[DiscountedPax]), 1), '0')
-                   ELSE '0'
-               END
-           ) AS [GuestCountPWD],
+            CASE
+                WHEN [TrnSales].[Pax] <> 0 OR [TrnSales].[Pax] IS NOT NULL
+                THEN COALESCE(CONVERT(VARCHAR(20), ([TrnPaxTable].[TotalPax]), 1), '0')
+                ELSE '0'
+            END
+        ) AS [GuestCount],
+        MAX(
+            CASE
+                WHEN [TrnSalesLine].[DiscountId] = [MstDiscount].[Id] AND [MstDiscount].[Discount] = 'Senior Citizen Discount'
+                THEN COALESCE(CONVERT(VARCHAR(20), ([TrnPaxTable].[DiscountedPax]), 1), '0')
+                ELSE '0'
+            END
+        ) AS [GuestCountSenior],
+        MAX(
+            CASE
+                WHEN [TrnSalesLine].[DiscountId] = [MstDiscount].[Id] AND [MstDiscount].[Discount] = 'PWD'
+                THEN COALESCE(CONVERT(VARCHAR(20), ([TrnPaxTable].[DiscountedPax]), 1), '0')
+                ELSE '0'
+            END
+        ) AS [GuestCountPWD],
            CASE 
                WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL 
-               THEN COALESCE(CONVERT(VARCHAR(20), ([GrossSales].[GrossSalesAmount] + [TotalDiscount].[TotalDiscountAmount]), 1), '0.00')
-               ELSE '0.00'
+               THEN CAST(ROUND(COALESCE([GrossSales].[GrossSalesAmount] + [TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2)) 
+               ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
            END AS [GrossSalesAmount],
            CASE 
                WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL 
-               THEN COALESCE(CONVERT(VARCHAR(20), (([GrossSales].[GrossSalesAmount])), 1), '0.00')
-               ELSE '0.00'
+               THEN CAST(ROUND(COALESCE([GrossSales].[GrossSalesAmount], 0), 2) AS DECIMAL(10, 2)) 
+               ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
            END AS [NetSalesAmount],
            CASE
                WHEN    [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
-               THEN    COALESCE(CONVERT(VARCHAR(20), (([TotalTax].[TotalTaxAmount])), 1), '0.00')
-               ELSE    '0.00'
+               THEN    CAST(ROUND(COALESCE([TotalTax].[TotalTaxAmount], 0), 2) AS DECIMAL(10, 2)) 
+               ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
            END AS [TotalTax],
            CASE
                WHEN    [TrnSalesLine].[TaxId] = [MstTax].[Id] AND [MstTax].[Tax]  = 'LOCAL TAX'
-               THEN    COALESCE(CONVERT(VARCHAR(20), (([TotalTax].[TotalTaxAmount])), 1), '0.00')
-               ELSE    '0.00'
+               THEN    CAST(ROUND(COALESCE([TotalTax].[TotalTaxAmount], 0), 2) AS DECIMAL(10, 2)) 
+               ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
            END AS [OtherLocalTax],
            MAX(
                CASE
                    WHEN    [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
-                   THEN    COALESCE(CONVERT(VARCHAR(20), (([TotalServiceCharge].[ServiceCharge])), 1), '0.00')
-                   ELSE    '0.00'
+                   THEN    CAST(ROUND(COALESCE([TotalServiceCharge].[ServiceCharge], 0), 2) AS DECIMAL(10, 2)) 
+                   ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
                END
            ) AS [TotalServiceCharge],
            '0.00' AS [TotalTip],
            CASE
-               WHEN    [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
-               THEN    COALESCE(CONVERT(VARCHAR(20), (([TotalDiscount].[TotalDiscountAmount])), 1), '0.00')
-               ELSE    '0.00'
+                WHEN    [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
+                THEN    CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2)) 
+                ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
            END AS [TotalDiscount],
            CASE
                WHEN    [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
-               THEN    COALESCE(CONVERT(VARCHAR(20), (([GrossSales].[GrossSalesAmount] - [TotalTax].[TotalTaxAmount])), 1), '0.00')
-               ELSE    '0.00'
+               THEN    CAST(ROUND(COALESCE([GrossSales].[GrossSalesAmount] - [TotalTax].[TotalTaxAmount], 0), 2) AS DECIMAL(10, 2)) 
+               ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
            END AS [LessTaxAmount],
            MAX(
                CASE 
                    WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL AND ([MstDiscount].[Discount] = 'Senior Citizen Discount' OR [MstDiscount].[Discount] = 'PWD Discount')
-                   THEN COALESCE(CONVERT(VARCHAR(20), (((([GrossSales].[TotalAmount]/[TrnPaxTable].[TotalPax])*[TrnPaxTable].[DiscountedPax])/1.12) - ((((([GrossSales].[TotalAmount]/[TrnPaxTable].[TotalPax])*[TrnPaxTable].[DiscountedPax])/1.12))*0.2)), 1), '0.00')
-                   ELSE '0.00'
+                   THEN CAST(ROUND(COALESCE((((([GrossSales].[TotalAmount]/[TrnPaxTable].[TotalPax])*[TrnPaxTable].[DiscountedPax])/1.12) - ((((([GrossSales].[TotalAmount]/[TrnPaxTable].[TotalPax])*[TrnPaxTable].[DiscountedPax])/1.12))*0.2)), 0), 2) AS DECIMAL(10, 2)) 
+                   ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
                END
            ) AS [TotalExemptSales],
            MAX(
@@ -118,50 +119,50 @@ export const SIATransactions = ({ Terminal, SMPOSSerialNumber }): string => {
                            'VIP Discount',
                            'National Coach', 'National Athlete', 'Medal of Valor Discount'
                        )
-                   THEN COALESCE(CONVERT(VARCHAR(20), (([TotalDiscount].[TotalDiscountAmount])), 1), '0.00')
-                   ELSE '0.00'
+                   THEN CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2)) 
+                   ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
                END
            ) AS [RegularOtherDiscountAmount],
            MAX(
                CASE
                    WHEN    ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'Employee Discount' OR [MstDiscount].[Discount] = 'Employee Meal')
-                   THEN    COALESCE(CONVERT(VARCHAR(20), (([TotalDiscount].[TotalDiscountAmount])), 1), '0.00')
-                   ELSE    '0.00'
+                   THEN    CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2)) 
+                   ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
                END 
            ) AS [EmployeeDiscountAmount],
            MAX(
                CASE
                    WHEN    ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'Senior Citizen Discount')
-                   THEN    COALESCE(CONVERT(VARCHAR(20), (([TotalDiscount].[TotalDiscountAmount])), 1), '0.00')
-                   ELSE    '0.00'
+                   THEN    CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2)) 
+                   ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
                END 
            ) AS [SeniorCitizenDiscountAmount],
            MAX(
                CASE
                    WHEN    ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'VIP Discount')
-                   THEN    COALESCE(CONVERT(VARCHAR, (([TotalDiscount].[TotalDiscountAmount])), 1), '0.00')
-                   ELSE    '0.00'
+                   THEN    CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2))
+                   ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2))
                END
            ) AS [VIPDiscountAmount],
            MAX(
                CASE
                    WHEN    ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'PWD')
-                   THEN    COALESCE(CONVERT(VARCHAR(20), (([TotalDiscount].[TotalDiscountAmount])), 1), '0.00')
-                   ELSE    '0.00'
+                   THEN    CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2))
+                   ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2))
                END 
            ) AS [PWDDiscountAmount],
            MAX(
                CASE
                    WHEN    ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'National Coach' OR [MstDiscount].[Discount] = 'National Athlete' OR [MstDiscount].[Discount] = 'Medal of Valor Discount')
-                   THEN    COALESCE(CONVERT(VARCHAR(20), (([TotalDiscount].[TotalDiscountAmount])), 1), '0.00')
-                   ELSE    '0.00'
+                   THEN    CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2))
+                   ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2))
                END 
            ) AS [NationalCoachAthleteMedalofValorDiscountamount],
            MAX(
                CASE
                    WHEN    ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'SMAC Discount' OR [MstDiscount].[Discount] = 'SMAC')
-                   THEN    COALESCE(CONVERT(VARCHAR(20), (([TotalDiscount].[TotalDiscountAmount])), 1), '0.00')
-                   ELSE    '0.00'
+                   THEN    CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2))
+                   ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2))
                END 
            ) AS [SMACDiscountAmount],
            ' ' AS [OnlineDealsDiscountName],
@@ -181,57 +182,57 @@ export const SIATransactions = ({ Terminal, SMPOSSerialNumber }): string => {
            MAX(
                CASE
                    WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Cash')
-                   THEN	COALESCE(CONVERT(VARCHAR(20), (([TrnCollectionLine].[Amount])), 1), '0.00')
-                   ELSE	'0.00'
+                   THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
+                   ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
                END
            ) AS [TotalCashSalesAmount],
            MAX(
                CASE
                    WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Gift Certificate')
-                   THEN	COALESCE(CONVERT(VARCHAR(20), (([TrnCollectionLine].[Amount])), 1), '0.00')
-                   ELSE	'0.00'
+                   THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
+                   ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
                END
            ) AS [TotalGiftCertificateSalesAmount],
            MAX(
                CASE
                    WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Gcash' OR [MstPayType].[PayType] = 'PayMaya' OR [MstPayType].[PayType] = 'GrabPay' OR [MstPayType].[PayType] = 'FoodPanda')
-                   THEN	COALESCE(CONVERT(VARCHAR(20), (([TrnCollectionLine].[Amount])), 1), '0.00')
-                   ELSE	'0.00'
+                   THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
+                   ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
                END
            ) AS [TotalEwalletOnlineSalesAmount],
            MAX(
                CASE
-                   WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Mastercard')
-                   THEN	COALESCE(CONVERT(VARCHAR(20), (([TrnCollectionLine].[Amount])), 1), '0.00')
-                   ELSE	'0.00'
+                    WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Mastercard')
+                    THEN CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
+                    ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
                END
            ) AS [TotalMastercardSalesAmount],
            MAX(
                CASE
                    WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Visa')
-                   THEN	COALESCE(CONVERT(VARCHAR(20), (([TrnCollectionLine].[Amount])), 1), '0.00')
-                   ELSE	'0.00'
+                   THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
+                   ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
                END
            ) AS [TotalVisaSalesAmount],
            MAX(
                CASE
                    WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Diners')
-                   THEN	COALESCE(CONVERT(VARCHAR(20), (([TrnCollectionLine].[Amount])), 1), '0.00')
-                   ELSE	'0.00'
+                   THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
+                   ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
                END
            ) AS [TotalDinersSalesAmount],
            MAX(
                CASE
                    WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'JCB')
-                   THEN	COALESCE(CONVERT(VARCHAR(20), (([TrnCollectionLine].[Amount])), 1), '0.00')
-                   ELSE	'0.00'
+                   THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
+                   ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
                END
            ) AS [TotalJCBSalesAmount],
            MAX(
                CASE
                    WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Credit Card')
-                   THEN	COALESCE(CONVERT(VARCHAR(20), (([TrnCollectionLine].[Amount])), 1), '0.00')
-                   ELSE	'0.00'
+                   THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
+                   ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
                END
            ) AS [TotalCreditCardSalesAmount],
            '${Terminal}' AS [TerminalNumber],
@@ -295,8 +296,8 @@ export const SIATransactions = ({ Terminal, SMPOSSerialNumber }): string => {
            END,
            CASE 
                WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
-               THEN '0.00'
-               ELSE COALESCE(CONVERT(VARCHAR(20), ([GrossSales].[GrossSalesAmount] + [TotalDiscount].[TotalDiscountAmount]), 1), '0.00')
+               THEN CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+               ELSE CAST(ROUND(COALESCE([GrossSales].[GrossSalesAmount] + [TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2))
            END,
            CASE 
                WHEN [TrnCollection].[IsReturn] = 2 
@@ -305,43 +306,43 @@ export const SIATransactions = ({ Terminal, SMPOSSerialNumber }): string => {
            END,
            CASE 
                WHEN [TrnCollection].[IsReturn] = 2 
-               THEN COALESCE(CONVERT(VARCHAR(20), ([TrnCollection].[Amount]), 1), '0.00')
-               ELSE '0.00'
+               THEN CAST(ROUND(COALESCE([TrnCollection].[Amount], 0), 2) AS DECIMAL(10, 2))
+               ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
            END,
            CASE 
                WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL 
-               THEN COALESCE(CONVERT(VARCHAR(20), ([GrossSales].[GrossSalesAmount] + [TotalDiscount].[TotalDiscountAmount]), 1), '0.00')
-               ELSE '0.00'
+               THEN CAST(ROUND(COALESCE(([GrossSales].[GrossSalesAmount] + [TotalDiscount].[TotalDiscountAmount]), 0), 2) AS DECIMAL(10, 2))
+               ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
            END,
            CASE 
                WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL 
-               THEN COALESCE(CONVERT(VARCHAR(20), (([GrossSales].[GrossSalesAmount])), 1), '0.00')
-               ELSE '0.00'
+               THEN CAST(ROUND(COALESCE(([GrossSales].[GrossSalesAmount]), 0), 2) AS DECIMAL(10, 2))
+               ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
            END,
            CASE
-               WHEN    [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
-               THEN    COALESCE(CONVERT(VARCHAR(20), (([TotalTax].[TotalTaxAmount])), 1), '0.00')
-               ELSE    '0.00'
+               WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
+               THEN CAST(ROUND(COALESCE([TotalTax].[TotalTaxAmount], 0), 2) AS DECIMAL(10, 2))
+               ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
            END,
            CASE
-               WHEN    [TrnSalesLine].[TaxId] = [MstTax].[Id] AND [MstTax].[Tax]  = 'LOCAL TAX'
-               THEN    COALESCE(CONVERT(VARCHAR(20), (([TotalTax].[TotalTaxAmount])), 1), '0.00')
-               ELSE    '0.00'
+               WHEN [TrnSalesLine].[TaxId] = [MstTax].[Id] AND [MstTax].[Tax]  = 'LOCAL TAX'
+               THEN CAST(ROUND(COALESCE([TotalTax].[TotalTaxAmount], 0), 2) AS DECIMAL(10, 2))
+               ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
            END,
            CASE 
                WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL 
-               THEN COALESCE(CONVERT(VARCHAR(20), ([GrossSales].[GrossSalesAmount]/ 1.12), 1), '0.00')
-               ELSE '0.00'
+               THEN CAST(ROUND(COALESCE(([GrossSales].[GrossSalesAmount]/ 1.12), 0), 2) AS DECIMAL(10, 2))
+               ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+           END,
+           CASE
+               WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
+               THEN CAST(ROUND(COALESCE(([TotalDiscount].[TotalDiscountAmount]), 0), 2) AS DECIMAL(10, 2))
+               ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
            END,
            CASE
                WHEN    [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
-               THEN    COALESCE(CONVERT(VARCHAR(20), (([TotalDiscount].[TotalDiscountAmount])), 1), '0.00')
-               ELSE    '0.00'
-           END,
-           CASE
-               WHEN    [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
-               THEN    COALESCE(CONVERT(VARCHAR(20), (([GrossSales].[GrossSalesAmount] - [TotalTax].[TotalTaxAmount])), 1), '0.00')
-               ELSE    '0.00'
+               THEN CAST(ROUND(COALESCE(([GrossSales].[GrossSalesAmount] - [TotalTax].[TotalTaxAmount]), 0), 2) AS DECIMAL(10, 2))
+               ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
            END
        `
 }
