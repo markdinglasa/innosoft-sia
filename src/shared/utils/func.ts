@@ -8,10 +8,6 @@ export const generateSignature = (message: string, signingKey: Uint8Array): stri
   return window.electron.fn.generateSignature(message, signingKey)
 }
 
-export const getKeyPairFromSigningKeyHex = (signingKeyHex: string): KeyPairDetails => {
-  return window.electron.fn.getKeyPairFromSigningKeyHex(signingKeyHex)
-}
-
 export const verifyBlockSignature = (block: any): boolean => {
   return window.electron.fn.verifyBlockSignature(block)
 }

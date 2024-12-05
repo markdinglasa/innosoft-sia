@@ -46,3 +46,12 @@ export const Span = styled.span`
   justify-content: center;
   margin-left: 10px;
 `
+export const Select = styled.select`
+  padding: 10px;
+  border-radius: 5px;
+  outline: none;
+  width: 100%;
+  &:hover {
+    background: ${colors.palette.neutral['100']};
+  }
+`

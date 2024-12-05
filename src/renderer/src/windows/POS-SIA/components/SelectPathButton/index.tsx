@@ -47,7 +47,7 @@ export const SelectPathButton: SFC<SelectPathButtonProps> = ({ className, onSele
     <S.Container className={className}>
       <S.Text>
         <S.Icon path={mdiInformation} size="30px" />
-        <S.Span> Select a location where to save the SIA transactions</S.Span>
+        <S.Span> Select a location where to save the reports.</S.Span>
       </S.Text>
       <S.UButton
         iconLeft={mdiFolder}

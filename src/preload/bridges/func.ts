@@ -27,11 +27,6 @@ const getKeyPairDetails = (keyPair: SignKeyPair): KeyPairDetails => {
   }
 }
 
-const getKeyPairFromSigningKeyHex = (signingKeyHex: string): KeyPairDetails => {
-  const keyPair = sign.keyPair.fromSeed(Buffer.from(signingKeyHex, 'hex'))
-  return getKeyPairDetails(keyPair)
-}
-
 const stringToUint8Array = (str: string): Uint8Array => {
   const encoder = new TextEncoder()
   return encoder.encode(str)
@@ -75,7 +70,6 @@ export const fnApi: FnApi = {
   generateAccount,
   generateSignature,
   getKeyPairDetails,
-  getKeyPairFromSigningKeyHex,
   stringToUint8Array,
   verifyBlockSignature,
   verifySignature

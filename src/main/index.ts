@@ -14,38 +14,41 @@ import {
 import installer, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import electronStore from 'electron-store'
 import path, { join } from 'path'
+import { NODE_ENV } from './constants'
 import './controllers'
 import './ipcMain'
+
 electronStore.initRenderer()
 require('electron-debug')()
 
 export let mainWindow: BrowserWindow | null = null
-let tray: Tray | null = null
+export let tray: Tray | null = null
 export let isQuitting = false
+export const isDev: boolean = NODE_ENV === 'development'
 
 const createWindow = (url: string): BrowserWindow => {
   mainWindow = new BrowserWindow({
     width: 400,
     height: 715,
     icon: path.join(__dirname, '../shared/assets/favicon.ico'),
-    show: false,
-    autoHideMenuBar: true,
+    show: isDev ? true : false,
+    autoHideMenuBar: isDev ? false : true,
     center: true,
-    frame: false,
-    resizable: false,
-    fullscreenable: false,
+    frame: true,
+    resizable: isDev ? true : false,
+    fullscreenable: isDev ? true : false,
     fullscreen: false,
-    vibrancy: 'under-window',
+    vibrancy: isDev ? 'titlebar' : 'under-window',
     title: 'Innsoft SIA',
-    visualEffectState: 'active',
-    titleBarStyle: 'hidden',
+    visualEffectState: isDev ? 'inactive' : 'active',
+    titleBarStyle: isDev ? 'default' : 'hidden',
     trafficLightPosition: { x: 15, y: 10 },
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
       nodeIntegration: true,
       contextIsolation: true,
-      devTools: false
+      devTools: isDev ? true : false
     }
   })
 
@@ -87,10 +90,11 @@ if (!gotTheLock) {
     app.on('browser-window-created', (_, window) => {
       optimizer.watchWindowShortcuts(window)
     })
-    await installer(REDUX_DEVTOOLS)
-    await installer(REACT_DEVELOPER_TOOLS)
-    const url = '../renderer/index.html'
-    mainWindow = createWindow(url)
+
+    if (isDev) await installer(REDUX_DEVTOOLS)
+    if (isDev) await installer(REACT_DEVELOPER_TOOLS)
+
+    mainWindow = createWindow('../renderer/index.html')
     tray = new Tray(nativeImage.createFromPath(path.join(__dirname, '../../resources/favicon.ico')))
 
     const contextMenu = Menu.buildFromTemplate([
@@ -109,7 +113,7 @@ if (!gotTheLock) {
       }
     ])
 
-    tray.setToolTip('Innosoft SIA')
+    tray.setToolTip('iSIA')
     tray.setContextMenu(contextMenu)
 
     tray.on('click', function () {
@@ -126,7 +130,7 @@ if (!gotTheLock) {
 
     // Auto-launch configuration
     const autoLaunch = new AutoLaunch({
-      name: 'Innosoft SIA',
+      name: 'iSIA',
       path: app.getPath('exe')
     })
 

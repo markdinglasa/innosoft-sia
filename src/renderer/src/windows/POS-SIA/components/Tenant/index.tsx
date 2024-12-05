@@ -13,6 +13,7 @@ export const Tenant: SFC = ({ className }) => {
   const [modalIsOpen, toggleModal] = useToggle(false)
   const tenantCode = tenant?.TenantCode
   const initialized = useSelector(getInitialize)
+
   const renderContent = () => {
     if (!tenantCode)
       return <S.Button onClick={toggleModal} iconLeft={mdiStore} text="Select Tenant" />
@@ -39,8 +40,20 @@ export const Tenant: SFC = ({ className }) => {
     <>
       <S.Container className={className}>
         <S.Text>
-          <S.Icon path={mdiInformation} size="30px" />
-          <S.Span> Please input the SM tenant details</S.Span>
+          <div>
+            <S.Icon path={mdiInformation} size="30px" />
+            <S.Span> Please input the Store tenant details.</S.Span>
+          </div>
+          <div className="w-full border-red">
+            <S.Select name="Tenant" aria-placeholder="Select Tenant">
+              <option>Select Tenant</option>
+              <option value="SM">SM</option>
+              <option value="RLC">Robinsons</option>
+              <option value="AYALA">Ayala</option>
+              <option value="MEGAWORLD">Mega World</option>
+              <option value="ALLIANCE">Alliance</option>
+            </S.Select>
+          </div>
         </S.Text>
         <Card heading="Tenant">{renderContent()}</Card>
       </S.Container>
