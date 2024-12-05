@@ -1,37 +1,23 @@
 import { getManager } from '@shared/selectors'
-import { SFC, WindowDataHandlers, WindowDispatch, WindowRegistration } from '@shared/types'
-import { useDispatch, useSelector } from 'react-redux'
-
 import { setActiveWindow } from '@shared/store/manager'
+import { AppDataHandlers, AppDispatch, AppRegistration, SFC } from '@shared/types'
 import { useEffect } from 'react'
-import {
-  SIAElectronStore,
-  SIAManager,
-  SIAManagerRegistration
-} from './windows/POS-SIA/registration'
+import { useDispatch, useSelector } from 'react-redux'
+import { SIAElectronStore, SIAManager, SIAManagerRegistration } from './App'
 
-export interface WindowElectronStore extends SIAElectronStore {}
-
-export const windowReducers = {
-  SIA: SIAManagerRegistration.reducer!
-}
-export const windowRouters: WindowDataHandlers = {}
-
-export const windowRegistration: WindowRegistration[] = [SIAManagerRegistration]
-
-//export const windowRouters: WindowDataHandlers = {}
-export const Windows: SFC = () => {
+export interface AppElectronStore extends SIAElectronStore {}
+export const AppReducers = { SIA: SIAManagerRegistration.reducer! }
+export const AppRouters: AppDataHandlers = {}
+export const AppRegistrations: AppRegistration[] = [SIAManagerRegistration]
+export const AppMain: SFC = () => {
   const { activeWindow } = useSelector(getManager)
-  const dispatch = useDispatch<WindowDispatch>()
-
+  const dispatch = useDispatch<AppDispatch>()
   useEffect(() => {
-    if (!activeWindow) {
-      dispatch(setActiveWindow(SIAManagerRegistration.windowId))
-    }
+    if (!activeWindow) dispatch(setActiveWindow(SIAManagerRegistration.appId))
   }, [activeWindow, dispatch])
   return (
     <>
-      <SIAManager display={activeWindow === SIAManagerRegistration.windowId} />
+      <SIAManager display={activeWindow === SIAManagerRegistration.appId} />
     </>
   )
 }

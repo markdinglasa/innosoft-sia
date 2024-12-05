@@ -1,8 +1,9 @@
-import { Wrapper } from '@shared/containers'
 import store from '@shared/store'
 import { GlobalStyle, ToastifyStyle } from '@shared/styles'
-import ReactDOM from 'react-dom/client'
+import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'
+import { Wrapper } from './Wrapper'
+
 const Root = () => {
   return (
     <Provider store={store}>
@@ -12,4 +13,4 @@ const Root = () => {
     </Provider>
   )
 }
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(<Root />)
+createRoot(document.getElementById('root') as HTMLElement).render(<Root />)
