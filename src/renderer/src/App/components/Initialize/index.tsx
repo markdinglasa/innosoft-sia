@@ -1,11 +1,12 @@
 import { mdiInformation, mdiPause, mdiPlay, mdiRestart } from '@mdi/js'
+import { Tenants } from '@renderer/App/types'
 import { Error } from '@shared/messages'
 import { SIATransactionDetailQuery, SIATransactions } from '@shared/query'
 import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, ButtonColor, SFC, SqlChannel, ToastType } from '@shared/types'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { getInitialize, getIsConnected, getPath, getTenant } from '../../selectors'
+import { getActiveTenant, getInitialize, getIsConnected, getPath, getTenant } from '../../selectors'
 import { setInitialize } from '../../store/manager'
 import { LoadingScreen } from '../LoadingScreen'
 import * as S from './Styles'
@@ -15,6 +16,7 @@ export const Initialize: SFC = ({ className }) => {
   const isConnected = useSelector(getIsConnected)
   const tenant = useSelector(getTenant)
   const initialized = useSelector(getInitialize)
+  const activeTenant = useSelector(getActiveTenant)
   const dispatch = useDispatch<AppDispatch>()
   const [loading, setLoading] = useState<boolean>(false)
   const checkFields = async (): Promise<boolean> => {
@@ -41,10 +43,13 @@ export const Initialize: SFC = ({ className }) => {
     if (!fieldsValid) {
       dispatch(setSnackbar({ display: true, message: Error.e00x44, type: ToastType.error }))
     }
+    if (!activeTenant) {
+      dispatch(setSnackbar({ display: true, message: Error.e00x46, type: ToastType.error }))
+    }
     if (!tenant) {
       dispatch(setSnackbar({ display: true, message: Error.e00x46, type: ToastType.error }))
     }
-    if (tenant && fieldsValid && isConnected) {
+    if (tenant && fieldsValid && isConnected && activeTenant) {
       dispatch(setInitialize(true))
       setLoading(true)
       setTimeout(() => {
@@ -74,26 +79,45 @@ export const Initialize: SFC = ({ className }) => {
     }
   }
 
+  const Terminal: number = useMemo(() => parseInt(tenant.Terminal, 10), [tenant])
+  const SMPOSSerialNumber = tenant.POSSerialNumber
+
+  const reports = async (Tenant: Tenants) => {
+    switch (Tenant) {
+      case Tenants.SM:
+        const transactionsQuery = SIATransactions({ Terminal, SMPOSSerialNumber })
+        const transactionsResponse: Response = await window.electron.sql.get(
+          SqlChannel.getSIATransactions,
+          `${path}/SIA`,
+          transactionsQuery
+        )
+
+        const transactionsDetailsQuery = SIATransactionDetailQuery({ Terminal })
+        const transactionDetailsResponse: Response = await window.electron.sql.get(
+          SqlChannel.getSIATransactionDetails,
+          `${path}/SIA`,
+          transactionsDetailsQuery
+        )
+        console.log(transactionsResponse)
+        console.log(transactionDetailsResponse)
+        break
+      case Tenants.ALLIANCE:
+        //do something here
+        break
+      case Tenants.AYALA:
+        //do something here
+        break
+      case Tenants.RLC:
+        //do something here
+        break
+      case Tenants.MW:
+        //do something here
+        break
+    }
+  }
   const loadData = async () => {
     try {
-      const Terminal: number = parseInt(tenant.Terminal, 10),
-        SMPOSSerialNumber = tenant.POSSerialNumber
-      const transactionsQuery = SIATransactions({ Terminal, SMPOSSerialNumber })
-
-      const transactionsResponse: Response = await window.electron.sql.get(
-        SqlChannel.getSIATransactions,
-        `${path}/SIA`,
-        transactionsQuery
-      )
-
-      const transactionsDetailsQuery = SIATransactionDetailQuery({ Terminal })
-      const transactionDetailsResponse: Response = await window.electron.sql.get(
-        SqlChannel.getSIATransactionDetails,
-        `${path}/SIA`,
-        transactionsDetailsQuery
-      )
-      console.log(transactionsResponse)
-      console.log(transactionDetailsResponse)
+      await reports(activeTenant)
     } catch (error: any) {
       dispatch(setSnackbar({ display: true, message: Error.e00x01, type: ToastType.error }))
     }
