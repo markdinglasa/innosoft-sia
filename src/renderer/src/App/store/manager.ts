@@ -10,13 +10,29 @@ export const initialState: Manager = {
   isConnected: false,
   initialize: false,
   snackbar: false,
-  activeTenant: null
+  activeTenant: null,
+  accumulatedTotal: 0,
+  controlNumber: 0
 }
 
 const manager = createSlice({
   name: SIA_MANAGER,
   initialState,
   reducers: {
+    setControlNumber: (state: Manager, { payload: controlNumber }: PayloadAction<number>) => {
+      state.controlNumber = controlNumber
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: SIA_MANAGER,
+        state: current(state)
+      })
+    },
+    setAccumulatedTotal: (state: Manager, { payload: accumulatedTotal }: PayloadAction<number>) => {
+      state.accumulatedTotal = accumulatedTotal
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: SIA_MANAGER,
+        state: current(state)
+      })
+    },
     setTenant: (state: Manager, { payload: tenant }: PayloadAction<any | null>) => {
       state.tenant = tenant
       window.electron.ipc.send(IpcChannel.setStoreValue, {
@@ -56,7 +72,14 @@ const manager = createSlice({
   }
 })
 
-export const { setTenant, setPath, setIsConnected, setActiveTenant, setInitialize, setManager } =
-  manager.actions
+export const {
+  setAccumulatedTotal,
+  setTenant,
+  setPath,
+  setIsConnected,
+  setActiveTenant,
+  setInitialize,
+  setManager
+} = manager.actions
 
 export default manager.reducer

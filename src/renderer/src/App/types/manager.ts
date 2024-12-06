@@ -5,6 +5,8 @@ export interface Manager {
   isConnected: boolean
   initialize: boolean
   snackbar: boolean
+  accumulatedTotal: number
+  controlNumber: number
 }
 
 export enum Tenants {

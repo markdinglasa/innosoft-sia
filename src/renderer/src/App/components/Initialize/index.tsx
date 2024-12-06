@@ -12,13 +12,14 @@ import { LoadingScreen } from '../LoadingScreen'
 import * as S from './Styles'
 
 export const Initialize: SFC = ({ className }) => {
+  const dispatch = useDispatch<AppDispatch>()
+  const [loading, setLoading] = useState<boolean>(false)
   const path = useSelector(getPath)
   const isConnected = useSelector(getIsConnected)
   const tenant = useSelector(getTenant)
   const initialized = useSelector(getInitialize)
   const activeTenant = useSelector(getActiveTenant)
-  const dispatch = useDispatch<AppDispatch>()
-  const [loading, setLoading] = useState<boolean>(false)
+
   const checkFields = async (): Promise<boolean> => {
     try {
       if (!path) return false
@@ -115,6 +116,7 @@ export const Initialize: SFC = ({ className }) => {
         break
     }
   }
+
   const loadData = async () => {
     try {
       await reports(activeTenant)
