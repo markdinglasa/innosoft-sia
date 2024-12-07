@@ -1,4 +1,4 @@
-export interface SysCurrent {
+export interface Tenant {
   TerminalId: number
   SMBranchCode?: string
   SMTenantCode?: string
