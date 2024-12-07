@@ -1,7 +1,12 @@
 import { mdiInformation, mdiPause, mdiPlay, mdiRestart } from '@mdi/js'
 import { Tenants } from '@renderer/App/types'
 import { Error } from '@shared/messages'
-import { SIATransactionDetailQuery, SIATransactions } from '@shared/query'
+import {
+  SIATransactionDetailQuery,
+  SIATransactions,
+  mwDailyDiscount,
+  mwDailyHourlySales
+} from '@shared/query'
 import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, ButtonColor, SFC, SqlChannel, ToastType } from '@shared/types'
 import { useEffect, useMemo, useState } from 'react'
@@ -84,6 +89,11 @@ export const Initialize: SFC = ({ className }) => {
   const SMPOSSerialNumber = tenant.POSSerialNumber
 
   const reports = async (Tenant: Tenants) => {
+    const Date = '2024-11-04'
+    const MallParnterCodeId = String(tenant.TenantCode)
+      .slice(0, 8)
+      .replace(/[^a-zA-Z0-9]/g, '')
+      .padStart(8, '0')
     switch (Tenant) {
       case Tenants.SM:
         const transactionsQuery = SIATransactions({ Terminal, SMPOSSerialNumber })
@@ -113,6 +123,38 @@ export const Initialize: SFC = ({ className }) => {
         break
       case Tenants.MW:
         //do something here
+        const dailyDiscountQuery: string = mwDailyDiscount({ Terminal, Date })
+        const dailyDiscount = await window.electron.sql.get(
+          SqlChannel.getDailyDiscount,
+          tenant,
+          path,
+          dailyDiscountQuery
+        )
+        const dailyHourlySalesQuery: string = mwDailyHourlySales({
+          Date,
+          Terminal,
+          MallParnterCodeId
+        })
+        const dailyHourlySales = await window.electron.sql.get(
+          SqlChannel.getDailyHourlySales,
+          tenant,
+          path,
+          dailyHourlySalesQuery
+        )
+        /*const dailySalesQuery: string = mwDailySales({
+          Date,
+          Terminal,
+          MallParnterCodeId
+        })
+        const dailySales = await window.electron.sql.get(
+          SqlChannel.getDailySales,
+          tenant,
+          path,
+          dailySalesQuery
+        )*/
+        //console.log(dailySales)
+        console.log(dailyHourlySales)
+        console.log(dailyDiscount)
         break
     }
   }

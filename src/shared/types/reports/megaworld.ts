@@ -33,7 +33,7 @@ export interface DailySale {
 export type DailySales = DailySale[]
 
 export interface DailyHourlySale {
-  MallParterCodeId: string // 8 digits
+  MallPartnerCodeId: string // 8 digits
   Terminal: string
   Date: string // MMDDYYYY
   HourCode: string

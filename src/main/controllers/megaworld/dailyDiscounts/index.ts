@@ -12,28 +12,20 @@ ipcMain.handle(
     try {
       const response = await recordByQuery(query)
       if (!response.List) return { IsSomething: false, Message: response.Message }
-
-      // Generate file name
       const fileName = generateMWFilename(
         MWFileType.DailyDiscount,
-        data.TenantCodeId,
+        data.TenantCode,
         data.Terminal,
-        data.BatchNo
+        data.BatchNo ?? 0
       )
       const filePath = paths.join(path, `${fileName}`)
-
-      // Remove existing file if it exists
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
-
-      // Prepare data for writing
       const dailyDiscountData = response.List.map(
         (item: DailyDiscount) =>
-          `${item.DiscountCode},${item.DiscountDescription},${item.DiscountAmount}`
-      ).join('\n') // Convert data to string with line breaks
+          `${item.DiscountCode}, ${item.DiscountDescription}, ${Number(item.DiscountAmount).toFixed(2)}`
+      ).join('\n')
 
-      // Write data to the file
       fs.writeFileSync(filePath, dailyDiscountData, 'utf8')
-
       return { IsSomething: true, Message: Success.s00x00 }
     } catch (error: any) {
       console.error('Error writing file:', error)

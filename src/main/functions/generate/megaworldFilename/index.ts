@@ -23,7 +23,10 @@ export const generateMWFilename = (
       throw new Error('Invalid batchNo: must be a single digit (0-9).')
     }
 
-    const formattedPartnerCode = String(partnerCode).padStart(8, '0')
+    const formattedPartnerCode = String(partnerCode)
+      .slice(0, 8)
+      .replace(/[^a-zA-Z0-9]/g, '')
+      .padStart(8, '0')
     const formattedTerminal = String(terminal).padStart(2, '0')
     const formattedBatchNo = String(batchNo)
 
