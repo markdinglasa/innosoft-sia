@@ -5,11 +5,13 @@ import {
   SIATransactionDetailQuery,
   SIATransactions,
   mwDailyDiscount,
-  mwDailyHourlySales
+  mwDailyHourlySales,
+  mwDailySales
 } from '@shared/query'
+import { mwDailyHourlySalesRepeated } from '@shared/query/megaworld/dailyhourlysales_repeated'
 import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, ButtonColor, SFC, SqlChannel, ToastType } from '@shared/types'
-import { formatDate } from '@shared/utils'
+import { formatDates } from '@shared/utils'
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getActiveTenant, getInitialize, getIsConnected, getPath, getTenant } from '../../selectors'
@@ -86,16 +88,17 @@ export const Initialize: SFC = ({ className }) => {
     }
   }
 
-  const Terminal: number = useMemo(() => parseInt(tenant.Terminal, 10), [tenant])
+  const Terminal: number = useMemo(() => parseInt(tenant.Terminal, 10), [tenant]) //TerminalId
   const SMPOSSerialNumber = tenant.POSSerialNumber
 
   const reports = async (Tenant: Tenants) => {
-    const Dates = formatDate(new Date())
+    const Dates = formatDates(new Date()).toString() ?? new Date()
+    console.log(Dates)
     const SalesType = tenant?.SMSalesType ?? 'NA'
     const MallParnterCodeId = String(tenant.TenantCode)
       .slice(0, 8)
       .replace(/[^a-zA-Z0-9]/g, '')
-      .padStart(8, '0')
+      .padEnd(8, '0')
     switch (Tenant) {
       case Tenants.SM:
         const transactionsQuery = SIATransactions({ Terminal, SMPOSSerialNumber, SalesType })
@@ -124,29 +127,28 @@ export const Initialize: SFC = ({ className }) => {
         //do something here
         const dailyDiscountQuery: string = mwDailyDiscount({ Terminal, Dates })
         await window.electron.sql.get(SqlChannel.getDailyDiscount, tenant, path, dailyDiscountQuery)
-        const dailyHourlySalesQuery: string = mwDailyHourlySales({
+        const dailyDaySalesQuery: string = mwDailyHourlySales({
           Dates,
           Terminal,
           MallParnterCodeId
+        })
+        const dailyHourlySalesQuery: string = mwDailyHourlySalesRepeated({
+          Dates,
+          Terminal
         })
         await window.electron.sql.get(
           SqlChannel.getDailyHourlySales,
           tenant,
           path,
+          dailyDaySalesQuery,
           dailyHourlySalesQuery
         )
-        /*const dailySalesQuery: string = mwDailySales({
-          Date,
+        const dailySalesQuery: string = mwDailySales({
+          Dates,
           Terminal,
           MallParnterCodeId
         })
-        const dailySales = await window.electron.sql.get(
-          SqlChannel.getDailySales,
-          tenant,
-          path,
-          dailySalesQuery
-        )*/
-        //console.log(dailySales)
+        await window.electron.sql.get(SqlChannel.getDailySales, tenant, path, dailySalesQuery)
         break
     }
   }

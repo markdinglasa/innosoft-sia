@@ -1,14 +1,14 @@
-export const mwDailySales = ({ Date, Terminal, MallParnterCodeId }: any): string => {
+export const mwDailySales = ({ Dates, Terminal, MallParnterCodeId }: any): string => {
   return `SELECT 
         '${MallParnterCodeId}' AS [MallParnterCodeId],
         [TrnSales].[TerminalId] AS [Terminal],
-        '${Date}' AS [Date]
+        '${Dates}' AS [Date]
     FROM  [TrnSales]
 
     `
 }
 
-export const TaxAmount = ({ Date, TerminalId }: any): string => {
+export const TaxAmount = ({ Dates, TerminalId }: any): string => {
   return `
     SELECT
         SUM(CASE 
@@ -56,14 +56,14 @@ export const TaxAmount = ({ Date, TerminalId }: any): string => {
         AND [TrnSales].[IsCancelled] = 0 
         AND [TrnSales].[TerminalId] = ${TerminalId}
         AND [TrnCollection].[IsCancelled] = 0  
-        AND CAST([TrnSales].[SalesDate] AS DATE) = '${Date}'
+        AND CAST([TrnSales].[SalesDate] AS DATE) = '${Dates}'
 
     GROUP BY 
         [TrnSales].[TerminalId],
         [TrnSales].[SalesDate]`
 }
 
-export const ServiceCharge = ({ Date, TerminalId }: any): string => {
+export const ServiceCharge = ({ Dates, TerminalId }: any): string => {
   return `
     SELECT 
     SUM([TrnSalesLine].[Amount]) AS ServiceCharge 
@@ -72,7 +72,7 @@ export const ServiceCharge = ({ Date, TerminalId }: any): string => {
     WHERE [ItemId] = 1 
     AND [TrnSales].[IsLocked] = 1 
     AND [TrnSales].[TerminalId] = ${TerminalId}
-    AND CAST([TrnSales].[SalesDate] AS DATE) = '${Date}' 
+    AND CAST([TrnSales].[SalesDate] AS DATE) = '${Dates}' 
     GROUP BY [TrnSalesLine].[Amount]
     `
 }
