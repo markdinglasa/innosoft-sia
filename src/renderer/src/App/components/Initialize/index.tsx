@@ -9,6 +9,7 @@ import {
 } from '@shared/query'
 import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, ButtonColor, SFC, SqlChannel, ToastType } from '@shared/types'
+import { formatDate } from '@shared/utils'
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getActiveTenant, getInitialize, getIsConnected, getPath, getTenant } from '../../selectors'
@@ -89,28 +90,26 @@ export const Initialize: SFC = ({ className }) => {
   const SMPOSSerialNumber = tenant.POSSerialNumber
 
   const reports = async (Tenant: Tenants) => {
-    const Date = '2024-11-04'
+    const Dates = formatDate(new Date())
+    const SalesType = tenant?.SMSalesType ?? 'NA'
     const MallParnterCodeId = String(tenant.TenantCode)
       .slice(0, 8)
       .replace(/[^a-zA-Z0-9]/g, '')
       .padStart(8, '0')
     switch (Tenant) {
       case Tenants.SM:
-        const transactionsQuery = SIATransactions({ Terminal, SMPOSSerialNumber })
-        const transactionsResponse: Response = await window.electron.sql.get(
+        const transactionsQuery = SIATransactions({ Terminal, SMPOSSerialNumber, SalesType })
+        await window.electron.sql.get(
           SqlChannel.getSIATransactions,
           `${path}/SIA`,
           transactionsQuery
         )
-
         const transactionsDetailsQuery = SIATransactionDetailQuery({ Terminal })
-        const transactionDetailsResponse: Response = await window.electron.sql.get(
+        await window.electron.sql.get(
           SqlChannel.getSIATransactionDetails,
           `${path}/SIA`,
           transactionsDetailsQuery
         )
-        console.log(transactionsResponse)
-        console.log(transactionDetailsResponse)
         break
       case Tenants.ALLIANCE:
         //do something here
@@ -123,19 +122,14 @@ export const Initialize: SFC = ({ className }) => {
         break
       case Tenants.MW:
         //do something here
-        const dailyDiscountQuery: string = mwDailyDiscount({ Terminal, Date })
-        const dailyDiscount = await window.electron.sql.get(
-          SqlChannel.getDailyDiscount,
-          tenant,
-          path,
-          dailyDiscountQuery
-        )
+        const dailyDiscountQuery: string = mwDailyDiscount({ Terminal, Dates })
+        await window.electron.sql.get(SqlChannel.getDailyDiscount, tenant, path, dailyDiscountQuery)
         const dailyHourlySalesQuery: string = mwDailyHourlySales({
-          Date,
+          Dates,
           Terminal,
           MallParnterCodeId
         })
-        const dailyHourlySales = await window.electron.sql.get(
+        await window.electron.sql.get(
           SqlChannel.getDailyHourlySales,
           tenant,
           path,
@@ -153,8 +147,6 @@ export const Initialize: SFC = ({ className }) => {
           dailySalesQuery
         )*/
         //console.log(dailySales)
-        console.log(dailyHourlySales)
-        console.log(dailyDiscount)
         break
     }
   }

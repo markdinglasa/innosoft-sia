@@ -23,6 +23,7 @@ ipcMain.handle(
         item.BusinessDay,
         item.CheckOpen,
         item.CheckClose,
+        item.SalesType,
         item.TransactionType,
         item.Void,
         item.VoidAmount,

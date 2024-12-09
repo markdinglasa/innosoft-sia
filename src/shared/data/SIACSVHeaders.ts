@@ -3,6 +3,7 @@ export const SIATransactionHeaders = [
   { id: 'BusinessDay', title: 'Business Day' },
   { id: 'CheckOpen', title: 'Check Open' },
   { id: 'CheckClose', title: 'Check Close' },
+  { id: 'SalesType', title: 'Sales Type' },
   { id: 'TransactionType', title: 'Transaction Type' },
   { id: 'Void', title: 'Void' },
   { id: 'VoidAmount', title: 'Void Amount' },

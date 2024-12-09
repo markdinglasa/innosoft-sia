@@ -1,4 +1,4 @@
-export const mwDailyDiscount = ({ Date, Terminal }: any): string => {
+export const mwDailyDiscount = ({ Dates, Terminal }: any): string => {
   return `SELECT 
             [TrnSales].[TerminalId] AS TerminalId,
             CASE WHEN [MstDiscount].[Discount] <> 'Zero Discount' THEN [MstDiscount].[Discount] ELSE 'NA' END AS [DiscountCode],
@@ -19,7 +19,7 @@ export const mwDailyDiscount = ({ Date, Terminal }: any): string => {
                 AND [TrnCollection].[IsLocked] = 1 
                 AND [TrnSales].[TerminalId] = ${Terminal}
                 AND [TrnSales].[IsCancelled] = 0 AND [TrnCollection].[IsCancelled] = 0  
-                AND CAST([TrnSales].[SalesDate] AS DATE) = '${Date}'
+                AND CAST([TrnSales].[SalesDate] AS DATE) = '${Dates}'
             GROUP BY 
             [TrnSales].[TerminalId],
             [MstDiscount].[Discount]`

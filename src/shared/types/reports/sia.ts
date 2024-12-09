@@ -3,6 +3,7 @@ export interface SIATransaction {
   BusinessDay: string
   CheckOpen: string
   CheckClose: string
+  SalesType: string
   TransactionType: string
   Void: number
   VoidAmount: number

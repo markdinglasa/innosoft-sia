@@ -1,12 +1,13 @@
-export const SIATransactions = ({ Terminal, SMPOSSerialNumber }): string => {
+export const SIATransactions = ({ Terminal, SMPOSSerialNumber, SalesType }): string => {
   return `
         
        SELECT 
-           REPLACE([TrnSales].[SalesNumber], '-', '') AS [OrderNumber],
-           CONVERT(varchar, [TrnSales].[SalesDate], 23) AS [BusinessDay],
-           CONVERT(varchar, [TrnSales].[EntryDateTime], 21) AS [CheckOpen],
-           CONVERT(varchar, [TrnSales].[UpdateDateTime], 21) AS [CheckClose],
-           COALESCE(NULLIF([MstTable].[TableCode], ''), 'Walk-In') AS [TransactionType],
+            REPLACE([TrnSales].[SalesNumber], '-', '') AS [OrderNumber],
+            CONVERT(varchar, [TrnSales].[SalesDate], 23) AS [BusinessDay],
+            CONCAT(CONVERT(varchar, [TrnSales].[SalesDate], 23), ' ', CONVERT(varchar, [TrnSalesLine].[SalesLineTimeStamp], 8)) AS [CheckOpen],
+            CONCAT(CONVERT(varchar, [TrnSales].[SalesDate], 23), ' ', CONVERT(varchar, [TrnSales].[UpdateDateTime], 8)) AS [CheckClose],
+            '${SalesType}' AS [SalesType],
+            COALESCE(NULLIF([MstTable].[TableCode], ''), 'Walk-In') AS [TransactionType],
            CASE 
                WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL 
                THEN 0 
@@ -285,6 +286,7 @@ export const SIATransactions = ({ Terminal, SMPOSSerialNumber }): string => {
            GROUP BY
            [TrnSales].[SalesNumber],
            [TrnSales].[SalesDate],
+           [TrnSalesLine].[SalesLineTimeStamp],
            [TrnSales].[EntryDateTime],
            [TrnSales].[UpdateDateTime],
            [MstTable].[TableCode],
