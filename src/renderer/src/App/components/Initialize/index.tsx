@@ -1,21 +1,28 @@
 import { mdiInformation, mdiPause, mdiPlay, mdiRestart } from '@mdi/js'
-import { Tenants } from '@renderer/App/types'
 import { Error } from '@shared/messages'
 import {
   SIATransactionDetailQuery,
   SIATransactions,
   mwDailyDiscount,
   mwDailyHourlySales,
+  mwDailyHourlySalesRepeated,
   mwDailySales
 } from '@shared/query'
-import { mwDailyHourlySalesRepeated } from '@shared/query/megaworld/dailyhourlysales_repeated'
 import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, ButtonColor, SFC, SqlChannel, ToastType } from '@shared/types'
 import { formatDates } from '@shared/utils'
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { getActiveTenant, getInitialize, getIsConnected, getPath, getTenant } from '../../selectors'
-import { setInitialize } from '../../store/manager'
+import {
+  getActiveTenant,
+  getBatchNo,
+  getInitialize,
+  getIsConnected,
+  getPath,
+  getTenant
+} from '../../selectors'
+import { setBatchNo, setInitialize } from '../../store/manager'
+import { Tenants } from '../../types'
 import { LoadingScreen } from '../LoadingScreen'
 import * as S from './Styles'
 
@@ -27,6 +34,7 @@ export const Initialize: SFC = ({ className }) => {
   const tenant = useSelector(getTenant)
   const initialized = useSelector(getInitialize)
   const activeTenant = useSelector(getActiveTenant)
+  const batchNo = useSelector(getBatchNo)
 
   const checkFields = async (): Promise<boolean> => {
     try {
@@ -93,8 +101,8 @@ export const Initialize: SFC = ({ className }) => {
 
   const reports = async (Tenant: Tenants) => {
     const Dates = formatDates(new Date()).toString() ?? new Date()
-    console.log(Dates)
     const SalesType = tenant?.SMSalesType ?? 'NA'
+    const BatchNo = batchNo + 1
     const MallParnterCodeId = String(tenant.TenantCode)
       .slice(0, 8)
       .replace(/[^a-zA-Z0-9]/g, '')
@@ -116,6 +124,7 @@ export const Initialize: SFC = ({ className }) => {
         break
       case Tenants.ALLIANCE:
         //do something here
+        //(DSum("expr1","RepPOS (Z Reading Z-Counter)")+Nz(DFirst("ZCounterEnd","SysCurrent"),0)) AS Zcounter
         break
       case Tenants.AYALA:
         //do something here
@@ -124,31 +133,49 @@ export const Initialize: SFC = ({ className }) => {
         //do something here
         break
       case Tenants.MW:
-        //do something here
-        const dailyDiscountQuery: string = mwDailyDiscount({ Terminal, Dates })
-        await window.electron.sql.get(SqlChannel.getDailyDiscount, tenant, path, dailyDiscountQuery)
-        const dailyDaySalesQuery: string = mwDailyHourlySales({
-          Dates,
-          Terminal,
-          MallParnterCodeId
-        })
-        const dailyHourlySalesQuery: string = mwDailyHourlySalesRepeated({
-          Dates,
-          Terminal
-        })
-        await window.electron.sql.get(
-          SqlChannel.getDailyHourlySales,
-          tenant,
-          path,
-          dailyDaySalesQuery,
-          dailyHourlySalesQuery
-        )
-        const dailySalesQuery: string = mwDailySales({
-          Dates,
-          Terminal,
-          MallParnterCodeId
-        })
-        await window.electron.sql.get(SqlChannel.getDailySales, tenant, path, dailySalesQuery)
+        try {
+          const dailyDiscountQuery: string = mwDailyDiscount({ Terminal, Dates })
+          await window.electron.sql.get(
+            SqlChannel.getDailyDiscount,
+            tenant,
+            path,
+            BatchNo,
+            dailyDiscountQuery
+          )
+          const dailyDaySalesQuery: string = mwDailyHourlySales({
+            Dates,
+            Terminal,
+            MallParnterCodeId
+          })
+          const dailyHourlySalesQuery: string = mwDailyHourlySalesRepeated({
+            Dates,
+            Terminal
+          })
+          await window.electron.sql.get(
+            SqlChannel.getDailyHourlySales,
+            tenant,
+            path,
+            BatchNo,
+            dailyDaySalesQuery,
+            dailyHourlySalesQuery
+          )
+          const dailySalesQuery: string = mwDailySales({
+            Dates,
+            Terminal,
+            MallParnterCodeId
+          })
+          await window.electron.sql.get(
+            SqlChannel.getDailySales,
+            tenant,
+            path,
+            BatchNo,
+            dailySalesQuery
+          )
+          dispatch(setBatchNo(BatchNo))
+        } catch (error: any) {
+          console.error(error.message)
+          dispatch(setSnackbar({ display: true, message: Error.e00x01, type: ToastType.error }))
+        }
         break
     }
   }

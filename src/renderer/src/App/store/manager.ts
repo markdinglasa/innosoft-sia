@@ -12,15 +12,15 @@ export const initialState: Manager = {
   snackbar: false,
   activeTenant: null,
   accumulatedTotal: 0,
-  controlNumber: 0
+  batchNo: 0
 }
 
 const manager = createSlice({
   name: SIA_MANAGER,
   initialState,
   reducers: {
-    setControlNumber: (state: Manager, { payload: controlNumber }: PayloadAction<number>) => {
-      state.controlNumber = controlNumber
+    setBatchNo: (state: Manager, { payload: batchNo }: PayloadAction<number>) => {
+      state.batchNo = batchNo
       window.electron.ipc.send(IpcChannel.setStoreValue, {
         key: SIA_MANAGER,
         state: current(state)
@@ -76,6 +76,7 @@ export const {
   setAccumulatedTotal,
   setTenant,
   setPath,
+  setBatchNo,
   setIsConnected,
   setActiveTenant,
   setInitialize,

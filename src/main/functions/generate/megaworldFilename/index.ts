@@ -19,7 +19,7 @@ export const generateMWFilename = (
       throw new Error('Invalid terminal: must be a number between 0 and 99.')
     }
 
-    if (typeof batchNo !== 'number' || batchNo < 0 || batchNo > 9) {
+    if (typeof batchNo !== 'number' || batchNo < 0) {
       throw new Error('Invalid batchNo: must be a single digit (0-9).')
     }
 
@@ -28,7 +28,6 @@ export const generateMWFilename = (
       .replace(/[^a-zA-Z0-9]/g, '')
       .padStart(8, '0')
     const formattedTerminal = String(terminal).padStart(2, '0')
-    const formattedBatchNo = String(batchNo)
 
     const currentDate = new Date()
     if (isNaN(currentDate.getTime())) {
@@ -38,8 +37,9 @@ export const generateMWFilename = (
     const month = currentDate.getMonth() + 1
     const monthCode = month > 9 ? String.fromCharCode(64 + month - 9) : String(month)
     const day = String(currentDate.getDate()).padStart(2, '0')
-    return `${type}${formattedPartnerCode}${formattedTerminal}${formattedBatchNo}.${monthCode}${day}`
+    return `${type}${formattedPartnerCode}${formattedTerminal}${batchNo}.${monthCode}${day}`
   } catch (error: any) {
+    console.error(error.message)
     return 'error.txt'
   }
 }

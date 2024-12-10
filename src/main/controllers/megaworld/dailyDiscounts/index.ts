@@ -8,7 +8,13 @@ import { recordByQuery } from '../../../model'
 
 ipcMain.handle(
   SqlChannel.getDailyDiscount,
-  async (_event: any, data: any, path: string, query: string): Promise<Response> => {
+  async (
+    _event: any,
+    data: any,
+    path: string,
+    BatchNo: number,
+    query: string
+  ): Promise<Response> => {
     try {
       const response = await recordByQuery(query)
       if (!response.List) return { IsSomething: false, Message: response.Message }
@@ -16,7 +22,7 @@ ipcMain.handle(
         MWFileType.DailyDiscount,
         data.TenantCode,
         data.Terminal,
-        data.BatchNo ?? 0
+        BatchNo ?? 0
       )
       const filePath = paths.join(path, `${fileName}`)
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath)

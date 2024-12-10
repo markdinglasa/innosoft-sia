@@ -1,10 +1,61 @@
-export const mwDailySales = ({ Dates, Terminal, MallParnterCodeId }: any): string => {
-  return `SELECT 
-        '${MallParnterCodeId}' AS [MallParnterCodeId],
+export const mwDailySales = ({
+  Dates,
+  Terminal,
+  OldAccumulatedTotal,
+  VatExempt,
+  RefundAmount,
+  VATAmount,
+  ServiceChargeAmount,
+  CashSales,
+  CreditDebitsales,
+  OtherPaymentSales,
+  VoidAmount,
+  ControlNumber,
+  SalesType,
+  NetSalesAmountPerSalesType,
+  MallParnterCodeId
+}: any): string => {
+  return `
+     SELECT
+        '${MallParnterCodeId}' AS [MallPartnerCodeId],
         [TrnSales].[TerminalId] AS [Terminal],
-        '${Dates}' AS [Date]
-    FROM  [TrnSales]
-
+        '${Dates}' AS [Date],
+		'${OldAccumulatedTotal}' AS [OldAccumulatedTotal],
+		${OldAccumulatedTotal} + SUM(CASE WHEN ISNULL([TrnCollection].[IsReturn], 0) = 2 OR ISNULL([TrnSales].[IsCancelled],0) = 1 THEN 0 ELSE CAST(ROUND([TrnSalesLine].[Amount], 3) AS DECIMAL(10, 3))  END) AS [NewAccumulatedTotal], 
+		SUM(CASE WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL  THEN CAST(ROUND(COALESCE([GrossSales].[GrossSalesAmount], 0), 3) AS DECIMAL(10, 3)) + CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 5) AS DECIMAL(10, 5)) ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) END) AS [GrossSalesAmount],
+		'${VatExempt}' AS [NonTaxSalesAmount],
+		SUM(CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND ([MstDiscount].[Discount] IN ('PWD', 'Senior Citizen Discount', 'MOV', 'Athlete Discount', 'National Athlete', 'Single Parent')) THEN ISNULL([TotalDiscount].[TotalDiscountAmount], 0) ELSE 0 END) AS [GovMandatedDiscount],
+		SUM(CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND  ([MstDiscount].[Discount] NOT IN ('PWD', 'Senior Citizen Discount', 'MOV', 'Athlete Discount', 'National Athlete', 'Single Parent')) THEN  ISNULL([TotalDiscount].[TotalDiscountAmount], 0) ELSE 0 END ) AS [OtherDiscount],
+		'${RefundAmount}' AS [RefundAmount],
+		'${VATAmount}' AS [RefundAmount],
+		'${ServiceChargeAmount}' AS [ServiceChargeAmount],
+		SUM(CASE WHEN (ISNULL([TrnCollection].[IsReturn], 0) = 2 OR ISNULL([TrnSales].[IsCancelled],0) = 1) THEN 0  ELSE CAST(ROUND([GrossSales].[GrossSalesAmount], 3) AS DECIMAL(10, 3)) END) AS [NetSalesAmount],
+		'${CashSales}' AS [CashSales],
+		'${CreditDebitsales}' AS [CreditDebitsales],
+		'${OtherPaymentSales}' AS [OtherPaymentSales],
+		'${VoidAmount}' AS [VoidAmount],
+		 COUNT(CASE  WHEN [TrnSales].[CustomerId] = 1 THEN [TrnSales].[Id] ELSE NULL END) +  COUNT(DISTINCT CASE  WHEN [TrnSales].[CustomerId] > 1 THEN [TrnSales].[CustomerId] ELSE NULL END ) AS [CustomerCount],
+		'${ControlNumber}' AS [ControlNumber],
+		COUNT([TrnSales].[Id]) AS [NoSalesTransaction],
+		'${SalesType}' AS [SalesType],
+		'${NetSalesAmountPerSalesType}' AS [NetSalesAmountPerSalesType]
+	FROM 
+        [TrnSales]
+        INNER JOIN [TrnSalesLine] ON [TrnSales].[Id] = [TrnSalesLine].[SalesId]
+        LEFT JOIN [TrnCollection] ON [TrnCollection].[SalesId] = [TrnSalesLine].[SalesId]
+        INNER JOIN [MstDiscount] ON [TrnSalesLine].[DiscountId] = [MstDiscount].[Id]
+        LEFT JOIN [TrnPaxTable] ON [TrnPaxTable].[SaleId] = [TrnSalesLine].[SalesId]
+        INNER JOIN [MstTax] ON [TrnSalesLine].[TaxId] = [MstTax].[Id]
+		LEFT JOIN (SELECT [SalesId], SUM(([DiscountAmount]) * ([Quantity])) AS [TotalDiscountAmount]FROM [TrnSalesLine] GROUP BY [SalesId]) AS [TotalDiscount] ON [TrnSales].[Id] = [TotalDiscount].[SalesId]
+		LEFT JOIN (SELECT [SalesId], SUM([Amount]) AS [GrossSalesAmount], SUM([Price]*[Quantity]) AS [TotalAmount] FROM [TrnSalesLine] GROUP BY [SalesId]) AS [GrossSales] ON [TrnSales].[Id] = [GrossSales].[SalesId]
+    WHERE 
+        [TrnSales].[IsLocked] = 1 
+        AND [TrnCollection].[IsLocked] = 1 
+        AND [TrnSales].[TerminalId] = '${Terminal}'
+        AND CAST([TrnSales].[SalesDate] AS DATE) = '${Dates}'
+    GROUP BY 
+        [TrnSales].[TerminalId],
+        [TrnSales].[SalesDate]
     `
 }
 

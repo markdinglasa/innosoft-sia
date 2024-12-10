@@ -12,6 +12,7 @@ ipcMain.handle(
     _event: any,
     data: any,
     path: string,
+    BatchNo: number,
     dayQuery: string,
     hourlyQuery: string
   ): Promise<Response> => {
@@ -31,7 +32,7 @@ ipcMain.handle(
         MWFileType.DailyHourlySales,
         data.TenantCode,
         data.Terminal,
-        data.BatchNo ?? 0 // Default to 0 if BatchNo is not provided
+        BatchNo ?? 0 // Default to 0 if BatchNo is not provided
       )
       const filePath = paths.join(path, fileName)
 

@@ -7,7 +7,13 @@ import { generateMWFilename } from '../../../functions'
 import { recordByQuery } from '../../../model'
 ipcMain.handle(
   SqlChannel.getDailySales,
-  async (_event: any, data: any, path: string, query: string): Promise<Response> => {
+  async (
+    _event: any,
+    data: any,
+    path: string,
+    BatchNo: number,
+    query: string
+  ): Promise<Response> => {
     try {
       // Fetch records based on the provided query
       const response = await recordByQuery(query)
@@ -22,7 +28,7 @@ ipcMain.handle(
         MWFileType.DailySales,
         data.TenantCode,
         data.Terminal,
-        data.BatchNo ?? 0
+        BatchNo ?? 0
       )
       const filePath = paths.join(path, `${fileName}`)
 
@@ -34,30 +40,30 @@ ipcMain.handle(
       // Format the sales data
       const hourlySalesData = response.List.map((item: DailySale) => {
         return [
-          `01${item.MallParterCodeId}`,
-          `02${item.Terminal}`,
-          `03${item.Date}`,
-          `04${item.OldAccumulatedTotal}`,
-          `05${item.NewAccumulatedTotal}`,
-          `06${item.GrossSalesAmount}`,
-          `07${item.NonTaxSalesAmount}`,
-          `08${item.GovMandatedDiscount}`,
-          `09${item.OtherDiscount}`,
-          `10${item.RefundAmount}`,
-          `11${item.TaxAmount}`,
-          `12${item.ServiceChargeAmount}`,
-          `13${item.NetSalesAmount}`,
-          `14${item.CashSales}`,
-          `15${item.CreditDebitsales}`,
-          `16${item.OtherPaymentSales}`,
-          `17${item.VoidAmount}`,
-          `18${item.CustomerCount}`,
-          `19${item.ControlNumber}`,
-          `20${item.NoSalesTransaction}`,
-          `21${item.SalesType}`,
-          `22${item.NetSalesAmountPerSalesType}`
-        ].join('\n') // Join each field with a newline
-      }).join('\n') // Join each record with a newline
+          `01${item?.MallParterCodeId ?? 'NA'}`,
+          `02${item?.Terminal ?? 'NA'}`,
+          `03${item?.Date ?? 'NA'}`,
+          `04${item?.OldAccumulatedTotal ?? 'NA'}`,
+          `05${item?.NewAccumulatedTotal ?? 'NA'}`,
+          `06${item?.GrossSalesAmount ?? 'NA'}`,
+          `07${item?.NonTaxSalesAmount ?? 'NA'}`,
+          `08${item?.GovMandatedDiscount}`,
+          `09${item?.OtherDiscount ?? 'NA'}`,
+          `10${item?.RefundAmount ?? 'NA'}`,
+          `11${item?.TaxAmount ?? 'NA'}`,
+          `12${item?.ServiceChargeAmount ?? 'NA'}`,
+          `13${item?.NetSalesAmount ?? 'NA'}`,
+          `14${item?.CashSales ?? 'NA'}`,
+          `15${item?.CreditDebitsales ?? 'NA'}`,
+          `16${item?.OtherPaymentSales ?? 'NA'}`,
+          `17${item?.VoidAmount ?? 'NA'}`,
+          `18${item?.CustomerCount ?? 'NA'}`,
+          `19${item?.ControlNumber ?? 'NA'}`,
+          `20${item?.NoSalesTransaction ?? 'NA'}`,
+          `21${item?.SalesType ?? 'NA'}`,
+          `22${item?.NetSalesAmountPerSalesType ?? 'NA'}`
+        ].join('\n')
+      }).join('\n')
 
       // Write the data to the file
       fs.writeFileSync(filePath, hourlySalesData, 'utf8')

@@ -1,3 +1,4 @@
 export * from './dailydiscount'
 export * from './dailyhourlysales'
+export * from './dailyhourlysales_repeated'
 export * from './dailysales'

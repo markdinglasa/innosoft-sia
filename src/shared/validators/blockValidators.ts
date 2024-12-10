@@ -1,7 +1,7 @@
 import { Block } from '@shared/types'
 import { verifyBlockSignature } from '@shared/utils/'
 import yup, { accountNumberSchema } from '@shared/utils/yup'
-import { windowRouters } from '../../renderer/src/registry'
+import { AppRouters } from '../../renderer/src/registry'
 
 const blockSchema: yup.SchemaOf<Block> = yup
   .object({
@@ -20,7 +20,7 @@ const blockSchema: yup.SchemaOf<Block> = yup
       })
       .test('is-valid-pid', 'Invalid pid', (payload) => {
         if (!payload?.pid) return true
-        return Object.keys(windowRouters).includes(payload.pid)
+        return Object.keys(AppRouters).includes(payload.pid)
       }),
     recipient: accountNumberSchema.required(),
     sender: accountNumberSchema.required(),

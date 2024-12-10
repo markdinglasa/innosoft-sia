@@ -1,13 +1,13 @@
 import { mdiInformation, mdiStore } from '@mdi/js'
-import { setActiveTenant } from '@renderer/App/store/manager'
-import { Tenants } from '@renderer/App/types'
 import { SelectOption } from '@shared/components'
 import { useToggle } from '@shared/hooks'
 import { AppDispatch, SFC, Theme } from '@shared/types'
 import { useDispatch, useSelector } from 'react-redux'
+import { Tenants } from '../..//types'
 import { Card, EditButton, SpacedItems } from '../../components'
 import { TenantModal } from '../../modals'
 import { getActiveTenant, getInitialize, getTenant } from '../../selectors'
+import { setActiveTenant } from '../../store/manager'
 import * as S from './Styles'
 
 export const Tenant: SFC = ({ className }) => {

@@ -1,12 +1,12 @@
 export interface Manager {
-  tenant: any | null
+  tenant: Tenant | null
   activeTenant: Tenants | null
   path: string | null
   isConnected: boolean
   initialize: boolean
   snackbar: boolean
   accumulatedTotal: number
-  controlNumber: number
+  batchNo: number
 }
 
 export enum Tenants {
@@ -29,4 +29,5 @@ export interface Tenant {
   POSSerialNumber: string
   SMCoinDirectory?: string
   Terminal: string
+  BatchNo?: number
 }
