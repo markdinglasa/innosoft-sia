@@ -7,7 +7,7 @@ export enum SalesType {
 }
 
 export interface DailySale {
-  MallParterCodeId: string //8 digits
+  MallPartnerCodeId: string //8 digits
   Terminal: string
   Date: string // MMDDYYYY
   OldAccumulatedTotal: number

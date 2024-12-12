@@ -2,10 +2,13 @@ export const mwDailySales = ({
   Dates,
   Terminal,
   OldAccumulatedTotal,
+  NewAccumulatedTotal,
+  GrossSalesAmount,
   VatExempt,
   RefundAmount,
   VATAmount,
   ServiceChargeAmount,
+  NetSalesAmount,
   CashSales,
   CreditDebitsales,
   OtherPaymentSales,
@@ -13,30 +16,30 @@ export const mwDailySales = ({
   ControlNumber,
   SalesType,
   NetSalesAmountPerSalesType,
-  MallParnterCodeId
+  MallPartnerCodeId
 }: any): string => {
   return `
-     SELECT
-        '${MallParnterCodeId}' AS [MallPartnerCodeId],
+       SELECT
+        '${MallPartnerCodeId}' AS [MallPartnerCodeId],
         [TrnSales].[TerminalId] AS [Terminal],
         '${Dates}' AS [Date],
 		'${OldAccumulatedTotal}' AS [OldAccumulatedTotal],
-		${OldAccumulatedTotal} + SUM(CASE WHEN ISNULL([TrnCollection].[IsReturn], 0) = 2 OR ISNULL([TrnSales].[IsCancelled],0) = 1 THEN 0 ELSE CAST(ROUND([TrnSalesLine].[Amount], 3) AS DECIMAL(10, 3))  END) AS [NewAccumulatedTotal], 
-		SUM(CASE WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL  THEN CAST(ROUND(COALESCE([GrossSales].[GrossSalesAmount], 0), 3) AS DECIMAL(10, 3)) + CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 5) AS DECIMAL(10, 5)) ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) END) AS [GrossSalesAmount],
+		'${NewAccumulatedTotal}' AS [NewAccumulatedTotal], 
+		'${GrossSalesAmount}' AS [GrossSalesAmount],
 		'${VatExempt}' AS [NonTaxSalesAmount],
 		SUM(CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND ([MstDiscount].[Discount] IN ('PWD', 'Senior Citizen Discount', 'MOV', 'Athlete Discount', 'National Athlete', 'Single Parent')) THEN ISNULL([TotalDiscount].[TotalDiscountAmount], 0) ELSE 0 END) AS [GovMandatedDiscount],
 		SUM(CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND  ([MstDiscount].[Discount] NOT IN ('PWD', 'Senior Citizen Discount', 'MOV', 'Athlete Discount', 'National Athlete', 'Single Parent')) THEN  ISNULL([TotalDiscount].[TotalDiscountAmount], 0) ELSE 0 END ) AS [OtherDiscount],
 		'${RefundAmount}' AS [RefundAmount],
 		'${VATAmount}' AS [TaxAmount],
 		'${ServiceChargeAmount}' AS [ServiceChargeAmount],
-		SUM(CASE WHEN (ISNULL([TrnCollection].[IsReturn], 0) = 2 OR ISNULL([TrnSales].[IsCancelled],0) = 1) THEN 0  ELSE CAST(ROUND([GrossSales].[GrossSalesAmount], 3) AS DECIMAL(10, 3)) END) AS [NetSalesAmount],
+		'${NetSalesAmount}' AS [NetSalesAmount],
 		'${CashSales}' AS [CashSales],
 		'${CreditDebitsales}' AS [CreditDebitsales],
 		'${OtherPaymentSales}' AS [OtherPaymentSales],
 		'${VoidAmount}' AS [VoidAmount],
-		 COUNT(CASE  WHEN [TrnSales].[CustomerId] = 1 THEN [TrnSales].[Id] ELSE NULL END) +  COUNT(DISTINCT CASE  WHEN [TrnSales].[CustomerId] > 1 THEN [TrnSales].[CustomerId] ELSE NULL END ) AS [CustomerCount],
+		 COUNT(DISTINCT CASE  WHEN [TrnSales].[CustomerId] = 1 THEN [TrnSales].[Id] ELSE NULL END) +  COUNT(DISTINCT CASE  WHEN [TrnSales].[CustomerId] > 1 THEN [TrnSales].[CustomerId] ELSE NULL END ) AS [CustomerCount],
 		'${ControlNumber}' AS [ControlNumber],
-		COUNT([TrnSales].[Id]) AS [NoSalesTransaction],
+		COUNT(DISTINCT [TrnSales].[Id]) AS [NoSalesTransaction],
 		'${SalesType}' AS [SalesType],
 		'${NetSalesAmountPerSalesType}' AS [NetSalesAmountPerSalesType]
 	FROM 
@@ -51,7 +54,7 @@ export const mwDailySales = ({
     WHERE 
         [TrnSales].[IsLocked] = 1 
         AND [TrnCollection].[IsLocked] = 1 
-        AND [TrnSales].[TerminalId] = '${Terminal}'
+        AND [TrnSales].[TerminalId] = ${Terminal}
         AND CAST([TrnSales].[SalesDate] AS DATE) = '${Dates}'
     GROUP BY 
         [TrnSales].[TerminalId],
@@ -130,19 +133,18 @@ export const ServiceChargeQuery = ({ Dates, Terminal }: any): string => {
 
 export const GrossSalesQuery = ({ Dates, Terminal }: any): string => {
   return `
-   SELECT 
-        SUM(ROUND(CASE WHEN((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) AND [MstDiscount].[Discount]<>'Senior Citizen Discount' And [MstDiscount].[Discount]<>'PWD' AND (ISNULL([TrnCollection].[IsReturn], 0) <> 2)) THEN [Price] ELSE ([Price1]+[Price2LessTax])*[Quantity] END, 3)) AS [GrossSales], 
-        SUM(ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) ) THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 3)) AS [TaxAmount],
-        SUM(ROUND(CASE WHEN( ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollection].[IsReturn], 0) = 0) THEN [TrnSalesLine].[Amount] ELSE 0 END, 3)) AS [NetSales],
+        SELECT 
+        SUM(ROUND((CASE WHEN((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) AND [MstDiscount].[Discount]<>'Senior Citizen Discount' And [MstDiscount].[Discount]<>'PWD' AND (ISNULL([TrnCollection].[IsReturn], 0) = 0)) THEN [Price] ELSE ([Price1]+[Price2LessTax]) END)*[Quantity],2)) AS [GrossSales], 
+        SUM(ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) ) THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 4)) AS [TaxAmount],
+        SUM(ROUND(CASE WHEN( ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollection].[IsReturn], 0) = 0) THEN [TrnSalesLine].[Amount] ELSE 0 END, 5)) AS [NetSales],
 		SUM(ROUND(CASE WHEN(ISNULL([TrnSales].[IsCancelled], 0) = 1) THEN  [TrnSalesLine].[Amount] ELSE 0 END, 3)) AS [VoidAmount],
 		SUM(ROUND(CASE WHEN(ISNULL([TrnSales].[IsCancelled], 0) = 0 AND ISNULL([TrnCollection].[IsReturn], 0) =  2) THEN  [TrnSalesLine].[Amount] ELSE 0 END, 3)) AS [RefundAmount],
-        SUM(ROUND(CASE WHEN([TrnSalesLine].[Price2]>0 AND ((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0))) THEN [TrnSalesLine].[quantity]*([TrnSalesLine].[price2lesstax]-([TrnSalesLine].[price2lesstax]*([TrnSalesLine].[DiscountRate]/100))) ELSE CASE WHEN ([TrnSalesLine].[TaxId]=5) THEN [TrnSalesLine].[Amount] ELSE 0 END END,3)) AS [VATExempt],
-        SUM(ROUND(CASE WHEN(((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0)) AND ([TrnSalesLine].[TaxAmount]<1) AND ([TrnSalesLine].[Discountid]<>4 And [TrnSalesLine].[Discountid]<>3)) THEN[TrnSalesLine].[Amount] ELSE 0 END, 3)) AS [NONVATSales]
+        SUM(ROUND(CASE WHEN([TrnSalesLine].[Price2]>0 AND ((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0))) THEN [TrnSalesLine].[quantity]*([TrnSalesLine].[price2lesstax]-([TrnSalesLine].[price2lesstax]*([TrnSalesLine].[DiscountRate]/100))) ELSE CASE WHEN ([TrnSalesLine].[TaxId]=5) THEN [TrnSalesLine].[Amount] ELSE 0 END END,5)) AS [VATExempt],
+        SUM(ROUND(CASE WHEN(((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0)) AND ([TrnSalesLine].[TaxAmount]<1) AND ([TrnSalesLine].[Discountid]<>4 And [TrnSalesLine].[Discountid]<>3)) THEN[TrnSalesLine].[Amount] ELSE 0 END, 5)) AS [NONVATSales]
         FROM TrnSales 
             INNER JOIN [TrnSalesLine] 
             LEFT JOIN [TrnCollection] ON [TrnCollection].[SalesId] = [TrnSalesLine].[SalesId]
             INNER JOIN [MstDiscount] ON TrnSalesLine.DiscountId = MstDiscount.Id
-            LEFT JOIN [TrnPaxTable] ON [TrnPaxTable].[SaleId] = [TrnSalesLine].[SalesId]
             INNER JOIN [MstTax] ON [TrnSalesLine].[TaxId] = [MstTax].[Id] ON [TrnSales].[Id] = [TrnSalesLine].[SalesId]
             LEFT JOIN (
                    SELECT [SalesId], SUM([Amount]) AS [ServiceCharge]
@@ -165,12 +167,19 @@ export const ControlNumberQuery = ({ Terminal }: any): string => {
     WHERE [TerminalId] = ${Terminal}
     `
 }
+export const PreviousReading = ({ PreviousDate, Terminal }: any): string => {
+  return `
+      SELECT [PreviousReading] AS [PreviousReading]
+      FROM [SysControlNumber]
+      WHERE [TerminalId] = ${Terminal} AND CAST([TimeStamp] AS DATE) = '${PreviousDate}'
+      `
+}
 export const PaymentSalesQuery = ({ Dates, Terminal }: any): string => {
   return `
     SELECT 
-    SUM(IIF(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollectionLine].[Amount], 0) > 0 AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Cash'), [TrnCollection].[Amount], 0)) AS [CashSales], 
-    SUM(IIF(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollectionLine].[Amount], 0) > 0  AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND ([MstPayType].[PayType] = 'Credit Card' OR [MstPayType].[PayType] = 'Debit' )), [TrnCollection].[Amount], 0)) AS [CreditDebitsales], 
-    SUM(IIF(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollectionLine].[Amount], 0)  > 0 AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] <> 'Credit Card' AND  [MstPayType].[PayType] <> 'Cash' AND  [MstPayType].[PayType] <> 'Debit' ), [TrnCollection].[Amount], 0)) AS [OtherPaymentSales]
+    SUM(CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollectionLine].[Amount], 0) > 0 AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Cash')) THEN CASE WHEN ([TrnCollectionLine].[Amount] > [TrnCollection].[Amount]) THEN [TrnCollection].[Amount] ELSE [TrnCollectionLine].[Amount] END ELSE 0 END) AS [CashSales], 
+    SUM(CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollectionLine].[Amount], 0) > 0  AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND ([MstPayType].[PayType] = 'Credit Card' OR [MstPayType].[PayType] = 'Debit' ))) THEN [TrnCollectionLine].[Amount] ELSE 0 END) AS [CreditDebitsales], 
+    SUM(CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollectionLine].[Amount], 0) > 0 AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] <> 'Credit Card' AND  [MstPayType].[PayType] <> 'Cash' AND  [MstPayType].[PayType] <> 'Debit' )) THEN [TrnCollectionLine].[Amount] ELSE 0 END) AS [OtherPaymentSales]
     
     FROM TrnSales 
 	LEFT JOIN TrnCollection ON [TrnSales].[Id] = [TrnCollection].[SalesId]
@@ -183,7 +192,7 @@ export const PaymentSalesQuery = ({ Dates, Terminal }: any): string => {
 	AND ISNULL([TrnCollection].[IsCancelled],0) = 0 
 	AND ISNULL([TrnCollection].[IsReturn],0) =0 
     AND [TrnSales].[TerminalId] =  ${Terminal}
-    AND CAST([TrnSales].[SalesDate] AS DATE) = '${Dates}'
+    AND CAST([TrnSales].[SalesDate] AS DATE) = ' ${Dates}'
 
 	GROUP BY 
 	[TrnSales].[TerminalId]`

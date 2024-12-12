@@ -40,7 +40,7 @@ ipcMain.handle(
       // Format the sales data
       const hourlySalesData = response.List.map((item: DailySale) => {
         return [
-          `01${item?.MallParterCodeId ?? 'NA'}`,
+          `01${item?.MallPartnerCodeId ?? 'NA'}`,
           `02${item?.Terminal ?? 'NA'}`,
           `03${String(item.Date).replace(/[^a-zA-Z0-9]/g, '') ?? 'NA'}`,
           `04${Number(item?.OldAccumulatedTotal ?? 'NA')

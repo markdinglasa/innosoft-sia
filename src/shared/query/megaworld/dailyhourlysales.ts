@@ -1,7 +1,7 @@
-export const mwDailyHourlySales = ({ Dates, Terminal, MallParnterCodeId }: any): string => {
+export const mwDailyHourlySales = ({ Dates, Terminal, MallPartnerCodeId }: any): string => {
   return `
         SELECT
-        '${MallParnterCodeId}' AS [MallPartnerCodeId],
+        '${MallPartnerCodeId}' AS [MallPartnerCodeId],
         [TrnSales].[TerminalId] AS [Terminal],
         '${Dates}' AS [Date],
         SUM(
@@ -11,8 +11,8 @@ export const mwDailyHourlySales = ({ Dates, Terminal, MallParnterCodeId }: any):
                 ELSE CAST(ROUND([TrnSalesLine].[Amount], 2) AS DECIMAL(10, 2))
             END
         ) AS [NetSalesAmountDay],
-        COUNT([TrnSales].[Id]) AS [NoSalesTransactionDay],
-        COUNT(
+        COUNT(DISTINCT [TrnSales].[Id]) AS [NoSalesTransactionDay],
+        COUNT(DISTINCT
         CASE 
             WHEN [TrnSales].[CustomerId] = 1 THEN [TrnSales].[Id] -- Count each walk-in customer individually
             ELSE NULL

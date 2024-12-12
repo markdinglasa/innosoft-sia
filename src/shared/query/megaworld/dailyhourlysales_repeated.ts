@@ -1,6 +1,6 @@
 export const mwDailyHourlySalesRepeated = ({ Dates, Terminal }: any): string => {
   return `
-         SELECT
+        SELECT
         CASE
             WHEN DATEPART(HOUR, [TrnSalesLine].[SalesLineTimeStamp]) = 0 THEN '24'
             ELSE RIGHT('0' + CAST(DATEPART(HOUR, [TrnSalesLine].[SalesLineTimeStamp]) AS VARCHAR), 2)
@@ -12,12 +12,8 @@ export const mwDailyHourlySalesRepeated = ({ Dates, Terminal }: any): string => 
                 ELSE CAST(ROUND([TrnSalesLine].[Amount], 2) AS DECIMAL(10, 2))
             END
         ) AS [NetSalesAmountHour],
-        COUNT([TrnSales].[Id]) AS [NoSalesTransactionHour],
-        COUNT(DISTINCT 
-            CASE 
-                WHEN ISNULL([TrnSales].[CustomerId], 0) <> 0 THEN [TrnSales].[CustomerId] 
-            END
-        ) AS [CustomerCountHour]
+        COUNT(DISTINCT [TrnSales].[Id]) AS [NoSalesTransactionHour],
+        COUNT(DISTINCT CASE WHEN [TrnSales].[CustomerId] = 1 THEN [TrnSales].[Id] ELSE NULL END) + COUNT(DISTINCT CASE WHEN [TrnSales].[CustomerId] > 1 THEN [TrnSales].[CustomerId] ELSE NULL END) AS [CustomerCountHour]
     FROM 
         [TrnSales]
         INNER JOIN [TrnSalesLine] ON [TrnSales].[Id] = [TrnSalesLine].[SalesId]

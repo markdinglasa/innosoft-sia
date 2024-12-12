@@ -16,15 +16,14 @@ export const Wrapper = styled.div`
 export const Header = styled.div`
   height: 2rem;
   width: 100%;
-  background: red;
 `
 export const Body = styled.div`
   width: 100%;
-  height: 800px;
+  height: 700px;
   padding: 10px 10px;
 `
 export const Footer = styled.div`
-  height: 70px;
+  height: 80px;
 `
 export const Card = styled.div`
   padding: 10px 10px;

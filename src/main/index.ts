@@ -28,8 +28,8 @@ export const isDev: boolean = NODE_ENV === 'development'
 
 const createWindow = (url: string): BrowserWindow => {
   mainWindow = new BrowserWindow({
-    width: 400,
-    height: 715,
+    width: 415,
+    height: 780,
     icon: path.join(__dirname, '../shared/assets/favicon.ico'),
     show: isDev ? true : false,
     autoHideMenuBar: isDev ? false : true,
