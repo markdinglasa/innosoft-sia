@@ -1,8 +1,13 @@
 import { mdiInformation, mdiPause, mdiPlay, mdiRestart } from '@mdi/js'
 import { Error } from '@shared/messages'
 import {
+  ControlNumberQuery,
+  GrossSalesQuery,
+  PaymentSalesQuery,
   SIATransactionDetailQuery,
   SIATransactions,
+  ServiceChargeQuery,
+  TaxAmountQuery,
   mwDailyDiscount,
   mwDailyHourlySales,
   mwDailyHourlySalesRepeated,
@@ -134,6 +139,7 @@ export const Initialize: SFC = ({ className }) => {
         break
       case Tenants.MW:
         try {
+          // DAILY DISCOUNTS
           const dailyDiscountQuery: string = mwDailyDiscount({ Terminal, Dates })
           await window.electron.sql.get(
             SqlChannel.getDailyDiscount,
@@ -147,6 +153,8 @@ export const Initialize: SFC = ({ className }) => {
             Terminal,
             MallParnterCodeId
           })
+          // END DAILY DISCOUNTS
+          // HOURLY SALES
           const dailyHourlySalesQuery: string = mwDailyHourlySalesRepeated({
             Dates,
             Terminal
@@ -159,9 +167,89 @@ export const Initialize: SFC = ({ className }) => {
             dailyDaySalesQuery,
             dailyHourlySalesQuery
           )
+          // END HOURLY SALES
+          // DAILY SALES
+          const ControlNoQuery = ControlNumberQuery({ Terminal })
+          const ControlNoResponse = await window.electron.sql.get(
+            SqlChannel.getAmount,
+            ControlNoQuery
+          )
+          const ControlNumber = ControlNoResponse?.Data?.ControlNumber ?? 0
+          const OldAccumulatedTotal = ControlNoResponse?.Data?.PreviousReading ?? 0
+          console.log('OldAccumulatedTotal:', OldAccumulatedTotal)
+          const VATAmountQuery: string = TaxAmountQuery({ Dates, Terminal })
+          const VATAmountResponse = await window.electron.sql.get(
+            SqlChannel.getAmount,
+            VATAmountQuery
+          )
+
+          const GrossSalesQ = GrossSalesQuery({ Dates, Terminal })
+          const GrossSalesResponse = await window.electron.sql.get(
+            SqlChannel.getAmount,
+            GrossSalesQ
+          )
+
+          const GrossAmount = Math.round((GrossSalesResponse?.Data?.GrossSales ?? 0) * 100) / 100
+          console.log('GrossAmount:', GrossAmount)
+          const VatExempt = VATAmountResponse?.Data?.VatExempt ?? 0 //NOnVatSales
+          console.log('VatExempt:', VatExempt)
+          const VATAmount = Math.round((GrossSalesResponse?.Data?.TaxAmount ?? 0) * 100) / 100
+          /*(GrossAmount -
+              (VATAmountResponse?.Data?.VatExempt ??
+                0 + VATAmountResponse?.Data?.AdjustmentAmount ??
+                0 + VATAmountResponse?.Data?.DisablityDiscount ??
+                0 + VATAmountResponse?.Data?.GrossSalesAmountNotSubjectToPercentageRent ??
+                0) /
+                1.12) *
+            0.12*/
+          console.log('VATAmount:', VATAmount)
+          const ServiceChargeQ: string = ServiceChargeQuery({ Dates, Terminal })
+          const ServiceChargeResponse = await window.electron.sql.get(
+            SqlChannel.getAmount,
+            ServiceChargeQ
+          )
+
+          const ServiceChargeAmount =
+            Math.round((ServiceChargeResponse?.Data?.ServiceCharge ?? 0) * 100) / 100
+          console.log('ServiceChargeAmount:', ServiceChargeAmount)
+          const RefundAmount = Math.round((GrossSalesResponse?.Data?.RefundAmount ?? 0) * 100) / 100
+          console.log('RefundAmount:', RefundAmount)
+          const VoidAmount = Math.round((GrossSalesResponse?.Data?.VoidAmount ?? 0) * 100) / 100
+          console.log('VoidAmount:', VoidAmount)
+          const NetSalesAmount = Math.round((GrossSalesResponse?.Data?.NetSales ?? 0) * 100) / 100
+          console.log('NetSalesAmount:', NetSalesAmount)
+          const PaymentSalesQ = PaymentSalesQuery({ Dates, Terminal })
+          const PaymentSalesReponse = await window.electron.sql.get(
+            SqlChannel.getAmount,
+            PaymentSalesQ
+          )
+
+          const CashSales = Math.round((PaymentSalesReponse?.Data?.CashSales ?? 0) * 100) / 100
+          console.log('CashSales:', CashSales)
+          const CreditDebitsales =
+            Math.round((PaymentSalesReponse?.Data?.CreditDebitsales ?? 0) * 100) / 100
+          console.log('CreditDebitsales:', CreditDebitsales)
+          const OtherPaymentSales =
+            Math.round((PaymentSalesReponse?.Data?.OtherPaymentSales ?? 0) * 100) / 100
+          console.log('OtherPaymentSales:', OtherPaymentSales)
+
+          const SalesType = '01'
+          const NetSalesAmountPerSalesType = 0
           const dailySalesQuery: string = mwDailySales({
             Dates,
             Terminal,
+            OldAccumulatedTotal,
+            VatExempt,
+            RefundAmount,
+            VATAmount,
+            ServiceChargeAmount,
+            CashSales,
+            CreditDebitsales,
+            OtherPaymentSales,
+            VoidAmount,
+            ControlNumber,
+            SalesType,
+            NetSalesAmountPerSalesType,
             MallParnterCodeId
           })
           await window.electron.sql.get(
@@ -171,6 +259,8 @@ export const Initialize: SFC = ({ className }) => {
             BatchNo,
             dailySalesQuery
           )
+          // END DAILY SALES
+          //if (Dates !== formatDates(new Date()).toString()) dispatch(setAccumulatedTotal(OldAccumulatedTotal + NetSalesAmount))
           dispatch(setBatchNo(BatchNo))
         } catch (error: any) {
           console.error(error.message)

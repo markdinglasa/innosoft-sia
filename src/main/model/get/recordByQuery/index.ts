@@ -18,6 +18,6 @@ export const recordByQuery = async (Query: string = ''): Promise<Response> => {
     if (!result.recordset || result.recordset.length < 1) return { List: [], Message: Error.e00x30 }
     return { List: result.recordset, Message: Success.s00x00 }
   } catch (error: any) {
-    return { List: [], Message: Error.e00x02 }
+    return { List: [], Message: error.message || Error.e00x02 }
   }
 }

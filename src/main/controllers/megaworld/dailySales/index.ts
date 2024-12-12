@@ -42,26 +42,73 @@ ipcMain.handle(
         return [
           `01${item?.MallParterCodeId ?? 'NA'}`,
           `02${item?.Terminal ?? 'NA'}`,
-          `03${item?.Date ?? 'NA'}`,
-          `04${item?.OldAccumulatedTotal ?? 'NA'}`,
-          `05${item?.NewAccumulatedTotal ?? 'NA'}`,
-          `06${item?.GrossSalesAmount ?? 'NA'}`,
-          `07${item?.NonTaxSalesAmount ?? 'NA'}`,
-          `08${item?.GovMandatedDiscount}`,
-          `09${item?.OtherDiscount ?? 'NA'}`,
-          `10${item?.RefundAmount ?? 'NA'}`,
-          `11${item?.TaxAmount ?? 'NA'}`,
-          `12${item?.ServiceChargeAmount ?? 'NA'}`,
-          `13${item?.NetSalesAmount ?? 'NA'}`,
-          `14${item?.CashSales ?? 'NA'}`,
-          `15${item?.CreditDebitsales ?? 'NA'}`,
-          `16${item?.OtherPaymentSales ?? 'NA'}`,
-          `17${item?.VoidAmount ?? 'NA'}`,
+          `03${String(item.Date).replace(/[^a-zA-Z0-9]/g, '') ?? 'NA'}`,
+          `04${Number(item?.OldAccumulatedTotal ?? 'NA')
+            .toFixed(2)
+            .toString()
+            .replace(/[^a-zA-Z0-9]/g, '')}`,
+          `05${Number(item?.NewAccumulatedTotal ?? 'NA')
+            .toFixed(2)
+            .toString()
+            .replace(/[^a-zA-Z0-9]/g, '')}`,
+          `06${Number(item?.GrossSalesAmount ?? 'NA')
+            .toFixed(2)
+            .toString()
+            .replace(/[^a-zA-Z0-9]/g, '')}`,
+          `07${Number(item?.NonTaxSalesAmount ?? 'NA')
+            .toFixed(2)
+            .toString()
+            .replace(/[^a-zA-Z0-9]/g, '')}`,
+          `08${Number(item?.GovMandatedDiscount)
+            .toFixed(2)
+            .toString()
+            .replace(/[^a-zA-Z0-9]/g, '')}`,
+          `09${Number(item?.OtherDiscount ?? 'NA')
+            .toFixed(2)
+            .toString()
+            .replace(/[^a-zA-Z0-9]/g, '')}`,
+          `10${Number(item?.RefundAmount ?? 'NA')
+            .toFixed(2)
+            .toString()
+            .replace(/[^a-zA-Z0-9]/g, '')}`,
+          `11${Number(item?.TaxAmount ?? 'NA')
+            .toFixed(2)
+            .toString()
+            .replace(/[^a-zA-Z0-9]/g, '')}`,
+          `12${Number(item?.ServiceChargeAmount ?? 'NA')
+            .toFixed(2)
+            .toString()
+            .replace(/[^a-zA-Z0-9]/g, '')}`,
+          `13${Number(item?.NetSalesAmount ?? 'NA')
+            .toFixed(2)
+            .toString()
+            .replace(/[^a-zA-Z0-9]/g, '')}`,
+          `14${Number(item?.CashSales ?? 'NA')
+            .toFixed(2)
+            .toString()
+            .replace(/[^a-zA-Z0-9]/g, '')}`,
+          `15${Number(item?.CreditDebitsales ?? 'NA')
+            .toFixed(2)
+            .toString()
+            .replace(/[^a-zA-Z0-9]/g, '')}`,
+          `16${Number(item?.OtherPaymentSales ?? 'NA')
+            .toFixed(2)
+            .toString()
+            .replace(/[^a-zA-Z0-9]/g, '')}`,
+          `17${Number(item?.VoidAmount ?? 'NA')
+            .toFixed(2)
+            .toString()
+            .replace(/[^a-zA-Z0-9]/g, '')}`,
           `18${item?.CustomerCount ?? 'NA'}`,
           `19${item?.ControlNumber ?? 'NA'}`,
           `20${item?.NoSalesTransaction ?? 'NA'}`,
           `21${item?.SalesType ?? 'NA'}`,
-          `22${item?.NetSalesAmountPerSalesType ?? 'NA'}`
+          `22${
+            Number(item?.NetSalesAmountPerSalesType)
+              .toFixed(2)
+              .toString()
+              .replace(/[^a-zA-Z0-9]/g, '') ?? 'NA'
+          }`
         ].join('\n')
       }).join('\n')
 

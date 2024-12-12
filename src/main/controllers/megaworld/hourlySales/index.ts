@@ -19,7 +19,6 @@ ipcMain.handle(
     try {
       // Query the database for the sales data
       const dayResponse = (await recordByQuery(dayQuery))?.List ?? []
-      console.log(dayResponse)
       const hourlyResponse = (await recordByQuery(hourlyQuery))?.List ?? []
 
       // Check if the response contains a valid list
