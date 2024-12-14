@@ -7,6 +7,7 @@ export interface Manager {
   snackbar: boolean
   accumulatedTotal: number
   batchNo: number
+  allianceCategory: string
 }
 
 export enum Tenants {

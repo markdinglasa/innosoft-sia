@@ -19,11 +19,11 @@ export const Header = styled.div`
 `
 export const Body = styled.div`
   width: 100%;
-  height: 700px;
   padding: 10px 10px;
 `
 export const Footer = styled.div`
   height: 80px;
+  position: relative;
 `
 export const Card = styled.div`
   padding: 10px 10px;

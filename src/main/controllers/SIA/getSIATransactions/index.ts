@@ -5,7 +5,7 @@ import { createArrayCsvWriter } from 'csv-writer'
 import { ipcMain } from 'electron'
 import fs from 'fs'
 import paths from 'path'
-import { generateFileName } from '../../../functions'
+import { generateSMFileName } from '../../../functions'
 import { recordByQuery } from '../../../model'
 
 const csvHeaders = headers.map((header) => header.title)
@@ -15,7 +15,7 @@ ipcMain.handle(
     try {
       const response = await recordByQuery(query)
       if (!response.List) return { IsSomething: false, Message: response.Message }
-      const fileName = generateFileName(false)
+      const fileName = generateSMFileName(false)
       const filePath = paths.join(path, fileName)
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
       const csvData = response.List.map((item: SIATransaction) => [

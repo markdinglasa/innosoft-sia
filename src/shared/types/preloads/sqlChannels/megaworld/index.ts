@@ -5,6 +5,7 @@ export enum MEGAWORLD {
   getVatExempt = 'get-vat-exempt',
   getRefundAmount = 'get-refund-amount',
   getAmount = 'get-amount',
+  getAmounts = 'get-amounts',
   getServiceChargeAmount = 'get-service-charge',
   getPayTypes = 'get-paytypes',
   getVoidAmount = 'get-void-amount',

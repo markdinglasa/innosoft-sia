@@ -1,3 +1,4 @@
+export * from './allianceQuery'
 export * from './function'
 export * from './megaworld'
 export * from './SIATransactionDetails'

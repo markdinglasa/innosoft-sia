@@ -1,4 +1,13 @@
-import { Auth, Database, License, MEGAWORLD, MstAccount, MstUser, SIA } from './sqlChannels'
+import {
+  Alliance,
+  Auth,
+  Database,
+  License,
+  MEGAWORLD,
+  MstAccount,
+  MstUser,
+  SIA
+} from './sqlChannels'
 
 export interface SqlApi {
   get(channel: string, ...args: any): any
@@ -14,7 +23,8 @@ export const SqlChannel = {
   ...SIA,
   ...MstAccount,
   ...MstUser,
-  ...MEGAWORLD
+  ...MEGAWORLD,
+  ...Alliance
 } as const
 
 export type SqlChannelType = (typeof SqlChannel)[keyof typeof SqlChannel]

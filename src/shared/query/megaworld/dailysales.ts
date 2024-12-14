@@ -120,7 +120,8 @@ export const TaxAmountQuery = ({ Dates, Terminal }: any): string => {
 export const ServiceChargeQuery = ({ Dates, Terminal }: any): string => {
   return `
     SELECT 
-    SUM([TrnSalesLine].[Amount]) AS [ServiceCharge] 
+    SUM([TrnSalesLine].[Amount]) AS [ServiceCharge],
+    COUNT([TrnSalesLine].[Amount]) AS [ServiceChargeCount]
     FROM TrnSalesLine
     LEFT JOIN [TrnSales] ON [TrnSales].[Id] = [TrnSalesLine].[SalesId]
     WHERE [ItemId] = 1 
@@ -160,13 +161,15 @@ export const GrossSalesQuery = ({ Dates, Terminal }: any): string => {
         GROUP BY 
         [TrnSales].[TerminalId]`
 }
-export const ControlNumberQuery = ({ Terminal }: any): string => {
+export const ControlNumberQuery = ({ Terminal, Dates }: any): string => {
   return `
     SELECT MAX([ControlNumber]) AS [ControlNumber], MAX([PreviousReading]) AS [PreviousReading]
     FROM [SysControlNumber]
     WHERE [TerminalId] = ${Terminal}
+    AND CAST([TimeStamp] AS DATE) = '${Dates}'
     `
 }
+
 export const PreviousReading = ({ PreviousDate, Terminal }: any): string => {
   return `
       SELECT [PreviousReading] AS [PreviousReading]
@@ -179,6 +182,8 @@ export const PaymentSalesQuery = ({ Dates, Terminal }: any): string => {
     SELECT 
     SUM(CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollectionLine].[Amount], 0) > 0 AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Cash')) THEN CASE WHEN ([TrnCollectionLine].[Amount] > [TrnCollection].[Amount]) THEN [TrnCollection].[Amount] ELSE [TrnCollectionLine].[Amount] END ELSE 0 END) AS [CashSales], 
     SUM(CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollectionLine].[Amount], 0) > 0  AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND ([MstPayType].[PayType] = 'Credit Card' OR [MstPayType].[PayType] = 'Debit' ))) THEN [TrnCollectionLine].[Amount] ELSE 0 END) AS [CreditDebitsales], 
+    SUM(CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollectionLine].[Amount], 0) > 0  AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND ([MstPayType].[PayType] = 'Credit Card'))) THEN [TrnCollectionLine].[Amount] ELSE 0 END) AS [Creditsales], 
+    SUM(CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollectionLine].[Amount], 0) > 0  AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND ([MstPayType].[PayType] = 'Charge'))) THEN [TrnCollectionLine].[Amount] ELSE 0 END) AS [ChargeSales],
     SUM(CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollectionLine].[Amount], 0) > 0 AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] <> 'Credit Card' AND  [MstPayType].[PayType] <> 'Cash' AND  [MstPayType].[PayType] <> 'Debit' )) THEN [TrnCollectionLine].[Amount] ELSE 0 END) AS [OtherPaymentSales]
     
     FROM TrnSales 

@@ -1,9 +1,12 @@
 import { mdiInformation, mdiPause, mdiPlay, mdiRestart } from '@mdi/js'
 import { Error } from '@shared/messages'
 import {
+  AllianceSalesEODQuery,
+  AllianceTenderTotalQuery,
   ControlNumberQuery,
   GrossSalesQuery,
   PaymentSalesQuery,
+  PreviousAmountsQuery,
   SIATransactionDetailQuery,
   SIATransactions,
   ServiceChargeQuery,
@@ -15,7 +18,7 @@ import {
 } from '@shared/query'
 import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, ButtonColor, SFC, SqlChannel, ToastType } from '@shared/types'
-import { formatDates } from '@shared/utils'
+import { formatDateYYYYMMDDHHMMSS, formatDates } from '@shared/utils'
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -105,13 +108,13 @@ export const Initialize: SFC = ({ className }) => {
   const SMPOSSerialNumber = tenant.POSSerialNumber
 
   const reports = async (Tenant: Tenants) => {
-    const Dates = formatDates(new Date('2024-11-17')).toString() ?? new Date()
+    const Dates = formatDates(new Date()).toString() ?? new Date()
     let PreviousDate: any = new Date(Dates)
     PreviousDate.setDate(PreviousDate.getDate() - 1)
     PreviousDate = formatDates(PreviousDate)
 
     const SalesType = tenant?.SMSalesType ?? 'NA'
-    const BatchNo = 17 //batchNo + 1
+    const BatchNo = batchNo + 1
     const MallPartnerCodeId = String(tenant?.TenantCode)
       .slice(0, 8)
       .replace(/[^a-zA-Z0-9]/g, '')
@@ -133,7 +136,84 @@ export const Initialize: SFC = ({ className }) => {
         break
       case Tenants.ALLIANCE:
         //do something here
-        //(DSum("expr1","RepPOS (Z Reading Z-Counter)")+Nz(DFirst("ZCounterEnd","SysCurrent"),0)) AS Zcounter
+        try {
+          const TenderQ = AllianceTenderTotalQuery({ Terminal, Dates })
+          const TenderResponse = await window.electron.sql.get(SqlChannel.getAmount, TenderQ)
+          const ServiceChargeQ: string = ServiceChargeQuery({ Dates, Terminal })
+          const ServiceChargeResponse = await window.electron.sql.get(
+            SqlChannel.getAmount,
+            ServiceChargeQ
+          )
+          const ControlNoQuery = ControlNumberQuery({ Terminal, Dates })
+          const ControlNoResponse = await window.electron.sql.get(
+            SqlChannel.getAmount,
+            ControlNoQuery
+          )
+          const CashSales = TenderResponse?.Data?.CashSales ?? 0
+          //console.log('CashSales:', CashSales)
+          const CashSalesCount = TenderResponse?.Data?.CashSalesCount ?? 0
+          //console.log('CashSalesCount:', CashSalesCount)
+          const CreditSales = TenderResponse?.Data?.CreditSales ?? 0
+          //console.log('CreditSales:', CreditSales)
+          const CreditSalesCount = TenderResponse?.Data?.CreditSalesCount ?? 0
+          //console.log('CreditSalesCount:', CreditSalesCount)
+          const ChargeSales = TenderResponse?.Data?.ChargeSales ?? 0
+          //console.log('ChargeSales:', ChargeSales)
+          const ChargeSalesCount = TenderResponse?.Data?.ChargeSalesCount ?? 0
+          //console.log('ChargeSalesCount:', ChargeSalesCount)
+          const GiftCertificateSales = TenderResponse?.Data?.GiftCertificateSales ?? 0
+          //console.log('GiftCertificateSales:', GiftCertificateSales)
+          const GiftCertificateSalesCount = TenderResponse?.Data?.GiftCertificateSalesCount ?? 0
+          //console.log('GiftCertificateSalesCount:', GiftCertificateSalesCount)
+          const OtherTenderSales = TenderResponse?.Data?.OtherTenderSales ?? 0
+          //console.log('OtherTenderSales:', OtherTenderSales)
+          const OtherTenderSalesCount = TenderResponse?.Data?.OtherTenderSalesCount ?? 0
+          //console.log('OtherTenderSalesCount:', OtherTenderSalesCount)
+          const EWT = 0
+          const ZeroRated = 0
+          const ServiceCharge = ServiceChargeResponse?.Data?.ServiceCharge ?? 0
+          const ServiceChargeCount = ServiceChargeResponse?.Data?.ServiceChargeCount ?? 0
+          const ControlNumber = ControlNoResponse?.Data?.ControlNumber ?? 0
+
+          const PreviousAmountsQ = PreviousAmountsQuery({ Terminal, Dates })
+          const PreviousAmountR = await window.electron.sql.get(
+            SqlChannel.getAmount,
+            PreviousAmountsQ
+          )
+          const PreviousTax = PreviousAmountR?.Data?.previoustax ?? 0
+          const PreviousReading = PreviousAmountR?.Data?.PreviousReading ?? 0
+          //console.log('PreviousReading:', PreviousReading)
+          const PreviousTaxSales = PreviousAmountR?.Data?.previoustaxsale ?? 0
+          const PreviousNonTaxSales = PreviousAmountR?.Data?.previousnotaxsale ?? 0
+          const SalesDate = formatDateYYYYMMDDHHMMSS(new Date())
+          const salesQ = AllianceSalesEODQuery({
+            Terminal,
+            Dates,
+            SalesDate,
+            PreviousReading,
+            PreviousTax,
+            PreviousTaxSales,
+            PreviousNonTaxSales,
+            ControlNumber,
+            ServiceCharge,
+            ServiceChargeCount,
+            CashSales,
+            CashSalesCount,
+            CreditSales,
+            CreditSalesCount,
+            ChargeSales,
+            ChargeSalesCount,
+            GiftCertificateSales,
+            GiftCertificateSalesCount,
+            OtherTenderSales,
+            OtherTenderSalesCount,
+            EWT,
+            ZeroRated
+          })
+          await window.electron.sql.get(SqlChannel.getAllianceSalesEOD, tenant, `${path}`, salesQ)
+        } catch (error: any) {
+          console.log('Alliance Report:', error.message)
+        }
         break
       case Tenants.AYALA:
         //do something here
@@ -173,20 +253,20 @@ export const Initialize: SFC = ({ className }) => {
           )
           // END HOURLY SALES
           // DAILY SALES
-          const ControlNoQuery = ControlNumberQuery({ Terminal })
+          const ControlNoQuery = ControlNumberQuery({ Terminal, Dates })
           const ControlNoResponse = await window.electron.sql.get(
             SqlChannel.getAmount,
             ControlNoQuery
           )
           const ControlNumber = ControlNoResponse?.Data?.ControlNumber ?? 0
-          console.log('ControlNumber:', ControlNumber)
+          //console.log('ControlNumber:', ControlNumber)
           /*const PreviousReadingQ = PreviousReading({ PreviousDate, Terminal })
           const PreviousReadingResponse = await window.electron.sql.get(
             SqlChannel.getAmount,
             PreviousReadingQ
           )*/
           const OldAccumulatedTotal = ControlNoResponse?.Data?.PreviousReading ?? 0
-          console.log('OldAccumulatedTotal:', OldAccumulatedTotal)
+          //console.log('OldAccumulatedTotal:', OldAccumulatedTotal)
           const VATAmountQuery: string = TaxAmountQuery({ Dates, Terminal })
           const VATAmountResponse = await window.electron.sql.get(
             SqlChannel.getAmount,
@@ -201,7 +281,7 @@ export const Initialize: SFC = ({ className }) => {
 
           const GrossSalesAmount =
             Math.round((GrossSalesResponse?.Data?.GrossSales ?? 0) * 100) / 100
-          console.log('GrossSalesAmount:', GrossSalesAmount)
+          //console.log('GrossSalesAmount:', GrossSalesAmount)
           const VatExempt = VATAmountResponse?.Data?.VatExempt ?? 0 //NOnVatSales
           const VATAmount = Math.round((GrossSalesResponse?.Data?.TaxAmount ?? 0) * 100) / 100
           /*let VATAmount =
@@ -214,7 +294,7 @@ export const Initialize: SFC = ({ className }) => {
                 1.12) *
             0.12
           VATAmount = Math.round((VATAmount ?? 0) * 100) / 100*/
-          console.log('VATAmount:', VATAmount)
+          //console.log('VATAmount:', VATAmount)
           const ServiceChargeQ: string = ServiceChargeQuery({ Dates, Terminal })
           const ServiceChargeResponse = await window.electron.sql.get(
             SqlChannel.getAmount,
@@ -223,16 +303,16 @@ export const Initialize: SFC = ({ className }) => {
 
           const ServiceChargeAmount =
             Math.round((ServiceChargeResponse?.Data?.ServiceCharge ?? 0) * 100) / 100
-          console.log('ServiceChargeAmount:', ServiceChargeAmount)
+          //console.log('ServiceChargeAmount:', ServiceChargeAmount)
           const RefundAmount = Math.round((GrossSalesResponse?.Data?.RefundAmount ?? 0) * 100) / 100
-          console.log('RefundAmount:', RefundAmount)
+          //console.log('RefundAmount:', RefundAmount)
           const VoidAmount = Math.round((GrossSalesResponse?.Data?.VoidAmount ?? 0) * 100) / 100
-          console.log('VoidAmount:', VoidAmount)
+          //console.log('VoidAmount:', VoidAmount)
           const NetSalesAmount = Math.round((GrossSalesResponse?.Data?.NetSales ?? 0) * 100) / 100
-          console.log('NetSalesAmount:', NetSalesAmount)
+          //console.log('NetSalesAmount:', NetSalesAmount)
           const NewAccumulatedTotal: number =
             Math.round((NetSalesAmount + OldAccumulatedTotal) * 100) / 100
-          console.log('NewAccumulatedTotal:', NewAccumulatedTotal)
+          //console.log('NewAccumulatedTotal:', NewAccumulatedTotal)
           const PaymentSalesQ = PaymentSalesQuery({ Dates, Terminal })
           const PaymentSalesReponse = await window.electron.sql.get(
             SqlChannel.getAmount,
@@ -240,13 +320,13 @@ export const Initialize: SFC = ({ className }) => {
           )
 
           const CashSales = Math.round((PaymentSalesReponse?.Data?.CashSales ?? 0) * 100) / 100
-          console.log('CashSales:', CashSales)
+          //console.log('CashSales:', CashSales)
           const CreditDebitsales =
             Math.round((PaymentSalesReponse?.Data?.CreditDebitsales ?? 0) * 100) / 100
-          console.log('CreditDebitsales:', CreditDebitsales)
+          //console.log('CreditDebitsales:', CreditDebitsales)
           const OtherPaymentSales =
             Math.round((PaymentSalesReponse?.Data?.OtherPaymentSales ?? 0) * 100) / 100
-          console.log('OtherPaymentSales:', OtherPaymentSales)
+          //console.log('OtherPaymentSales:', OtherPaymentSales)
           const SalesType = '01'
           const NetSalesAmountPerSalesType = 0
           const dailySalesQuery: string = mwDailySales({

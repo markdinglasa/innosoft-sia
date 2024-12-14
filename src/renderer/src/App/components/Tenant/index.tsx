@@ -1,18 +1,20 @@
 import { mdiInformation, mdiStore } from '@mdi/js'
 import { SelectOption } from '@shared/components'
+import { AllianceCategory } from '@shared/data/alliance'
 import { useToggle } from '@shared/hooks'
 import { AppDispatch, SFC, Theme } from '@shared/types'
 import { useDispatch, useSelector } from 'react-redux'
-import { Tenants } from '../..//types'
 import { Card, EditButton, SpacedItems } from '../../components'
 import { TenantModal } from '../../modals'
-import { getActiveTenant, getInitialize, getTenant } from '../../selectors'
-import { setActiveTenant } from '../../store/manager'
+import { getActiveTenant, getAllianceCategory, getInitialize, getTenant } from '../../selectors'
+import { setActiveTenant, setAllianceCategory } from '../../store/manager'
+import { TenantOption, Tenants } from '../../types'
 import * as S from './Styles'
 
 export const Tenant: SFC = ({ className }) => {
   const tenant = useSelector(getTenant)
   const activeTenant = useSelector(getActiveTenant)
+  const allianceCategory = useSelector(getAllianceCategory)
   const initialized = useSelector(getInitialize)
   const [modalIsOpen, toggleModal] = useToggle(false)
   const dispatch = useDispatch<AppDispatch>()
@@ -39,14 +41,7 @@ export const Tenant: SFC = ({ className }) => {
       />
     )
   }
-  const TenantOption = [
-    { label: 'Select Tenant', value: Tenants.DEFAULT },
-    { label: Tenants.SM, value: Tenants.SM },
-    { label: Tenants.RLC, value: Tenants.RLC },
-    { label: Tenants.AYALA, value: Tenants.AYALA },
-    { label: Tenants.MW, value: Tenants.MW },
-    { label: Tenants.ALLIANCE, value: Tenants.ALLIANCE }
-  ]
+
   return (
     <>
       <S.Container className={className}>
@@ -64,6 +59,18 @@ export const Tenant: SFC = ({ className }) => {
             disabled={initialized}
           />
         </S.Div>
+        {activeTenant === Tenants.ALLIANCE && (
+          <S.Div className="w-full">
+            <SelectOption
+              value={String(allianceCategory ?? '')}
+              label="Select Category"
+              name="Category"
+              options={AllianceCategory}
+              onChange={(e) => dispatch(setAllianceCategory(e.target.value))}
+              disabled={initialized}
+            />
+          </S.Div>
+        )}
         {activeTenant && <Card heading={`${activeTenant} Tenant`}>{renderContent()}</Card>}
       </S.Container>
       {renderModal()}

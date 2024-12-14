@@ -12,7 +12,8 @@ export const initialState: Manager = {
   snackbar: false,
   activeTenant: null,
   accumulatedTotal: 0,
-  batchNo: 0
+  batchNo: 0,
+  allianceCategory: ''
 }
 
 const manager = createSlice({
@@ -28,6 +29,13 @@ const manager = createSlice({
     },
     setAccumulatedTotal: (state: Manager, { payload: accumulatedTotal }: PayloadAction<number>) => {
       state.accumulatedTotal = accumulatedTotal
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: SIA_MANAGER,
+        state: current(state)
+      })
+    },
+    setAllianceCategory: (state: Manager, { payload: allianceCategory }: PayloadAction<string>) => {
+      state.allianceCategory = allianceCategory
       window.electron.ipc.send(IpcChannel.setStoreValue, {
         key: SIA_MANAGER,
         state: current(state)
@@ -79,6 +87,7 @@ export const {
   setBatchNo,
   setIsConnected,
   setActiveTenant,
+  setAllianceCategory,
   setInitialize,
   setManager
 } = manager.actions
