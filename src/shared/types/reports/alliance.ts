@@ -63,6 +63,7 @@ export interface AllianceSalesTrxline {
   senior: number
   pwd: number
   diplomat: number
+  taxtype: string
   tax: number
   memo: string // MstItem.Remarks
   total: number // qty * unitprice
@@ -113,7 +114,7 @@ export interface AllianceSalesProduct {
   sku: string // barcode
   name: string // item description
   inventory: number
-  unitprice: number
+  price: number
   category: string
 }
 export interface XMLData {

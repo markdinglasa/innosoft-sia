@@ -1,9 +1,26 @@
 import { Error, Success } from '@shared/messages'
-import { AllianceSalesEOD, AllianceType, Response, SqlChannel } from '@shared/types'
+import {
+  AllianceProductLineQuery,
+  AllianceProductsQuery,
+  AllianceTransactionQuery
+} from '@shared/query'
+import {
+  AllianceSalesEOD,
+  AllianceSalesProduct,
+  AllianceSalesTrx,
+  AllianceSalesTrxline,
+  AllianceType,
+  Response,
+  SqlChannel
+} from '@shared/types'
 import { ipcMain } from 'electron'
 import fs from 'fs'
 import paths from 'path'
-import { formatDateYYYYMMDDHHMMSS, generateAllianceFilename } from '../../../functions'
+import {
+  formatDateDash,
+  formatDateYYYYMMDDHHMMSS,
+  generateAllianceFilename
+} from '../../../functions'
 import { recordByQuery } from '../../../model'
 
 ipcMain.handle(
@@ -12,9 +29,15 @@ ipcMain.handle(
     try {
       // Fetch records based on the provided query
       const salesResponse = await recordByQuery(salesQ)
-
+      const Terminal = data?.Terminal ?? 0
+      //console.log('Terminal:', Terminal)
+      const Dates = formatDateDash(new Date())
+      //console.log('Dates:', Dates)
+      const trxQuery = AllianceTransactionQuery({ Terminal, Dates })
+      const trnResponse = await recordByQuery(trxQuery)
+      //console.log('trnResponse:', trnResponse)
       // Handle case when response does not have a 'List'
-      if (!salesResponse.List) {
+      if (!salesResponse.List || !trnResponse.List) {
         return { IsSomething: false, Message: salesResponse.Message }
       }
 
@@ -31,25 +54,32 @@ ipcMain.handle(
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath)
       }
-
       // Format the sales data
       const SalesId = `
        <id>
           <tenantid>${data.TenantCode ?? 'NA'}</tenantid>
-          <key>${'K9BRJGJS'}</key>
+          <key>${data.Key ?? 'NA'}</key>
           <tmid>${data.Terminal.toString().padStart(4, '0') ?? 1}</tmid>
           <doc>${'SALES_PREOOD'}</doc>
         </id>
       `
-      const Master = `
-      <product>
-        <sku>${102}</sku>
-        <name>${'Hen Lin Siopao Asado'}</name>
-        <inventory>${0}</inventory>
-        <price>${Number(100).toFixed(2)}</price>
-        <category>${data.Category ?? '01'}</category>
-      </product>
-     `
+      const products = AllianceProductsQuery({ Terminal, Dates })
+      const productsResponse = await recordByQuery(products)
+
+      const Master = (productsResponse?.List || [])
+        .map((item: AllianceSalesProduct) => {
+          return [
+            `<product>
+          <sku>${item?.sku ?? 0}</sku>
+          <name>${item?.name ?? 'NA'}</name>
+          <inventory>${item?.inventory ?? 0}</inventory>
+          <price>${Number(item?.price ?? 0).toFixed(2)}</price>
+          <category>${data.Category ?? '01'}</category>
+        </product>`
+          ].join('\n')
+        })
+        .join('\n')
+
       const sales = salesResponse.List.map((item: AllianceSalesEOD) => {
         return [
           `<date>${item?.date ?? ''}</date>`,
@@ -103,64 +133,82 @@ ipcMain.handle(
         ].join('\n')
       }).join('\n')
 
-      const SalesLine = `
-        <line>
-          <sku>${100}</sku>
-          <qty>${1}</qty>
-          <unitprice>${Number(100).toFixed(2)}</unitprice>
-          <disc>${Number(0).toFixed(2)}</disc>
-          <senior>${Number(0).toFixed(2)}</senior>
-          <pwd>${Number(0).toFixed(2)}</pwd>
-          <diplomat>${Number(0).toFixed(2)}</diplomat>
-          <taxtype>${Number(0).toFixed(2)}</taxtype>
-          <tax>${Number(0).toFixed(2)}</tax>
-          <memo>${'NA'}</memo>
-          <total>${Number(0).toFixed(2)}</total>
-          <choicetype></choicetype>
-        </line>
-      `
+      const formatNumber = (value: number | undefined, defaultValue = 0): string =>
+        Number(value ?? defaultValue).toFixed(2)
+
+      const trx = await Promise.all(
+        trnResponse.List.map(async (item: AllianceSalesTrx) => {
+          const ReceiptNumber = item?.receiptno
+          const trxline = AllianceProductLineQuery({ Terminal, Dates, ReceiptNumber })
+          const trxlineResponse = await recordByQuery(trxline)
+
+          // Generate SalesLine XML
+          const SalesLine = (trxlineResponse?.List || [])
+            .map((lineItem: AllianceSalesTrxline) => {
+              return `
+              <line>
+                <sku>${lineItem?.sku ?? 0}</sku>
+                <qty>${lineItem?.qty ?? 0}</qty>
+                <unitprice>${formatNumber(lineItem?.unitprice)}</unitprice>
+                <disc>${formatNumber(lineItem?.disc)}</disc>
+                <senior>${formatNumber(lineItem?.senior)}</senior>
+                <pwd>${formatNumber(lineItem?.pwd)}</pwd>
+                <diplomat>${formatNumber(lineItem?.diplomat)}</diplomat>
+                <taxtype>${lineItem?.taxtype ?? 'NA'}</taxtype>
+                <tax>${formatNumber(lineItem?.tax)}</tax>
+                <memo>NA</memo>
+                <total>${formatNumber(lineItem?.total)}</total>
+                <choicetype></choicetype>
+              </line>`
+            })
+            .join('\n')
+          return `
+            <trx>
+              <receiptno>${item?.receiptno}</receiptno>
+              <void>${formatNumber(item?.void)}</void>
+              <cash>${formatNumber(item?.cash)}</cash>
+              <credit>${formatNumber(item?.credit)}</credit>
+              <giftcheck>${formatNumber(item?.giftcheck)}</giftcheck>
+              <othertender>${formatNumber(item?.othertender)}</othertender>
+              <linedisc>${formatNumber(item?.linedisc)}</linedisc>
+              <linesenior>${formatNumber(item?.linesenior)}</linesenior>
+              <evat>${formatNumber(item?.evat)}</evat>
+              <linepwd>${formatNumber(item?.linepwd)}</linepwd>
+              <linediplomat>${formatNumber(item?.linediplomat)}</linediplomat>
+              <subtotal>${formatNumber(item?.subtotal)}</subtotal>
+              <disc>${formatNumber(item?.disc)}</disc>
+              <senior>${formatNumber(item?.senior)}</senior>
+              <pwd>${formatNumber(item?.pwd)}</pwd>
+              <diplomat>${formatNumber(item?.diplomat)}</diplomat>
+              <vat>${formatNumber(item?.vat)}</vat>
+              <exvat>${formatNumber(item?.exvat)}</exvat>
+              <incvat>${formatNumber(item?.incvat)}</incvat>
+              <localtax>${formatNumber(item?.localtax)}</localtax>
+              <amusement>${formatNumber(item?.amusement)}</amusement>
+              <service>${formatNumber(item?.service)}</service>
+              <taxsale>${formatNumber(item?.taxsale)}</taxsale>
+              <notaxsale>${formatNumber(item?.notaxsale)}</notaxsale>
+              <taxexsale>${formatNumber(item?.taxexsale)}</taxexsale>
+              <taxinsale>${formatNumber(item?.taxincsale)}</taxinsale>
+              <zerosale>${formatNumber(item?.zerosale)}</zerosale>
+              <vatexempt>${formatNumber(item?.vatexempt)}</vatexempt>
+              <customercount>${item?.customercnt ?? 0}</customercount>
+              <gross>${formatNumber(item?.gross)}</gross>
+              <refund>${formatNumber(item?.refund)}</refund>
+              <taxrate>${formatNumber(item?.taxrate)}</taxrate>
+              <posted>${item?.posted ?? 'NA'}</posted>
+              <memo>NA</memo>
+              ${SalesLine}
+            </trx>`
+        })
+      )
+
       const SalesEOD = `
       <root>
         ${SalesId}
         <sales>
         ${sales}
-        <trx>
-          <receiptno>${14}</receiptno>
-          <void>${Number(0).toFixed(2)}</void>
-          <cash>${Number(0).toFixed(2)}</cash>
-          <credit>${Number(0).toFixed(2)}</credit>
-          <giftcheck>${Number(0).toFixed(2)}</giftcheck>
-          <othertender>${Number(0).toFixed(2)}</othertender>
-          <linedisc>${Number(0).toFixed(2)}</linedisc>
-          <linesenior>${Number(0).toFixed(2)}</linesenior>
-          <evat>${Number(0).toFixed(2)}</evat>
-          <linepwd>${Number(0).toFixed(2)}</linepwd>
-          <linediplomat>${Number(0).toFixed(2)}</linediplomat>
-          <subtotal>${Number(0).toFixed(2)}</subtotal>
-          <disc>${Number(0).toFixed(2)}</disc>
-          <senior>${Number(0).toFixed(2)}</senior>
-          <pwd>${Number(0).toFixed(2)}</pwd>
-          <diplomat>${Number(0).toFixed(2)}</diplomat>
-          <vat>${Number(0).toFixed(2)}</vat>
-          <exvat>${Number(0).toFixed(2)}</exvat>
-          <incvat>${Number(0).toFixed(2)}</incvat>
-          <localtax>${Number(0).toFixed(2)}</localtax>
-          <amusement >${Number(0).toFixed(2)}</amusement >
-          <service>${Number(0).toFixed(2)}</service>
-          <taxsale>${Number(0).toFixed(2)}</taxsale>
-          <notaxsale>${Number(0).toFixed(2)}</notaxsale>
-          <taxexsale>${Number(0).toFixed(2)}</taxexsale>
-          <taxinsale>${Number(0).toFixed(2)}</taxinsale>
-          <zerosale>${Number(0).toFixed(2)}</zerosale>
-          <vatexempt>${Number(0).toFixed(2)}</vatexempt>
-          <customercount>${1}</customercount>
-          <gross>${Number(100).toFixed(2)}</gross>
-          <refund>${Number(0).toFixed(2)}</refund>
-          <taxrate>${Number(0).toFixed(2)}</taxrate>
-          <posted>${'20241214070707' /*YYYYMMDDHHMMSS*/}</posted>
-          <memo>${'NA'}</memo>
-          ${SalesLine}
-        </trx>
+        ${trx}
         </sales>
         <master>
         ${Master}

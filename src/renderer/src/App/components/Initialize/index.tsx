@@ -189,7 +189,6 @@ export const Initialize: SFC = ({ className }) => {
           const salesQ = AllianceSalesEODQuery({
             Terminal,
             Dates,
-            SalesDate,
             PreviousReading,
             PreviousTax,
             PreviousTaxSales,
