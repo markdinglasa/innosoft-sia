@@ -13,8 +13,8 @@ export interface Manager {
 export enum Tenants {
   DEFAULT = '',
   SM = 'SM',
-  RLC = 'Robinsons',
-  AYALA = 'Ayala',
+  //RLC = 'Robinsons',
+  //AYALA = 'Ayala',
   ALLIANCE = 'Alliance',
   MW = 'MegaWorld'
 }
@@ -31,4 +31,5 @@ export interface Tenant {
   SMCoinDirectory?: string
   Terminal: string
   BatchNo?: number
+  POSKey?: string
 }

@@ -1,4 +1,3 @@
-export * from './allianceFilename'
 export * from './createFolder'
+export * from './filenames'
 export * from './generateToken'
-export * from './megaworldFilename'

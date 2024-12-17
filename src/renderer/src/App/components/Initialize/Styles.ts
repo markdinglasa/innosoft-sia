@@ -25,7 +25,6 @@ export const Text = styled.div`
   display: flex;
   align-items: center;
   justify-content: start;
-  margin-bottom: 10px;
 `
 export const Icon = styled(UIcon)`
   color: ${colors.palette.neutral[200]};
@@ -38,8 +37,22 @@ export const Div = styled.div`
   gap: 10px;
 `
 export const DivBtn = styled.div`
-  width: 20%;
+  width: 30%;
 `
 export const DivBtn2 = styled.div`
-  width: 80%;
+  width: 70%;
+`
+export const TopTitle = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: between;
+  margin-bottom: 10px;
+`
+export const InputDate = styled.input`
+  border-radius: 6px;
+  outline: none;
+  border: none;
+  padding: 8px 12px;
+  background: ${colors.palette.neutral['100']};
 `

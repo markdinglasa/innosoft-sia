@@ -36,7 +36,8 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme }) 
     POSSerialNumber: tenant?.POSSerialNumber || '',
     SMClassCode: tenant?.SMClassCode || '',
     StoreNumber: tenant?.StoreNumber || '',
-    POSMachineNumber: tenant?.POSMachineNumber || ''
+    POSMachineNumber: tenant?.POSMachineNumber || '',
+    POSKey: tenant?.POSKey || ''
   }
 
   type FormValues = typeof initialValues
@@ -51,6 +52,7 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme }) 
         SMSalesType: values.SMSalesType,
         POSMachineNumber: values.POSMachineNumber,
         POSSerialNumber: values.POSSerialNumber,
+        POSKey: values.POSKey,
         Terminal: values.Terminal
       }
       dispatch(setTenant(data))
@@ -73,6 +75,7 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme }) 
       SMSalesType: yup.string().required('Required'),
       POSMachineNumber: yup.string().required('Required'),
       POSSerialNumber: yup.string().required('Required'),
+      POSKey: yup.string().nullable().optional(),
       Terminal: yup.number().integer().required('Required').notOneOf([0], 'Terminal cannot be 0')
     })
   }, [])
@@ -156,6 +159,16 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme }) 
               name="POSSerialNumber"
               touched={touched}
               value={values.POSSerialNumber}
+              onChange={handleChange}
+            />
+            <Input
+              theme={theme}
+              errors={errors}
+              type="text"
+              label="POS Key (optional)"
+              name="POSKey"
+              touched={touched}
+              value={values.POSKey}
               onChange={handleChange}
             />
             <Input

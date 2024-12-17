@@ -1,0 +1,12 @@
+import logo from '../../../resources/innosoftlogo.svg'
+
+export const windowNotification = (title: string, body: string, path?: string) => {
+  const notification = new window.Notification(title, {
+    body: body,
+    icon: logo
+  })
+
+  notification.onclick = async () => {
+    await window.electron.dialog.openFolder(path ?? '')
+  }
+}

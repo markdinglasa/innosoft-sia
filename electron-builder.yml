@@ -1,4 +1,4 @@
-appId: com.innosoft.app
+appId: innosoft.SIA.v01.app
 productName: Innosoft SIA 1.0
 directories:
   buildResources: build
@@ -42,5 +42,7 @@ appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
 publish:
-  provider: generic
-  url: https://example.com/auto-updates
+  provider: github
+  owner: emperorkira
+  repo: https://github.com/emperorkira/innosoft-sia
+  releaseType: draft

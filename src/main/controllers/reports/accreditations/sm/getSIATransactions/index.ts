@@ -5,8 +5,8 @@ import { createArrayCsvWriter } from 'csv-writer'
 import { ipcMain } from 'electron'
 import fs from 'fs'
 import paths from 'path'
-import { generateSMFileName } from '../../../functions'
-import { recordByQuery } from '../../../model'
+import { generateSMFileName } from '../../../../../functions'
+import { recordByQuery } from '../../../../../model'
 
 const csvHeaders = headers.map((header) => header.title)
 ipcMain.handle(

@@ -1,5 +1,4 @@
 export * from './alliance'
 export * from './megaworld'
 export * from './rlc'
-export * from './sia'
-export * from './tenant'
+export * from './sm'

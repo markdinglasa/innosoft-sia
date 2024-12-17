@@ -14,6 +14,9 @@ const electronApi: ElectronApi = {
   dialog: {
     showOpenDialog: async (options: Electron.OpenDialogOptions) => {
       return await ipcRenderer.invoke('show-open-dialog', options)
+    },
+    openFolder: async (path: string) => {
+      return await ipcRenderer.invoke('open-folder', path)
     }
   }
 }

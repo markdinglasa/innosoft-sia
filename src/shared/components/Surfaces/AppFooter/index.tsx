@@ -1,5 +1,5 @@
 import { SFC } from '@shared/types'
-import logo from '../../../../../resources/logo.svg'
+import logo from '../../../../../resources/innosoftlogo.svg'
 import * as S from './Styles'
 
 export const AppFooter: SFC = ({ className }) => {

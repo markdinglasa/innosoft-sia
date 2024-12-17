@@ -20,18 +20,25 @@ import {
   formatDateDash,
   formatDateYYYYMMDDHHMMSS,
   generateAllianceFilename
-} from '../../../functions'
-import { recordByQuery } from '../../../model'
+} from '../../../../../functions'
+import { recordByQuery } from '../../../../../model'
 
 ipcMain.handle(
   SqlChannel.getAllianceSalesEOD,
-  async (_event: any, data: any, path: string, salesQ: string): Promise<Response> => {
+  async (
+    _event: any,
+    data: any,
+    path: string,
+    salesQ: string,
+    dates: string,
+    category: string
+  ): Promise<Response> => {
     try {
       // Fetch records based on the provided query
       const salesResponse = await recordByQuery(salesQ)
       const Terminal = data?.Terminal ?? 0
       //console.log('Terminal:', Terminal)
-      const Dates = formatDateDash(new Date())
+      const Dates = formatDateDash(new Date(dates ?? ''))
       //console.log('Dates:', Dates)
       const trxQuery = AllianceTransactionQuery({ Terminal, Dates })
       const trnResponse = await recordByQuery(trxQuery)
@@ -46,7 +53,7 @@ ipcMain.handle(
         AllianceType.salesEOD,
         data.TenantCode,
         data.Terminal,
-        new Date()
+        new Date(dates ?? '')
       )
       const filePath = paths.join(path, `${fileName}`)
 
@@ -58,9 +65,9 @@ ipcMain.handle(
       const SalesId = `
        <id>
           <tenantid>${data.TenantCode ?? 'NA'}</tenantid>
-          <key>${data.Key ?? 'NA'}</key>
+          <key>${data.POSKey ?? 'NA'}</key>
           <tmid>${data.Terminal.toString().padStart(4, '0') ?? 1}</tmid>
-          <doc>${'SALES_PREOOD'}</doc>
+          <doc>${'SALES_PREEOD'}</doc>
         </id>
       `
       const products = AllianceProductsQuery({ Terminal, Dates })
@@ -70,12 +77,12 @@ ipcMain.handle(
         .map((item: AllianceSalesProduct) => {
           return [
             `<product>
-          <sku>${item?.sku ?? 0}</sku>
-          <name>${item?.name ?? 'NA'}</name>
-          <inventory>${item?.inventory ?? 0}</inventory>
-          <price>${Number(item?.price ?? 0).toFixed(2)}</price>
-          <category>${data.Category ?? '01'}</category>
-        </product>`
+              <sku>${item?.sku ?? 0}</sku>
+              <name>${item?.name ?? 'NA'}</name>
+              <inventory>${item?.inventory ?? 0}</inventory>
+              <price>${Number(item?.price ?? 0).toFixed(2)}</price>
+              <category>${category ?? '01'}</category>
+            </product>`
           ].join('\n')
         })
         .join('\n')

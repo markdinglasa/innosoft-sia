@@ -23,7 +23,9 @@ export const Body = styled.div`
 `
 export const Footer = styled.div`
   height: 80px;
-  position: relative;
+  position: fixed;
+  width: 100vw;
+  bottom: 0px;
 `
 export const Card = styled.div`
   padding: 10px 10px;

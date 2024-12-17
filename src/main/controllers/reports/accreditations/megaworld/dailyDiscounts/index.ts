@@ -3,8 +3,8 @@ import { DailyDiscount, MWFileType, Response, SqlChannel } from '@shared/types'
 import { ipcMain } from 'electron'
 import fs from 'fs'
 import paths from 'path'
-import { generateMWFilename } from '../../../functions'
-import { recordByQuery } from '../../../model'
+import { generateMWFilename } from '../../../../../functions'
+import { recordByQuery } from '../../../../../model'
 
 ipcMain.handle(
   SqlChannel.getDailyDiscount,

@@ -29,7 +29,7 @@ export const isDev: boolean = NODE_ENV === 'development'
 const createWindow = (url: string): BrowserWindow => {
   mainWindow = new BrowserWindow({
     width: 415,
-    height: 780,
+    height: 860,
     icon: path.join(__dirname, '../shared/assets/favicon.ico'),
     show: isDev ? true : false,
     autoHideMenuBar: isDev ? false : true,
@@ -50,6 +50,11 @@ const createWindow = (url: string): BrowserWindow => {
       contextIsolation: true,
       devTools: isDev ? true : false
     }
+  })
+
+  ipcMain.handle('open-folder', async (_event, folderPath) => {
+    const result = await shell.openPath(folderPath)
+    return result
   })
 
   ipcMain.handle('show-open-dialog', async (_event, options: OpenDialogOptions) => {
@@ -85,6 +90,7 @@ if (!gotTheLock) {
       mainWindow.focus()
     }
   })
+  app.setAppUserModelId('innosoft SIA v1.0')
   app.whenReady().then(async () => {
     electronApp.setAppUserModelId('com.innosoft')
     app.on('browser-window-created', (_, window) => {

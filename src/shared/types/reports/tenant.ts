@@ -1,8 +1,9 @@
 export interface Tenant {
-  TerminalId: number
+  Terminal: number
   SMBranchCode?: string
   SMTenantCode?: string
   SMClassCode?: string
+  TenantCode?: string
   SMTradeCode?: string
   SMStoreNumber?: string
   SMSaleType: string

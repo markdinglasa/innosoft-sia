@@ -6,6 +6,7 @@ import {
   MEGAWORLD,
   MstAccount,
   MstUser,
+  RLC,
   SIA
 } from './sqlChannels'
 
@@ -24,7 +25,8 @@ export const SqlChannel = {
   ...MstAccount,
   ...MstUser,
   ...MEGAWORLD,
-  ...Alliance
+  ...Alliance,
+  ...RLC
 } as const
 
 export type SqlChannelType = (typeof SqlChannel)[keyof typeof SqlChannel]

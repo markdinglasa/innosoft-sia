@@ -23,7 +23,7 @@ export const TextContainer = styled.div`
   flex-direction: column;
   align-items: start;
   justify-content: start;
-  padding: 5px 5px;
+  padding: 10px 5px;
 `
 export const Image = styled.img`
   height: 75px;

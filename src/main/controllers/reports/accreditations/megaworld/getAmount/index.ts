@@ -1,7 +1,7 @@
 import { Error, Success } from '@shared/messages'
 import { Response, SqlChannel } from '@shared/types'
 import { ipcMain } from 'electron'
-import { recordByQuery } from '../../../model'
+import { recordByQuery } from '../../../../../model'
 
 ipcMain.handle(SqlChannel.getAmount, async (_event: any, query: string): Promise<Response> => {
   try {

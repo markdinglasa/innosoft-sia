@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
-export const NODE_ENV: string = 'development'
+export const NODE_ENV: string = 'production'
 
 //DATABASE CONFIGURATIONS
 export const DB_USER: string = (process.env?.DB_USER ?? 'sa') as string

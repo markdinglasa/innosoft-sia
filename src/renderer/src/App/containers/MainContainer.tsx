@@ -31,7 +31,6 @@ export const SIAManager: SFC<AppProps> = ({ className }) => {
               <Initialize />
             </S.Card>
           </S.Body>
-
           <S.Footer>
             <AppFooter />
           </S.Footer>

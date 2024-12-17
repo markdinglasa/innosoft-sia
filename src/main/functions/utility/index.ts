@@ -28,13 +28,6 @@ export const alphanumeric = (input: string): string => {
   return input.replace(/[^a-zA-Z0-9]/g, '')
 }
 
-export const generateSMFileName = (IsDetails: boolean = false) => {
-  const date = new Date()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const year = date.getFullYear()
-  return IsDetails ? `${month}_${year}_TransactionDetails.csv` : `${month}_${year}_Transactions.csv`
-}
-
 export const formatDateYYYYMMDDHHMMSS = (CurrentDate: Date) => {
   const month = String(CurrentDate.getMonth() + 1).padStart(2, '0') // Months are 0-based, add 1
   const day = String(CurrentDate.getDate()).padStart(2, '0')
@@ -50,4 +43,11 @@ export const formatDateDash = (date: Date): string => {
   const day = String(date.getDate()).padStart(2, '0')
   const year = date.getFullYear()
   return `${year}-${month}-${day}`
+}
+
+export const formatDateSlash = (date: Date): string => {
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const day = date.getDate().toString().padStart(2, '0')
+  const year = date.getFullYear()
+  return `${month}/${day}/${year}`
 }
