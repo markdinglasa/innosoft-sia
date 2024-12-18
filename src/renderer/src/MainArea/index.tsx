@@ -39,8 +39,21 @@ export const MainArea: SFC = ({ className }) => {
     checkLicense()
   }, [license, dispatch])
 
+  const [showSplash, setShowSplash] = useState(true)
+
+  useEffect(() => {
+    const splashTimeout = setTimeout(() => {
+      setShowSplash(false)
+    }, 5000)
+
+    // Cleanup timeout when component unmounts
+    return () => clearTimeout(splashTimeout)
+  }, [])
+
   const renderContent = () => {
-    if (isLicenseValid === null) return <Splash message="Please wait..." />
+    if (showSplash || isLicenseValid === null) {
+      return <Splash message="Please wait..." />
+    }
     return isLicenseValid ? <AppMain /> : <License />
   }
 

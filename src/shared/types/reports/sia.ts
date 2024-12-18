@@ -43,6 +43,12 @@ export interface SIATransaction {
   DiscountField4Amount: number
   DiscountField5Amount: number
   DiscountField6Amount: number
+  PaymentType1: string
+  PaymentAmount1: number
+  PaymentType2: string
+  PaymentAmount2: number
+  PaymentType3: string
+  PaymentAmount3: number
   TotalCashSalesAmount: number
   TotalGiftCertificateSalesAmount: number
   TotalEwalletOnlineSalesAmount: number

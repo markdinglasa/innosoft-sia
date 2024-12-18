@@ -1,6 +1,6 @@
 import { SFC } from '@shared/types'
 import { ReactNode } from 'react'
-import logo from '../../../../../resources/logo.svg'
+import logo from '../../../../../resources/innosoftlogo.svg'
 import * as S from './Styles'
 
 interface SplashProps {

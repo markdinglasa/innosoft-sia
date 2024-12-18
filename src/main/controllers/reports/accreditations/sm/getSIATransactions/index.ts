@@ -11,13 +11,14 @@ import { recordByQuery } from '../../../../../model'
 const csvHeaders = headers.map((header) => header.title)
 ipcMain.handle(
   SqlChannel.getSIATransactions,
-  async (_event: any, path: string, query: string): Promise<Response> => {
+  async (_event: any, path: string, query: string, date: string): Promise<Response> => {
     try {
       const response = await recordByQuery(query)
       if (!response.List) return { IsSomething: false, Message: response.Message }
-      const fileName = generateSMFileName(false)
+      const fileName = generateSMFileName(false, date)
       const filePath = paths.join(path, fileName)
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+
       const csvData = response.List.map((item: SIATransaction) => [
         item.OrderNumber,
         item.BusinessDay,
@@ -63,6 +64,12 @@ ipcMain.handle(
         item.DiscountField4Amount,
         item.DiscountField5Amount,
         item.DiscountField6Amount,
+        item.PaymentType1,
+        item.PaymentAmount1,
+        item.PaymentType2,
+        item.PaymentAmount2,
+        item.PaymentType3,
+        item.PaymentAmount3,
         item.TotalCashSalesAmount,
         item.TotalGiftCertificateSalesAmount,
         item.TotalEwalletOnlineSalesAmount,
@@ -81,7 +88,7 @@ ipcMain.handle(
       await csvWriter.writeRecords(csvData)
       return { IsSomething: true, Message: Success.s00x00 }
     } catch (error: any) {
-      return { IsSomething: false, Message: Error.e00x02 }
+      return { IsSomething: false, Message: error.message || Error.e00x02 }
     }
   }
 )

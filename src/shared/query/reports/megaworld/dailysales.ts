@@ -197,7 +197,7 @@ export const PaymentSalesQuery = ({ Dates, Terminal }: any): string => {
 	AND ISNULL([TrnCollection].[IsCancelled],0) = 0 
 	AND ISNULL([TrnCollection].[IsReturn],0) =0 
     AND [TrnSales].[TerminalId] =  ${Terminal}
-    AND CAST([TrnSales].[SalesDate] AS DATE) = ' ${Dates}'
+    AND CAST([TrnSales].[SalesDate] AS DATE) = '${Dates}'
 
 	GROUP BY 
 	[TrnSales].[TerminalId]`

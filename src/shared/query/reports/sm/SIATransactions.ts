@@ -1,13 +1,33 @@
-export const SIATransactions = ({ Terminal, SMPOSSerialNumber, SalesType }): string => {
+export const SIATransactions = ({ Terminal, SMPOSSerialNumber, SalesType, Dates }): string => {
   return `
-        
-       SELECT 
-            REPLACE([TrnSales].[SalesNumber], '-', '') AS [OrderNumber],
-            CONVERT(varchar, [TrnSales].[SalesDate], 23) AS [BusinessDay],
-            CONCAT(CONVERT(varchar, [TrnSales].[SalesDate], 23), ' ', CONVERT(varchar, [TrnSalesLine].[SalesLineTimeStamp], 8)) AS [CheckOpen],
-            CONCAT(CONVERT(varchar, [TrnSales].[SalesDate], 23), ' ', CONVERT(varchar, [TrnSales].[UpdateDateTime], 8)) AS [CheckClose],
-            '${SalesType}' AS [SalesType],
-            COALESCE(NULLIF([MstTable].[TableCode], ''), 'Walk-In') AS [TransactionType],
+    WITH AggregatedPayments AS (
+        SELECT 
+            [TrnSales].[SalesNumber],
+            [MstPayType].[PayType],
+            [TrnCollectionLine].[Amount] AS [Amount],
+            ROW_NUMBER() OVER (
+                PARTITION BY [TrnSales].[SalesNumber]
+                ORDER BY [TrnCollectionLine].[Amount] DESC
+            ) AS PaymentRank
+        FROM [TrnSales]
+        LEFT JOIN [TrnCollection] ON [TrnSales].[Id] = [TrnCollection].[SalesId]
+        LEFT JOIN [TrnCollectionLine] ON [TrnCollectionLine].[CollectionId] = [TrnCollection].[Id]
+        LEFT JOIN [MstPayType] ON [MstPayType].[Id] = [TrnCollectionLine].[PayTypeId]
+        WHERE 
+            [TrnSales].[TerminalId] = ${Terminal}
+            AND [TrnSales].[IsLocked] = 1
+            AND MONTH(CAST([TrnSales].[SalesDate] AS DATE)) = MONTH('${Dates}')
+			AND YEAR(CAST([TrnSales].[SalesDate] AS DATE)) = YEAR('${Dates}')
+            AND ISNULL([TrnCollection].[IsCancelled], 0) = 0
+            AND ISNULL([TrnCollectionLine].[Amount], 0) > 0
+    )
+    SELECT 
+           REPLACE([TrnSales].[SalesNumber], '-', '') AS [OrderNumber],
+           CONVERT(varchar, [TrnSales].[SalesDate], 23) AS [BusinessDay],
+           MIN(CONCAT(CONVERT(varchar, [TrnSales].[SalesDate], 23), ' ', CONVERT(varchar, [TrnSalesLine].[SalesLineTimeStamp], 8))) AS [CheckOpen],
+           MAX(CONCAT(CONVERT(varchar, [TrnSales].[SalesDate], 23), ' ', CONVERT(varchar, [TrnSales].[UpdateDateTime], 8))) AS [CheckClose],
+           '${SalesType}' AS [SalesType],
+           MAX(CASE WHEN ISNULL([MstTable].[TableCode],'Walk-in') <> 'Walk-in' AND ISNULL([MstTable].[TableCode],'Walk-in') <> 'Walk-in' THEN 'Dine-in' ELSE ISNULL([MstTable].[TableCode],'Walk-in') END) AS [TransactionType],
            CASE 
                WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL 
                THEN 0 
@@ -60,32 +80,32 @@ export const SIATransactions = ({ Terminal, SMPOSSerialNumber, SalesType }): str
                ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
            END AS [NetSalesAmount],
            CASE
-               WHEN    [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
-               THEN    CAST(ROUND(COALESCE([TotalTax].[TotalTaxAmount], 0), 2) AS DECIMAL(10, 2)) 
-               ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
+               WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
+               THEN CAST(ROUND(COALESCE([TotalTax].[TotalTaxAmount], 0), 2) AS DECIMAL(10, 2)) 
+               ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
            END AS [TotalTax],
            CASE
-               WHEN    [TrnSalesLine].[TaxId] = [MstTax].[Id] AND [MstTax].[Tax]  = 'LOCAL TAX'
-               THEN    CAST(ROUND(COALESCE([TotalTax].[TotalTaxAmount], 0), 2) AS DECIMAL(10, 2)) 
-               ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
+               WHEN [TrnSalesLine].[TaxId] = [MstTax].[Id] AND [MstTax].[Tax]  = 'LOCAL TAX'
+               THEN CAST(ROUND(COALESCE([TotalTax].[TotalTaxAmount], 0), 2) AS DECIMAL(10, 2)) 
+               ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
            END AS [OtherLocalTax],
            MAX(
                CASE
-                   WHEN    [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
-                   THEN    CAST(ROUND(COALESCE([TotalServiceCharge].[ServiceCharge], 0), 2) AS DECIMAL(10, 2)) 
-                   ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
+                   WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
+                   THEN  CAST(ROUND(COALESCE([TotalServiceCharge].[ServiceCharge], 0), 2) AS DECIMAL(10, 2)) 
+                   ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
                END
            ) AS [TotalServiceCharge],
            '0.00' AS [TotalTip],
            CASE
-                WHEN    [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
-                THEN    CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2)) 
-                ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
+                WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
+                THEN CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2)) 
+                ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
            END AS [TotalDiscount],
            CASE
-               WHEN    [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
-               THEN    CAST(ROUND(COALESCE([GrossSales].[GrossSalesAmount] - [TotalTax].[TotalTaxAmount], 0), 2) AS DECIMAL(10, 2)) 
-               ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
+               WHEN [TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL
+               THEN CAST(ROUND(COALESCE([GrossSales].[GrossSalesAmount] - [TotalTax].[TotalTaxAmount], 0), 2) AS DECIMAL(10, 2)) 
+               ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
            END AS [LessTaxAmount],
            MAX(
                CASE 
@@ -126,44 +146,44 @@ export const SIATransactions = ({ Terminal, SMPOSSerialNumber, SalesType }): str
            ) AS [RegularOtherDiscountAmount],
            MAX(
                CASE
-                   WHEN    ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'Employee Discount' OR [MstDiscount].[Discount] = 'Employee Meal')
-                   THEN    CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2)) 
-                   ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
+                   WHEN ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'Employee Discount' OR [MstDiscount].[Discount] = 'Employee Meal')
+                   THEN CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2)) 
+                   ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
                END 
            ) AS [EmployeeDiscountAmount],
            MAX(
                CASE
-                   WHEN    ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'Senior Citizen Discount')
-                   THEN    CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2)) 
-                   ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
+                   WHEN ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'Senior Citizen Discount')
+                   THEN CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2)) 
+                   ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
                END 
            ) AS [SeniorCitizenDiscountAmount],
            MAX(
                CASE
-                   WHEN    ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'VIP Discount')
-                   THEN    CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2))
-                   ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+                   WHEN ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'VIP Discount')
+                   THEN CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2))
+                   ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
                END
            ) AS [VIPDiscountAmount],
            MAX(
                CASE
-                   WHEN    ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'PWD')
-                   THEN    CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2))
-                   ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+                   WHEN ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'PWD')
+                   THEN CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2))
+                   ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
                END 
            ) AS [PWDDiscountAmount],
            MAX(
                CASE
-                   WHEN    ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'National Coach' OR [MstDiscount].[Discount] = 'National Athlete' OR [MstDiscount].[Discount] = 'Medal of Valor Discount')
-                   THEN    CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2))
-                   ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+                   WHEN ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'National Coach' OR [MstDiscount].[Discount] = 'National Athlete' OR [MstDiscount].[Discount] = 'Medal of Valor Discount' OR [MstDiscount].[Discount] = 'MOV')
+                   THEN CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2))
+                   ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
                END 
            ) AS [NationalCoachAthleteMedalofValorDiscountamount],
            MAX(
                CASE
-                   WHEN    ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'SMAC Discount' OR [MstDiscount].[Discount] = 'SMAC')
-                   THEN    CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2))
-                   ELSE    CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+                   WHEN ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([MstDiscount].[Discount] = 'SMAC Discount' OR [MstDiscount].[Discount] = 'SMAC')
+                   THEN CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2))
+                   ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
                END 
            ) AS [SMACDiscountAmount],
            ' ' AS [OnlineDealsDiscountName],
@@ -180,62 +200,68 @@ export const SIATransactions = ({ Terminal, SMPOSSerialNumber, SalesType }): str
            '0.00'  AS [DiscountField4Amount], 
            '0.00'  AS [DiscountField5Amount], 
            '0.00'  AS [DiscountField6Amount],
-           MAX(
-               CASE
-                   WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Cash')
-                   THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
-                   ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
-               END
-           ) AS [TotalCashSalesAmount],
-           MAX(
-               CASE
-                   WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Gift Certificate')
-                   THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
-                   ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
-               END
-           ) AS [TotalGiftCertificateSalesAmount],
-           MAX(
-               CASE
-                   WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Gcash' OR [MstPayType].[PayType] = 'PayMaya' OR [MstPayType].[PayType] = 'GrabPay' OR [MstPayType].[PayType] = 'FoodPanda')
-                   THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
-                   ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
-               END
-           ) AS [TotalEwalletOnlineSalesAmount],
-           MAX(
-               CASE
-                    WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Mastercard')
-                    THEN CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
-                    ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
-               END
-           ) AS [TotalMastercardSalesAmount],
-           MAX(
-               CASE
-                   WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Visa')
-                   THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
-                   ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
-               END
-           ) AS [TotalVisaSalesAmount],
-           MAX(
-               CASE
-                   WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Diners')
-                   THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
-                   ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
-               END
-           ) AS [TotalDinersSalesAmount],
-           MAX(
-               CASE
-                   WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'JCB')
-                   THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
-                   ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
-               END
-           ) AS [TotalJCBSalesAmount],
-           MAX(
-               CASE
-                   WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Credit Card')
-                   THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
-                   ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
-               END
-           ) AS [TotalCreditCardSalesAmount],
+            MAX(CASE WHEN PaymentRank = 1 THEN [AggregatedPayments].[PayType] END) AS [PaymentType1],
+            MAX(CASE WHEN PaymentRank = 1 THEN [AggregatedPayments].[Amount] END) AS [PaymentAmount1],
+            MAX(CASE WHEN PaymentRank = 2 THEN [AggregatedPayments].[PayType] END) AS [PaymentType2],
+            MAX(CASE WHEN PaymentRank = 2 THEN [AggregatedPayments].[Amount] END) AS [PaymentAmount2],
+            MAX(CASE WHEN PaymentRank = 3 THEN [AggregatedPayments].[PayType] END) AS [PaymentType3],
+            MAX(CASE WHEN PaymentRank = 3 THEN [AggregatedPayments].[Amount] END) AS [PaymentAmount3],
+            MAX(
+                CASE
+                    WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Cash')
+                    THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
+                    ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+                END
+            ) AS [TotalCashSalesAmount],
+            MAX(
+                CASE
+                    WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Gift Certificate')
+                    THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
+                    ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+                END
+            ) AS [TotalGiftCertificateSalesAmount],
+            MAX(
+                CASE
+                    WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Gcash' OR [MstPayType].[PayType] = 'PayMaya' OR [MstPayType].[PayType] = 'GrabPay' OR [MstPayType].[PayType] = 'FoodPanda')
+                    THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
+                    ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+                END
+            ) AS [TotalEwalletOnlineSalesAmount],
+            MAX(
+                CASE
+                        WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Mastercard')
+                        THEN CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
+                        ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+                END
+            ) AS [TotalMastercardSalesAmount],
+            MAX(
+                CASE
+                    WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Visa')
+                    THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
+                    ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+                END
+            ) AS [TotalVisaSalesAmount],
+            MAX(
+                CASE
+                    WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Diners')
+                    THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
+                    ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+                END
+            ) AS [TotalDinersSalesAmount],
+            MAX(
+                CASE
+                    WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'JCB')
+                    THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
+                    ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+                END
+            ) AS [TotalJCBSalesAmount],
+            MAX(
+                CASE
+                    WHEN	([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL) AND ([TrnCollectionLine].[Amount] > 0 OR [TrnCollectionLine].[Amount] IS NOT NULL) AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Credit Card')
+                    THEN	CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
+                    ELSE	CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+                END
+            ) AS [TotalCreditCardSalesAmount],
            '${Terminal}' AS [TerminalNumber],
            '${SMPOSSerialNumber}' AS [SMPOSSerialNumber]
            FROM [TrnSales]
@@ -248,6 +274,7 @@ export const SIATransactions = ({ Terminal, SMPOSSerialNumber, SalesType }): str
                LEFT JOIN [MstPayType] ON [MstPayType].[Id] = [TrnCollectionLine].[PayTypeId]
                LEFT JOIN [MstDiscount] ON [MstDiscount].[Id] = [TrnSalesLine].[DiscountId]
                LEFT JOIN [TrnPaxTable] ON [TrnPaxTable].[SaleId] = [TrnSalesLine].[SalesId]
+               LEFT JOIN [AggregatedPayments] ON [TrnSales].[SalesNumber] = [AggregatedPayments].[SalesNumber]
                LEFT JOIN (
                    SELECT [SalesId], SUM([Amount]) AS [GrossSalesAmount],
                    SUM([Price]*[Quantity]) AS [TotalAmount]
@@ -282,11 +309,13 @@ export const SIATransactions = ({ Terminal, SMPOSSerialNumber, SalesType }): str
                INNER JOIN [TrnPaxTable] ON [TrnSalesLine].[SalesId] = [TrnPaxTable].[SaleId]
                GROUP BY [TrnSalesLine].[SalesId], [TrnPaxTable].[TotalPax], [TrnPaxTable].[DiscountedPax]
                ) AS [PAX] ON [TrnSales].[Id] = [PAX].[SalesId]
-           WHERE [TrnSales].[TerminalId] = ${Terminal} AND [TrnSales].[IsLocked] = 1 AND MONTH([TrnSales].[EntryDateTime]) = MONTH(GETDATE()) AND YEAR([TrnSales].[EntryDateTime]) = YEAR(GETDATE())
+           WHERE [TrnSales].[TerminalId] = ${Terminal}
+           AND [TrnSales].[IsLocked] = 1 
+		   AND MONTH(CAST([TrnSales].[SalesDate] AS DATE)) = MONTH('${Dates}')
+	       AND YEAR(CAST([TrnSales].[SalesDate] AS DATE)) = YEAR('${Dates}')
            GROUP BY
            [TrnSales].[SalesNumber],
            [TrnSales].[SalesDate],
-           [TrnSalesLine].[SalesLineTimeStamp],
            [TrnSales].[EntryDateTime],
            [TrnSales].[UpdateDateTime],
            [MstTable].[TableCode],

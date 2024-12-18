@@ -6,33 +6,51 @@ import { windowNotification } from '@shared/utils'
 import { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 
-export const useSMReports = (path: string, tenant: Tenant) => {
+export const useSMReports = (path: string, tenant: Tenant, Dates: string) => {
   const dispatch = useDispatch<AppDispatch>()
-
-  const { TerminalId = 0, SMPOSSerialNumber = 0, SMSaleType = '' } = tenant
+  const { Terminal = 1, SMPOSSerialNumber = '000000', SMSalesType = 'NA' } = tenant
 
   const createReport = useCallback(async () => {
     try {
       // Generate SIATransactions report
       const transactionsQuery = SIATransactions({
-        Terminal: TerminalId,
+        Terminal,
         SMPOSSerialNumber,
-        SalesType: SMSaleType
+        SalesType: SMSalesType,
+        Dates
       })
 
-      await window.electron.sql.get(SqlChannel.getSIATransactions, `${path}/SIA`, transactionsQuery)
-
-      // Generate SIATransactionDetails report
-      const transactionsDetailsQuery = SIATransactionDetailQuery({ Terminal: TerminalId })
-
-      await window.electron.sql.get(
-        SqlChannel.getSIATransactionDetails,
-        `${path}/SIA`,
-        transactionsDetailsQuery
+      const trnResult = await window.electron.sql.get(
+        SqlChannel.getSIATransactions,
+        String(`${path}/SIA`).replace('\\', '/'),
+        transactionsQuery,
+        Dates
       )
+      //console.log(trnResult)
+      // Generate SIATransactionDetails report
+      const transactionsDetailsQuery = SIATransactionDetailQuery({ Terminal, Dates })
 
-      // Success notification
-      windowNotification('SM Reports', 'New reports have been created.', `${path}/SIA`)
+      const trnDetailResult = await window.electron.sql.get(
+        SqlChannel.getSIATransactionDetails,
+        String(`${path}/SIA`).replace('\\', '/'),
+        transactionsDetailsQuery,
+        Dates
+      )
+      if (trnResult.IsSomething && trnDetailResult.IsSomething)
+        // Success notification
+        windowNotification(
+          'SM Reports',
+          'New reports have been created.',
+          String(`${path}/SIA`).replace('\\', '/')
+        )
+      else
+        dispatch(
+          setSnackbar({
+            display: true,
+            message: trnResult.Message || Error.e00x01,
+            type: ToastType.error
+          })
+        )
     } catch (error: any) {
       console.error('Report creation failed:', error)
 
@@ -48,7 +66,7 @@ export const useSMReports = (path: string, tenant: Tenant) => {
         })
       )
     }
-  }, [path, TerminalId, SMPOSSerialNumber, SMSaleType, dispatch])
+  }, [path, Terminal, SMPOSSerialNumber, SMSalesType, dispatch])
 
   return createReport
 }

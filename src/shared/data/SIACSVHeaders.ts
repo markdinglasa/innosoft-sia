@@ -46,6 +46,12 @@ export const SIATransactionHeaders = [
   { id: 'DiscountField4Amount', title: 'Discount Field 4 Amount' },
   { id: 'DiscountField5Amount', title: 'Discount Field 5 Amount' },
   { id: 'DiscountField6Amount', title: 'Discount Field 6 Amount' },
+  { id: 'PaymentType1', title: 'Payment Type_1' },
+  { id: 'PaymentAmount1', title: 'Payment Amount_1' },
+  { id: 'PaymentType2', title: 'Payment Type_2' },
+  { id: 'PaymentAmount2', title: 'Payment Amount_2' },
+  { id: 'PaymentType3', title: 'Payment Type_3' },
+  { id: 'PaymentAmount3', title: 'Payment Amount_3' },
   { id: 'TotalCashSalesAmount', title: 'Total Cash Sales Amount' },
   { id: 'TotalGiftCertificateSalesAmount', title: 'Total Gift Certificate Sales Amount' },
   { id: 'TotalEwalletOnlineSalesAmount', title: 'Total Ewallet Online Sales Amount' },
@@ -55,7 +61,7 @@ export const SIATransactionHeaders = [
   { id: 'TotalJCBSalesAmount', title: 'Total JCB Sales Amount' },
   { id: 'TotalCreditCardSalesAmount', title: 'Total Credit Card Sales Amount' },
   { id: 'TerminalNumber', title: 'Terminal Number' },
-  { id: 'SMPOSSerialNumber', title: 'SMPOS Serial Number' }
+  { id: 'SMPOSSerialNumber', title: 'Serial Number' }
 ]
 
 export const SIATransactionDetailsHeaders = [

@@ -1,27 +1,28 @@
 import { mdiInformation, mdiPause, mdiPlay, mdiRestart } from '@mdi/js'
-import { useAllianceReports, useMWReports, useSMReports } from '@renderer/App/hooks'
 import { Error } from '@shared/messages'
 import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, ButtonColor, SFC, SqlChannel, ToastType } from '@shared/types'
 import { formatDates } from '@shared/utils'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useAllianceReports, useMWReports, useSMReports } from '../../hooks'
 import {
   getActiveTenant,
   getAllianceCategory,
   getInitialize,
   getIsConnected,
   getPath,
+  getSelectedDate,
   getTenant
 } from '../../selectors'
-import { setInitialize } from '../../store/manager'
+import { setDates, setInitialize } from '../../store/manager'
 import { Tenants } from '../../types'
 import { LoadingScreen } from '../LoadingScreen'
 import * as S from './Styles'
 
 export const Initialize: SFC = ({ className }) => {
   const dispatch = useDispatch<AppDispatch>()
-  const [dates, setDates] = useState<Date>(new Date())
+  const dates = useSelector(getSelectedDate)
   const Dates = formatDates(new Date(dates ?? '')).toString()
 
   const [loading, setLoading] = useState<boolean>(false)
@@ -32,7 +33,7 @@ export const Initialize: SFC = ({ className }) => {
   const activeTenant = useSelector(getActiveTenant)
   const allianceCategory = useSelector(getAllianceCategory)
 
-  const SMReports = useSMReports(path, tenant)
+  const SMReports = useSMReports(path, tenant, Dates)
   const AllianceReport = useAllianceReports(path, tenant, Dates, allianceCategory)
   const MWReports = useMWReports(path, tenant, Dates)
 
@@ -137,13 +138,13 @@ export const Initialize: SFC = ({ className }) => {
             <S.Icon path={mdiInformation} size="30px" />
             <S.Span>Before starting, make sure the above items are ready.</S.Span>
           </S.Text>
-          {activeTenant !== Tenants.SM && (
+          {activeTenant && (
             <div>
               <S.InputDate
                 type="date"
                 name="dates"
                 value={formatDates(dates ?? new Date())}
-                onChange={(e) => setDates(new Date(e.target.value))}
+                onChange={(e) => dispatch(setDates(new Date(e.target.value).toString()))}
                 disabled={initialized}
               />
             </div>

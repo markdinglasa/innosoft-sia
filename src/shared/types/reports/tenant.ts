@@ -6,7 +6,7 @@ export interface Tenant {
   TenantCode?: string
   SMTradeCode?: string
   SMStoreNumber?: string
-  SMSaleType: string
+  SMSalesType: string
   SMPOSMachineNUmber?: string
   SMPOSSerialNumber?: string
   SMCoinDirectory?: string

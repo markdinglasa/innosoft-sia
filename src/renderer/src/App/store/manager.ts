@@ -13,13 +13,21 @@ export const initialState: Manager = {
   activeTenant: null,
   accumulatedTotal: 0,
   batchNo: 0,
-  allianceCategory: ''
+  allianceCategory: '',
+  dates: new Date().toString()
 }
 
 const manager = createSlice({
   name: SIA_MANAGER,
   initialState,
   reducers: {
+    setDates: (state: Manager, { payload: dates }: PayloadAction<string>) => {
+      state.dates = dates
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: SIA_MANAGER,
+        state: current(state)
+      })
+    },
     setBatchNo: (state: Manager, { payload: batchNo }: PayloadAction<number>) => {
       state.batchNo = batchNo
       window.electron.ipc.send(IpcChannel.setStoreValue, {
@@ -89,6 +97,7 @@ export const {
   setActiveTenant,
   setAllianceCategory,
   setInitialize,
+  setDates,
   setManager
 } = manager.actions
 

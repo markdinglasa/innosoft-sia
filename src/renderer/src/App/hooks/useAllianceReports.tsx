@@ -20,7 +20,7 @@ export const useAllianceReports = (
 ) => {
   const dispatch = useDispatch<AppDispatch>()
 
-  const { TerminalId: Terminal = 0 } = tenant
+  const { Terminal = 0 } = tenant
 
   const createReport = useCallback(async () => {
     try {

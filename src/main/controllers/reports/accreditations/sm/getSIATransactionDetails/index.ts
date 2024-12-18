@@ -11,11 +11,11 @@ import { recordByQuery } from '../../../../../model'
 const csvHeaders = headers.map((header) => header.title)
 ipcMain.handle(
   SqlChannel.getSIATransactionDetails,
-  async (_event: any, path: string, query: string): Promise<Response> => {
+  async (_event: any, path: string, query: string, dates: string): Promise<Response> => {
     try {
       const response = await recordByQuery(query)
       if (!response.List) return { IsSomething: false, Message: response.Message }
-      const fileName = generateSMFileName(true)
+      const fileName = generateSMFileName(true, dates)
       const filePath = paths.join(path, fileName)
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
 
@@ -47,7 +47,7 @@ ipcMain.handle(
       await csvWriter.writeRecords(csvData)
       return { IsSomething: true, Message: Success.s00x00 }
     } catch (error: any) {
-      return { IsSomething: false, Message: Error.e00x02 }
+      return { IsSomething: false, Message: error.message || Error.e00x02 }
     }
   }
 )

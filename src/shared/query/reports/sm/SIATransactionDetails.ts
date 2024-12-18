@@ -1,4 +1,4 @@
-export const SIATransactionDetailQuery = ({ Terminal }): string => {
+export const SIATransactionDetailQuery = ({ Terminal, Dates }): string => {
   return `
    	SELECT 
     REPLACE([TrnSales].[SalesNumber], '-', '') AS [OrderNumber],
@@ -57,5 +57,8 @@ export const SIATransactionDetailQuery = ({ Terminal }): string => {
     LEFT JOIN [MstItemGroupItem] ON [MstItemGroupItem].[ItemId] = [TrnSalesLine].[ItemId]
     LEFT JOIN [MstItemGroup] ON [MstItemGroup].[Id] = [MstItemGroupItem].[ItemGroupId]
     LEFT JOIN [MstDiscount] ON [MstDiscount].[Id] = [TrnSalesLine].[DiscountId]
-    WHERE [TrnSales].[TerminalId] = ${Terminal} AND [TrnSales].[IsLocked] = 1 AND MONTH([TrnSales].[EntryDateTime]) = MONTH(GETDATE()) AND YEAR([TrnSales].[EntryDateTime]) = YEAR(GETDATE())`
+    WHERE [TrnSales].[TerminalId] = ${Terminal} 
+	AND [TrnSales].[IsLocked] = 1 
+	AND MONTH(CAST([TrnSales].[SalesDate] AS DATE)) = MONTH('${Dates}')
+	AND YEAR(CAST([TrnSales].[SalesDate] AS DATE)) = YEAR('${Dates}')`
 }
