@@ -55,6 +55,7 @@ export const SIATransactionHeaders = [
   { id: 'TotalCashSalesAmount', title: 'Total Cash Sales Amount' },
   { id: 'TotalGiftCertificateSalesAmount', title: 'Total Gift Certificate Sales Amount' },
   { id: 'TotalEwalletOnlineSalesAmount', title: 'Total Ewallet Online Sales Amount' },
+  { id: 'TotalOtherTenderAmount', title: 'Total Other Tender Sales Amount' },
   { id: 'TotalMastercardSalesAmount', title: 'Total Mastercard Sales Amount' },
   { id: 'TotalVisaSalesAmount', title: 'Total Visa Sales Amount' },
   { id: 'TotalDinersSalesAmount', title: 'Total Diners Sales Amount' },

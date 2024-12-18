@@ -73,6 +73,7 @@ ipcMain.handle(
         item.TotalCashSalesAmount,
         item.TotalGiftCertificateSalesAmount,
         item.TotalEwalletOnlineSalesAmount,
+        item.TotalOtherTenderAmount,
         item.TotalMastercardSalesAmount,
         item.TotalVisaSalesAmount,
         item.TotalDinersSalesAmount,

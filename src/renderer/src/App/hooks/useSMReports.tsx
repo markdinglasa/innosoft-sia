@@ -26,7 +26,7 @@ export const useSMReports = (path: string, tenant: Tenant, Dates: string) => {
         transactionsQuery,
         Dates
       )
-      //console.log(trnResult)
+      console.log(trnResult)
       // Generate SIATransactionDetails report
       const transactionsDetailsQuery = SIATransactionDetailQuery({ Terminal, Dates })
 
