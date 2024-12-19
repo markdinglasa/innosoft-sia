@@ -24,7 +24,7 @@ export const Initialize: SFC = ({ className }) => {
   const dispatch = useDispatch<AppDispatch>()
   const dates = useSelector(getSelectedDate)
   const Dates = formatDates(new Date(dates ?? '')).toString()
-
+  //console.log('Dates:', Dates)
   const [loading, setLoading] = useState<boolean>(false)
   const path = useSelector(getPath)
   const isConnected = useSelector(getIsConnected)
@@ -33,9 +33,9 @@ export const Initialize: SFC = ({ className }) => {
   const activeTenant = useSelector(getActiveTenant)
   const allianceCategory = useSelector(getAllianceCategory)
 
-  const SMReports = useSMReports(path, tenant, Dates)
-  const AllianceReport = useAllianceReports(path, tenant, Dates, allianceCategory)
-  const MWReports = useMWReports(path, tenant, Dates)
+  const SMReports = useSMReports()
+  const AllianceReport = useAllianceReports()
+  const MWReports = useMWReports()
 
   const checkFields = async (): Promise<boolean> => {
     try {
@@ -96,10 +96,10 @@ export const Initialize: SFC = ({ className }) => {
   const reports = async (Tenant: Tenants) => {
     switch (Tenant) {
       case Tenants.SM:
-        SMReports()
+        SMReports(path, tenant, Dates)
         break
       case Tenants.ALLIANCE:
-        AllianceReport()
+        AllianceReport(path, tenant, Dates, allianceCategory)
         break
       /*case Tenants.AYALA:
         dispatch(setSnackbar({ display: true, message: Error.e00x47, type: ToastType.error }))
@@ -108,7 +108,7 @@ export const Initialize: SFC = ({ className }) => {
         dispatch(setSnackbar({ display: true, message: Error.e00x47, type: ToastType.error }))
         break*/
       case Tenants.MW:
-        MWReports()
+        MWReports(path, tenant, Dates)
         break
     }
   }

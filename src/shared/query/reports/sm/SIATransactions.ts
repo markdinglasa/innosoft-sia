@@ -17,7 +17,7 @@ export const SIATransactions = ({ Terminal, SMPOSSerialNumber, SalesType, Dates 
             [TrnSales].[TerminalId] = ${Terminal}
             AND [TrnSales].[IsLocked] = 1
             AND MONTH(CAST([TrnSales].[SalesDate] AS DATE)) = MONTH('${Dates}')
-			AND YEAR(CAST([TrnSales].[SalesDate] AS DATE)) = YEAR('${Dates})
+			AND YEAR(CAST([TrnSales].[SalesDate] AS DATE)) = YEAR('${Dates}')
             AND ISNULL([TrnCollection].[IsCancelled], 0) = 0
             AND ISNULL([TrnCollectionLine].[Amount], 0) > 0
     )
@@ -136,12 +136,14 @@ export const SIATransactions = ({ Terminal, SMPOSSerialNumber, SalesType, Dates 
 
 		MAX(CASE 
 			WHEN (ISNULL([TrnCollection].[IsReturn],0) = 2) AND ([MstDiscount].[Discount] = 'Senior Citizen Discount' OR [MstDiscount].[Discount] = 'PWD Discount') THEN
-			- CAST(ROUND(COALESCE((((([GrossSales].[TotalAmount]/[TrnPaxTable].[TotalPax])*[TrnPaxTable].[DiscountedPax])/1.12) - ((((([GrossSales].[TotalAmount]/[TrnPaxTable].[TotalPax])*[TrnPaxTable].[DiscountedPax])/1.12))*0.2)), 0), 2) AS DECIMAL(10, 2)) 
+			-([TrnSalesLine].[quantity]*([TrnSalesLine].[price2lesstax]-([TrnSalesLine].[price2lesstax]*([TrnSalesLine].[DiscountRate]/100))))
+			WHEN ((ISNULL([TrnCollection].[IsReturn],0) = 2) AND [TrnSalesLine].[TaxId]=5) THEN -[TrnSalesLine].[Amount] 
 			WHEN (ISNULL([TrnCollection].[IsCancelled],0) = 2) THEN
 			CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
 			WHEN (ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollection].[IsReturn],0) = 0 ) AND ([MstDiscount].[Discount] = 'Senior Citizen Discount' OR [MstDiscount].[Discount] = 'PWD Discount')
-			THEN CAST(ROUND(COALESCE((((([GrossSales].[TotalAmount]/[TrnPaxTable].[TotalPax])*[TrnPaxTable].[DiscountedPax])/1.12) - ((((([GrossSales].[TotalAmount]/[TrnPaxTable].[TotalPax])*[TrnPaxTable].[DiscountedPax])/1.12))*0.2)), 0), 2) AS DECIMAL(10, 2)) 
-			ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
+			THEN [TrnSalesLine].[quantity]*([TrnSalesLine].[price2lesstax]-([TrnSalesLine].[price2lesstax]*([TrnSalesLine].[DiscountRate]/100)))
+			ELSE CASE WHEN ([TrnSalesLine].[TaxId]=5) THEN [TrnSalesLine].[Amount] 
+			ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) END
         END) AS [TotalExemptSales],
         MAX(
                CASE
@@ -348,44 +350,20 @@ export const SIATransactions = ({ Terminal, SMPOSSerialNumber, SalesType, Dates 
 					--ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
 				END
 			) AS [TotalEwalletOnlineSalesAmount],
-			MAX(
-			CASE
-				WHEN ISNULL([TrnSales].[IsReturn], 0) = 2 
-					 AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id]) AND [MstPayType].[PayType] NOT IN (
-                 'Cash', 
-                 'Gift Certificate', 
-                 'Gcash', 
-                 'PayMaya', 
-                 'GrabPay', 
-                 'FoodPanda', 
-                 'Visa', 
-                 'Diners', 
-                 'JCB', 
-                 'Credit Card'
-             ) THEN
-					CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
-				WHEN ISNULL([TrnCollection].[IsCancelled], 0) = 1 THEN
-					CAST(ROUND(0, 2) AS DECIMAL(10, 2))
-				WHEN ISNULL([TrnCollection].[IsCancelled], 0) = 0 
-					 AND ISNULL([TrnCollection].[IsReturn], 0) = 0 
-					 AND ISNULL([TrnCollectionLine].[Amount], 0) > 0 
-					 AND [TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] 
-					 AND [MstPayType].[PayType] NOT IN (
-                 'Cash', 
-                 'Gift Certificate', 
-                 'Gcash', 
-                 'PayMaya', 
-                 'GrabPay', 
-                 'FoodPanda', 
-                 'Visa', 
-                 'Diners', 
-                 'JCB', 
-                 'Credit Card'
-             ) THEN
-					CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
-			END
-		) AS [TotalOtherTenderAmount],
-
+            MAX(
+                CASE
+                    WHEN ISNULL([TrnSales].[IsReturn], 0) = 2 AND ISNULL([TrnCollectionLine].[Amount], 0) > 0 
+                        AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id]) AND [MstPayType].[PayType] NOT IN ('Cash', 'Gift Certificate', 'Gcash', 'PayMaya', 'GrabPay', 'FoodPanda', 'Visa', 'Diners', 'JCB', 'Credit Card') THEN
+                        -CAST(ROUND(COALESCE(([TrnCollectionLine].[Amount]), 0), 2) AS DECIMAL(10, 2))
+                    WHEN ISNULL([TrnCollection].[IsCancelled], 0) = 1 THEN
+                        CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+                    WHEN ISNULL([TrnCollection].[IsCancelled], 0) = 0 
+                        AND ISNULL([TrnCollection].[IsReturn], 0) = 0 
+                        AND ISNULL([TrnCollectionLine].[Amount], 0) > 0 
+                        AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id]) AND [MstPayType].[PayType] NOT IN ('Cash', 'Gift Certificate', 'Gcash', 'PayMaya', 'GrabPay', 'FoodPanda', 'Visa', 'Diners', 'JCB', 'Credit Card') THEN
+                        CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
+                END
+            ) AS [TotalOtherTenderAmount],
 
 			MAX(
 				CASE
@@ -501,7 +479,7 @@ export const SIATransactions = ({ Terminal, SMPOSSerialNumber, SalesType, Dates 
             WHERE [TrnSales].[TerminalId] = ${Terminal}
             AND [TrnSales].[IsLocked] = 1
             AND MONTH(CAST([TrnSales].[SalesDate] AS DATE)) = MONTH('${Dates}')
-			AND YEAR(CAST([TrnSales].[SalesDate] AS DATE)) = YEAR('${Dates})
+			AND YEAR(CAST([TrnSales].[SalesDate] AS DATE)) = YEAR('${Dates}')
 		  
            GROUP BY
            [TrnSales].[SalesNumber],

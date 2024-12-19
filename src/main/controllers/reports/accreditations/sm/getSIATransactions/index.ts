@@ -15,6 +15,7 @@ ipcMain.handle(
     try {
       const response = await recordByQuery(query)
       if (!response.List) return { IsSomething: false, Message: response.Message }
+
       const fileName = generateSMFileName(false, date)
       const filePath = paths.join(path, fileName)
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
@@ -51,7 +52,7 @@ ipcMain.handle(
         item.NationalCoachAthleteMedalofValorDiscountamount,
         item.SMACDiscountAmount,
         item.OnlineDealsDiscountName,
-        item.OnlineDealsDiscountAmount,
+        item?.OnlineDealsDiscountAmount,
         item.DiscountField1Name,
         item.DiscountField2Name,
         item.DiscountField3Name,
@@ -64,28 +65,30 @@ ipcMain.handle(
         item.DiscountField4Amount,
         item.DiscountField5Amount,
         item.DiscountField6Amount,
-        item.PaymentType1,
-        item.PaymentAmount1,
-        item.PaymentType2,
-        item.PaymentAmount2,
-        item.PaymentType3,
-        item.PaymentAmount3,
-        item.TotalCashSalesAmount,
-        item.TotalGiftCertificateSalesAmount,
-        item.TotalEwalletOnlineSalesAmount,
-        item.TotalOtherTenderAmount,
-        item.TotalMastercardSalesAmount,
-        item.TotalVisaSalesAmount,
-        item.TotalDinersSalesAmount,
-        item.TotalJCBSalesAmount,
-        item.TotalCreditCardSalesAmount,
+        item?.PaymentType1 ?? 'NA',
+        item?.PaymentAmount1 ?? 0,
+        item?.PaymentType2 ?? 'NA',
+        item?.PaymentAmount2 ?? 0,
+        item?.PaymentType3 ?? 'NA',
+        item?.PaymentAmount3 ?? 0,
+        item?.TotalCashSalesAmount ?? 0,
+        item?.TotalGiftCertificateSalesAmount ?? 0,
+        item?.TotalEwalletOnlineSalesAmount ?? 0,
+        item?.TotalOtherTenderAmount ?? 0,
+        item?.TotalMastercardSalesAmount ?? 0,
+        item?.TotalVisaSalesAmount ?? 0,
+        item?.TotalDinersSalesAmount ?? 0,
+        item?.TotalJCBSalesAmount ?? 0,
+        item?.TotalCreditCardSalesAmount ?? 0,
         item.TerminalNumber,
         item.SMPOSSerialNumber
       ])
+
       const csvWriter = createArrayCsvWriter({
         path: filePath,
         header: csvHeaders
       })
+
       await csvWriter.writeRecords(csvData)
       return { IsSomething: true, Message: Success.s00x00 }
     } catch (error: any) {

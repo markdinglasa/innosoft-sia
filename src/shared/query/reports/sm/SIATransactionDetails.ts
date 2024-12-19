@@ -59,6 +59,7 @@ export const SIATransactionDetailQuery = ({ Terminal, Dates }): string => {
     LEFT JOIN [MstDiscount] ON [MstDiscount].[Id] = [TrnSalesLine].[DiscountId]
     WHERE [TrnSales].[TerminalId] = ${Terminal} 
 	AND [TrnSales].[IsLocked] = 1 
+
 	AND MONTH(CAST([TrnSales].[SalesDate] AS DATE)) = MONTH('${Dates}')
 	AND YEAR(CAST([TrnSales].[SalesDate] AS DATE)) = YEAR('${Dates}')`
 }

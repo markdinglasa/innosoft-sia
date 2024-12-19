@@ -6,67 +6,71 @@ import { windowNotification } from '@shared/utils'
 import { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 
-export const useSMReports = (path: string, tenant: Tenant, Dates: string) => {
+export const useSMReports = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const { Terminal = 1, SMPOSSerialNumber = '000000', SMSalesType = 'NA' } = tenant
 
-  const createReport = useCallback(async () => {
-    try {
-      // Generate SIATransactions report
-      const transactionsQuery = SIATransactions({
-        Terminal,
-        SMPOSSerialNumber,
-        SalesType: SMSalesType,
-        Dates
-      })
+  const createReport = useCallback(
+    async (path: string, tenant: Tenant, Dates: string) => {
+      const { Terminal = 1, SMPOSSerialNumber = '000000', SMSalesType = 'NA' } = tenant
 
-      const trnResult = await window.electron.sql.get(
-        SqlChannel.getSIATransactions,
-        String(`${path}/SIA`).replace('\\', '/'),
-        transactionsQuery,
-        Dates
-      )
-      console.log(trnResult)
-      // Generate SIATransactionDetails report
-      const transactionsDetailsQuery = SIATransactionDetailQuery({ Terminal, Dates })
+      try {
+        // Generate SIATransactions report
+        const transactionsQuery = SIATransactions({
+          Terminal,
+          SMPOSSerialNumber,
+          SalesType: SMSalesType,
+          Dates
+        })
 
-      const trnDetailResult = await window.electron.sql.get(
-        SqlChannel.getSIATransactionDetails,
-        String(`${path}/SIA`).replace('\\', '/'),
-        transactionsDetailsQuery,
-        Dates
-      )
-      if (trnResult.IsSomething && trnDetailResult.IsSomething)
-        // Success notification
-        windowNotification(
-          'SM Reports',
-          'New reports have been created.',
-          String(`${path}/SIA`).replace('\\', '/')
+        const trnResult = await window.electron.sql.get(
+          SqlChannel.getSIATransactions,
+          String(`${path}/SIA`).replace('\\', '/'),
+          transactionsQuery,
+          Dates
         )
-      else
+        //console.log(trnResult)
+        // Generate SIATransactionDetails report
+        const transactionsDetailsQuery = SIATransactionDetailQuery({ Terminal, Dates })
+
+        const trnDetailResult = await window.electron.sql.get(
+          SqlChannel.getSIATransactionDetails,
+          String(`${path}/SIA`).replace('\\', '/'),
+          transactionsDetailsQuery,
+          Dates
+        )
+        if (trnResult.IsSomething && trnDetailResult.IsSomething)
+          // Success notification
+          windowNotification(
+            'SM Reports',
+            'New reports have been created.',
+            String(`${path}/SIA`).replace('\\', '/')
+          )
+        else
+          dispatch(
+            setSnackbar({
+              display: true,
+              message: trnResult.Message || Error.e00x01,
+              type: ToastType.error
+            })
+          )
+      } catch (error: any) {
+        console.error('Report creation failed:', error)
+
+        // Failure notification
+        windowNotification('SM Reports Failed', error.message || 'An unknown error occurred')
+
+        // Display Snackbar error
         dispatch(
           setSnackbar({
             display: true,
-            message: trnResult.Message || Error.e00x01,
+            message: Error.e00x01,
             type: ToastType.error
           })
         )
-    } catch (error: any) {
-      console.error('Report creation failed:', error)
-
-      // Failure notification
-      windowNotification('SM Reports Failed', error.message || 'An unknown error occurred')
-
-      // Display Snackbar error
-      dispatch(
-        setSnackbar({
-          display: true,
-          message: Error.e00x01,
-          type: ToastType.error
-        })
-      )
-    }
-  }, [path, Terminal, SMPOSSerialNumber, SMSalesType, dispatch])
+      }
+    },
+    [dispatch]
+  )
 
   return createReport
 }
