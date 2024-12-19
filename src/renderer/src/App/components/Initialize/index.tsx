@@ -1,4 +1,4 @@
-import { mdiInformation, mdiPause, mdiPlay, mdiRestart } from '@mdi/js'
+import { mdiPause, mdiPlay, mdiRestart } from '@mdi/js'
 import { Error } from '@shared/messages'
 import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, ButtonColor, SFC, SqlChannel, ToastType } from '@shared/types'
@@ -23,7 +23,7 @@ import * as S from './Styles'
 export const Initialize: SFC = ({ className }) => {
   const dispatch = useDispatch<AppDispatch>()
   const dates = useSelector(getSelectedDate)
-  const Dates = formatDates(new Date(dates ?? '')).toString()
+  const Dates = formatDates(new Date(dates ?? new Date())).toString()
   //console.log('Dates:', Dates)
   const [loading, setLoading] = useState<boolean>(false)
   const path = useSelector(getPath)
@@ -133,24 +133,38 @@ export const Initialize: SFC = ({ className }) => {
   return (
     <>
       <S.Container className={className}>
-        <S.TopTitle>
+        {/*<S.TopTitle>
           <S.Text>
             <S.Icon path={mdiInformation} size="30px" />
             <S.Span>Before starting, make sure the above items are ready.</S.Span>
           </S.Text>
+        </S.TopTitle>*/}
+        <S.TopTitle>
           {activeTenant && (
-            <div>
-              <S.InputDate
-                type="date"
-                name="dates"
-                value={formatDates(dates ?? new Date())}
-                onChange={(e) => dispatch(setDates(new Date(e.target.value).toString()))}
-                disabled={initialized}
-              />
-            </div>
+            <>
+              <S.Div>
+                <S.DivBtn2>
+                  <S.InputDate
+                    type="date"
+                    name="dates"
+                    value={formatDates(dates ?? new Date())}
+                    onChange={(e) => dispatch(setDates(new Date(e.target.value).toString()))}
+                    disabled={initialized}
+                  />
+                </S.DivBtn2>
+                <S.DivBtn>
+                  <S.Button
+                    onClick={() => dispatch(setDates(null))}
+                    text="System Date"
+                    //iconLeft={mdiCalendarBlank}
+                    color={ButtonColor.blue}
+                    disabled={initialized}
+                  />
+                </S.DivBtn>
+              </S.Div>
+            </>
           )}
         </S.TopTitle>
-
         {initialized && (
           <>
             <S.Div>

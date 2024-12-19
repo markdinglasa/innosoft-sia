@@ -37,7 +37,7 @@ export const Card = styled.div`
   }
 `
 export const Title = styled.div`
-  height: 50px;
+  height: 40px;
   border-radius: 8px;
   align-items: center;
   display: flex;

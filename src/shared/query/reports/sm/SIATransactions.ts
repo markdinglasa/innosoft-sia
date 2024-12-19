@@ -24,8 +24,8 @@ export const SIATransactions = ({ Terminal, SMPOSSerialNumber, SalesType, Dates 
     SELECT 
         REPLACE([TrnSales].[SalesNumber], '-', '') AS [OrderNumber],
         CONVERT(varchar, [TrnSales].[SalesDate], 23) AS [BusinessDay],
-        MIN(CONCAT(CONVERT(varchar, [TrnSales].[SalesDate], 23), ' ', CONVERT(varchar, [TrnSalesLine].[SalesLineTimeStamp], 8))) AS [CheckOpen],
-        MAX(CONCAT(CONVERT(varchar, [TrnSales].[SalesDate], 23), ' ', CONVERT(varchar, [TrnSales].[UpdateDateTime], 8))) AS [CheckClose],
+        MIN((CONVERT(varchar, [TrnSales].[SalesDate], 23)+' '+CONVERT(varchar, [TrnSalesLine].[SalesLineTimeStamp], 8))) AS [CheckOpen],
+        MAX((CONVERT(varchar, [TrnSales].[SalesDate], 23)+' '+CONVERT(varchar, [TrnSales].[UpdateDateTime], 8))) AS [CheckClose],
         '${SalesType}' AS [SalesType],
         MAX(CASE WHEN ISNULL([MstTable].[TableCode],'Walk-in') <> 'Walk-in' AND ISNULL([MstTable].[TableCode],'Walk-in') <> 'Walk-in' THEN 'Dine-in' ELSE ISNULL([MstTable].[TableCode],'Walk-in') END) AS [TransactionType],
         CASE 

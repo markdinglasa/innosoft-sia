@@ -8,6 +8,7 @@ import {
   Menu,
   nativeImage,
   OpenDialogOptions,
+  screen,
   shell,
   Tray
 } from 'electron'
@@ -27,9 +28,12 @@ export let isQuitting = false
 export const isDev: boolean = NODE_ENV === 'development'
 
 const createWindow = (url: string): BrowserWindow => {
+  const primaryDisplay = screen.getPrimaryDisplay()
+  const { height } = primaryDisplay.size
+
   mainWindow = new BrowserWindow({
     width: 415,
-    height: 860,
+    height: height - 100,
     icon: path.join(__dirname, '../shared/assets/favicon.ico'),
     show: isDev ? true : false,
     autoHideMenuBar: isDev ? false : true,

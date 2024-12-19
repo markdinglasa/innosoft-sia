@@ -1,4 +1,4 @@
-import { mdiFolder, mdiInformation } from '@mdi/js'
+import { mdiFolder } from '@mdi/js'
 import { Error } from '@shared/messages'
 import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, ButtonColor, ButtonType, SFC, ToastType } from '@shared/types'
@@ -43,10 +43,10 @@ export const SelectPathButton: SFC<SelectPathButtonProps> = ({ className, onSele
 
   return (
     <S.Container className={className}>
-      <S.Text>
+      {/*<S.Text>
         <S.Icon path={mdiInformation} size="30px" />
         <S.Span> Select a location where to save the reports</S.Span>
-      </S.Text>
+      </S.Text>*/}
       <S.UButton
         iconLeft={mdiFolder}
         onClick={handleSelectPath}

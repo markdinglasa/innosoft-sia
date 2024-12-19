@@ -104,7 +104,7 @@ export const AllianceSalesEODQuery = ({
 }): string => {
   return `
  		SELECT 
-		MIN(CONCAT(REPLACE(CONVERT(varchar, [TrnSales].[SalesDate], 23),'-',''), '', REPLACE(CONVERT(varchar, [TrnSalesLine].[SalesLineTimeStamp], 8),':',''))) AS [date],
+		MIN((REPLACE(CONVERT(varchar, [TrnSales].[SalesDate], 23),'-','')+''+REPLACE(CONVERT(varchar, [TrnSalesLine].[SalesLineTimeStamp], 8),':',''))) AS [date],
 		'${ControlNumber}' AS [zcounter],
 		'${PreviousReading}' AS [previousnrgt],
     ${PreviousReading} + SUM(ROUND(CASE WHEN( ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollection].[IsReturn], 0) = 0) THEN [TrnSalesLine].[Amount] ELSE 0 END, 5)) AS [nrgt],
@@ -116,8 +116,8 @@ export const AllianceSalesEODQuery = ({
 
 		'${PreviousNonTaxSales}' AS [previousnotaxsale],
     ${PreviousNonTaxSales} + SUM(ROUND(CASE WHEN(((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0)) AND ([TrnSalesLine].[TaxAmount]<1) AND ([TrnSalesLine].[Discountid]<>4 And [TrnSalesLine].[Discountid]<>3)) THEN[TrnSalesLine].[Amount] ELSE 0 END, 5)) AS [newnotaxsale],
-		MIN(CONCAT(CONVERT(varchar, [TrnSales].[SalesDate], 23), ' ', CONVERT(varchar, [TrnSalesLine].[SalesLineTimeStamp], 8))) AS [opentime],
-		MAX(CONCAT(CONVERT(varchar, [TrnSales].[SalesDate], 23), ' ', CONVERT(varchar, [TrnSalesLine].[SalesLineTimeStamp], 8))) AS [closetime],
+		MIN((CONVERT(varchar, [TrnSales].[SalesDate], 23)+ ' '+CONVERT(varchar, [TrnSalesLine].[SalesLineTimeStamp], 8))) AS [opentime],
+		MAX((CONVERT(varchar, [TrnSales].[SalesDate], 23)+ ' '+CONVERT(varchar, [TrnSalesLine].[SalesLineTimeStamp], 8))) AS [closetime],
     SUM(ROUND((CASE WHEN((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) AND [MstDiscount].[Discount]<>'Senior Citizen Discount' And [MstDiscount].[Discount]<>'PWD' AND (ISNULL([TrnCollection].[IsReturn], 0) = 0)) THEN [Price] ELSE ([Price1]+[Price2LessTax]) END)*[Quantity],2)) AS [gross],
 		SUM(ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) ) THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 4)) AS [vat],
 
@@ -256,7 +256,7 @@ export const AllianceTransactionQuery = ({ Terminal, Dates }) => {
 	SUM(DISTINCT ROUND((CASE WHEN((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) AND [MstDiscount].[Discount]<>'Senior Citizen Discount' And [MstDiscount].[Discount]<>'PWD' AND (ISNULL([TrnCollection].[IsReturn], 0) = 0)) THEN [TrnSalesLine].[Price] ELSE ([TrnSalesLine].[Price1]+[TrnSalesLine].[Price2LessTax]) END)*[TrnSalesLine].[Quantity],2)) AS [gross],
 	SUM(CASE WHEN [TrnSales].[IsReturn] = 2 THEN CAST(ROUND(ISNULL([TrnSalesLine].[Amount], 0), 2) AS DECIMAL(10, 2)) ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) END) AS [refund],
 	MAX([TrnSalesLine].[TaxRate]) AS [taxrate],
-	MIN(REPLACE(CONCAT(CONVERT(varchar, [TrnSales].[SalesDate], 23), '',REPLACE(CONVERT(varchar, [TrnSalesLine].[SalesLineTimeStamp], 8),':', '')), '-', '')) AS [posted],
+	MIN(REPLACE((CONVERT(varchar, [TrnSales].[SalesDate], 23)+''+REPLACE(CONVERT(varchar, [TrnSalesLine].[SalesLineTimeStamp], 8),':', '')), '-', '')) AS [posted],
 	[TotalQuantity].[Quantity] AS [qty],
 	1 AS [created],
 	'NA' AS [memo]

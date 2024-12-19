@@ -54,5 +54,10 @@ export const InputDate = styled.input`
   outline: none;
   border: none;
   padding: 8px 12px;
+  width: 100%;
   background: ${colors.palette.neutral['100']};
+`
+export const BtnCon = styled.div`
+  width: 100%;
+  gap: 10px;
 `

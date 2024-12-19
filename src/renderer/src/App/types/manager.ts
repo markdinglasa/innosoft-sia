@@ -8,7 +8,7 @@ export interface Manager {
   accumulatedTotal: number
   batchNo: number
   allianceCategory: string
-  dates: string
+  dates: string | null
 }
 
 export enum Tenants {

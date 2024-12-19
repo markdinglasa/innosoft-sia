@@ -1,4 +1,4 @@
-import { mdiInformation, mdiStore } from '@mdi/js'
+import { mdiStore } from '@mdi/js'
 import { SelectOption } from '@shared/components'
 import { AllianceCategory } from '@shared/data/alliance'
 import { useToggle } from '@shared/hooks'
@@ -45,10 +45,10 @@ export const Tenant: SFC = ({ className }) => {
   return (
     <>
       <S.Container className={className}>
-        <S.Text>
+        {/*<S.Text>
           <S.Icon path={mdiInformation} size="30px" />
           <S.Span> Please input the tenant details</S.Span>
-        </S.Text>
+        </S.Text>*/}
         <S.Div className="w-full">
           <SelectOption
             value={String(activeTenant ?? '')}

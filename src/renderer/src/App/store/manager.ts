@@ -21,7 +21,7 @@ const manager = createSlice({
   name: SIA_MANAGER,
   initialState,
   reducers: {
-    setDates: (state: Manager, { payload: dates }: PayloadAction<string>) => {
+    setDates: (state: Manager, { payload: dates }: PayloadAction<string | null>) => {
       state.dates = dates
       window.electron.ipc.send(IpcChannel.setStoreValue, {
         key: SIA_MANAGER,
