@@ -137,7 +137,7 @@ export const AllianceSalesEODQuery = ({
 		COUNT(DISTINCT (CASE WHEN(ISNULL([TrnSales].[IsCancelled], 0) = 1) THEN  [TrnSalesLine].[Amount] ELSE null END)) AS [voidcnt],
 
     SUM(CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND (TrnSalesLine.[DiscountAmount]>0) THEN ISNULL([TotalDiscount].[TotalDiscountAmount], 0) ELSE 0 END) AS [disc],
-		COUNT(CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND (TrnSalesLine.[DiscountAmount]>0) THEN ISNULL([TotalDiscount].[TotalDiscountAmount], null) ELSE 0 END) AS [disccnt],
+		COUNT(CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND (TrnSalesLine.[DiscountAmount]>0) THEN ISNULL([TotalDiscount].[TotalDiscountAmount], null) ELSE null END) AS [disccnt],
 
 		SUM(ROUND(CASE WHEN(ISNULL([TrnSales].[IsCancelled], 0) = 0 AND ISNULL([TrnCollection].[IsReturn], 0) =  2) THEN  [TrnSalesLine].[Amount] ELSE 0 END, 3)) AS [refund],
 		COUNT((CASE WHEN(ISNULL([TrnSales].[IsCancelled], 0) = 0 AND ISNULL([TrnCollection].[IsReturn], 0) =  2) THEN  [TrnSalesLine].[Amount] ELSE null END)) AS [refundcnt],
@@ -221,34 +221,84 @@ export const AllianceProductLineQuery = ({ Terminal, Dates, ReceiptNumber }) => 
 
 export const AllianceTransactionQuery = ({ Terminal, Dates }) => {
   return `
-   	 	SELECT 
+	SELECT 
     REPLACE([TrnCollection].[CollectionNumber], '-', '') AS [receiptno],
-	SUM(CASE WHEN [TrnSales].[IsCancelled] = 1 THEN CAST(ROUND(ISNULL([TrnSalesLine].[Amount], 0), 2) AS DECIMAL(10, 2)) ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) END) AS [void],
-	SUM( DISTINCT CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0  AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Cash')) THEN CASE WHEN ([TrnCollectionLine].[Amount] > [TrnCollection].[Amount]) THEN [TrnCollection].[Amount] ELSE [TrnCollectionLine].[Amount] END ELSE 0 END) AS [cash],
-	SUM( DISTINCT CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0  AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND ([MstPayType].[PayType] = 'Credit Card'))) THEN [TrnCollectionLine].[Amount] ELSE 0 END) AS [credit],
-    SUM( DISTINCT CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0  AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND ([MstPayType].[PayType] = 'Charge'))) THEN [TrnCollectionLine].[Amount] ELSE 0 END) AS [charge],
-   	SUM( DISTINCT CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0  AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] = 'Gift Certificate')) THEN [TrnCollectionLine].[Amount] ELSE 0 END) AS [giftcheck],
-	SUM( DISTINCT CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0  AND ([TrnCollectionLine].[PayTypeId] = [MstPayType].[Id] AND [MstPayType].[PayType] <> 'Credit Card' AND  [MstPayType].[PayType] <> 'Cash' AND  [MstPayType].[PayType] <> 'Gift Certificate' AND  [MstPayType].[PayType] <> 'Charge' )) THEN [TrnCollectionLine].[Amount] ELSE 0 END) AS [othertender],
-    SUM(DISTINCT CASE WHEN [TrnSales].[IsCancelled] = 1 OR [TrnSales].[IsReturn] = 2 THEN CAST(ROUND(0, 2) AS DECIMAL(10, 2)) ELSE  CAST(ROUND(ISNULL([TrnSalesLine].[DiscountAmount], 0), 2) AS DECIMAL(10, 2)) END) AS [linedisc],
+    SUM(CASE 
+        WHEN TrnSales.IsCancelled = 1 
+        THEN CAST(ROUND(ISNULL(TrnSalesLine.Amount, 0), 2) AS DECIMAL(10, 2)) 
+        ELSE 0 
+    END) AS void,
+
+    SUM(CASE 
+        WHEN ISNULL(TrnCollection.IsCancelled, 0) = 0 
+             AND TrnCollectionLine.PayTypeId = MstPayType.Id 
+             AND MstPayType.PayType = 'Cash' 
+        THEN CASE 
+            WHEN TrnCollectionLine.Amount > TrnCollection.Amount 
+            THEN TrnCollection.Amount 
+            ELSE TrnCollectionLine.Amount 
+        END 
+        ELSE 0 
+    END) AS cash,
+    SUM(CASE 
+        WHEN ISNULL(TrnCollection.IsCancelled, 0) = 0 
+             AND TrnCollectionLine.PayTypeId = MstPayType.Id 
+             AND MstPayType.PayType = 'Credit Card' 
+        THEN TrnCollectionLine.Amount 
+        ELSE 0 
+    END) AS credit,
+    SUM(CASE 
+        WHEN ISNULL(TrnCollection.IsCancelled, 0) = 0 
+             AND TrnCollectionLine.PayTypeId = MstPayType.Id 
+             AND MstPayType.PayType = 'Charge' 
+        THEN TrnCollectionLine.Amount 
+        ELSE 0 
+    END) AS charge,
+    SUM(CASE 
+        WHEN ISNULL(TrnCollection.IsCancelled, 0) = 0 
+             AND TrnCollectionLine.PayTypeId = MstPayType.Id 
+             AND MstPayType.PayType = 'Gift Certificate' 
+        THEN TrnCollectionLine.Amount 
+        ELSE 0 
+    END) AS giftcheck,
+    SUM(CASE 
+        WHEN ISNULL(TrnCollection.IsCancelled, 0) = 0 
+             AND TrnCollectionLine.PayTypeId = MstPayType.Id 
+             AND MstPayType.PayType NOT IN ('Credit Card', 'Cash', 'Gift Certificate', 'Charge') 
+        THEN TrnCollectionLine.Amount 
+        ELSE 0 
+    END) AS othertender,
+    SUM(CASE 
+        WHEN TrnSales.IsCancelled = 1 OR TrnSales.IsReturn = 2 
+        THEN 0 
+        ELSE CAST(ROUND(ISNULL(TrnSalesLine.DiscountAmount, 0), 2) AS DECIMAL(10, 2)) 
+    END) AS linedisc,
+
 	SUM(DISTINCT CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND ([MstDiscount].[Discount] IN ('Senior Citizen Discount')) THEN ISNULL([TotalDiscount].[TotalDiscountAmount], 0) ELSE 0 END) AS [linesenior],
+
 	0 AS [evat],
 	SUM(DISTINCT CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND ([MstDiscount].[Discount] IN ('PWD')) THEN ISNULL([TotalDiscount].[TotalDiscountAmount], 0) ELSE 0 END) AS [linepwd],
+
     SUM(DISTINCT CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND ([MstDiscount].[Discount] IN ('Diplomat Discount')) THEN ISNULL([TotalDiscount].[TotalDiscountAmount], 0) ELSE 0 END) AS [linediplomat],
+
 	SUM(DISTINCT CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0) THEN [TrnCollectionLine].[Amount] ELSE 0 END) AS [subtotal],
 	0 AS [senior],
 	0 AS [pwd],
 	0 AS [diplomat],
 	SUM(DISTINCT ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) ) THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 4)) AS [vat],
 	0 as [exvat],
+  
 	SUM(DISTINCT ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) ) THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 4)) AS [invat],
+
 	SUM(DISTINCT ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) AND [MstTax].[Tax] = 'LOCAL TAX') THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 4)) AS [localtax],
 	SUM(DISTINCT ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) AND [MstTax].[Tax] = 'AMUSEMENT TAX') THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 4)) AS [amusement],
 	0 [ewt],
+
 	ISNULL([TotalServiceCharge].[ServiceCharge],0) AS [service],
-	SUM(DISTINCT CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnSalesLine].[TaxAmount],0) <= 0) THEN ([TrnCollectionLine].[Amount]) ELSE 0 END)-SUM(DISTINCT ROUND(CASE WHEN(([TrnSalesLine].[Amount] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) ) THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 4)) AS [taxsale],
+	SUM(DISTINCT CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnSalesLine].[TaxAmount],0) > 0) THEN [TrnSalesLine].[Amount] ELSE 0 END) AS [taxsale],
 	SUM(DISTINCT CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnSalesLine].[TaxAmount],0) <= 0) THEN ([TrnCollectionLine].[Amount]) ELSE 0 END) AS [notaxsale],
 	0 as [taxexsale],
-	SUM(DISTINCT ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) ) THEN [TrnSalesLine].[Amount] ELSE 0 END, 4)) AS [taxinsale],
+	SUM(DISTINCT ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) ) THEN [TrnSalesLine].[Amount] ELSE 0 END, 4)) AS [taxincsale],
 	0 AS [zerosale],
 	SUM(DISTINCT ROUND(CASE WHEN([TrnSalesLine].[Price2]>0 AND ((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0))) THEN [TrnSalesLine].[quantity]*([TrnSalesLine].[price2lesstax]-([TrnSalesLine].[price2lesstax]*([TrnSalesLine].[DiscountRate]/100))) ELSE CASE WHEN ([TrnSalesLine].[TaxId]=5) THEN [TrnSalesLine].[Amount] ELSE 0 END END,5)) AS [vatexempt],
 

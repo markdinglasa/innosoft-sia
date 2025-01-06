@@ -124,5 +124,5 @@ export interface XMLData {
 }
 export enum AllianceType {
   salesEOD = 'sales',
-  onlineSaels = 'sales_preeod'
+  onlineSalesPREEOD = 'sales_preeod'
 }

@@ -9,6 +9,7 @@ import { useAllianceReports, useMWReports, useSMReports } from '../../hooks'
 import {
   getActiveTenant,
   getAllianceCategory,
+  getAllianceReportType,
   getInitialize,
   getIsConnected,
   getPath,
@@ -24,14 +25,16 @@ export const Initialize: SFC = ({ className }) => {
   const dispatch = useDispatch<AppDispatch>()
   const dates = useSelector(getSelectedDate)
   const Dates = formatDates(new Date(dates ?? new Date())).toString()
-  //console.log('Dates:', Dates)
+
   const [loading, setLoading] = useState<boolean>(false)
   const path = useSelector(getPath)
   const isConnected = useSelector(getIsConnected)
   const tenant = useSelector(getTenant)
+
   const initialized = useSelector(getInitialize)
   const activeTenant = useSelector(getActiveTenant)
   const allianceCategory = useSelector(getAllianceCategory)
+  const reportType = useSelector(getAllianceReportType)
 
   const SMReports = useSMReports()
   const AllianceReport = useAllianceReports()
@@ -99,7 +102,7 @@ export const Initialize: SFC = ({ className }) => {
         SMReports(path, tenant, Dates)
         break
       case Tenants.ALLIANCE:
-        AllianceReport(path, tenant, Dates, allianceCategory)
+        AllianceReport(path, tenant, Dates, allianceCategory, reportType)
         break
       /*case Tenants.AYALA:
         dispatch(setSnackbar({ display: true, message: Error.e00x47, type: ToastType.error }))

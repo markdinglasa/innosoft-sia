@@ -13,7 +13,8 @@ export const initialState: Manager = {
   activeTenant: null,
   accumulatedTotal: 0,
   batchNo: 0,
-  allianceCategory: '',
+  allianceCategory: 'Food',
+  allianceReportType: 'salesEOD',
   dates: new Date().toString()
 }
 
@@ -44,6 +45,16 @@ const manager = createSlice({
     },
     setAllianceCategory: (state: Manager, { payload: allianceCategory }: PayloadAction<string>) => {
       state.allianceCategory = allianceCategory
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: SIA_MANAGER,
+        state: current(state)
+      })
+    },
+    setAllianceReportType: (
+      state: Manager,
+      { payload: allianceReportType }: PayloadAction<string>
+    ) => {
+      state.allianceReportType = allianceReportType
       window.electron.ipc.send(IpcChannel.setStoreValue, {
         key: SIA_MANAGER,
         state: current(state)
@@ -96,6 +107,7 @@ export const {
   setIsConnected,
   setActiveTenant,
   setAllianceCategory,
+  setAllianceReportType,
   setInitialize,
   setDates,
   setManager

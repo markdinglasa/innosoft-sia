@@ -9,4 +9,5 @@ export const getSnackbar = (state: RootState) => state.SIA.manager.snackbar
 export const getAccumulatedTotal = (state: RootState) => state.SIA.manager.accumulatedTotal
 export const getBatchNo = (state: RootState) => state.SIA.manager.batchNo
 export const getAllianceCategory = (state: RootState) => state.SIA.manager.allianceCategory
+export const getAllianceReportType = (state: RootState) => state.SIA.manager.allianceReportType
 export const getSelectedDate = (state: RootState) => state.SIA.manager.dates

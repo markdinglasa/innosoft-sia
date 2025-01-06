@@ -16,7 +16,7 @@ export const useAllianceReports = () => {
   const dispatch = useDispatch<AppDispatch>()
 
   const createReport = useCallback(
-    async (path: string, tenant: Tenant, Dates: string, Category: string) => {
+    async (path: string, tenant: Tenant, Dates: string, Category: string, ReportType: string) => {
       const { Terminal = 0 } = tenant
       try {
         const TenderQ = AllianceTenderTotalQuery({ Terminal, Dates })
@@ -78,14 +78,25 @@ export const useAllianceReports = () => {
           EWT,
           ZeroRated
         })
-        await window.electron.sql.get(
-          SqlChannel.getAllianceSalesEOD,
-          tenant,
-          `${path}`,
-          salesQ,
-          Dates,
-          Category
-        )
+        if (ReportType === 'salesEOD') {
+          await window.electron.sql.get(
+            SqlChannel.getAllianceSalesEOD,
+            tenant,
+            `${path}`,
+            salesQ,
+            Dates,
+            Category
+          )
+        } else if (ReportType === 'onlineSalesPREEOD') {
+          await window.electron.sql.get(
+            SqlChannel.getAllianceOnlineSales,
+            tenant,
+            `${path}`,
+            salesQ,
+            Dates,
+            Category
+          )
+        }
         // Success notification
         windowNotification('Alliance Reports', 'New reports have been created.', path)
       } catch (error: any) {

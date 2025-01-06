@@ -11,13 +11,13 @@ export const useSMReports = () => {
 
   const createReport = useCallback(
     async (path: string, tenant: Tenant, Dates: string) => {
-      const { Terminal = 1, SMPOSSerialNumber = '000000', SMSalesType = 'NA' } = tenant
+      const { Terminal = 1, POSSerialNumber = '000000', SMSalesType = 'NA' } = tenant
 
       try {
         // Generate SIATransactions report
         const transactionsQuery = SIATransactions({
           Terminal,
-          SMPOSSerialNumber,
+          POSSerialNumber,
           SalesType: SMSalesType,
           Dates
         })

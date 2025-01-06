@@ -5,9 +5,10 @@ export interface Tenant {
   SMClassCode?: string
   TenantCode?: string
   SMTradeCode?: string
-  SMStoreNumber?: string
+  StoreNumber?: string
   SMSalesType: string
-  SMPOSMachineNUmber?: string
-  SMPOSSerialNumber?: string
+  POSMachineNumber?: string
+  POSSerialNumber?: string
   SMCoinDirectory?: string
+  POSKey?: string
 }

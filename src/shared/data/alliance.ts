@@ -43,3 +43,9 @@ export const AllianceCategory = [
   { label: 'Watches', value: '46' },
   { label: 'Others', value: '99' }
 ]
+
+export const AllianceReportTypeOptions = [
+  { label: 'Select Report Type', value: '' },
+  { label: 'Sales (EOD)', value: 'salesEOD' },
+  { label: 'Online Sales (PREEOD)', value: 'onlineSalesPREEOD' }
+]
