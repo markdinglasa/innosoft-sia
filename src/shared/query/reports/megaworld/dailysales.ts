@@ -135,6 +135,7 @@ export const ServiceChargeQuery = ({ Dates, Terminal }: any): string => {
 export const GrossSalesQuery = ({ Dates, Terminal }: any): string => {
   return `
         SELECT 
+        SUM(ROUND(CASE WHEN( ISNULL([TrnSales].[IsCancelled],0) = 0 AND ISNULL([TrnSales].[IsReturn], 0) = 0) THEN [TrnSalesLine].[Amount] ELSE 0 END, 5)) AS [PreviousReading],
         SUM(ROUND((CASE WHEN((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) AND [MstDiscount].[Discount]<>'Senior Citizen Discount' And [MstDiscount].[Discount]<>'PWD' AND (ISNULL([TrnCollection].[IsReturn], 0) = 0)) THEN [Price] ELSE ([Price1]+[Price2LessTax]) END)*[Quantity],2)) AS [GrossSales], 
 
         SUM(ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) ) THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 4)) AS [TaxAmount],
@@ -176,11 +177,12 @@ export const ControlNumberQuery = ({ Terminal, Dates }: any): string => {
     `
 }
 
-export const PreviousReading = ({ PreviousDate, Terminal }: any): string => {
+export const PreviousReading = ({ Dates, Terminal }: any): string => {
   return `
-      SELECT [PreviousReading] AS [PreviousReading]
-      FROM [SysControlNumber]
-      WHERE [TerminalId] = ${Terminal} AND CAST([TimeStamp] AS DATE) = '${PreviousDate}'
+        SELECT  
+        SUM(ROUND(CASE WHEN( ISNULL([TrnSales].[IsCancelled],0) = 0 AND ISNULL([TrnSales].[IsReturn], 0) = 0) THEN [TrnSalesLine].[Amount] ELSE 0 END, 5)) AS [PreviousReading]
+        FROM [TrnSales] LEFT JOIN [TrnSalesLine] ON [TrnSalesLine].[SalesId] = [TrnSales].[Id]
+        WHERE [TerminalId] = ${Terminal} AND CAST([TrnSales].[SalesDate] AS DATE) < '${Dates}'
       `
 }
 export const PaymentSalesQuery = ({ Dates, Terminal }: any): string => {

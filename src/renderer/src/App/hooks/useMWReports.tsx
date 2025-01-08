@@ -7,6 +7,7 @@ import {
   mwDailyHourlySalesRepeated,
   mwDailySales,
   PaymentSalesQuery,
+  PreviousReading,
   ServiceChargeQuery,
   TaxAmountQuery
 } from '@shared/query'
@@ -35,14 +36,20 @@ export const useMWReports = () => {
           setBatchNo((prev) => prev + 1)
           setPreviousDate(currentDate)
         }
-
+        const PreviousReadingQuery = PreviousReading({ Dates, Terminal })
+        const PreviousReadingResponse = await window.electron.sql.get(
+          SqlChannel.getAmount,
+          PreviousReadingQuery
+        )
+        const OldAccumulatedTotal = PreviousReadingResponse?.Data?.PreviousReading ?? 0
         const dailyDiscountQuery: string = mwDailyDiscount({ Terminal, Dates })
         await window.electron.sql.get(
           SqlChannel.getDailyDiscount,
           tenant,
           path,
           BatchNo,
-          dailyDiscountQuery
+          dailyDiscountQuery,
+          currentDate
         )
 
         const dailyDaySalesQuery: string = mwDailyHourlySales({
@@ -62,7 +69,8 @@ export const useMWReports = () => {
           path,
           BatchNo,
           dailyDaySalesQuery,
-          dailyHourlySalesQuery
+          dailyHourlySalesQuery,
+          currentDate
         )
         // END HOURLY SALES
         // DAILY SALES
@@ -71,8 +79,9 @@ export const useMWReports = () => {
           SqlChannel.getAmount,
           ControlNoQuery
         )
+
         const ControlNumber = ControlNoResponse?.Data?.ControlNumber ?? 0
-        const OldAccumulatedTotal = ControlNoResponse?.Data?.PreviousReading ?? 0
+        //const OldAccumulatedTotal = ControlNoResponse?.Data?.PreviousReading ?? 0
         const VATAmountQuery: string = TaxAmountQuery({ Dates, Terminal })
         const VATAmountResponse = await window.electron.sql.get(
           SqlChannel.getAmount,
@@ -132,7 +141,9 @@ export const useMWReports = () => {
           tenant,
           path,
           BatchNo,
-          dailySalesQuery
+          dailySalesQuery,
+          currentDate,
+          OldAccumulatedTotal
         )
         // Success notification
         windowNotification('Megaworld Reports', 'New reports have been created.', path)

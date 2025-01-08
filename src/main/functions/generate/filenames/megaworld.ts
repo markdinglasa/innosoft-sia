@@ -2,9 +2,10 @@ import { MWFileType } from '@shared/types'
 
 export const generateMWFilename = (
   type: MWFileType,
-  partnerCode: string = '00000000', // 8 digit
+  partnerCode: string = '0000', // 8 digit
   terminal: string = '01',
-  batchNo = 0
+  batchNo = 0,
+  dates = new Date()
 ): string => {
   try {
     if (typeof type !== 'string' || type.length !== 1) {
@@ -24,12 +25,12 @@ export const generateMWFilename = (
     }
 
     const formattedPartnerCode = String(partnerCode)
-      .slice(0, 8)
+      .slice(0, 4)
       .replace(/[^a-zA-Z0-9]/g, '')
-      .padStart(8, '0')
+      .padStart(4, '0')
     const formattedTerminal = String(terminal).padStart(2, '0')
 
-    const currentDate = new Date()
+    const currentDate = new Date(dates)
     if (isNaN(currentDate.getTime())) {
       throw new Error('Invalid date: Unable to retrieve the current date.')
     }

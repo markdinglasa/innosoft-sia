@@ -3,7 +3,7 @@ import { DailyHourlySale, MWFileType, Response, SqlChannel } from '@shared/types
 import { ipcMain } from 'electron'
 import fs from 'fs'
 import paths from 'path'
-import { generateMWFilename } from '../../../../../functions'
+import { formatDateMMDDYYYY, generateMWFilename } from '../../../../../functions'
 import { recordByQuery } from '../../../../../model'
 
 ipcMain.handle(
@@ -14,7 +14,8 @@ ipcMain.handle(
     path: string,
     BatchNo: number,
     dayQuery: string,
-    hourlyQuery: string
+    hourlyQuery: string,
+    dates: Date
   ): Promise<Response> => {
     try {
       // Query the database for the sales data
@@ -31,7 +32,8 @@ ipcMain.handle(
         MWFileType.DailyHourlySales,
         data.TenantCode,
         data.Terminal,
-        BatchNo ?? 0 // Default to 0 if BatchNo is not provided
+        BatchNo ?? 0, // Default to 0 if BatchNo is not provided
+        dates
       )
       const filePath = paths.join(path, fileName)
 
@@ -56,13 +58,13 @@ ipcMain.handle(
           })
           .join('\n') ?? ''
 
-      const daySalesData =
+      let daySalesData =
         dayResponse
           ?.map((item: DailyHourlySale) => {
             return [
               `01${item.MallPartnerCodeId}`, // Mall Partner Code ID
               `02${item.Terminal}`, // Terminal
-              `03${String(item.Date).replace(/[^a-zA-Z0-9]/g, '')}`, // Date (formatted)
+              `03${String(formatDateMMDDYYYY(new Date(item.Date))).replace(/[^a-zA-Z0-9]/g, '')}`, // Date (formatted)
               hourlySalesData, // Include hourly sales data here
               `08${String(item.NetSalesAmountDay)
                 .replace(/[^a-zA-Z0-9]/g, '')
@@ -72,6 +74,19 @@ ipcMain.handle(
             ].join('\n')
           })
           .join('\n') ?? ''
+      if (!daySalesData || daySalesData.length === 0)
+        daySalesData = [
+          `01${data.TenantCode ?? 'NA'}`,
+          `02${data?.Terminal ?? '00'}`,
+          `03${String(formatDateMMDDYYYY(new Date(dates))).replace(/[^a-zA-Z0-9]/g, '') ?? '00000000'}`,
+          `040`,
+          `05000`,
+          `060`,
+          `070`,
+          `08000`,
+          `090`,
+          `100`
+        ].join('\n')
 
       // Write the formatted data to the file
       fs.writeFileSync(filePath, daySalesData, 'utf8')

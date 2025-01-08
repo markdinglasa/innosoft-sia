@@ -45,6 +45,13 @@ export const formatDateDash = (date: Date): string => {
   return `${year}-${month}-${day}`
 }
 
+export const formatDateMMDDYYYY = (date: Date): string => {
+  const month = String(date.getMonth() + 1).padStart(2, '0') // Months are 0-based, add 1
+  const day = String(date.getDate()).padStart(2, '0')
+  const year = date.getFullYear()
+  return `${month}${day}${year}`
+}
+
 export const formatDateSlash = (date: Date): string => {
   const month = (date.getMonth() + 1).toString().padStart(2, '0')
   const day = date.getDate().toString().padStart(2, '0')

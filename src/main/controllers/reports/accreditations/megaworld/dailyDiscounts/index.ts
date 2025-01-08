@@ -13,7 +13,8 @@ ipcMain.handle(
     data: any,
     path: string,
     BatchNo: number,
-    query: string
+    query: string,
+    dates: Date
   ): Promise<Response> => {
     try {
       const response = await recordByQuery(query)
@@ -22,15 +23,16 @@ ipcMain.handle(
         MWFileType.DailyDiscount,
         data.TenantCode,
         data.Terminal,
-        BatchNo ?? 0
+        BatchNo ?? 0,
+        dates
       )
       const filePath = paths.join(path, `${fileName}`)
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
-      const dailyDiscountData = response.List.map(
+      let dailyDiscountData = response.List.map(
         (item: DailyDiscount) =>
           `${item.DiscountCode}, ${item.DiscountDescription}, ${Number(item.DiscountAmount).toFixed(2)}`
       ).join('\n')
-
+      if (!dailyDiscountData || dailyDiscountData === '') dailyDiscountData = `NA, NA, 0.00`
       fs.writeFileSync(filePath, dailyDiscountData, 'utf8')
       return { IsSomething: true, Message: Success.s00x00 }
     } catch (error: any) {
