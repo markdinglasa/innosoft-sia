@@ -26,13 +26,15 @@ ipcMain.handle(
         BatchNo ?? 0,
         dates
       )
+
       const filePath = paths.join(path, `${fileName}`)
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
       let dailyDiscountData = response.List.map(
         (item: DailyDiscount) =>
           `${item.DiscountCode}, ${item.DiscountDescription}, ${Number(item.DiscountAmount).toFixed(2)}`
       ).join('\n')
-      if (!dailyDiscountData || dailyDiscountData === '') dailyDiscountData = `NA, NA, 0.00`
+
+      if (!dailyDiscountData || dailyDiscountData.length === 0) dailyDiscountData = `NA, NA, 0.00`
       fs.writeFileSync(filePath, dailyDiscountData, 'utf8')
       return { IsSomething: true, Message: Success.s00x00 }
     } catch (error: any) {

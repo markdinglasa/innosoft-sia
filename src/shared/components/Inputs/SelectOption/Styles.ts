@@ -6,7 +6,11 @@ export const ErrorMessage = styled.div`
   font-size: 10px;
   margin-top: 6px;
 `
-
+export const Container = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`
 export const Field = styled.select`
   background: ${colors.palette.neutral['075']};
   border-radius: 8px;
@@ -23,7 +27,7 @@ export const Field = styled.select`
 `
 
 export const Label = styled.label`
-  font-size: 10px;
+  font-size: 12px;
   margin-bottom: 8px;
   color: ${colors.palette.neutral['100']};
 `

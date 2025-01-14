@@ -37,11 +37,13 @@ export const Card = styled.div`
   }
 `
 export const Title = styled.div`
-  height: 40px;
+  width: 100%;
   border-radius: 8px;
-  align-items: center;
   display: flex;
+  flex-direction: row;
+  align-items: center;
   justify-content: center;
+  margin-bottom: 10px;
 `
 export const H2 = styled.h2`
   color: ${colors.palette.neutral['100']};

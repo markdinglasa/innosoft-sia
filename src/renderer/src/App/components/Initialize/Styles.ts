@@ -3,7 +3,13 @@ import { Button as UButton } from '@shared/components'
 import { colors } from '@shared/styles'
 import styled from 'styled-components'
 
-export const Container = styled.div``
+export const Container = styled.div`
+  gap: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+`
 export const Button = styled(UButton)`
   border: none;
   border-radius: 8px;
@@ -47,7 +53,6 @@ export const TopTitle = styled.div`
   display: flex;
   align-items: center;
   justify-content: between;
-  margin-bottom: 10px;
 `
 export const InputDate = styled.input`
   border-radius: 6px;
@@ -60,4 +65,24 @@ export const InputDate = styled.input`
 export const BtnCon = styled.div`
   width: 100%;
   gap: 10px;
+`
+export const DateRangeCon = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+`
+export const Label = styled.label`
+  font-size: 12px;
+  color: ${colors.palette.neutral['100']};
+  margin-bottom: 6px;
+`
+export const DateCon = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: start;
+  justify-content: start;
+  flex-direction: column;
 `

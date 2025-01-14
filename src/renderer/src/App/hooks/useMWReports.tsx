@@ -43,13 +43,14 @@ export const useMWReports = () => {
         )
         const OldAccumulatedTotal = PreviousReadingResponse?.Data?.PreviousReading ?? 0
         const dailyDiscountQuery: string = mwDailyDiscount({ Terminal, Dates })
+
         await window.electron.sql.get(
           SqlChannel.getDailyDiscount,
           tenant,
           path,
           BatchNo,
           dailyDiscountQuery,
-          currentDate
+          Dates
         )
 
         const dailyDaySalesQuery: string = mwDailyHourlySales({
@@ -70,7 +71,7 @@ export const useMWReports = () => {
           BatchNo,
           dailyDaySalesQuery,
           dailyHourlySalesQuery,
-          currentDate
+          Dates
         )
         // END HOURLY SALES
         // DAILY SALES
@@ -142,7 +143,7 @@ export const useMWReports = () => {
           path,
           BatchNo,
           dailySalesQuery,
-          currentDate,
+          Dates,
           OldAccumulatedTotal
         )
         // Success notification

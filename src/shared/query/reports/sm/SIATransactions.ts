@@ -16,7 +16,6 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
         WHERE 
             [TrnSales].[TerminalId] = ${Terminal}
             AND [TrnSales].[IsLocked] = 1
-			AND DAY(CAST([TrnSales].[SalesDate] AS DATE)) = DAY('${Dates}')
             AND MONTH(CAST([TrnSales].[SalesDate] AS DATE)) = MONTH('${Dates}')
 			AND YEAR(CAST([TrnSales].[SalesDate] AS DATE)) = YEAR('${Dates}')
             AND ISNULL([TrnCollection].[IsCancelled], 0) = 0
@@ -416,7 +415,6 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
                ) AS [PAX] ON [TrnSales].[Id] = [PAX].[SalesId]
             WHERE [TrnSales].[TerminalId] = ${Terminal}
             AND [TrnSales].[IsLocked] = 1
-			AND DAY(CAST([TrnSales].[SalesDate] AS DATE)) = DAY('${Dates}')
             AND MONTH(CAST([TrnSales].[SalesDate] AS DATE)) = MONTH('${Dates}')
 			AND YEAR(CAST([TrnSales].[SalesDate] AS DATE)) = YEAR('${Dates}')
 		  

@@ -1,5 +1,6 @@
 import { mdiPause, mdiPlay, mdiRestart } from '@mdi/js'
 import { Error } from '@shared/messages'
+import { getSettings } from '@shared/selectors'
 import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, ButtonColor, SFC, SqlChannel, ToastType } from '@shared/types'
 import { formatDates } from '@shared/utils'
@@ -10,6 +11,7 @@ import {
   getActiveTenant,
   getAllianceCategory,
   getAllianceReportType,
+  getDateRanges,
   getInitialize,
   getIsConnected,
   getPath,
@@ -17,6 +19,7 @@ import {
   getTenant
 } from '../../selectors'
 import { setDates, setInitialize } from '../../store/manager'
+import { setDateEnd, setDateStart } from '../../store/settings'
 import { Tenants } from '../../types'
 import { LoadingScreen } from '../LoadingScreen'
 import * as S from './Styles'
@@ -25,12 +28,13 @@ export const Initialize: SFC = ({ className }) => {
   const dispatch = useDispatch<AppDispatch>()
   const dates = useSelector(getSelectedDate)
   const Dates = formatDates(new Date(dates ?? new Date())).toString()
-
+  //console.log('Dates: ', Dates)
+  const settings = useSelector(getSettings)
   const [loading, setLoading] = useState<boolean>(false)
   const path = useSelector(getPath)
   const isConnected = useSelector(getIsConnected)
   const tenant = useSelector(getTenant)
-
+  const dateRanges = useSelector(getDateRanges)
   const initialized = useSelector(getInitialize)
   const activeTenant = useSelector(getActiveTenant)
   const allianceCategory = useSelector(getAllianceCategory)
@@ -96,13 +100,14 @@ export const Initialize: SFC = ({ className }) => {
     }
   }
 
-  const reports = async (Tenant: Tenants) => {
+  const reports = async (Tenant: Tenants, OptDate?: string | null) => {
+    const currentDate = formatDates(new Date(OptDate ?? Dates)).toString()
     switch (Tenant) {
       case Tenants.SM:
-        SMReports(path, tenant, Dates)
+        SMReports(path, tenant, currentDate)
         break
       case Tenants.ALLIANCE:
-        AllianceReport(path, tenant, Dates, allianceCategory, reportType)
+        AllianceReport(path, tenant, currentDate, allianceCategory, reportType)
         break
       /*case Tenants.AYALA:
         dispatch(setSnackbar({ display: true, message: Error.e00x47, type: ToastType.error }))
@@ -111,7 +116,7 @@ export const Initialize: SFC = ({ className }) => {
         dispatch(setSnackbar({ display: true, message: Error.e00x47, type: ToastType.error }))
         break*/
       case Tenants.MW:
-        MWReports(path, tenant, Dates)
+        MWReports(path, tenant, currentDate)
         break
     }
   }
@@ -123,10 +128,32 @@ export const Initialize: SFC = ({ className }) => {
       dispatch(setSnackbar({ display: true, message: Error.e00x01, type: ToastType.error }))
     }
   }
+  const handleGenerate = async () => {
+    dispatch(setInitialize(false))
+    try {
+      if (settings.IsDateRange) {
+        setLoading(true)
+        for (
+          let d = new Date(dateRanges.DateStart);
+          d <= new Date(dateRanges.DateEnd);
+          d.setDate(d.getDate() + 1)
+        ) {
+          await reports(activeTenant, d.toString())
+          if (d >= new Date(dateRanges.DateEnd)) {
+            break
+          }
+        }
+        setLoading(false)
+      }
+    } catch (error: any) {
+      dispatch(setSnackbar({ display: true, message: Error.e00x01, type: ToastType.error }))
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
     if (!initialized) return
-    else loadData()
+    if (initialized) loadData()
     const interval = setInterval(() => {
       loadData()
     }, 60000 * 5)
@@ -142,33 +169,67 @@ export const Initialize: SFC = ({ className }) => {
             <S.Span>Before starting, make sure the above items are ready.</S.Span>
           </S.Text>
         </S.TopTitle>*/}
-        <S.TopTitle>
-          {activeTenant && (
-            <>
+        {activeTenant && settings.IsDateRange && (
+          <>
+            <S.DateRangeCon>
               <S.Div>
-                <S.DivBtn2>
+                <S.DateCon>
+                  <S.Label>Date Start</S.Label>
                   <S.InputDate
                     type="date"
-                    name="dates"
-                    value={formatDates(dates ?? new Date())}
-                    onChange={(e) => dispatch(setDates(new Date(e.target.value).toString()))}
+                    name="datestart"
+                    value={formatDates(dateRanges.DateStart ?? new Date())}
+                    onChange={(e) => dispatch(setDateStart(new Date(e.target.value).toString()))}
                     disabled={initialized}
                   />
-                </S.DivBtn2>
-                <S.DivBtn>
-                  <S.Button
-                    onClick={() => dispatch(setDates(null))}
-                    text="System Date"
-                    //iconLeft={mdiCalendarBlank}
-                    color={ButtonColor.blue}
+                </S.DateCon>
+                <S.DateCon>
+                  <S.Label>Date End</S.Label>
+                  <S.InputDate
+                    type="date"
+                    name="dateend"
+                    value={formatDates(dateRanges.DateEnd ?? new Date())}
+                    onChange={(e) => dispatch(setDateEnd(new Date(e.target.value).toString()))}
                     disabled={initialized}
                   />
-                </S.DivBtn>
+                </S.DateCon>
               </S.Div>
-            </>
-          )}
-        </S.TopTitle>
-        {initialized && (
+              <S.DateCon>
+                <S.Button
+                  onClick={handleGenerate}
+                  iconLeft={mdiPlay}
+                  text="Generate"
+                  color={ButtonColor.blue}
+                />
+              </S.DateCon>
+            </S.DateRangeCon>
+          </>
+        )}
+        {activeTenant && !settings.IsDateRange && (
+          <>
+            <S.Div>
+              <S.DivBtn2>
+                <S.InputDate
+                  type="date"
+                  name="dates"
+                  value={formatDates(dates ?? new Date())}
+                  onChange={(e) => dispatch(setDates(new Date(e.target.value).toString()))}
+                  disabled={initialized}
+                />
+              </S.DivBtn2>
+              <S.DivBtn>
+                <S.Button
+                  onClick={() => dispatch(setDates(null))}
+                  text="System Date"
+                  //iconLeft={mdiCalendarBlank}
+                  color={ButtonColor.blue}
+                  disabled={initialized}
+                />
+              </S.DivBtn>
+            </S.Div>
+          </>
+        )}
+        {initialized && !settings.IsDateRange && (
           <>
             <S.Div>
               <S.DivBtn2>
@@ -190,7 +251,7 @@ export const Initialize: SFC = ({ className }) => {
             </S.Div>
           </>
         )}
-        {!initialized && (
+        {!initialized && !settings.IsDateRange && (
           <S.Button
             onClick={handleInitialize}
             iconLeft={mdiPlay}

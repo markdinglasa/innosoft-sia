@@ -34,7 +34,7 @@ export const generateMWFilename = (
     if (isNaN(currentDate.getTime())) {
       throw new Error('Invalid date: Unable to retrieve the current date.')
     }
-
+    console.log(currentDate)
     const month = currentDate.getMonth() + 1
     const monthCode = month > 9 ? String.fromCharCode(64 + month - 9) : String(month)
     const day = String(currentDate.getDate()).padStart(2, '0')

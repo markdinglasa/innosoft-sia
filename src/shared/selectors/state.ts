@@ -9,6 +9,7 @@ export const getActiveWindow = (state: RootState) => state.system.manager.active
 export const getActiveLicense = (state: RootState) => state.system.manager.activeLicense
 export const getActiveKey = (state: RootState) => state.system.manager.activeKey
 
+export const getSettings = (state: RootState) => state.SIA.settings
 //UTILITIES
 export const getStoreLoaded = (state: RootState) => state.system.internal.storeLoaded
 export const getSnackbar = (state: RootState) => state.system.manager.activeSnackbar
