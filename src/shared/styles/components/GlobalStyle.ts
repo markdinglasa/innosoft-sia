@@ -40,6 +40,20 @@ export const GlobalStyle = createGlobalStyle`
     margin: 0;
   }
 
+  .mb-1{
+    margin-bottom: 5px;
+  }
+  .mb-2{
+    margin-bottom: 10px;
+  }
+  .mb-3{
+    margin-bottom: 15px;
+  }
+  .mb-4{
+    margin-bottom: 20px;
+  }
+
+
   h1 {
     font-size: 24px;
   }

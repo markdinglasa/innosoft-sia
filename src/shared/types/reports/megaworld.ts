@@ -55,5 +55,6 @@ export interface DailyDiscount {
 export enum MWFileType {
   DailySales = 'S',
   DailyHourlySales = 'H',
-  DailyDiscount = 'D'
+  DailyDiscount = 'D',
+  ZReading = 'Z'
 }

@@ -16,11 +16,14 @@ export const Container = styled.div`
 `
 export const CardBody = styled.div`
   width: 100%;
-  padding: 10px 10px;
 `
 export const Button = styled(UButton)`
   width: 100%;
 `
 export const Div = styled.div`
   margin-bottom: 10px;
+`
+export const ZReadingCon = styled.div`
+  height: 500px;
+  overflow: auto;
 `

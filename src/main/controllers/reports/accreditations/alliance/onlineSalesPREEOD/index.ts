@@ -116,6 +116,7 @@ ipcMain.handle(
               <void>${formatNumber(item?.void)}</void>
               <cash>${formatNumber(item?.cash)}</cash>
               <credit>${formatNumber(item?.credit)}</credit>
+              <charge>${formatNumber(item?.charge)}</charge>
               <giftcheck>${formatNumber(item?.giftcheck)}</giftcheck>
               <othertender>${formatNumber(item?.othertender)}</othertender>
               <linedisc>${formatNumber(item?.linedisc)}</linedisc>
@@ -130,14 +131,14 @@ ipcMain.handle(
               <diplomat>${formatNumber(item?.diplomat)}</diplomat>
               <vat>${formatNumber(item?.vat)}</vat>
               <exvat>${formatNumber(item?.exvat)}</exvat>
-              <incvat>${formatNumber(item?.incvat)}</incvat>
+              <incvat>${formatNumber(item?.vat)}</incvat>
               <localtax>${formatNumber(item?.localtax)}</localtax>
               <amusement>${formatNumber(item?.amusement)}</amusement>
               <service>${formatNumber(item?.service)}</service>
               <taxsale>${formatNumber(item?.taxsale)}</taxsale>
               <notaxsale>${formatNumber(item?.notaxsale)}</notaxsale>
               <taxexsale>${formatNumber(item?.taxexsale)}</taxexsale>
-              <taxincsale>${formatNumber(item?.taxincsale)}</taxincsale>
+              <taxincsale>${formatNumber(item?.taxsale)}</taxincsale>
               <zerosale>${formatNumber(item?.zerosale)}</zerosale>
               <vatexempt>${formatNumber(item?.vatexempt)}</vatexempt>
               <customercount>${item?.customercnt ?? 0}</customercount>

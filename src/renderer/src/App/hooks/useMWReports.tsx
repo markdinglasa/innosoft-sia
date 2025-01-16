@@ -14,6 +14,8 @@ import {
 import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, SqlChannel, Tenant, ToastType } from '@shared/types'
 import { windowNotification } from '@shared/utils'
+import { Buffer } from 'buffer'
+import html2pdf from 'html2pdf.js'
 import { useCallback, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
@@ -23,7 +25,7 @@ export const useMWReports = () => {
   const [previousDate, setPreviousDate] = useState<string | null>(null)
 
   const createReport = useCallback(
-    async (path: string, tenant: Tenant, Dates: string) => {
+    async (path: string, tenant: Tenant, Dates: string, element: any, IsZReading: boolean) => {
       const { Terminal = 0, TenantCode = '' } = tenant
       const MallPartnerCodeId = String(TenantCode ?? '')
         .slice(0, 8)
@@ -36,6 +38,7 @@ export const useMWReports = () => {
           setBatchNo((prev) => prev + 1)
           setPreviousDate(currentDate)
         }
+
         const PreviousReadingQuery = PreviousReading({ Dates, Terminal })
         const PreviousReadingResponse = await window.electron.sql.get(
           SqlChannel.getAmount,
@@ -146,6 +149,19 @@ export const useMWReports = () => {
           Dates,
           OldAccumulatedTotal
         )
+        if (IsZReading && element) {
+          const options = {
+            margin: 0.1,
+            jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
+          }
+          const pdfBlob = await html2pdf().from(element).set(options).outputPdf('blob')
+          const arrayBuffer = await pdfBlob.arrayBuffer()
+          await window.electron.sql.post(SqlChannel.getZReading, tenant, Dates, BatchNo, {
+            buffer: Buffer.from(arrayBuffer),
+            targetDir: path
+          })
+        }
+
         // Success notification
         windowNotification('Megaworld Reports', 'New reports have been created.', path)
       } catch (error: any) {

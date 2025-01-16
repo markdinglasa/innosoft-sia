@@ -13,7 +13,8 @@ export enum IpcChannel {
   loadStore = 'load-store-data',
   restartApp = 'restart-application',
   setStoreValue = 'set-store-value',
-  closeApp = 'close-application'
+  closeApp = 'close-application',
+  saveFile = 'save-file'
 }
 
 export type SetStoreValuePayload<K extends keyof LocalElectronStore> = {

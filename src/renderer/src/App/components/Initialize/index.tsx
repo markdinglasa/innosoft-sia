@@ -4,7 +4,7 @@ import { getSettings } from '@shared/selectors'
 import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, ButtonColor, SFC, SqlChannel, ToastType } from '@shared/types'
 import { formatDates } from '@shared/utils'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAllianceReports, useMWReports, useSMReports } from '../../hooks'
 import {
@@ -22,12 +22,14 @@ import { setDates, setInitialize } from '../../store/manager'
 import { setDateEnd, setDateStart } from '../../store/settings'
 import { Tenants } from '../../types'
 import { LoadingScreen } from '../LoadingScreen'
+import { ZReading } from '../ZReading'
 import * as S from './Styles'
 
 export const Initialize: SFC = ({ className }) => {
   const dispatch = useDispatch<AppDispatch>()
   const dates = useSelector(getSelectedDate)
   const Dates = formatDates(new Date(dates ?? new Date())).toString()
+  const [optDate, setOptDate] = useState<string | null>(null)
   //console.log('Dates: ', Dates)
   const settings = useSelector(getSettings)
   const [loading, setLoading] = useState<boolean>(false)
@@ -39,6 +41,7 @@ export const Initialize: SFC = ({ className }) => {
   const activeTenant = useSelector(getActiveTenant)
   const allianceCategory = useSelector(getAllianceCategory)
   const reportType = useSelector(getAllianceReportType)
+  const pointerRef = useRef<HTMLDivElement>(null)
 
   const SMReports = useSMReports()
   const AllianceReport = useAllianceReports()
@@ -99,7 +102,7 @@ export const Initialize: SFC = ({ className }) => {
       dispatch(setSnackbar({ display: true, message: Error.e00x01, type: ToastType.error }))
     }
   }
-
+  const element = pointerRef.current
   const reports = async (Tenant: Tenants, OptDate?: string | null) => {
     const currentDate = formatDates(new Date(OptDate ?? Dates)).toString()
     switch (Tenant) {
@@ -116,7 +119,7 @@ export const Initialize: SFC = ({ className }) => {
         dispatch(setSnackbar({ display: true, message: Error.e00x47, type: ToastType.error }))
         break*/
       case Tenants.MW:
-        MWReports(path, tenant, currentDate)
+        MWReports(path, tenant, currentDate, element, settings.IsZReading)
         break
     }
   }
@@ -129,26 +132,34 @@ export const Initialize: SFC = ({ className }) => {
     }
   }
   const handleGenerate = async () => {
-    dispatch(setInitialize(false))
-    try {
-      if (settings.IsDateRange) {
-        setLoading(true)
-        for (
-          let d = new Date(dateRanges.DateStart);
-          d <= new Date(dateRanges.DateEnd);
-          d.setDate(d.getDate() + 1)
-        ) {
-          await reports(activeTenant, d.toString())
-          if (d >= new Date(dateRanges.DateEnd)) {
-            break
+    if (!dateRanges.DateStart || !dateRanges.DateEnd) {
+      dispatch(
+        setSnackbar({ display: true, message: 'Please select a date range', type: ToastType.error })
+      )
+    } else {
+      dispatch(setInitialize(false))
+      setLoading(true)
+      try {
+        if (settings.IsDateRange) {
+          for (
+            let d = new Date(dateRanges.DateStart);
+            d <= new Date(dateRanges.DateEnd);
+            d.setDate(d.getDate() + 1)
+          ) {
+            setOptDate(d.toString())
+            await reports(activeTenant, d.toString())
+            if (d >= new Date(dateRanges.DateEnd)) {
+              break
+            }
           }
         }
-        setLoading(false)
+      } catch (error: any) {
+        dispatch(setSnackbar({ display: true, message: Error.e00x01, type: ToastType.error }))
       }
-    } catch (error: any) {
-      dispatch(setSnackbar({ display: true, message: Error.e00x01, type: ToastType.error }))
-      setLoading(false)
     }
+    setTimeout(() => {
+      setLoading(false)
+    }, 9000)
   }
 
   useEffect(() => {
@@ -261,6 +272,11 @@ export const Initialize: SFC = ({ className }) => {
         )}
       </S.Container>
       {renderLoadingScreen()}
+      <div style={{ display: 'none' }}>
+        <div ref={pointerRef}>
+          <ZReading CurrentDate={optDate ?? Dates} />
+        </div>
+      </div>
     </>
   )
 }

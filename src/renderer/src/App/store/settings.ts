@@ -46,6 +46,13 @@ const settiingsStore = createSlice({
         state: current(state)
       })
     },
+    setIsZReading: (state: SettingsTable, { payload: IsZReading }: PayloadAction<boolean>) => {
+      state.IsZReading = IsZReading
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: SIA_SETTINGS,
+        state: current(state)
+      })
+    },
     setSettings: setLocalAndStateReducer<SettingsTable>(SIA_SETTINGS)
   }
 })
@@ -56,6 +63,7 @@ export const {
   setDateEnd,
   setIsDateRange,
   setIsDailyReport,
+  setIsZReading,
   setSettings
 } = settiingsStore.actions
 

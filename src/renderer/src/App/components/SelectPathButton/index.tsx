@@ -16,7 +16,7 @@ interface SelectPathButtonProps {
 export const SelectPathButton: SFC<SelectPathButtonProps> = ({ className, onSelect }) => {
   const dispatch = useDispatch<AppDispatch>()
   const pathSelector = useSelector(getPath)
-  const [path, setPaths] = useState<string | null>(pathSelector)
+  const [_path, setPaths] = useState<string | null>(pathSelector)
   const initialized = useSelector(getInitialize)
   const handleSelectPath = async () => {
     try {

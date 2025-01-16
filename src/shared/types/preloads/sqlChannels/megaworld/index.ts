@@ -9,5 +9,6 @@ export enum MEGAWORLD {
   getServiceChargeAmount = 'get-service-charge',
   getPayTypes = 'get-paytypes',
   getVoidAmount = 'get-void-amount',
-  getControlNumber = 'get-control-number'
+  getControlNumber = 'get-control-number',
+  getZReading = 'get-z-reading'
 }

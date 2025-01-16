@@ -14,6 +14,7 @@ import {
 } from 'electron'
 import installer, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import electronStore from 'electron-store'
+import fs from 'fs'
 import path, { join } from 'path'
 import { NODE_ENV } from './constants'
 import './controllers'
@@ -59,6 +60,20 @@ const createWindow = (url: string): BrowserWindow => {
   ipcMain.handle('open-folder', async (_event, folderPath) => {
     const result = await shell.openPath(folderPath)
     return result
+  })
+
+  ipcMain.handle('save-file', (_event, { base64Data, filename, path }) => {
+    const buffer = Buffer.from(base64Data, 'base64')
+    const savePath = path.join(path, filename)
+
+    console.log('Selected Path:', savePath)
+    fs.writeFile(savePath, new Uint8Array(buffer), (err) => {
+      if (err) {
+        console.error('Failed to save PDF:', err)
+      } else {
+        console.log('PDF saved successfully to:', savePath)
+      }
+    })
   })
 
   ipcMain.handle('show-open-dialog', async (_event, options: OpenDialogOptions) => {
