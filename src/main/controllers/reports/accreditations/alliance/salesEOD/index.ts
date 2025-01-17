@@ -2,7 +2,9 @@ import { Error, Success } from '@shared/messages'
 import {
   AllianceProductLineQuery,
   AllianceProductsQuery,
-  AllianceTransactionQuery
+  AllianceTransactionQuery,
+  PreviousAmountsQuery,
+  ZControlNumber
 } from '@shared/query'
 import {
   AllianceSalesEOD,
@@ -39,14 +41,17 @@ ipcMain.handle(
       const Terminal = data?.Terminal ?? 0
       //console.log('Terminal:', Terminal)
       const Dates = formatDateDash(new Date(dates ?? ''))
+      const ControlNumber = await recordByQuery(ZControlNumber({ Dates, Terminal }))
+      const controlNumber = ControlNumber?.List?.[0]?.ControlNumber ?? 0
+      const PrevAmount = await recordByQuery(PreviousAmountsQuery({ Dates, Terminal }))
+      const PreviousReading = PrevAmount?.List?.[0]?.PreviousReading ?? 0
+      const PreviousTax = PrevAmount?.List?.[0]?.previoustax ?? 0
+      const PreviousTaxSale = PrevAmount?.List?.[0]?.previoustaxsale ?? 0
+      const PreviousNoTaxSale = PrevAmount?.List?.[0]?.previousnotaxsale ?? 0
       //console.log('Dates:', Dates)
       const trxQuery = AllianceTransactionQuery({ Terminal, Dates })
       const trnResponse = await recordByQuery(trxQuery)
-      console.log('trnResponse:', trnResponse)
-      // Handle case when response does not have a 'List'
-      if (!salesResponse.List || !trnResponse.List) {
-        return { IsSomething: false, Message: salesResponse.Message }
-      }
+      //console.log('trnResponse:', trnResponse)
 
       // Generate the file name and path
       const fileName = generateAllianceFilename(
@@ -87,64 +92,66 @@ ipcMain.handle(
         })
         .join('\n')
 
-      const sales = salesResponse.List.map((item: AllianceSalesEOD) => {
-        return [
-          `<date>${item?.date ?? ''}</date>`,
-          `<zcounter>${item?.zcounter ?? '0'}</zcounter>`,
-          `<previousnrgt>${Number(item.previousnrgt).toFixed(2) ?? '0.00'}</previousnrgt>`,
-          `<nrgt>${Number(item.nrgt).toFixed(2) ?? '0.00'}</nrgt>`,
-          `<previoustax>${Number(item.previoustax).toFixed(2) ?? '0.00'}</previoustax>`,
-          `<newtax>${Number(item.newtax).toFixed(2) ?? '0.00'}</newtax>`,
-          `<previoustaxsale>${Number(item.previoustaxsale).toFixed(2) ?? '0.00'}</previoustaxsale>`,
-          `<newtaxsale>${Number(item.newtaxsale).toFixed(2) ?? '0.00'}</newtaxsale>`,
-          `<previousnotaxsale>${Number(item.previousnotaxsale).toFixed(2) ?? '0.00'}</previousnotaxsale>`,
-          `<newnotaxsale>${Number(item.newnotaxsale).toFixed(2) ?? '0.00'}</newnotaxsale>`,
-          `<opentime>${formatDateYYYYMMDDHHMMSS(new Date(item.opentime)) ?? 'NA'}</opentime>`,
-          `<closetime>${formatDateYYYYMMDDHHMMSS(new Date(item.closetime)) ?? 'NA'}</closetime>`,
-          `<gross>${Number(item.gross).toFixed(2) ?? '0.00'}</gross>`,
-          `<vat>${Number(item.vat).toFixed(2) ?? '0.00'}</vat>`,
-          `<localtax>${Number(item.localtax).toFixed(2) ?? '0.00'}</localtax>`,
-          `<amusement>${Number(item.amusement).toFixed(2) ?? '0.00'}</amusement>`,
-          `<ewt>${Number(item.ewt).toFixed(2) ?? '0.00'}</ewt>`,
-          `<taxsale>${Number(item.taxsale).toFixed(2) ?? '0.00'}</taxsale>`,
-          `<notaxsale>${Number(item.notaxsale).toFixed(2) ?? '0.00'}</notaxsale>`,
-          `<zerosale>${Number(item.zerosale).toFixed(2) ?? '0.00'}</zerosale>`,
-          `<vatexempt>${Number(item.vatexempt).toFixed(2) ?? '0.00'}</vatexempt>`,
-          `<void>${Number(item.void).toFixed(2) ?? '0.00'}</void>`,
-          `<voidcnt>${Number(item.voidcnt).toFixed(2) ?? '0.00'}</voidcnt>`,
-          `<disc>${Number(item.disc).toFixed(2) ?? '0.00'}</disc>`,
-          `<disccnt>${Number(item.disccnt).toFixed(2) ?? '0.00'}</disccnt>`,
-          `<refund>${Number(item.refund).toFixed(2) ?? '0.00'}</refund>`,
-          `<refundcnt>${Number(item.refundcnt).toFixed(2) ?? '0.00'}</refundcnt>`,
-          `<senior>${Number(item.senior).toFixed(2) ?? '0.00'}</senior>`,
-          `<seniorcnt>${Number(item.seniorcnt).toFixed(2) ?? '0.00'}</seniorcnt>`,
-          `<pwd>${Number(item.pwd).toFixed(2) ?? '0.00'}</pwd>`,
-          `<pwdcnt>${Number(item.pwdcnt).toFixed(2) ?? '0.00'}</pwdcnt>`,
-          `<diplomat>${Number(item.diplomat).toFixed(2) ?? '0.00'}</diplomat>`,
-          `<diplomatcnt>${Number(item.diplomatcnt).toFixed(2) ?? '0.00'}</diplomatcnt>`,
-          `<service>${Number(item.service).toFixed(2) ?? '0.00'}</service>`,
-          `<servicecnt>${Number(item.servicecnt).toFixed(2) ?? '0.00'}</servicecnt>`,
-          `<receiptstart>${item.receiptstart ?? 'NA'}</receiptstart>`,
-          `<receiptend>${item.receiptend ?? 'NA'}</receiptend>`,
-          `<trxcnt>${Number(item.trxcnt).toFixed(2) ?? '0.00'}</trxcnt>`,
-          `<cash>${Number(item.cash).toFixed(2) ?? '0.00'}</cash>`,
-          `<cashcnt>${Number(item.cashcnt).toFixed(2) ?? '0.00'}</cashcnt>`,
-          `<credit>${Number(item.credit).toFixed(2) ?? '0.00'}</credit>`,
-          `<creditcnt>${Number(item.creditcnt).toFixed(2) ?? '0.00'}</creditcnt>`,
-          `<charge>${Number(item.charge).toFixed(2) ?? '0.00'}</charge>`,
-          `<chargecnt>${Number(item.chargecnt).toFixed(2) ?? '0.00'}</chargecnt>`,
-          `<giftcheck>${Number(item.giftcheck).toFixed(2) ?? '0.00'}</giftcheck>`,
-          `<giftcheckcnt>${Number(item.giftcheckcnt).toFixed(2) ?? '0.00'}</giftcheckcnt>`,
-          `<othertender>${Number(item.othertender).toFixed(2) ?? '0.00'}</othertender>`,
-          `<othertendercnt>${Number(item.othertendercnt).toFixed(2) ?? '0.00'}</othertendercnt>`
-        ].join('\n')
-      }).join('\n')
+      let sales = (salesResponse?.List || [])
+        .map((item: AllianceSalesEOD) => {
+          return [
+            `<date>${item?.date ?? ''}</date>`,
+            `<zcounter>${item?.zcounter ?? '0'}</zcounter>`,
+            `<previousnrgt>${Number(item.previousnrgt).toFixed(2) ?? '0.00'}</previousnrgt>`,
+            `<nrgt>${Number(item.nrgt).toFixed(2) ?? '0.00'}</nrgt>`,
+            `<previoustax>${Number(item.previoustax).toFixed(2) ?? '0.00'}</previoustax>`,
+            `<newtax>${Number(item.newtax).toFixed(2) ?? '0.00'}</newtax>`,
+            `<previoustaxsale>${Number(item.previoustaxsale).toFixed(2) ?? '0.00'}</previoustaxsale>`,
+            `<newtaxsale>${Number(item.newtaxsale).toFixed(2) ?? '0.00'}</newtaxsale>`,
+            `<previousnotaxsale>${Number(item.previousnotaxsale).toFixed(2) ?? '0.00'}</previousnotaxsale>`,
+            `<newnotaxsale>${Number(item.newnotaxsale).toFixed(2) ?? '0.00'}</newnotaxsale>`,
+            `<opentime>${formatDateYYYYMMDDHHMMSS(new Date(item.opentime)) ?? 'NA'}</opentime>`,
+            `<closetime>${formatDateYYYYMMDDHHMMSS(new Date(item.closetime)) ?? 'NA'}</closetime>`,
+            `<gross>${Number(item.gross).toFixed(2) ?? '0.00'}</gross>`,
+            `<vat>${Number(item.vat).toFixed(2) ?? '0.00'}</vat>`,
+            `<localtax>${Number(item.localtax).toFixed(2) ?? '0.00'}</localtax>`,
+            `<amusement>${Number(item.amusement).toFixed(2) ?? '0.00'}</amusement>`,
+            `<ewt>${Number(item.ewt).toFixed(2) ?? '0.00'}</ewt>`,
+            `<taxsale>${Number(item.taxsale).toFixed(2) ?? '0.00'}</taxsale>`,
+            `<notaxsale>${Number(item.notaxsale).toFixed(2) ?? '0.00'}</notaxsale>`,
+            `<zerosale>${Number(item.zerosale).toFixed(2) ?? '0.00'}</zerosale>`,
+            `<vatexempt>${Number(item.vatexempt).toFixed(2) ?? '0.00'}</vatexempt>`,
+            `<void>${Number(item.void).toFixed(2) ?? '0.00'}</void>`,
+            `<voidcnt>${Number(item.voidcnt).toFixed(2) ?? '0.00'}</voidcnt>`,
+            `<disc>${Number(item.disc).toFixed(2) ?? '0.00'}</disc>`,
+            `<disccnt>${Number(item.disccnt).toFixed(2) ?? '0.00'}</disccnt>`,
+            `<refund>${Number(item.refund).toFixed(2) ?? '0.00'}</refund>`,
+            `<refundcnt>${Number(item.refundcnt).toFixed(2) ?? '0.00'}</refundcnt>`,
+            `<senior>${Number(item.senior).toFixed(2) ?? '0.00'}</senior>`,
+            `<seniorcnt>${Number(item.seniorcnt).toFixed(2) ?? '0.00'}</seniorcnt>`,
+            `<pwd>${Number(item.pwd).toFixed(2) ?? '0.00'}</pwd>`,
+            `<pwdcnt>${Number(item.pwdcnt).toFixed(2) ?? '0.00'}</pwdcnt>`,
+            `<diplomat>${Number(item.diplomat).toFixed(2) ?? '0.00'}</diplomat>`,
+            `<diplomatcnt>${Number(item.diplomatcnt).toFixed(2) ?? '0.00'}</diplomatcnt>`,
+            `<service>${Number(item.service).toFixed(2) ?? '0.00'}</service>`,
+            `<servicecnt>${Number(item.servicecnt).toFixed(2) ?? '0.00'}</servicecnt>`,
+            `<receiptstart>${item.receiptstart ?? 'NA'}</receiptstart>`,
+            `<receiptend>${item.receiptend ?? 'NA'}</receiptend>`,
+            `<trxcnt>${Number(item.trxcnt).toFixed(2) ?? '0.00'}</trxcnt>`,
+            `<cash>${Number(item.cash).toFixed(2) ?? '0.00'}</cash>`,
+            `<cashcnt>${Number(item.cashcnt).toFixed(2) ?? '0.00'}</cashcnt>`,
+            `<credit>${Number(item.credit).toFixed(2) ?? '0.00'}</credit>`,
+            `<creditcnt>${Number(item.creditcnt).toFixed(2) ?? '0.00'}</creditcnt>`,
+            `<charge>${Number(item.charge).toFixed(2) ?? '0.00'}</charge>`,
+            `<chargecnt>${Number(item.chargecnt).toFixed(2) ?? '0.00'}</chargecnt>`,
+            `<giftcheck>${Number(item.giftcheck).toFixed(2) ?? '0.00'}</giftcheck>`,
+            `<giftcheckcnt>${Number(item.giftcheckcnt).toFixed(2) ?? '0.00'}</giftcheckcnt>`,
+            `<othertender>${Number(item.othertender).toFixed(2) ?? '0.00'}</othertender>`,
+            `<othertendercnt>${Number(item.othertendercnt).toFixed(2) ?? '0.00'}</othertendercnt>`
+          ].join('\n')
+        })
+        .join('\n')
 
       const formatNumber = (value: number | undefined, defaultValue = 0): string =>
         Number(value ?? defaultValue).toFixed(2)
 
       const trx = await Promise.all(
-        trnResponse.List.map(async (item: AllianceSalesTrx) => {
+        (trnResponse?.List || []).map(async (item: AllianceSalesTrx) => {
           const ReceiptNumber = item?.receiptno
           const trxline = AllianceProductLineQuery({ Terminal, Dates, ReceiptNumber })
           const trxlineResponse = await recordByQuery(trxline)
@@ -210,13 +217,64 @@ ipcMain.handle(
             </trx>`
         })
       )
-
+      if (!sales || sales.length === 0) {
+        sales = [
+          `<date>${formatDateYYYYMMDDHHMMSS(new Date(Dates))}</date>`,
+          `<zcounter>${controlNumber}</zcounter>`,
+          `<previousnrgt>${Number(PreviousReading).toFixed(2) ?? '0.00'}</previousnrgt>`,
+          `<nrgt>${Number(0).toFixed(2) ?? '0.00'}</nrgt>`,
+          `<previoustax>${Number(PreviousTax).toFixed(2) ?? '0.00'}</previoustax>`,
+          `<newtax>${Number(0).toFixed(2) ?? '0.00'}</newtax>`,
+          `<previoustaxsale>${Number(PreviousTaxSale).toFixed(2) ?? '0.00'}</previoustaxsale>`,
+          `<newtaxsale>${Number(0).toFixed(2) ?? '0.00'}</newtaxsale>`,
+          `<previousnotaxsale>${Number(PreviousNoTaxSale).toFixed(2) ?? '0.00'}</previousnotaxsale>`,
+          `<newnotaxsale>${Number(0).toFixed(2) ?? '0.00'}</newnotaxsale>`,
+          `<opentime>${formatDateYYYYMMDDHHMMSS(new Date(Dates)) ?? 'NA'}</opentime>`,
+          `<closetime>${formatDateYYYYMMDDHHMMSS(new Date(Dates)) ?? 'NA'}</closetime>`,
+          `<gross>${Number(0).toFixed(2) ?? '0.00'}</gross>`,
+          `<vat>${Number(0).toFixed(2) ?? '0.00'}</vat>`,
+          `<localtax>${Number(0).toFixed(2) ?? '0.00'}</localtax>`,
+          `<amusement>${Number(0).toFixed(2) ?? '0.00'}</amusement>`,
+          `<ewt>${Number().toFixed(2) ?? '0.00'}</ewt>`,
+          `<taxsale>${Number(0).toFixed(2) ?? '0.00'}</taxsale>`,
+          `<notaxsale>${Number(0).toFixed(2) ?? '0.00'}</notaxsale>`,
+          `<zerosale>${Number(0).toFixed(2) ?? '0.00'}</zerosale>`,
+          `<vatexempt>${Number(0).toFixed(2) ?? '0.00'}</vatexempt>`,
+          `<void>${Number(0).toFixed(2) ?? '0.00'}</void>`,
+          `<voidcnt>${Number(0).toFixed(2) ?? '0.00'}</voidcnt>`,
+          `<disc>${Number(0).toFixed(2) ?? '0.00'}</disc>`,
+          `<disccnt>${Number(0).toFixed(2) ?? '0.00'}</disccnt>`,
+          `<refund>${Number(0).toFixed(2) ?? '0.00'}</refund>`,
+          `<refundcnt>${Number(0).toFixed(2) ?? '0.00'}</refundcnt>`,
+          `<senior>${Number(0).toFixed(2) ?? '0.00'}</senior>`,
+          `<seniorcnt>${Number(0).toFixed(2) ?? '0.00'}</seniorcnt>`,
+          `<pwd>${Number(0).toFixed(2) ?? '0.00'}</pwd>`,
+          `<pwdcnt>${Number(0).toFixed(2) ?? '0.00'}</pwdcnt>`,
+          `<diplomat>${Number(0).toFixed(2) ?? '0.00'}</diplomat>`,
+          `<diplomatcnt>${Number(0).toFixed(2) ?? '0.00'}</diplomatcnt>`,
+          `<service>${Number(0).toFixed(2) ?? '0.00'}</service>`,
+          `<servicecnt>${Number(0).toFixed(2) ?? '0.00'}</servicecnt>`,
+          `<receiptstart>${'0'}</receiptstart>`,
+          `<receiptend>${'0'}</receiptend>`,
+          `<trxcnt>${Number(0).toFixed(2) ?? '0.00'}</trxcnt>`,
+          `<cash>${Number(0).toFixed(2) ?? '0.00'}</cash>`,
+          `<cashcnt>${Number(0).toFixed(2) ?? '0.00'}</cashcnt>`,
+          `<credit>${Number(0).toFixed(2) ?? '0.00'}</credit>`,
+          `<creditcnt>${Number(0).toFixed(2) ?? '0.00'}</creditcnt>`,
+          `<charge>${Number(0).toFixed(2) ?? '0.00'}</charge>`,
+          `<chargecnt>${Number(0).toFixed(2) ?? '0.00'}</chargecnt>`,
+          `<giftcheck>${Number(0).toFixed(2) ?? '0.00'}</giftcheck>`,
+          `<giftcheckcnt>${Number(0).toFixed(2) ?? '0.00'}</giftcheckcnt>`,
+          `<othertender>${Number(0).toFixed(2) ?? '0.00'}</othertender>`,
+          `<othertendercnt>${Number(0).toFixed(2) ?? '0.00'}</othertendercnt>`
+        ].join('\n')
+      }
       const SalesEOD = `
       <root>
         ${SalesId}
         <sales>
         ${sales}
-        ${trx}
+        ${trx ?? ''}
         </sales>
         <master>
         ${Master}

@@ -221,7 +221,7 @@ export const AllianceProductLineQuery = ({ Terminal, Dates, ReceiptNumber }) => 
 
 export const AllianceTransactionQuery = ({ Terminal, Dates }) => {
   return `
-	SELECT 
+SELECT 
     REPLACE([TrnCollection].[CollectionNumber], '-', '') AS [receiptno],
     SUM(CASE 
         WHEN TrnSales.IsCancelled = 1 
@@ -230,7 +230,7 @@ export const AllianceTransactionQuery = ({ Terminal, Dates }) => {
     END) AS void,
 
     SUM(CASE 
-        WHEN ISNULL(TrnCollection.IsCancelled, 0) = 0 
+        WHEN ISNULL(TrnCollection.IsCancelled, 0) = 0 AND ISNULL (TrnCollection.IsReturn,0) = 0
              AND TrnCollectionLine.PayTypeId = MstPayType.Id 
              AND MstPayType.PayType = 'Cash' 
         THEN CASE 
@@ -241,28 +241,28 @@ export const AllianceTransactionQuery = ({ Terminal, Dates }) => {
         ELSE 0 
     END) AS cash,
     SUM(CASE 
-        WHEN ISNULL(TrnCollection.IsCancelled, 0) = 0 
+        WHEN ISNULL(TrnCollection.IsCancelled, 0) = 0 AND ISNULL (TrnCollection.IsReturn,0) = 0
              AND TrnCollectionLine.PayTypeId = MstPayType.Id 
              AND MstPayType.PayType = 'Credit Card' 
         THEN TrnCollectionLine.Amount 
         ELSE 0 
     END) AS credit,
     SUM(CASE 
-        WHEN ISNULL(TrnCollection.IsCancelled, 0) = 0 
+        WHEN ISNULL(TrnCollection.IsCancelled, 0) = 0 AND ISNULL (TrnCollection.IsReturn,0) = 0
              AND TrnCollectionLine.PayTypeId = MstPayType.Id 
              AND MstPayType.PayType = 'Charge' 
         THEN TrnCollectionLine.Amount 
         ELSE 0 
     END) AS charge,
     SUM(CASE 
-        WHEN ISNULL(TrnCollection.IsCancelled, 0) = 0 
+        WHEN ISNULL(TrnCollection.IsCancelled, 0) = 0 AND ISNULL (TrnCollection.IsReturn,0) = 0
              AND TrnCollectionLine.PayTypeId = MstPayType.Id 
              AND MstPayType.PayType = 'Gift Certificate' 
         THEN TrnCollectionLine.Amount 
         ELSE 0 
     END) AS giftcheck,
     SUM(CASE 
-        WHEN ISNULL(TrnCollection.IsCancelled, 0) = 0 
+        WHEN ISNULL(TrnCollection.IsCancelled, 0) = 0 AND ISNULL (TrnCollection.IsReturn,0) = 0
              AND TrnCollectionLine.PayTypeId = MstPayType.Id 
              AND MstPayType.PayType NOT IN ('Credit Card', 'Cash', 'Gift Certificate', 'Charge') 
         THEN TrnCollectionLine.Amount 
@@ -281,22 +281,22 @@ export const AllianceTransactionQuery = ({ Terminal, Dates }) => {
 
     SUM(DISTINCT CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND ([MstDiscount].[Discount] IN ('Diplomat Discount')) THEN ISNULL([TotalDiscount].[TotalDiscountAmount], 0) ELSE 0 END) AS [linediplomat],
 
-	SUM(DISTINCT CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0) THEN [TrnCollectionLine].[Amount] ELSE 0 END) AS [subtotal],
+	SUM(DISTINCT CASE WHEN(ISNULL(TrnCollection.IsCancelled, 0) = 0 AND ISNULL (TrnCollection.IsReturn,0) = 0) THEN [TrnCollectionLine].[Amount] ELSE 0 END) AS [subtotal],
 	0 AS [senior],
 	0 AS [pwd],
 	0 AS [diplomat],
 	SUM(DISTINCT ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) ) THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 4)) AS [vat],
 	0 as [exvat],
   
-	SUM(DISTINCT ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) ) THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 4)) AS [invat],
+	SUM(DISTINCT ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) ) THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 4)) AS [incvat],
 
 	SUM(DISTINCT ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) AND [MstTax].[Tax] = 'LOCAL TAX') THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 4)) AS [localtax],
 	SUM(DISTINCT ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) AND [MstTax].[Tax] = 'AMUSEMENT TAX') THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 4)) AS [amusement],
 	0 [ewt],
 
 	ISNULL([TotalServiceCharge].[ServiceCharge],0) AS [service],
-	SUM(DISTINCT CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnSalesLine].[TaxAmount],0) > 0) THEN [TrnSalesLine].[Amount] ELSE 0 END) AS [taxsale],
-	SUM(DISTINCT CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnSalesLine].[TaxAmount],0) <= 0) THEN ([TrnCollectionLine].[Amount]) ELSE 0 END) AS [notaxsale],
+	SUM(DISTINCT CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSalesLine].[TaxAmount],0) > 0) THEN [TrnSalesLine].[Amount] ELSE 0 END) AS [taxsale],
+	SUM(DISTINCT CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSalesLine].[TaxAmount],0) <= 0) THEN ([TrnCollectionLine].[Amount]) ELSE 0 END) AS [notaxsale],
 	0 as [taxexsale],
 	SUM(DISTINCT ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) ) THEN [TrnSalesLine].[Amount] ELSE 0 END, 4)) AS [taxincsale],
 	0 AS [zerosale],
@@ -304,8 +304,9 @@ export const AllianceTransactionQuery = ({ Terminal, Dates }) => {
 
 	MAX(ISNULL([TrnPaxTable].[TotalPax],1)) AS [customercnt],
 	SUM(DISTINCT ROUND((CASE WHEN((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) AND [MstDiscount].[Discount]<>'Senior Citizen Discount' And [MstDiscount].[Discount]<>'PWD' AND (ISNULL([TrnCollection].[IsReturn], 0) = 0)) THEN [TrnSalesLine].[Price] ELSE ([TrnSalesLine].[Price1]+[TrnSalesLine].[Price2LessTax]) END)*[TrnSalesLine].[Quantity],2)) AS [gross],
-	SUM(CASE WHEN [TrnSales].[IsReturn] = 2 THEN CAST(ROUND(ISNULL([TrnSalesLine].[Amount], 0), 2) AS DECIMAL(10, 2)) ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) END) AS [refund],
-	MAX([TrnSalesLine].[TaxRate]) AS [taxrate],
+	SUM(DISTINCT CASE WHEN [TrnSales].[IsReturn] = 2 THEN CAST(ROUND(ISNULL([TrnSalesLine].[Amount], 0), 2) AS DECIMAL(10, 2)) ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) END) AS [refund],
+
+	MAX(CASE WHEN ISNULL(TrnCollection.IsCancelled, 0) = 0 AND ISNULL (TrnCollection.IsReturn,0) = 0 THEN [TrnSalesLine].[TaxRate] ELSE 0 END) AS [taxrate],
 	MIN(REPLACE((CONVERT(varchar, [TrnSales].[SalesDate], 23)+''+REPLACE(CONVERT(varchar, [TrnSalesLine].[SalesLineTimeStamp], 8),':', '')), '-', '')) AS [posted],
 	[TotalQuantity].[Quantity] AS [qty],
 	1 AS [created],
