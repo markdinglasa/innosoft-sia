@@ -49,9 +49,10 @@ ipcMain.handle(
           ?.map((item: DailyHourlySale) => {
             return [
               `04${item.HourCode}`, // HourCode
-              `05${String(item.NetSalesAmountHour)
-                .replace(/[^a-zA-Z0-9]/g, '')
-                .padEnd(6, '0')}`, // Net Sales Amount for the Hour (formatted)
+              `05${Number(item.NetSalesAmountHour)
+                .toFixed(2)
+                .toString()
+                .replace(/[^a-zA-Z0-9]/g, '')}`, // Net Sales Amount for the Hour (formatted)
               `06${item.NoSalesTransactionHour}`, // Number of Sales Transactions for the Hour
               `07${item.CustomerCountHour}` // Customer Count for the Hour
             ].join('\n')
@@ -66,9 +67,10 @@ ipcMain.handle(
               `02${item.Terminal}`, // Terminal
               `03${String(formatDateMMDDYYYY(new Date(item.Date))).replace(/[^a-zA-Z0-9]/g, '')}`, // Date (formatted)
               hourlySalesData, // Include hourly sales data here
-              `08${String(item.NetSalesAmountDay)
-                .replace(/[^a-zA-Z0-9]/g, '')
-                .padEnd(6, '0')}`, // Net Sales Amount for the Day (formatted)
+              `08${Number(item.NetSalesAmountDay)
+                .toFixed(2)
+                .toString()
+                .replace(/[^a-zA-Z0-9]/g, '')}`, // Net Sales Amount for the Day (formatted)
               `09${item.NoSalesTransactionDay}`, // Number of Sales Transactions for the Day
               `10${item.CustomerCountDay}` // Customer Count for the Day
             ].join('\n')
