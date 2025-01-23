@@ -28,6 +28,12 @@ export const alphanumeric = (input: string): string => {
   return input.replace(/[^a-zA-Z0-9]/g, '')
 }
 
+export const formatDateYYYYMMDD = (CurrentDate: Date) => {
+  const month = String(CurrentDate.getMonth() + 1).padStart(2, '0') // Months are 0-based, add 1
+  const day = String(CurrentDate.getDate()).padStart(2, '0')
+  const year = CurrentDate.getFullYear()
+  return `${year}${month}${day}`
+}
 export const formatDateYYYYMMDDHHMMSS = (CurrentDate: Date) => {
   const month = String(CurrentDate.getMonth() + 1).padStart(2, '0') // Months are 0-based, add 1
   const day = String(CurrentDate.getDate()).padStart(2, '0')

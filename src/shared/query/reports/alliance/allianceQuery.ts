@@ -268,23 +268,20 @@ SELECT
         THEN TrnCollectionLine.Amount 
         ELSE 0 
     END) AS othertender,
-    SUM(CASE 
+    SUM(DISTINCT CASE 
         WHEN TrnSales.IsCancelled = 1 OR TrnSales.IsReturn = 2 
         THEN 0 
-        ELSE CAST(ROUND(ISNULL(TrnSalesLine.DiscountAmount, 0), 2) AS DECIMAL(10, 2)) 
+        ELSE ISNULL([TotalDiscount].[TotalDiscountAmount], 0)
     END) AS linedisc,
 
 	SUM(DISTINCT CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND ([MstDiscount].[Discount] IN ('Senior Citizen Discount')) THEN ISNULL([TotalDiscount].[TotalDiscountAmount], 0) ELSE 0 END) AS [linesenior],
-
 	0 AS [evat],
 	SUM(DISTINCT CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND ([MstDiscount].[Discount] IN ('PWD')) THEN ISNULL([TotalDiscount].[TotalDiscountAmount], 0) ELSE 0 END) AS [linepwd],
-
     SUM(DISTINCT CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND ([MstDiscount].[Discount] IN ('Diplomat Discount')) THEN ISNULL([TotalDiscount].[TotalDiscountAmount], 0) ELSE 0 END) AS [linediplomat],
-
-	SUM(DISTINCT CASE WHEN(ISNULL(TrnCollection.IsCancelled, 0) = 0 AND ISNULL (TrnCollection.IsReturn,0) = 0) THEN [TrnCollectionLine].[Amount] ELSE 0 END) AS [subtotal],
-	0 AS [senior],
-	0 AS [pwd],
-	0 AS [diplomat],
+	SUM(DISTINCT CASE WHEN(ISNULL(TrnCollection.IsCancelled, 0) = 0 AND ISNULL (TrnCollection.IsReturn,0) = 0) THEN [TrnCollection].[Amount] ELSE 0 END) AS [subtotal],
+	SUM(DISTINCT CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND ([MstDiscount].[Discount] IN ('Senior Citizen Discount')) THEN ISNULL([TotalDiscount].[TotalDiscountAmount], 0) ELSE 0 END) AS [senior],
+	SUM(DISTINCT CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND ([MstDiscount].[Discount] IN ('PWD')) THEN ISNULL([TotalDiscount].[TotalDiscountAmount], 0) ELSE 0 END) AS [pwd],
+    SUM(DISTINCT CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND ([MstDiscount].[Discount] IN ('Diplomat Discount')) THEN ISNULL([TotalDiscount].[TotalDiscountAmount], 0) ELSE 0 END) AS [diplomat],
 	SUM(DISTINCT ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) ) THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 4)) AS [vat],
 	0 as [exvat],
   
@@ -296,9 +293,9 @@ SELECT
 
 	ISNULL([TotalServiceCharge].[ServiceCharge],0) AS [service],
 	SUM(DISTINCT CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSalesLine].[TaxAmount],0) > 0) THEN [TrnSalesLine].[Amount] ELSE 0 END) AS [taxsale],
-	SUM(DISTINCT CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSalesLine].[TaxAmount],0) <= 0) THEN ([TrnCollectionLine].[Amount]) ELSE 0 END) AS [notaxsale],
+	SUM(DISTINCT CASE WHEN(ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSalesLine].[TaxAmount],0) <= 0) THEN ([TrnCollection].[Amount]) ELSE 0 END) AS [notaxsale],
 	0 as [taxexsale],
-	SUM(DISTINCT ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) ) THEN [TrnSalesLine].[Amount] ELSE 0 END, 4)) AS [taxincsale],
+	SUM(DISTINCT ROUND(CASE WHEN(([TrnSalesLine].[TaxAmount] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) ) THEN [TrnCollection].[Amount] ELSE 0 END, 4)) AS [taxincsale],
 	0 AS [zerosale],
 	SUM(DISTINCT ROUND(CASE WHEN([TrnSalesLine].[Price2]>0 AND ((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0))) THEN [TrnSalesLine].[quantity]*([TrnSalesLine].[price2lesstax]-([TrnSalesLine].[price2lesstax]*([TrnSalesLine].[DiscountRate]/100))) ELSE CASE WHEN ([TrnSalesLine].[TaxId]=5) THEN [TrnSalesLine].[Amount] ELSE 0 END END,5)) AS [vatexempt],
 
@@ -306,7 +303,7 @@ SELECT
 	SUM(DISTINCT ROUND((CASE WHEN((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) AND [MstDiscount].[Discount]<>'Senior Citizen Discount' And [MstDiscount].[Discount]<>'PWD' AND (ISNULL([TrnCollection].[IsReturn], 0) = 0)) THEN [TrnSalesLine].[Price] ELSE ([TrnSalesLine].[Price1]+[TrnSalesLine].[Price2LessTax]) END)*[TrnSalesLine].[Quantity],2)) AS [gross],
 	SUM(DISTINCT CASE WHEN [TrnSales].[IsReturn] = 2 THEN CAST(ROUND(ISNULL([TrnSalesLine].[Amount], 0), 2) AS DECIMAL(10, 2)) ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) END) AS [refund],
 
-	MAX(CASE WHEN ISNULL(TrnCollection.IsCancelled, 0) = 0 AND ISNULL (TrnCollection.IsReturn,0) = 0 THEN [TrnSalesLine].[TaxRate] ELSE 0 END) AS [taxrate],
+	MAX(CASE WHEN (ISNULL(TrnCollection.IsCancelled, 0) = 0 AND ISNULL (TrnCollection.IsReturn,0) = 0 AND [MstDiscount].[Discount]<>'Senior Citizen Discount' And [MstDiscount].[Discount]<>'PWD') THEN [TrnSalesLine].[TaxRate] ELSE 0 END) AS [taxrate],
 	MIN(REPLACE((CONVERT(varchar, [TrnSales].[SalesDate], 23)+''+REPLACE(CONVERT(varchar, [TrnSalesLine].[SalesLineTimeStamp], 8),':', '')), '-', '')) AS [posted],
 	[TotalQuantity].[Quantity] AS [qty],
 	1 AS [created],

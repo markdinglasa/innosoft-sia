@@ -20,6 +20,7 @@ import fs from 'fs'
 import paths from 'path'
 import {
   formatDateDash,
+  formatDateYYYYMMDD,
   formatDateYYYYMMDDHHMMSS,
   generateAllianceFilename
 } from '../../../../../functions'
@@ -58,7 +59,8 @@ ipcMain.handle(
         AllianceType.salesEOD,
         data.TenantCode,
         data.Terminal,
-        new Date(dates ?? '')
+        controlNumber,
+        dates
       )
       const filePath = paths.join(path, `${fileName}`)
 
@@ -95,7 +97,7 @@ ipcMain.handle(
       let sales = (salesResponse?.List || [])
         .map((item: AllianceSalesEOD) => {
           return [
-            `<date>${item?.date ?? ''}</date>`,
+            `<date>${formatDateYYYYMMDD(new Date(dates)) ?? ''}</date>`,
             `<zcounter>${item?.zcounter ?? '0'}</zcounter>`,
             `<previousnrgt>${Number(item.previousnrgt).toFixed(2) ?? '0.00'}</previousnrgt>`,
             `<nrgt>${Number(item.nrgt).toFixed(2) ?? '0.00'}</nrgt>`,
@@ -219,7 +221,7 @@ ipcMain.handle(
       )
       if (!sales || sales.length === 0) {
         sales = [
-          `<date>${formatDateYYYYMMDDHHMMSS(new Date(Dates))}</date>`,
+          `<date>${formatDateYYYYMMDD(new Date(Dates))}</date>`,
           `<zcounter>${controlNumber}</zcounter>`,
           `<previousnrgt>${Number(PreviousReading).toFixed(2) ?? '0.00'}</previousnrgt>`,
           `<nrgt>${Number(0).toFixed(2) ?? '0.00'}</nrgt>`,

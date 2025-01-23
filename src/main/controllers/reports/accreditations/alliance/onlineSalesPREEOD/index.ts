@@ -2,7 +2,8 @@ import { Error, Success } from '@shared/messages'
 import {
   AllianceProductLineQuery,
   AllianceProductsQuery,
-  AllianceTransactionQuery
+  AllianceTransactionQuery,
+  ZControlNumber
 } from '@shared/query'
 import {
   AllianceSalesProduct,
@@ -15,7 +16,11 @@ import {
 import { ipcMain } from 'electron'
 import fs from 'fs'
 import paths from 'path'
-import { formatDateDash, generateAllianceFilename } from '../../../../../functions'
+import {
+  formatDateDash,
+  formatDateYYYYMMDD,
+  generateAllianceFilename
+} from '../../../../../functions'
 import { recordByQuery } from '../../../../../model'
 
 ipcMain.handle(
@@ -35,6 +40,8 @@ ipcMain.handle(
       //console.log('Terminal:', Terminal)
       const Dates = formatDateDash(new Date(dates ?? ''))
       //console.log('Dates:', Dates)
+      const ControlNumber = await recordByQuery(ZControlNumber({ Dates, Terminal }))
+      const controlNumber = ControlNumber?.List?.[0]?.ControlNumber ?? 0
       const trxQuery = AllianceTransactionQuery({ Terminal, Dates })
       const trnResponse = await recordByQuery(trxQuery)
       //console.log('trnResponse:', trnResponse)
@@ -48,7 +55,8 @@ ipcMain.handle(
         AllianceType.onlineSalesPREEOD,
         data.TenantCode,
         data.Terminal,
-        new Date(dates ?? '')
+        controlNumber,
+        dates
       )
       const filePath = paths.join(path, `${fileName}`)
 
@@ -156,6 +164,7 @@ ipcMain.handle(
       <root>
         ${SalesId}
         <sales>
+        <date>${formatDateYYYYMMDD(new Date(dates))}</date>
         ${trx}
         </sales>
         <master>
