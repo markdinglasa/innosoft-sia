@@ -29,6 +29,7 @@ export const Initialize: SFC = ({ className }) => {
   const dispatch = useDispatch<AppDispatch>()
   const dates = useSelector(getSelectedDate)
   const Dates = formatDates(new Date(dates ?? new Date())).toString()
+
   const [optDate, setOptDate] = useState<string | null>(null)
   //console.log('Dates: ', Dates)
   const settings = useSelector(getSettings)

@@ -51,10 +51,12 @@ export interface SIATransaction {
   PaymentAmount3: number
   TotalCashSalesAmount: number
   TotalGiftCertificateSalesAmount: number
+  TotalDebitCardSalesAmount: number
   TotalEwalletOnlineSalesAmount: number
   TotalOtherTenderAmount: number
   TotalMastercardSalesAmount: number
   TotalVisaSalesAmount: number
+  TotalAmericanExpressSalesAmount: number
   TotalDinersSalesAmount: number
   TotalJCBSalesAmount: number
   TotalCreditCardSalesAmount: number

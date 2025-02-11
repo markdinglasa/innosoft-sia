@@ -1,6 +1,6 @@
 export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates }): string => {
   return `
-     WITH AggregatedPayments AS (
+WITH AggregatedPayments AS (
         SELECT 
             [TrnSales].[SalesNumber],
             [MstPayType].[PayType],
@@ -13,8 +13,7 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
         LEFT JOIN [TrnCollection] ON [TrnSales].[Id] = [TrnCollection].[SalesId]
         LEFT JOIN [TrnCollectionLine] ON [TrnCollectionLine].[CollectionId] = [TrnCollection].[Id]
         LEFT JOIN [MstPayType] ON [MstPayType].[Id] = [TrnCollectionLine].[PayTypeId]
-        WHERE 
-            [TrnSales].[TerminalId] = ${Terminal}
+           WHERE [TrnSales].[TerminalId] = ${Terminal}
             AND [TrnSales].[IsLocked] = 1
             AND MONTH(CAST([TrnSales].[SalesDate] AS DATE)) = MONTH('${Dates}')
 			AND YEAR(CAST([TrnSales].[SalesDate] AS DATE)) = YEAR('${Dates}')
@@ -283,7 +282,20 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
 						CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
 					--ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
 				END
-			) AS [TotalGiftCertificateSalesAmount],
+			) AS [TotalGiftCertificateSalesAmount], --Total Gift Cheque / Gift Card Sales Amount
+			MAX(
+				CASE
+					WHEN ISNULL([TrnSales].[IsCancelled], 0) = 1 OR ISNULL([TrnSales].[IsReturn], 0) = 2 THEN 
+						CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+					WHEN ISNULL([TrnCollection].[IsCancelled], 0) = 0
+						 AND ISNULL([TrnCollection].[IsReturn], 0) = 0
+						 AND ISNULL([TrnCollectionLine].[Amount], 0) > 0
+						 AND [TrnCollectionLine].[PayTypeId] = [MstPayType].[Id]
+						 AND [MstPayType].[PayType] = 'Debit' THEN
+						CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
+					--ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+				END
+			) AS [TotalDebitCardSalesAmount],
 
 			MAX(
 				CASE
@@ -323,7 +335,32 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
 					--ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
 				END
 			) AS [TotalMastercardSalesAmount],
-
+						MAX(
+				CASE
+					WHEN ISNULL([TrnSales].[IsCancelled], 0) = 1 OR ISNULL([TrnSales].[IsReturn], 0) = 2 THEN 
+						CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+					WHEN ISNULL([TrnCollection].[IsCancelled], 0) = 0
+						 AND ISNULL([TrnCollection].[IsReturn], 0) = 0
+						 AND ISNULL([TrnCollectionLine].[Amount], 0) > 0
+						 AND [TrnCollectionLine].[PayTypeId] = [MstPayType].[Id]
+						 AND [MstPayType].[PayType] = 'Visa' THEN
+						CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
+					--ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+				END
+			) AS [TotalVisaSalesAmount],
+			MAX(
+				CASE
+					WHEN ISNULL([TrnSales].[IsCancelled], 0) = 1 OR ISNULL([TrnSales].[IsReturn], 0) = 2 THEN 
+						CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+					WHEN ISNULL([TrnCollection].[IsCancelled], 0) = 0
+						 AND ISNULL([TrnCollection].[IsReturn], 0) = 0
+						 AND ISNULL([TrnCollectionLine].[Amount], 0) > 0
+						 AND [TrnCollectionLine].[PayTypeId] = [MstPayType].[Id]
+						 AND [MstPayType].[PayType] = 'American Express' THEN
+						CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
+					--ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+				END
+			) AS [TotalAmericanExpressSalesAmount],
 			MAX(
 				CASE
 					WHEN ISNULL([TrnSales].[IsCancelled], 0) = 1 OR ISNULL([TrnSales].[IsReturn], 0) = 2 THEN 

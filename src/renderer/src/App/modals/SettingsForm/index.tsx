@@ -1,4 +1,5 @@
 import { Input, SwitchButton } from '@shared/components'
+import { useToggle } from '@shared/hooks'
 import { Error, Success } from '@shared/messages'
 import { getSettings } from '@shared/selectors'
 import { setSnackbar } from '@shared/store/manager'
@@ -62,7 +63,8 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
       MachineNumber: yup.string().required('Machine Number is required')
     })
   }, [])
-
+  const [IsDateRange, toggleDateRange] = useToggle(false)
+  const [IsZReading, toggleZReading] = useToggle(false)
   return (
     <>
       <S.UModal className={className} close={close} header="Settings" theme={theme}>
@@ -75,7 +77,16 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
               validationSchema={validationSchema}
               enableReinitialize={true} // Add this line
             >
-              {({ dirty, errors, isSubmitting, touched, isValid, values, handleChange }) => (
+              {({
+                dirty,
+                errors,
+                isSubmitting,
+                touched,
+                isValid,
+                values,
+                handleChange,
+                setFieldValue
+              }) => (
                 <Form>
                   <S.Div>
                     <SwitchButton
@@ -91,16 +102,29 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
                       Name="IsDateRange"
                       Label="Date Range"
                       Disabled={false}
-                      OnChange={handleChange}
+                      OnChange={(_: any, _value: any) => {
+                        toggleDateRange() // toggle first
+                        setTimeout(() => {
+                          setFieldValue('IsZReading', false)
+                          setFieldValue('IsDateRange', !IsDateRange) // use updated state
+                        }, 0)
+                      }}
                       Values={values.IsDateRange}
                       Errors={errors}
                       Touched={touched}
                     />
+
                     <SwitchButton
                       Name="IsZReading"
                       Label="Include Z Reading"
                       Disabled={false}
-                      OnChange={handleChange}
+                      OnChange={(_: any, _value: any) => {
+                        toggleZReading() // toggle first
+                        setTimeout(() => {
+                          setFieldValue('IsZReading', !IsZReading) // use updated state
+                          setFieldValue('IsDateRange', false)
+                        }, 0)
+                      }}
                       Values={values.IsZReading}
                       Errors={errors}
                       Touched={touched}

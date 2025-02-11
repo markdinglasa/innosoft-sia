@@ -2,7 +2,9 @@ import { Error, Success } from '@shared/messages'
 import {
   AllianceProductLineQuery,
   AllianceProductsQuery,
-  AllianceTransactionQuery,
+  AllianceTransactionDiscountsQuery,
+  AllianceTransactionOtherQuery,
+  AllianceTransactionVATQuery,
   PreviousAmountsQuery,
   ZControlNumber
 } from '@shared/query'
@@ -50,8 +52,30 @@ ipcMain.handle(
       const PreviousTaxSale = PrevAmount?.List?.[0]?.previoustaxsale ?? 0
       const PreviousNoTaxSale = PrevAmount?.List?.[0]?.previousnotaxsale ?? 0
       //console.log('Dates:', Dates)
-      const trxQuery = AllianceTransactionQuery({ Terminal, Dates })
-      const trnResponse = await recordByQuery(trxQuery)
+
+      const trxDiscQ = AllianceTransactionDiscountsQuery({ Terminal, Dates })
+      const trxVATQ = AllianceTransactionVATQuery({ Terminal, Dates })
+      const trxOthrQ = AllianceTransactionOtherQuery({ Terminal, Dates })
+
+      const trxDiscR = await recordByQuery(trxDiscQ)
+      const trxVATR = await recordByQuery(trxVATQ)
+      //console.log('VATS:', trxVATR)
+      const trxOthrR = await recordByQuery(trxOthrQ)
+
+      // join all trx by receiptno
+      const merge1 = (trxDiscR.List || []).map((disc: any) => {
+        const vats = (trxVATR.List ?? []).find((vat: any) => vat.receiptno === disc.receiptno) || {}
+        return { ...disc, ...vats }
+      })
+      const merge2 = merge1.map((item: any) => {
+        const other =
+          (trxOthrR.List ?? []).find((oth: any) => oth.receiptno === item.receiptno) || {}
+        return { ...item, ...other }
+      })
+
+      //const trxQuery = AllianceTransactionQuery({ Terminal, Dates })
+      //const trnResponse = await recordByQuery(trxQuery)
+      //console.log('trnResponse:', merge2)
       //console.log('trnResponse:', trnResponse)
 
       // Generate the file name and path
@@ -114,7 +138,7 @@ ipcMain.handle(
             `<localtax>${Number(item.localtax).toFixed(2) ?? '0.00'}</localtax>`,
             `<amusement>${Number(item.amusement).toFixed(2) ?? '0.00'}</amusement>`,
             `<ewt>${Number(item.ewt).toFixed(2) ?? '0.00'}</ewt>`,
-            `<taxsale>${Number(item.taxsale).toFixed(2) ?? '0.00'}</taxsale>`,
+            `<taxsale>${Number(item.taxsale).toFixed(2)}</taxsale>`,
             `<notaxsale>${Number(item.notaxsale).toFixed(2) ?? '0.00'}</notaxsale>`,
             `<zerosale>${Number(item.zerosale).toFixed(2) ?? '0.00'}</zerosale>`,
             `<vatexempt>${Number(item.vatexempt).toFixed(2) ?? '0.00'}</vatexempt>`,
@@ -151,19 +175,17 @@ ipcMain.handle(
 
       const formatNumber = (value: number | undefined, defaultValue = 0): string =>
         Number(value ?? defaultValue).toFixed(2)
-
       const trx = await Promise.all(
-        (trnResponse?.List || []).map(async (item: AllianceSalesTrx) => {
+        merge2.map(async (item: AllianceSalesTrx) => {
           const ReceiptNumber = item?.receiptno
           const trxline = AllianceProductLineQuery({ Terminal, Dates, ReceiptNumber })
           const trxlineResponse = await recordByQuery(trxline)
-
           // Generate SalesLine XML
           const SalesLine = (trxlineResponse?.List || [])
             .map((lineItem: AllianceSalesTrxline) => {
               return `
               <line>
-                <sku>${lineItem?.sku ?? 0}</sku>
+                <sku>${lineItem?.sku ?? 'NA'}</sku>
                 <qty>${lineItem?.qty ?? 0}</qty>
                 <unitprice>${formatNumber(lineItem?.unitprice)}</unitprice>
                 <disc>${formatNumber(lineItem?.disc)}</disc>
@@ -178,7 +200,8 @@ ipcMain.handle(
               </line>`
             })
             .join('\n')
-          return `
+          return [
+            `
             <trx>
               <receiptno>${item?.receiptno}</receiptno>
               <void>${formatNumber(item?.void)}</void>
@@ -204,9 +227,9 @@ ipcMain.handle(
               <amusement>${formatNumber(item?.amusement)}</amusement>
               <service>${formatNumber(item?.service)}</service>
               <taxsale>${formatNumber(item?.taxsale)}</taxsale>
-              <notaxsale>${formatNumber(item?.notaxsale)}</notaxsale>
+              <notaxsale>${formatNumber(item?.vatexempt)}</notaxsale>
               <taxexsale>${formatNumber(item?.taxexsale)}</taxexsale>
-              <taxincsale>${formatNumber(item?.taxsale)}</taxincsale>
+              <taxincsale>${formatNumber(item.taxsale)}</taxincsale>
               <zerosale>${formatNumber(item?.zerosale)}</zerosale>
               <vatexempt>${formatNumber(item?.vatexempt)}</vatexempt>
               <customercount>${item?.customercnt ?? 0}</customercount>
@@ -217,8 +240,10 @@ ipcMain.handle(
               <memo>NA</memo>
               ${SalesLine}
             </trx>`
+          ].join('\n')
         })
       )
+      //console.log('trx:', trx)
       if (!sales || sales.length === 0) {
         sales = [
           `<date>${formatDateYYYYMMDD(new Date(Dates))}</date>`,
