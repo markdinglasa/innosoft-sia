@@ -1,6 +1,6 @@
 export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates }): string => {
   return `
-WITH AggregatedPayments AS (
+	WITH AggregatedPayments AS (
         SELECT 
             [TrnSales].[SalesNumber],
             [MstPayType].[PayType],

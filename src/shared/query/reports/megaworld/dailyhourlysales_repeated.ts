@@ -5,7 +5,7 @@ export const mwDailyHourlySalesRepeated = ({ Dates, Terminal }: any): string => 
             WHEN DATEPART(HOUR, [TrnSalesLine].[SalesLineTimeStamp]) = 0 THEN '24'
             ELSE RIGHT('0' + CAST(DATEPART(HOUR, [TrnSalesLine].[SalesLineTimeStamp]) AS VARCHAR), 2)
         END AS [HourCode],
-        SUM(
+        SUM(DISTINCT
             CASE 
                 WHEN ISNULL([TrnCollection].[IsReturn], 0) = 2 
                 THEN 0 

@@ -23,7 +23,7 @@ interface ZReadingProps {
 
 export const ZReading: SFC<ZReadingProps> = ({ className, CurrentDate }) => {
   const ZreadingDetails = useSelector(getSettings)
-  const Terminal = useSelector(getTenant).Terminal
+  const Terminal = useSelector(getTenant)?.Terminal ?? 0
   const Dates = formatDates(new Date(CurrentDate ?? new Date())).toString()
   const [paytypes, setPaytypes] = useState<any[]>([])
   const [collectionNumber, setCollectionNumber] = useState<any>({})

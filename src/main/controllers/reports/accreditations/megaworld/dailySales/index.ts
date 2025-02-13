@@ -1,4 +1,5 @@
 import { Error, Success } from '@shared/messages'
+import { mwSalesType } from '@shared/query'
 import { DailySale, MWFileType, Response, SqlChannel } from '@shared/types'
 import { ipcMain } from 'electron'
 import fs from 'fs'
@@ -34,7 +35,22 @@ ipcMain.handle(
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath)
       }
-
+      const salestypesQ = mwSalesType({ Dates: dates, Terminal: data.Terminal })
+      const salestypeR = await recordByQuery(salestypesQ)
+      let salestypeD = (salestypeR?.List || []).map(
+        (item: { SalesType: string; NetSalesAmount: number }) => {
+          return [
+            `21${item?.SalesType ?? 'NA'}`,
+            `22${
+              Number(item?.NetSalesAmount)
+                .toFixed(2)
+                .toString()
+                .replace(/[^a-zA-Z0-9]/g, '') ?? 'NA'
+            }`
+          ].join('\n')
+        }
+      )
+      // console.log(salestypeR)
       // Format the sales data
       let dailySalesData = (response?.List || [])
         .map((item: DailySale) => {
@@ -101,16 +117,11 @@ ipcMain.handle(
             `18${item?.CustomerCount ?? 'NA'}`,
             `19${item?.ControlNumber ?? 'NA'}`,
             `20${item?.NoSalesTransaction ?? 'NA'}`,
-            `21${item?.SalesType ?? 'NA'}`,
-            `22${
-              Number(item?.NetSalesAmountPerSalesType)
-                .toFixed(2)
-                .toString()
-                .replace(/[^a-zA-Z0-9]/g, '') ?? 'NA'
-            }`
+            salestypeD.join('\n')
           ].join('\n')
         })
         .join('\n')
+
       if (!dailySalesData || dailySalesData.length === 0)
         dailySalesData = [
           `01${data.TenantCode ?? 'NA'}`,

@@ -116,8 +116,12 @@ if (!gotTheLock) {
       optimizer.watchWindowShortcuts(window)
     })
 
-    if (isDev) await installer(REDUX_DEVTOOLS)
-    if (isDev) await installer(REACT_DEVELOPER_TOOLS)
+    try {
+      if (isDev) await installer(REDUX_DEVTOOLS)
+      if (isDev) await installer(REACT_DEVELOPER_TOOLS)
+    } catch (error) {
+      console.error('Failed to install extensions:', error)
+    }
 
     mainWindow = createWindow('../renderer/index.html')
     tray = new Tray(nativeImage.createFromPath(path.join(__dirname, '../../resources/favicon.ico')))

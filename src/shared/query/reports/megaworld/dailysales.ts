@@ -103,7 +103,7 @@ export const TaxAmountQuery = ({ Dates, Terminal }: any): string => {
         FROM [TrnSalesLine] 
         GROUP BY [SalesId]) AS TotalDiscount 
         ON [TrnSales].[Id] = [TotalDiscount].[SalesId]
-
+    
     WHERE 
         [TrnSales].[IsLocked] = 1 
         AND [TrnCollection].[IsLocked] = 1 
