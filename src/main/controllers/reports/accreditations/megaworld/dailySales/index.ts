@@ -20,7 +20,7 @@ ipcMain.handle(
     try {
       // Fetch records based on the provided query
       const response = await recordByQuery(query)
-
+      // console.log('daily-sales:', response)
       // Generate the file name and path
       const fileName = generateMWFilename(
         MWFileType.DailySales,
