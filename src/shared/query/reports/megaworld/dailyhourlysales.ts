@@ -1,8 +1,8 @@
 export const mwDailyHourlySales = ({ Dates, Terminal, MallPartnerCodeId }: any): string => {
   return `
-    SELECT
+     SELECT
     '${MallPartnerCodeId}' AS [MallPartnerCodeId],
-    [TrnSales].[TerminalId] AS [Terminal],
+    SalesDay.[TerminalId] AS [Terminal],
     '${Dates}' AS [Date],
     SUM(SalesDay.NetSalesAmount) AS [NetSalesAmountDay],
     COUNT(DISTINCT [TrnSales].[Id]) AS [NoSalesTransactionDay],
@@ -23,27 +23,33 @@ FROM
     [TrnSales]
     LEFT JOIN (
         SELECT 
-            TrnSalesLine.SalesId, 
+            TrnCollection.SalesId, 
+            TrnCollection.[IsCancelled],
+            TrnCollection.[TerminalId],
+            TrnCollection.CollectionDate,
             SUM(
                 CASE 
                     WHEN ISNULL(TrnSales.[IsReturn], 0) = 2 
                     THEN 0 
-                    ELSE CAST(ROUND(TrnSalesLine.[NetPrice] * TrnSalesLine.[Quantity], 2) AS DECIMAL(10, 2))
+                    ELSE CAST(ROUND(TrnCollection.Amount, 2) AS DECIMAL(10, 2))
                 END
             ) AS [NetSalesAmount]
         FROM 
-            TrnSalesLine 
-            INNER JOIN TrnSales ON TrnSales.Id = TrnSalesLine.SalesId
+            TrnCollection 
+            INNER JOIN TrnSales ON TrnSales.Id = TrnCollection.SalesId
         GROUP BY 
-            TrnSalesLine.SalesId
+            TrnCollection.SalesId,
+            TrnCollection.[IsCancelled],
+            TrnCollection.[TerminalId],
+            TrnCollection.CollectionDate
     ) AS SalesDay ON [TrnSales].Id = SalesDay.SalesId
 WHERE 
     [TrnSales].[IsLocked] = 1 
-    AND [TrnSales].[TerminalId] = ${Terminal}
-    AND [TrnSales].[IsCancelled] = 0 
-    AND CAST([TrnSales].[SalesDate] AS DATE) = '${Dates}'
+    AND SalesDay.[TerminalId] = ${Terminal}
+    AND SalesDay.[IsCancelled] = 0 
+    AND CAST(SalesDay.CollectionDate AS DATE) = '${Dates}'
 GROUP BY 
-    [TrnSales].[TerminalId],
-    CAST([TrnSales].[SalesDate] AS DATE)
+   SalesDay.[TerminalId],
+    CAST(SalesDay.CollectionDate AS DATE)
   `
 }
