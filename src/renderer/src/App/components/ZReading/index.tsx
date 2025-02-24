@@ -1,5 +1,4 @@
 import {
-  GrossSalesQuery,
   PreviousReading,
   ZControlNumber,
   ZCounter,
@@ -9,6 +8,7 @@ import {
   ZVATAnalysis,
   ZVoid
 } from '@shared/query'
+import { mwNetSales } from '@shared/query/reports/megaworld/netsales'
 import { getSettings } from '@shared/selectors'
 import { SFC, SqlChannel } from '@shared/types'
 import { convertDate, formatDates, formatNumber } from '@shared/utils'
@@ -41,6 +41,7 @@ export const ZReading: SFC<ZReadingProps> = ({ className, CurrentDate }) => {
       const payTypeResponse = await window.electron.sql.get(SqlChannel.getAmounts, paytypesQuery)
       setPaytypes(payTypeResponse.Data ?? [])
     }
+
     const fetchControlNumber = async () => {
       const cnQuery = ZControlNumber({ Dates, Terminal })
       const cnResponse = await window.electron.sql.get(SqlChannel.getAmount, cnQuery)
@@ -68,7 +69,7 @@ export const ZReading: SFC<ZReadingProps> = ({ className, CurrentDate }) => {
     }
 
     const fetchGross = async () => {
-      const GrossSalesQ = GrossSalesQuery({ Dates, Terminal })
+      const GrossSalesQ = mwNetSales({ Dates, Terminal })
       const GrossSalesResponse = await window.electron.sql.get(SqlChannel.getAmount, GrossSalesQ)
       setGross(GrossSalesResponse.Data ?? {})
     }
@@ -102,7 +103,7 @@ export const ZReading: SFC<ZReadingProps> = ({ className, CurrentDate }) => {
     fetchGross()
     fetchPreviousReading()
     fetchDiscounts()
-  }, [Dates, Terminal])
+  }, [CurrentDate, Terminal])
 
   const totalCollection =
     paytypes.length > 0
@@ -113,12 +114,20 @@ export const ZReading: SFC<ZReadingProps> = ({ className, CurrentDate }) => {
     discounts.length > 0
       ? discounts.reduce((total, discount) => total + (discount?.NonGovDiscountAmount ?? 0), 0)
       : 0
-
+  const GovDiscountAmount =
+    discounts.length > 0
+      ? discounts.reduce((total, discount) => total + (discount?.GovDiscountAmount ?? 0), 0)
+      : 0
+  const GrossSalesAmount =
+    Number(Math.round((gross?.NetSales ?? 0) * 100) / 100) +
+    Number(regularDiscounts) +
+    Number(GovDiscountAmount)
+  //console.log(discounts)
   return (
     <>
-      <S.Container className={className}>
+      <S.Container className={`text-bold ${className}`}>
         <S.Div className="mb-3">
-          <h4 className="mb-1"> {ZreadingDetails.Name ?? 'NA'}</h4>
+          <h4 className="mb-1 text-black"> {ZreadingDetails.Name ?? 'NA'}</h4>
           <S.TextSmall> {ZreadingDetails.Address ?? 'NA'}</S.TextSmall>
           <S.TextSmall> Operator {ZreadingDetails.Operator ?? 'NA'}</S.TextSmall>
         </S.Div>
@@ -137,7 +146,7 @@ export const ZReading: SFC<ZReadingProps> = ({ className, CurrentDate }) => {
           <S.DivBetween>
             <S.TextNormal style={{ textAlign: 'end', padding: '2px' }}>Gross Sales:</S.TextNormal>
             <S.TextNormal>
-              {formatNumber(Number(Math.round((gross?.GrossSales ?? 0) * 100) / 100))}
+              {formatNumber(Number(Math.round((GrossSalesAmount ?? 0) * 100) / 100))}
             </S.TextNormal>
           </S.DivBetween>
           <S.DivBetween>
@@ -149,15 +158,23 @@ export const ZReading: SFC<ZReadingProps> = ({ className, CurrentDate }) => {
           {discounts.length > 0 &&
             discounts.map(
               (discount, index) =>
-                discount.IsGovernmentMandated != 0 && (
-                  <S.DivBetween key={index}>
-                    <S.TextNormal style={{ textAlign: 'end', padding: '2px' }}>
-                      {discount?.Discount ?? 'NA'}:
-                    </S.TextNormal>
-                    <S.TextNormal>
-                      {formatNumber(Number(discount?.GovDiscountAmount ?? 0))}
-                    </S.TextNormal>
-                  </S.DivBetween>
+                discount.IsGovernmentMandated && (
+                  <S.Div key={index}>
+                    <S.DivBetween>
+                      <S.TextNormal style={{ textAlign: 'end', padding: '2px' }}>
+                        {discount?.Discount ?? 'NA'}:
+                      </S.TextNormal>
+                      <S.TextNormal>
+                        {formatNumber(Number(discount?.GovDiscountAmount ?? 0))}
+                      </S.TextNormal>
+                    </S.DivBetween>
+                    <S.DivBetween>
+                      <S.TextNormal style={{ textAlign: 'end', padding: '2px' }}>
+                        Less:
+                      </S.TextNormal>
+                      <S.TextNormal>{formatNumber(Number(discount?.VATExempt ?? 0))}</S.TextNormal>
+                    </S.DivBetween>
+                  </S.Div>
                 )
             )}
           <S.DivBetween>
@@ -197,8 +214,10 @@ export const ZReading: SFC<ZReadingProps> = ({ className, CurrentDate }) => {
         </S.DivBorderTop>
         <S.DivBorderTop>
           <S.DivBetween>
-            <S.TextNormal style={{ textAlign: 'end', padding: '2px' }}>Non-VAT Sales:</S.TextNormal>
-            <S.TextNormal> {formatNumber(VATAnalysis?.NonVATSales ?? 0)}</S.TextNormal>
+            <S.TextNormal style={{ textAlign: 'end', padding: '2px' }}>
+              Service Charge:
+            </S.TextNormal>
+            <S.TextNormal> {formatNumber(VATAnalysis?.NONVat ?? 0)}</S.TextNormal>
           </S.DivBetween>
           <S.DivBetween>
             <S.TextNormal style={{ textAlign: 'end', padding: '2px' }}>VAT Sales:</S.TextNormal>
@@ -210,7 +229,7 @@ export const ZReading: SFC<ZReadingProps> = ({ className, CurrentDate }) => {
             <S.TextNormal style={{ textAlign: 'end', padding: '2px' }}>
               VAT Exempt Sales:
             </S.TextNormal>
-            <S.TextNormal> {formatNumber(VATAnalysis?.VATExemptSales ?? 0)}</S.TextNormal>
+            <S.TextNormal> {formatNumber(VATAnalysis?.VATExempt ?? 0)}</S.TextNormal>
           </S.DivBetween>
           <S.DivBetween>
             <S.TextNormal style={{ textAlign: 'end', padding: '2px' }}>

@@ -1,16 +1,17 @@
 import { Error } from '@shared/messages'
 import {
-  ControlNumberQuery,
   GrossSalesQuery,
   mwDailyDiscount,
   mwDailyHourlySales,
   mwDailyHourlySalesRepeated,
   mwDailySales,
+  mwDiscounts,
   PaymentSalesQuery,
   PreviousReading,
-  ServiceChargeQuery,
-  TaxAmountQuery
+  ZControlNumber,
+  ZVATAnalysis
 } from '@shared/query'
+import { mwNetSales } from '@shared/query/reports/megaworld/netsales'
 import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, SqlChannel, Tenant, ToastType } from '@shared/types'
 import { windowNotification } from '@shared/utils'
@@ -39,12 +40,19 @@ export const useMWReports = () => {
           setPreviousDate(currentDate)
         }
 
+        const ControlNoQuery = ZControlNumber({ Terminal, Dates })
+        const ControlNoResponse = await window.electron.sql.get(
+          SqlChannel.getAmount,
+          ControlNoQuery
+        )
+        const ControlNumber = ControlNoResponse?.Data?.ControlNumber ?? 0
         const PreviousReadingQuery = PreviousReading({ Dates, Terminal })
         const PreviousReadingResponse = await window.electron.sql.get(
           SqlChannel.getAmount,
           PreviousReadingQuery
         )
-        const OldAccumulatedTotal = PreviousReadingResponse?.Data?.PreviousReading ?? 0
+        const OldAccumulatedTotal =
+          Math.round((PreviousReadingResponse?.Data?.PreviousReading ?? 0) * 100) / 100
         const dailyDiscountQuery: string = mwDailyDiscount({ Terminal, Dates })
 
         await window.electron.sql.get(
@@ -78,34 +86,25 @@ export const useMWReports = () => {
         )
         // END HOURLY SALES
         // DAILY SALES
-        const ControlNoQuery = ControlNumberQuery({ Terminal, Dates })
-        const ControlNoResponse = await window.electron.sql.get(
-          SqlChannel.getAmount,
-          ControlNoQuery
-        )
 
-        const ControlNumber = ControlNoResponse?.Data?.ControlNumber ?? 0
         //const OldAccumulatedTotal = ControlNoResponse?.Data?.PreviousReading ?? 0
-        const VATAmountQuery: string = TaxAmountQuery({ Dates, Terminal })
+        /*const VATAmountQuery: string = TaxAmountQuery({ Dates, Terminal })
         const VATAmountResponse = await window.electron.sql.get(
           SqlChannel.getAmount,
           VATAmountQuery
-        )
+        )*/
         const GrossSalesQ = GrossSalesQuery({ Dates, Terminal })
         const GrossSalesResponse = await window.electron.sql.get(SqlChannel.getAmount, GrossSalesQ)
-        const GrossSalesAmount = Math.round((GrossSalesResponse?.Data?.GrossSales ?? 0) * 100) / 100
-        const VatExempt = VATAmountResponse?.Data?.VatExempt ?? 0
-        const VATAmount = Math.round((GrossSalesResponse?.Data?.TaxAmount ?? 0) * 100) / 100
-        const ServiceChargeQ: string = ServiceChargeQuery({ Dates, Terminal })
-        const ServiceChargeResponse = await window.electron.sql.get(
-          SqlChannel.getAmount,
-          ServiceChargeQ
-        )
-        const ServiceChargeAmount =
-          Math.round((ServiceChargeResponse?.Data?.ServiceCharge ?? 0) * 100) / 100
+        //const GrossSalesAmount = Math.round((GrossSalesResponse?.Data?.GrossSales ?? 0) * 100) / 100
+        const vaQuery = ZVATAnalysis({ Dates, Terminal })
+        const vaResponse = await window.electron.sql.get(SqlChannel.getAmount, vaQuery)
+        const NonVATSalesAmount = Math.round((vaResponse?.Data?.NONVat ?? 0) * 100) / 100
+        const VATAmount = Math.round((vaResponse?.Data?.VATAmount ?? 0) * 100) / 100
         const RefundAmount = Math.round((GrossSalesResponse?.Data?.RefundAmount ?? 0) * 100) / 100
         const VoidAmount = Math.round((GrossSalesResponse?.Data?.VoidAmount ?? 0) * 100) / 100
-        const NetSalesAmount = Math.round((GrossSalesResponse?.Data?.NetSales ?? 0) * 100) / 100
+        const netsalesQuery = mwNetSales({ Dates, Terminal })
+        const netsalesResponse = await window.electron.sql.get(SqlChannel.getAmount, netsalesQuery)
+        const NetSalesAmount = Math.round((netsalesResponse?.Data?.NetSales ?? 0) * 100) / 100
         const NewAccumulatedTotal: number =
           Math.round((NetSalesAmount + OldAccumulatedTotal) * 100) / 100
         const PaymentSalesQ = PaymentSalesQuery({ Dates, Terminal })
@@ -118,6 +117,14 @@ export const useMWReports = () => {
           Math.round((PaymentSalesReponse?.Data?.CreditDebitsales ?? 0) * 100) / 100
         const OtherPaymentSales =
           Math.round((PaymentSalesReponse?.Data?.OtherPaymentSales ?? 0) * 100) / 100
+        const discQuery = mwDiscounts({ Dates, Terminal })
+        const discResponse = await window.electron.sql.get(SqlChannel.getAmount, discQuery)
+
+        const GovMandatedDiscount =
+          Math.round((discResponse?.Data?.GovMandatedDiscount ?? 0) * 100) / 100
+        const OtherDiscount = Math.round((discResponse?.Data?.OtherDiscount ?? 0) * 100) / 100
+        const tmpGrossSaless = NetSalesAmount + GovMandatedDiscount + OtherDiscount
+        const GrossSales = Math.round(tmpGrossSaless * 100) / 100
         const SalesType = '01'
         const NetSalesAmountPerSalesType = 0
         const dailySalesQuery: string = mwDailySales({
@@ -125,11 +132,11 @@ export const useMWReports = () => {
           Terminal,
           OldAccumulatedTotal,
           NewAccumulatedTotal,
-          GrossSalesAmount,
-          VatExempt,
+          GrossSalesAmount: GrossSales,
+          VatExempt: NonVATSalesAmount,
           RefundAmount,
           VATAmount,
-          ServiceChargeAmount,
+          ServiceChargeAmount: NonVATSalesAmount,
           NetSalesAmount,
           CashSales,
           CreditDebitsales,

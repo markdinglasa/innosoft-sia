@@ -1,5 +1,6 @@
 import { mdiPause, mdiPlay, mdiRestart } from '@mdi/js'
 import { Error } from '@shared/messages'
+import { ControlNumberQuery } from '@shared/query'
 import { getSettings } from '@shared/selectors'
 import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, ButtonColor, SFC, SqlChannel, ToastType } from '@shared/types'
@@ -30,7 +31,7 @@ export const Initialize: SFC = ({ className }) => {
   const dates = useSelector(getSelectedDate)
   const Dates = formatDates(new Date(dates ?? new Date())).toString()
 
-  const [optDate, setOptDate] = useState<string | null>(null)
+  //const [optDate, setOptDate] = useState<string | null>(null)
   //console.log('Dates: ', Dates)
   const settings = useSelector(getSettings)
   const [loading, setLoading] = useState<boolean>(false)
@@ -47,6 +48,21 @@ export const Initialize: SFC = ({ className }) => {
   const SMReports = useSMReports()
   const AllianceReport = useAllianceReports()
   const MWReports = useMWReports()
+
+  const handleCheckEOD = async (
+    Terminal: number = 0,
+    SelectedDate: string = ''
+  ): Promise<boolean> => {
+    try {
+      const ControlNoQuery = ControlNumberQuery({ Terminal, Dates: SelectedDate })
+      const ControlNoResponse = await window.electron.sql.get(SqlChannel.getAmount, ControlNoQuery)
+      const ControlNumber = ControlNoResponse?.Data?.ControlNumber ?? 0
+      if (typeof ControlNumber !== 'number' || ControlNumber === 0) return false
+      else return true
+    } catch (error: any) {
+      return false
+    }
+  }
 
   const checkFields = async (): Promise<boolean> => {
     try {
@@ -74,12 +90,16 @@ export const Initialize: SFC = ({ className }) => {
       dispatch(setSnackbar({ display: true, message: Error.e00x46, type: ToastType.error }))
     if (!tenant)
       dispatch(setSnackbar({ display: true, message: Error.e00x46, type: ToastType.error }))
-    if (tenant && fieldsValid && isConnected && activeTenant) {
+    const isEOD = await handleCheckEOD(tenant.Terminal, Dates)
+    if (!isEOD) {
+      dispatch(setSnackbar({ display: true, message: Error.e00x48, type: ToastType.error }))
+    }
+    if (tenant && fieldsValid && isConnected && activeTenant && isEOD) {
       dispatch(setInitialize(true))
       setLoading(true)
       setTimeout(() => {
         setLoading(false)
-      }, 9000)
+      }, 1000)
     }
   }
 
@@ -98,14 +118,14 @@ export const Initialize: SFC = ({ className }) => {
       setLoading(true)
       setTimeout(() => {
         setLoading(false)
-      }, 9000)
+      }, 1000)
     } else {
       dispatch(setSnackbar({ display: true, message: Error.e00x01, type: ToastType.error }))
     }
   }
   const element = pointerRef.current
-  const reports = async (Tenant: Tenants, OptDate?: string | null) => {
-    const currentDate = formatDates(new Date(OptDate ?? Dates)).toString()
+  const reports = async (Tenant: Tenants, OptDate: string) => {
+    const currentDate = formatDates(new Date(OptDate)).toString()
     switch (Tenant) {
       case Tenants.SM:
         SMReports(path, tenant, currentDate)
@@ -127,7 +147,7 @@ export const Initialize: SFC = ({ className }) => {
 
   const loadData = async () => {
     try {
-      await reports(activeTenant)
+      await reports(activeTenant, Dates)
     } catch (error: any) {
       dispatch(setSnackbar({ display: true, message: Error.e00x01, type: ToastType.error }))
     }
@@ -147,10 +167,13 @@ export const Initialize: SFC = ({ className }) => {
             d <= new Date(dateRanges.DateEnd);
             d.setDate(d.getDate() + 1)
           ) {
-            setOptDate(d.toString())
-            await reports(activeTenant, d.toString())
-            if (d >= new Date(dateRanges.DateEnd)) {
-              break
+            //setOptDate(d.toString())
+            const isEOD = await handleCheckEOD(tenant.Terminal, formatDates(d).toString())
+            if (isEOD) {
+              await reports(activeTenant, d.toString())
+              if (d >= new Date(dateRanges.DateEnd)) {
+                break
+              }
             }
           }
         }
@@ -275,7 +298,7 @@ export const Initialize: SFC = ({ className }) => {
       {renderLoadingScreen()}
       <div style={{ display: 'none' }}>
         <div ref={pointerRef}>
-          <ZReading CurrentDate={optDate ?? Dates} />
+          <ZReading CurrentDate={Dates} />
         </div>
       </div>
     </>

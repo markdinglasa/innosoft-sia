@@ -45,5 +45,6 @@ export enum Error {
   e00x44 = 'User must be provided as an non zero integer',
   e00x45 = 'Path must be provided as a non-empty string',
   e00x46 = 'Tenant details are missing',
-  e00x47 = 'This feature or function is still under construction.'
+  e00x47 = 'This feature or function is still under construction.',
+  e00x48 = 'EOD is not yet performed.'
 }

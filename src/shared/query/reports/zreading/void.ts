@@ -12,10 +12,10 @@ export const ZCounter = ({ Dates, Terminal }: any): string => {
         [TrnSales].[IsLocked] = 1 
         AND [TrnCollection].[IsLocked] = 1 
         AND [TrnSales].[TerminalId] = ${Terminal}
-        AND CAST([TrnSales].[SalesDate] AS DATE) = '${Dates}'
+        AND CAST([TrnCollection].[CollectionDate] AS DATE) = '${Dates}'
     GROUP BY 
 
-        [TrnSales].[TerminalId],
-        [TrnSales].[SalesDate]
+        [TrnCollection].[TerminalId],
+        [TrnCollection].[CollectionDate]
     `
 }

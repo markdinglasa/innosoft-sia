@@ -7,7 +7,7 @@ export const mwDailyDiscount = ({ Dates, Terminal }: any): string => {
             CASE WHEN [MstDiscount].[Discount] <> 'Zero Discount' THEN [MstDiscount].[Discount] ELSE 'NA' END  AS [DiscountDescription],
             Sum(CASE 
             WHEN ([TrnSalesLine].[DiscountAmount] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) = 0) 
-            THEN [TrnSalesLine].[DiscountAmount]
+            THEN [TrnSalesLine].[DiscountAmount]*[TrnSalesLine].[Quantity]
             ELSE 0
             END) AS [DiscountAmount]
         FROM 

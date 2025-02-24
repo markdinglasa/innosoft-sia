@@ -20,6 +20,7 @@ ipcMain.handle(
     try {
       // Fetch records based on the provided query
       const response = await recordByQuery(query)
+      //console.log(query)
       // console.log('daily-sales:', response)
       // Generate the file name and path
       const fileName = generateMWFilename(
@@ -52,6 +53,7 @@ ipcMain.handle(
       )
       // console.log(salestypeR)
       // Format the sales data
+      // console.log(response?.List)
       let dailySalesData = (response?.List || [])
         .map((item: DailySale) => {
           return [
