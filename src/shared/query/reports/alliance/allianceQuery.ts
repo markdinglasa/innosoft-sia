@@ -103,32 +103,32 @@ export const AllianceSalesEODQuery = ({
   ZeroRated
 }): string => {
   return `
- 		SELECT 
+SELECT 
 		MIN((REPLACE(CONVERT(varchar, [TrnSales].[SalesDate], 23),'-','')+''+REPLACE(CONVERT(varchar, [TrnSalesLine].[SalesLineTimeStamp], 8),':',''))) AS [date],
 		'${ControlNumber}' AS [zcounter],
 		'${PreviousReading}' AS [previousnrgt],
 		0 + SUM(ROUND(CASE WHEN( ISNULL([TrnCollection].[IsCancelled],0) = 0 AND ISNULL([TrnCollection].[IsReturn], 0) = 0) THEN [TrnSalesLine].[Amount] ELSE 0 END, 5)) AS [nrgt],
 		'${PreviousTax}' AS [previoustax],
-		0 + SUM(ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) ) THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 4)) AS [newtax],
+		0 + SUM(ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) ) THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 5)) AS [newtax],
 		'${PreviousTaxSales}' AS [previoustaxsale],
-		0 + SUM(ROUND((CASE WHEN((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) AND [MstDiscount].[Discount]<>'Senior Citizen Discount' And [MstDiscount].[Discount]<>'PWD' AND ISNULL([TrnSalesLine].[TaxAmount],0)>0 AND (ISNULL([TrnCollection].[IsReturn], 0) = 0)) THEN [TrnSalesLine].[Amount] ELSE (0) END),2)) AS [newtaxsale],
+		0 + SUM(ROUND((CASE WHEN((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) AND [MstDiscount].[Discount]<>'Senior Citizen Discount' And [MstDiscount].[Discount]<>'PWD' AND ISNULL([TrnSalesLine].[TaxAmount],0)>0 AND (ISNULL([TrnCollection].[IsReturn], 0) = 0)) THEN [TrnSalesLine].[Amount]-[TrnSalesLine].[TaxAmount] ELSE (0) END),5)) AS [newtaxsale],
 		'${PreviousNonTaxSales}' AS [previousnotaxsale],
 		0 + SUM(ROUND(CASE WHEN(((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0)) AND ([TrnSalesLine].[TaxAmount]<=0)) THEN[TrnCollection].[Amount] ELSE 0 END, 5)) AS [newnotaxsale],
 		MIN((CONVERT(varchar, [TrnSales].[SalesDate], 23)+ ' '+CONVERT(varchar, [TrnSalesLine].[SalesLineTimeStamp], 8))) AS [opentime],
 		MAX((CONVERT(varchar, [TrnSales].[SalesDate], 23)+ ' '+CONVERT(varchar, [TrnSalesLine].[SalesLineTimeStamp], 8))) AS [closetime],
-		SUM(ROUND((CASE WHEN((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) AND [MstDiscount].[Discount]<>'Senior Citizen Discount' And [MstDiscount].[Discount]<>'PWD' AND (ISNULL([TrnCollection].[IsReturn], 0) = 0)) THEN [Price] ELSE ([Price1]+[Price2LessTax]) END)*[Quantity],2)) AS [gross],
-		SUM(ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) ) THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 4)) AS [vat],
+		SUM(ROUND((CASE WHEN((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) AND [MstDiscount].[Discount]<>'Senior Citizen Discount' And [MstDiscount].[Discount]<>'PWD' AND (ISNULL([TrnCollection].[IsReturn], 0) = 0)) THEN [Price] ELSE ([Price1]+[Price2LessTax]) END)*[Quantity],5)) AS [gross],
+		SUM(ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) ) THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 5)) AS [vat],
 		SUM(ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) AND [MstTax].[Tax] = 'LOCAL TAX') THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 4)) AS [localtax],
 		SUM(ROUND(CASE WHEN(([TrnSalesLine].[TaxRate] > 0) AND (ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) AND [MstTax].[Tax] = 'AMUSEMENT TAX') THEN [TrnSalesLine].[TaxAmount] ELSE 0 END, 4)) AS [amusement],
 		'${EWT}' AS [ewt],
-		SUM(ROUND((CASE WHEN((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) AND [MstDiscount].[Discount]<>'Senior Citizen Discount' And [MstDiscount].[Discount]<>'PWD' AND ISNULL([TrnSalesLine].[TaxAmount],0)>0 AND (ISNULL([TrnCollection].[IsReturn], 0) = 0)) THEN [TrnSalesLine].[Amount] ELSE (0) END),2)) AS [taxsale],
+		SUM(ROUND((CASE WHEN((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0) AND [MstDiscount].[Discount]<>'Senior Citizen Discount' And [MstDiscount].[Discount]<>'PWD' AND ISNULL([TrnSalesLine].[TaxAmount],0)>0 AND (ISNULL([TrnCollection].[IsReturn], 0) = 0)) THEN [TrnSalesLine].[Amount]-[TrnSalesLine].[TaxAmount] ELSE (0) END),5)) AS [taxsale],
 		SUM(ROUND(CASE WHEN(((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0)) AND ([TrnSalesLine].[TaxAmount]<=0)) THEN[TrnCollection].[Amount] ELSE 0 END, 5)) AS [notaxsale],
 		'${ZeroRated}' AS [zerosale],
 		SUM(ROUND(CASE WHEN([TrnSalesLine].[Price2]>0 AND ((ISNULL([TrnCollection].[IsReturn], 0) =  0 AND ISNULL([TrnSales].[IsCancelled],0) = 0))) THEN [TrnSalesLine].[quantity]*([TrnSalesLine].[price2lesstax]-([TrnSalesLine].[price2lesstax]*([TrnSalesLine].[DiscountRate]/100))) ELSE CASE WHEN ([TrnSalesLine].[TaxId]=5) THEN [TrnSalesLine].[Amount] ELSE 0 END END,5)) AS [vatexempt],
 		SUM(ROUND(CASE WHEN(ISNULL([TrnSales].[IsCancelled], 0) = 1) THEN  [TrnSalesLine].[Amount] ELSE 0 END, 3)) AS [void],
 		COUNT(DISTINCT (CASE WHEN(ISNULL([TrnSales].[IsCancelled], 0) = 1) THEN  [TrnSalesLine].[Amount] ELSE null END)) AS [voidcnt],
-		SUM(CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND (TrnSalesLine.[DiscountAmount]>0) THEN ISNULL([TotalDiscount].[TotalDiscountAmount], 0) ELSE 0 END) AS [disc],
-		COUNT(CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND (TrnSalesLine.[DiscountAmount]>0) THEN ISNULL([TotalDiscount].[TotalDiscountAmount], null) ELSE null END) AS [disccnt],
+		SUM(CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND (TrnSalesLine.[DiscountAmount]>0) AND ([MstDiscount].[Discount] NOT IN ('Senior Citizen Discount','PWD')) THEN ISNULL([TotalDiscount].[TotalDiscountAmount], 0) ELSE 0 END) AS [disc],
+		COUNT(CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND (TrnSalesLine.[DiscountAmount]>0) AND ([MstDiscount].[Discount] NOT IN ('Senior Citizen Discount','PWD')) THEN ISNULL([TotalDiscount].[TotalDiscountAmount], null) ELSE null END) AS [disccnt],
 		SUM(ROUND(CASE WHEN(ISNULL([TrnSales].[IsCancelled], 0) = 0 AND ISNULL([TrnCollection].[IsReturn], 0) =  2) THEN  [TrnSalesLine].[Amount] ELSE 0 END, 3)) AS [refund],
 		COUNT((CASE WHEN(ISNULL([TrnSales].[IsCancelled], 0) = 0 AND ISNULL([TrnCollection].[IsReturn], 0) =  2) THEN  [TrnSalesLine].[Amount] ELSE null END)) AS [refundcnt],
 		SUM(CASE WHEN (ISNULL([TrnCollection].[IsReturn],0) = 0 OR ISNULL([TrnSales].[IsCancelled],0) = 1) AND ([MstDiscount].[Discount] IN ('Senior Citizen Discount')) THEN ISNULL([TotalDiscount].[TotalDiscountAmount], 0) ELSE 0 END) AS [senior],
@@ -210,13 +210,13 @@ export const AllianceProductLineQuery = ({ Terminal, Dates, ReceiptNumber }) => 
 
 export const AllianceTransactionVATQuery = ({ Terminal, Dates }) => {
   return `
-  WITH FilteredSales AS (
+   WITH FilteredSales AS (
     SELECT *
-    FROM TrnSales
+    FROM TrnCollection
     WHERE TerminalId = ${Terminal}
       AND IsLocked = 1
-      AND CAST(SalesDate AS DATE) = '${Dates}'
-  ),
+      AND CAST(CollectionDate AS DATE) = '${Dates}'
+    ),
   SalesLines AS (
       SELECT 
           sl.Id,
@@ -315,10 +315,10 @@ export const AllianceTransactionOtherQuery = ({ Terminal, Dates }) => {
   return `
   WITH FilteredSales AS (
     SELECT *
-    FROM TrnSales
+    FROM TrnCollection
     WHERE TerminalId = ${Terminal}
       AND IsLocked = 1
-      AND CAST(SalesDate AS DATE) = '${Dates}'
+      AND CAST(CollectionDate AS DATE) = '${Dates}'
 ),
 SalesLines AS (
     SELECT 
@@ -401,6 +401,26 @@ PaymentAggregates AS (
     FROM Collections
     GROUP BY SalesId, CollectionNumber
 ),
+-- Pre-aggregate discounts without duplicates
+DiscountAggregates AS (
+    SELECT 
+        d.SalesId,
+        SUM(d.DiscTotal) AS TotalDiscountAmount,
+        SUM(CASE WHEN d.Discount = 'Senior Citizen Discount' THEN d.DiscTotal ELSE 0 END) AS linesenior,
+        SUM(CASE WHEN d.Discount = 'PWD' THEN d.DiscTotal ELSE 0 END) AS linepwd,
+        SUM(CASE WHEN d.Discount = 'Diplomat Discount' THEN d.DiscTotal ELSE 0 END) AS linediplomat
+    FROM (
+        SELECT DISTINCT
+            sl.SalesId,
+            sl.Discount,
+            sl.DiscountAmount * sl.Quantity AS DiscTotal
+        FROM SalesLines sl
+        JOIN FilteredSales s ON sl.SalesId = s.Id
+        JOIN Collections c ON s.Id = c.SalesId
+        WHERE (c.CollectionIsReturn = 0 OR s.IsCancelled = 1)
+    ) d
+    GROUP BY d.SalesId
+),
 ServiceChargeAgg AS (
     SELECT
         SalesId,
@@ -423,6 +443,41 @@ PaxTable AS (
     FROM TrnPaxTable
     WHERE SaleId IN (SELECT Id FROM FilteredSales)
     GROUP BY SaleId
+),
+
+VatCalculations AS (
+    SELECT
+        v.SalesId,
+        SUM(CASE
+            WHEN v.TaxRate > 0
+                 THEN v.TaxAmount
+            ELSE 0
+        END) AS vat,
+        SUM(CASE
+            WHEN v.TaxRate > 0 
+                 AND v.Tax = 'LOCAL TAX'
+                 THEN v.TaxAmount
+            ELSE 0
+        END) AS localtax,
+        SUM(CASE
+            WHEN v.TaxRate > 0
+                 AND v.Tax = 'AMUSEMENT TAX'
+                 THEN v.TaxAmount
+            ELSE 0
+        END) AS amusement
+	FROM (
+        SELECT DISTINCT
+            sl.SalesId,
+			sl.TaxRate,
+			sl.TaxAmount,
+			mstTax.Tax
+        FROM SalesLines sl
+        LEFT JOIN FilteredSales s ON sl.SalesId = s.Id
+		LEFT JOIN Collections c ON s.Id = c.SalesId
+		LEFT JOIN MstTax mstTax ON sl.TaxId = mstTax.Id
+        WHERE (c.CollectionIsReturn = 0 OR s.IsCancelled = 1)
+    ) v
+    GROUP BY v.SalesId
 )
 SELECT
     REPLACE(c.CollectionNumber, '-', '') AS receiptno,
@@ -435,15 +490,20 @@ SELECT
     0 AS evat,
     SUM(DISTINCT CASE
         WHEN c.CollectionIsCancelled = 0 AND c.CollectionIsReturn = 0 
-             THEN c.CollectionAmount
+             THEN sl.Price * sl.Quantity
         ELSE 0
     END) AS subtotal,
+    vc.vat,
+    0 AS exvat,
+    vc.vat AS incvat,
+    vc.localtax,
+    vc.amusement,
     0 AS ewt,
     sc.ServiceCharge AS service,
     SUM(DISTINCT CASE
         WHEN c.CollectionIsCancelled = 0 AND c.CollectionIsReturn = 0 
              AND sl.TaxAmount > 0
-             THEN sl.Amount/1.12
+             THEN sl.Amount
         ELSE 0
     END) AS taxsale,
     SUM(DISTINCT CASE
@@ -455,7 +515,7 @@ SELECT
     0 AS taxexsale,
     SUM(DISTINCT CASE
         WHEN sl.TaxAmount > 0 AND (c.CollectionIsReturn = 0 AND s.IsCancelled = 0)
-             THEN c.CollectionAmount/1.12
+             THEN c.CollectionAmount
         ELSE 0
     END) AS taxincsale,
     0 AS zerosale,
@@ -466,11 +526,8 @@ SELECT
     END) AS vatexempt,
     MAX(pt.TotalPax) AS customercnt,
     SUM(DISTINCT CASE
-        WHEN (s.IsReturn = 2 OR s.IsCancelled = 1) THEN 0
-        ELSE (CASE WHEN sl.Discount NOT IN ('Senior Citizen Discount', 'PWD') 
-                   THEN sl.Price 
-                   ELSE (sl.Price1 + sl.Price2LessTax) 
-              END) * sl.Quantity
+        WHEN (s.IsReturn = 0 OR s.IsCancelled = 0) THEN c.CollectionAmount
+        ELSE 0
     END) AS gross,
     SUM(CASE WHEN s.IsReturn = 2 THEN sl.Amount ELSE 0 END) AS refund,
     MAX(CASE
@@ -479,7 +536,7 @@ SELECT
              THEN sl.TaxRate
         ELSE 0
     END) AS taxrate,
-    MIN(REPLACE(CONVERT(varchar, s.SalesDate, 23) 
+    MIN(REPLACE(CONVERT(varchar, s.CollectionDate, 23) 
              + REPLACE(CONVERT(varchar, sl.SalesLineTimeStamp, 8), ':', ''), '-', '')) AS posted,
     tq.Quantity AS qty,
     1 AS created,
@@ -487,10 +544,13 @@ SELECT
 FROM FilteredSales s
 LEFT JOIN SalesLines sl ON s.Id = sl.SalesId
 LEFT JOIN Collections c ON s.Id = c.SalesId
-LEFT JOIN PaymentAggregates pa ON c.SalesId = pa.SalesId AND c.CollectionNumber = pa.CollectionNumber
+LEFT JOIN PaymentAggregates pa ON c.SalesId = pa.SalesId 
+                              AND c.CollectionNumber = pa.CollectionNumber
+LEFT JOIN DiscountAggregates da ON s.Id = da.SalesId
 LEFT JOIN ServiceChargeAgg sc ON s.Id = sc.SalesId
 LEFT JOIN TotalQuantity tq ON s.Id = tq.SalesId
 LEFT JOIN PaxTable pt ON s.Id = pt.SaleId
+LEFT JOIN VatCalculations vc ON s.Id = vc.SalesId
 GROUP BY 
     c.CollectionNumber,
     tq.Quantity,
@@ -500,19 +560,26 @@ GROUP BY
     pa.charge,
     pa.giftcheck,
     pa.othertender,
-    sc.ServiceCharge;
+    da.TotalDiscountAmount,
+    da.linesenior,
+    da.linepwd,
+    da.linediplomat,
+    vc.vat,
+    vc.localtax,
+    vc.amusement,
+    sc.ServiceCharge
 `
 }
 export const AllianceTransactionDiscountsQuery = ({ Terminal, Dates }) => {
   return `
-    WITH FilteredSales AS (
-        SELECT *
-        FROM TrnSales
-        WHERE TerminalId = ${Terminal}
-          AND IsLocked = 1
-          AND CAST(SalesDate AS DATE) = '${Dates}'
+WITH FilteredSales AS (
+    SELECT *
+    FROM TrnCollection
+    WHERE TerminalId = ${Terminal}
+      AND IsLocked = 1
+      AND CAST(CollectionDate AS DATE) = '${Dates}'
     ),
-    SalesLines AS (
+        SalesLines AS (
         SELECT 
             sl.Id,
             sl.SalesId,
@@ -556,7 +623,7 @@ export const AllianceTransactionDiscountsQuery = ({ Terminal, Dates }) => {
     DiscountAggregates AS (
         SELECT 
             d.SalesId,
-            SUM(d.DiscTotal) AS TotalDiscountAmount,
+			SUM(CASE WHEN d.Discount <> 'Senior Citizen Discount' AND d.Discount <> 'PWD' THEN d.DiscTotal ELSE 0 END) AS disc,
             SUM(CASE WHEN d.Discount = 'Senior Citizen Discount' THEN d.DiscTotal ELSE 0 END) AS linesenior,
             SUM(CASE WHEN d.Discount = 'PWD' THEN d.DiscTotal ELSE 0 END) AS linepwd,
             SUM(CASE WHEN d.Discount = 'Diplomat Discount' THEN d.DiscTotal ELSE 0 END) AS linediplomat
@@ -574,10 +641,11 @@ export const AllianceTransactionDiscountsQuery = ({ Terminal, Dates }) => {
     )
     SELECT
         REPLACE(c.CollectionNumber, '-', '') AS receiptno,
-        da.TotalDiscountAmount AS linedisc,
-        da.linesenior,
-        da.linepwd,
-        da.linediplomat,
+        0 AS linedisc,
+        0 AS linesenior,
+        0 AS linepwd,
+        0 AS linediplomat,
+        da.disc AS disc,
         da.linesenior AS senior,
         da.linepwd AS pwd,
         da.linediplomat AS diplomat
@@ -587,7 +655,7 @@ export const AllianceTransactionDiscountsQuery = ({ Terminal, Dates }) => {
     LEFT JOIN DiscountAggregates da ON s.Id = da.SalesId
     GROUP BY 
         c.CollectionNumber,
-        da.TotalDiscountAmount,
+        da.disc,
         da.linesenior,
         da.linepwd,
         da.linediplomat
@@ -770,11 +838,6 @@ SELECT
     pa.charge,
     pa.giftcheck,
     pa.othertender,
-    da.TotalDiscountAmount AS linedisc,
-    da.linesenior,
-    0 AS evat,
-    da.linepwd,
-    da.linediplomat,
     SUM(DISTINCT CASE
         WHEN c.CollectionIsCancelled = 0 AND c.CollectionIsReturn = 0 
              THEN c.CollectionAmount

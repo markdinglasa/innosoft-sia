@@ -2,8 +2,8 @@ export const ZVATAnalysis = ({ Dates, Terminal }: any): string => {
   return `
 SELECT 
 	SUM(
-		CASE WHEN TrnSalesLine.DiscountId <> 7 AND TrnSalesLine.DiscountId <> 16 AND TrnSalesLine.TaxId = 4
-		THEN TrnSalesLine.Amount
+		CASE WHEN MstDiscount.Discount <> 'PWD' AND MstDiscount.Discount <> 'Senior Citizen Discount' AND MstTax.Tax = 'VAT' AND TrnSalesLine.TaxAmount > 0
+		THEN [TrnSalesLine].[Amount]-[TrnSalesLine].[TaxAmount]
 		ELSE 0 
 	END) AS VATSales,
 	SUM((CASE WHEN(([TrnSalesLine].[TaxRate] > 0)) THEN [TrnSalesLine].[TaxAmount] ELSE 0 END)) AS [VATAmount],

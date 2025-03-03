@@ -2,7 +2,9 @@ import { Error, Success } from '@shared/messages'
 import {
   AllianceProductLineQuery,
   AllianceProductsQuery,
-  AllianceTransactionQuery,
+  AllianceTransactionDiscountsQuery,
+  AllianceTransactionOtherQuery,
+  AllianceTransactionVATQuery,
   ZControlNumber
 } from '@shared/query'
 import {
@@ -42,11 +44,30 @@ ipcMain.handle(
       //console.log('Dates:', Dates)
       const ControlNumber = await recordByQuery(ZControlNumber({ Dates, Terminal }))
       const controlNumber = ControlNumber?.List?.[0]?.ControlNumber ?? 0
-      const trxQuery = AllianceTransactionQuery({ Terminal, Dates })
-      const trnResponse = await recordByQuery(trxQuery)
+      //const trxQuery = AllianceTransactionQuery({ Terminal, Dates })
+      //const trnResponse = await recordByQuery(trxQuery)
+      const trxDiscQ = AllianceTransactionDiscountsQuery({ Terminal, Dates })
+      const trxVATQ = AllianceTransactionVATQuery({ Terminal, Dates })
+      const trxOthrQ = AllianceTransactionOtherQuery({ Terminal, Dates })
+
+      const trxDiscR = await recordByQuery(trxDiscQ)
+      const trxVATR = await recordByQuery(trxVATQ)
+      //console.log('VATS:', trxVATR)
+      const trxOthrR = await recordByQuery(trxOthrQ)
+
+      // join all trx by receiptno
+      const merge1 = (trxDiscR.List || []).map((disc: any) => {
+        const vats = (trxVATR.List ?? []).find((vat: any) => vat.receiptno === disc.receiptno) || {}
+        return { ...disc, ...vats }
+      })
+      const merge2 = merge1.map((item: any) => {
+        const other =
+          (trxOthrR.List ?? []).find((oth: any) => oth.receiptno === item.receiptno) || {}
+        return { ...item, ...other }
+      })
       //console.log('trnResponse:', trnResponse)
       // Handle case when response does not have a 'List'
-      if (!salesResponse.List || !trnResponse.List) {
+      if (!salesResponse.List || !merge2) {
         return { IsSomething: false, Message: salesResponse.Message }
       }
 
@@ -94,7 +115,7 @@ ipcMain.handle(
         Number(value ?? defaultValue).toFixed(2)
 
       const trx = await Promise.all(
-        trnResponse.List.map(async (item: AllianceSalesTrx) => {
+        merge2.map(async (item: AllianceSalesTrx) => {
           const ReceiptNumber = item?.receiptno
           const trxline = AllianceProductLineQuery({ Terminal, Dates, ReceiptNumber })
           const trxlineResponse = await recordByQuery(trxline)

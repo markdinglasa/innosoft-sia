@@ -77,7 +77,8 @@ ipcMain.handle(
       //const trnResponse = await recordByQuery(trxQuery)
       //console.log('trnResponse:', merge2)
       //console.log('trnResponse:', trnResponse)
-
+      const formatNumber = (value: number | undefined, defaultValue = 0): string =>
+        (Math.round((value ?? defaultValue) * 100) / 100).toFixed(2)
       // Generate the file name and path
       const fileName = generateAllianceFilename(
         AllianceType.salesEOD,
@@ -123,58 +124,56 @@ ipcMain.handle(
           return [
             `<date>${formatDateYYYYMMDD(new Date(dates)) ?? ''}</date>`,
             `<zcounter>${item?.zcounter ?? '0'}</zcounter>`,
-            `<previousnrgt>${Number(item.previousnrgt).toFixed(2) ?? '0.00'}</previousnrgt>`,
-            `<nrgt>${Number(item.nrgt).toFixed(2) ?? '0.00'}</nrgt>`,
-            `<previoustax>${Number(item.previoustax).toFixed(2) ?? '0.00'}</previoustax>`,
-            `<newtax>${Number(item.newtax).toFixed(2) ?? '0.00'}</newtax>`,
-            `<previoustaxsale>${Number(item.previoustaxsale).toFixed(2) ?? '0.00'}</previoustaxsale>`,
-            `<newtaxsale>${Number(item.newtaxsale).toFixed(2) ?? '0.00'}</newtaxsale>`,
-            `<previousnotaxsale>${Number(item.previousnotaxsale).toFixed(2) ?? '0.00'}</previousnotaxsale>`,
-            `<newnotaxsale>${Number(item.newnotaxsale).toFixed(2) ?? '0.00'}</newnotaxsale>`,
+            `<previousnrgt>${formatNumber(item.previousnrgt)}</previousnrgt>`,
+            `<nrgt>${formatNumber(item.nrgt)}</nrgt>`,
+            `<previoustax>${formatNumber(item.previoustax)}</previoustax>`,
+            `<newtax>${formatNumber(item.newtax)}</newtax>`,
+            `<previoustaxsale>${formatNumber(item.previoustaxsale)}</previoustaxsale>`,
+            `<newtaxsale>${formatNumber(item.newtaxsale)}</newtaxsale>`,
+            `<previousnotaxsale>${formatNumber(item.previousnotaxsale)}</previousnotaxsale>`,
+            `<newnotaxsale>${formatNumber(item.newnotaxsale)}</newnotaxsale>`,
             `<opentime>${formatDateYYYYMMDDHHMMSS(new Date(item.opentime)) ?? 'NA'}</opentime>`,
             `<closetime>${formatDateYYYYMMDDHHMMSS(new Date(item.closetime)) ?? 'NA'}</closetime>`,
-            `<gross>${Number(item.gross).toFixed(2) ?? '0.00'}</gross>`,
-            `<vat>${Number(item.vat).toFixed(2) ?? '0.00'}</vat>`,
-            `<localtax>${Number(item.localtax).toFixed(2) ?? '0.00'}</localtax>`,
-            `<amusement>${Number(item.amusement).toFixed(2) ?? '0.00'}</amusement>`,
-            `<ewt>${Number(item.ewt).toFixed(2) ?? '0.00'}</ewt>`,
-            `<taxsale>${Number(item.taxsale).toFixed(2)}</taxsale>`,
-            `<notaxsale>${Number(item.notaxsale).toFixed(2) ?? '0.00'}</notaxsale>`,
-            `<zerosale>${Number(item.zerosale).toFixed(2) ?? '0.00'}</zerosale>`,
-            `<vatexempt>${Number(item.vatexempt).toFixed(2) ?? '0.00'}</vatexempt>`,
-            `<void>${Number(item.void).toFixed(2) ?? '0.00'}</void>`,
-            `<voidcnt>${Number(item.voidcnt).toFixed(2) ?? '0.00'}</voidcnt>`,
-            `<disc>${Number(item.disc).toFixed(2) ?? '0.00'}</disc>`,
-            `<disccnt>${Number(item.disccnt).toFixed(2) ?? '0.00'}</disccnt>`,
-            `<refund>${Number(item.refund).toFixed(2) ?? '0.00'}</refund>`,
-            `<refundcnt>${Number(item.refundcnt).toFixed(2) ?? '0.00'}</refundcnt>`,
-            `<senior>${Number(item.senior).toFixed(2) ?? '0.00'}</senior>`,
-            `<seniorcnt>${Number(item.seniorcnt).toFixed(2) ?? '0.00'}</seniorcnt>`,
-            `<pwd>${Number(item.pwd).toFixed(2) ?? '0.00'}</pwd>`,
-            `<pwdcnt>${Number(item.pwdcnt).toFixed(2) ?? '0.00'}</pwdcnt>`,
-            `<diplomat>${Number(item.diplomat).toFixed(2) ?? '0.00'}</diplomat>`,
-            `<diplomatcnt>${Number(item.diplomatcnt).toFixed(2) ?? '0.00'}</diplomatcnt>`,
-            `<service>${Number(item.service).toFixed(2) ?? '0.00'}</service>`,
-            `<servicecnt>${Number(item.servicecnt).toFixed(2) ?? '0.00'}</servicecnt>`,
+            `<gross>${formatNumber(item.gross)}</gross>`,
+            `<vat>${formatNumber(item.vat)}</vat>`,
+            `<localtax>${formatNumber(item.localtax)}</localtax>`,
+            `<amusement>${formatNumber(item.amusement)}</amusement>`,
+            `<ewt>${formatNumber(item.ewt)}</ewt>`,
+            `<taxsale>${formatNumber(item.taxsale)}</taxsale>`,
+            `<notaxsale>${formatNumber(item.notaxsale)}</notaxsale>`,
+            `<zerosale>${formatNumber(item.zerosale)}</zerosale>`,
+            `<vatexempt>${formatNumber(item.vatexempt)}</vatexempt>`,
+            `<void>${formatNumber(item.void)}</void>`,
+            `<voidcnt>${formatNumber(item.voidcnt)}</voidcnt>`,
+            `<disc>${formatNumber(item.disc)}</disc>`,
+            `<disccnt>${formatNumber(item.disccnt)}</disccnt>`,
+            `<refund>${formatNumber(item.refund)}</refund>`,
+            `<refundcnt>${formatNumber(item.refundcnt)}</refundcnt>`,
+            `<senior>${formatNumber(item.senior)}</senior>`,
+            `<seniorcnt>${formatNumber(item.seniorcnt)}</seniorcnt>`,
+            `<pwd>${formatNumber(item.pwd)}</pwd>`,
+            `<pwdcnt>${formatNumber(item.pwdcnt)}</pwdcnt>`,
+            `<diplomat>${formatNumber(item.diplomat)}</diplomat>`,
+            `<diplomatcnt>${formatNumber(item.diplomatcnt)}</diplomatcnt>`,
+            `<service>${formatNumber(item.service)}</service>`,
+            `<servicecnt>${Number(item.servicecnt)}</servicecnt>`,
             `<receiptstart>${item.receiptstart ?? 'NA'}</receiptstart>`,
             `<receiptend>${item.receiptend ?? 'NA'}</receiptend>`,
-            `<trxcnt>${Number(item.trxcnt).toFixed(2) ?? '0.00'}</trxcnt>`,
-            `<cash>${Number(item.cash).toFixed(2) ?? '0.00'}</cash>`,
-            `<cashcnt>${Number(item.cashcnt).toFixed(2) ?? '0.00'}</cashcnt>`,
-            `<credit>${Number(item.credit).toFixed(2) ?? '0.00'}</credit>`,
-            `<creditcnt>${Number(item.creditcnt).toFixed(2) ?? '0.00'}</creditcnt>`,
-            `<charge>${Number(item.charge).toFixed(2) ?? '0.00'}</charge>`,
-            `<chargecnt>${Number(item.chargecnt).toFixed(2) ?? '0.00'}</chargecnt>`,
-            `<giftcheck>${Number(item.giftcheck).toFixed(2) ?? '0.00'}</giftcheck>`,
-            `<giftcheckcnt>${Number(item.giftcheckcnt).toFixed(2) ?? '0.00'}</giftcheckcnt>`,
-            `<othertender>${Number(item.othertender).toFixed(2) ?? '0.00'}</othertender>`,
-            `<othertendercnt>${Number(item.othertendercnt).toFixed(2) ?? '0.00'}</othertendercnt>`
+            `<trxcnt>${Number(item.trxcnt)}</trxcnt>`,
+            `<cash>${formatNumber(item.cash)}</cash>`,
+            `<cashcnt>${Number(item.cashcnt)}</cashcnt>`,
+            `<credit>${formatNumber(item.credit)}</credit>`,
+            `<creditcnt>${Number(item.creditcnt)}</creditcnt>`,
+            `<charge>${formatNumber(item.charge)}</charge>`,
+            `<chargecnt>${Number(item.chargecnt)}</chargecnt>`,
+            `<giftcheck>${formatNumber(item.giftcheck)}</giftcheck>`,
+            `<giftcheckcnt>${Number(item.giftcheckcnt)}</giftcheckcnt>`,
+            `<othertender>${formatNumber(item.othertender)}</othertender>`,
+            `<othertendercnt>${Number(item.othertendercnt)}</othertendercnt>`
           ].join('\n')
         })
         .join('\n')
 
-      const formatNumber = (value: number | undefined, defaultValue = 0): string =>
-        Number(value ?? defaultValue).toFixed(2)
       const trx = await Promise.all(
         merge2.map(async (item: AllianceSalesTrx) => {
           const ReceiptNumber = item?.receiptno
@@ -232,7 +231,7 @@ ipcMain.handle(
               <taxincsale>${formatNumber(item.taxsale)}</taxincsale>
               <zerosale>${formatNumber(item?.zerosale)}</zerosale>
               <vatexempt>${formatNumber(item?.vatexempt)}</vatexempt>
-              <customercount>${item?.customercnt ?? 0}</customercount>
+              <customercount>${item?.customercnt ?? 1}</customercount>
               <gross>${formatNumber(item?.gross)}</gross>
               <refund>${formatNumber(item?.refund)}</refund>
               <taxrate>${formatNumber(item?.taxrate)}</taxrate>

@@ -105,6 +105,7 @@ export const ZReading: SFC<ZReadingProps> = ({ className, CurrentDate }) => {
     fetchDiscounts()
   }, [CurrentDate, Terminal])
 
+  //console.log(discounts)
   const totalCollection =
     paytypes.length > 0
       ? paytypes.reduce((total, paytype) => total + (paytype?.TotalAmount ?? 0), 0)
@@ -221,9 +222,7 @@ export const ZReading: SFC<ZReadingProps> = ({ className, CurrentDate }) => {
           </S.DivBetween>
           <S.DivBetween>
             <S.TextNormal style={{ textAlign: 'end', padding: '2px' }}>VAT Sales:</S.TextNormal>
-            <S.TextNormal>
-              {formatNumber((VATAnalysis?.VATSales ?? 0) - (VATAnalysis?.VATAmount ?? 0))}
-            </S.TextNormal>
+            <S.TextNormal>{formatNumber(VATAnalysis?.VATSales ?? 0)}</S.TextNormal>
           </S.DivBetween>
           <S.DivBetween>
             <S.TextNormal style={{ textAlign: 'end', padding: '2px' }}>
