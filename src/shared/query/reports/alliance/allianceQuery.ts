@@ -212,10 +212,10 @@ export const AllianceTransactionVATQuery = ({ Terminal, Dates }) => {
   return `
    WITH FilteredSales AS (
     SELECT *
-    FROM TrnCollection
+    FROM TrnSales
     WHERE TerminalId = ${Terminal}
       AND IsLocked = 1
-      AND CAST(CollectionDate AS DATE) = '${Dates}'
+      AND CAST(SalesDate AS DATE) = '${Dates}'
     ),
   SalesLines AS (
       SELECT 
@@ -315,10 +315,10 @@ export const AllianceTransactionOtherQuery = ({ Terminal, Dates }) => {
   return `
   WITH FilteredSales AS (
     SELECT *
-    FROM TrnCollection
+    FROM TrnSales
     WHERE TerminalId = ${Terminal}
       AND IsLocked = 1
-      AND CAST(CollectionDate AS DATE) = '${Dates}'
+      AND CAST(SalesDate AS DATE) = '${Dates}'
 ),
 SalesLines AS (
     SELECT 
@@ -574,10 +574,10 @@ export const AllianceTransactionDiscountsQuery = ({ Terminal, Dates }) => {
   return `
 WITH FilteredSales AS (
     SELECT *
-    FROM TrnCollection
+    FROM TrnSales
     WHERE TerminalId = ${Terminal}
       AND IsLocked = 1
-      AND CAST(CollectionDate AS DATE) = '${Dates}'
+      AND CAST(SalesDate AS DATE) = '${Dates}'
     ),
         SalesLines AS (
         SELECT 
