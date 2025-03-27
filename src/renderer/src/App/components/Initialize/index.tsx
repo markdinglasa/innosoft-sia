@@ -124,6 +124,7 @@ export const Initialize: SFC = ({ className }) => {
     }
   }
   const element = pointerRef.current
+
   const reports = async (Tenant: Tenants, OptDate: string) => {
     const currentDate = formatDates(new Date(OptDate)).toString()
     switch (Tenant) {
@@ -152,6 +153,19 @@ export const Initialize: SFC = ({ className }) => {
       dispatch(setSnackbar({ display: true, message: Error.e00x01, type: ToastType.error }))
     }
   }
+
+  const handleGenerateNoSale = async () => {
+    setLoading(true)
+    try {
+      loadData()
+    } catch (error: any) {
+      dispatch(setSnackbar({ display: true, message: Error.e00x01, type: ToastType.error }))
+    }
+    setTimeout(() => {
+      setLoading(false)
+    }, 9000)
+  }
+
   const handleGenerate = async () => {
     if (!dateRanges.DateStart || !dateRanges.DateEnd) {
       dispatch(
@@ -291,6 +305,14 @@ export const Initialize: SFC = ({ className }) => {
             onClick={handleInitialize}
             iconLeft={mdiPlay}
             text="Start"
+            color={ButtonColor.blue}
+          />
+        )}
+        {!initialized && !settings.IsDateRange && String(activeTenant) === Tenants.ALLIANCE && (
+          <S.Button
+            onClick={handleGenerateNoSale}
+            iconLeft={mdiPlay}
+            text="Generate No Sale"
             color={ButtonColor.blue}
           />
         )}

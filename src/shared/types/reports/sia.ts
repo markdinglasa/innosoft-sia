@@ -20,6 +20,7 @@ export interface SIATransaction {
   TotalTip: number
   TotalDiscount: number
   LessTaxAmount: number
+  TaxExemptSales: number
   TotalExemptSales: number
   RegularOtherDiscountName: string
   RegularOtherDiscountAmount: number

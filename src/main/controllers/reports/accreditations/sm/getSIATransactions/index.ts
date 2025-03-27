@@ -42,6 +42,7 @@ ipcMain.handle(
         item.TotalTip,
         item.TotalDiscount,
         item.LessTaxAmount,
+        item.TaxExemptSales,
         item.TotalExemptSales,
         item.RegularOtherDiscountName,
         item.RegularOtherDiscountAmount,
