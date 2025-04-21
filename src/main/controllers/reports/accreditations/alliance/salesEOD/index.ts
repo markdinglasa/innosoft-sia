@@ -41,6 +41,7 @@ ipcMain.handle(
     try {
       // Fetch records based on the provided query
       const salesResponse = await recordByQuery(salesQ)
+      console.log('salesResponse:', salesResponse)
       const Terminal = data?.Terminal ?? 0
       //console.log('Terminal:', Terminal)
       const Dates = formatDateDash(new Date(dates ?? ''))
@@ -243,18 +244,19 @@ ipcMain.handle(
         })
       )
       //console.log('trx:', trx)
+      // NO SALES
       if (!sales || sales.length === 0) {
         sales = [
           `<date>${formatDateYYYYMMDD(new Date(Dates))}</date>`,
           `<zcounter>${controlNumber}</zcounter>`,
           `<previousnrgt>${Number(PreviousReading).toFixed(2) ?? '0.00'}</previousnrgt>`,
-          `<nrgt>${Number(0).toFixed(2) ?? '0.00'}</nrgt>`,
+          `<nrgt>${Number(PreviousReading).toFixed(2) ?? '0.00'}</nrgt>`,
           `<previoustax>${Number(PreviousTax).toFixed(2) ?? '0.00'}</previoustax>`,
-          `<newtax>${Number(0).toFixed(2) ?? '0.00'}</newtax>`,
+          `<newtax>${Number(PreviousTax).toFixed(2) ?? '0.00'}</newtax>`,
           `<previoustaxsale>${Number(PreviousTaxSale).toFixed(2) ?? '0.00'}</previoustaxsale>`,
-          `<newtaxsale>${Number(0).toFixed(2) ?? '0.00'}</newtaxsale>`,
+          `<newtaxsale>${Number(PreviousTaxSale).toFixed(2) ?? '0.00'}</newtaxsale>`,
           `<previousnotaxsale>${Number(PreviousNoTaxSale).toFixed(2) ?? '0.00'}</previousnotaxsale>`,
-          `<newnotaxsale>${Number(0).toFixed(2) ?? '0.00'}</newnotaxsale>`,
+          `<newnotaxsale>${Number(PreviousNoTaxSale).toFixed(2) ?? '0.00'}</newnotaxsale>`,
           `<opentime>${formatDateYYYYMMDDHHMMSS(new Date(Dates)) ?? 'NA'}</opentime>`,
           `<closetime>${formatDateYYYYMMDDHHMMSS(new Date(Dates)) ?? 'NA'}</closetime>`,
           `<gross>${Number(0).toFixed(2) ?? '0.00'}</gross>`,
