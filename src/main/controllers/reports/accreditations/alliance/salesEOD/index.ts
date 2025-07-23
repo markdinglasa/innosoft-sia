@@ -41,7 +41,8 @@ ipcMain.handle(
     try {
       // Fetch records based on the provided query
       const salesResponse = await recordByQuery(salesQ)
-      console.log('salesResponse:', salesResponse)
+      //console.log('SalesQ:', salesQ)
+      //console.log('SalesQ:', salesResponse)
       const Terminal = data?.Terminal ?? 0
       //console.log('Terminal:', Terminal)
       const Dates = formatDateDash(new Date(dates ?? ''))
@@ -73,7 +74,7 @@ ipcMain.handle(
           (trxOthrR.List ?? []).find((oth: any) => oth.receiptno === item.receiptno) || {}
         return { ...item, ...other }
       })
-
+      //console.log(`transactions-[${Dates}]:`, merge2)
       //const trxQuery = AllianceTransactionQuery({ Terminal, Dates })
       //const trnResponse = await recordByQuery(trxQuery)
       //console.log('trnResponse:', merge2)
