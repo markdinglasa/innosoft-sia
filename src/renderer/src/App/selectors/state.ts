@@ -14,3 +14,4 @@ export const getSelectedDate = (state: RootState) => state.SIA.manager.dates
 
 //SETTINGS
 export const getDateRanges = (state: RootState) => state.SIA.settings
+export const getSettings = (state: RootState) => state.SIA.settings

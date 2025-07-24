@@ -6,10 +6,12 @@ import { colors } from '@shared/styles'
 import { AppProps, SFC, Theme } from '@shared/types'
 import { useSelector } from 'react-redux'
 import { DatabaseCard, SelectPathButton, Tenant } from '../components'
+import { EJournal } from '../components/EJournal'
 import { Initialize } from '../components/Initialize'
 import { SettingsModal } from '../modals'
 import { getActiveTenant } from '../selectors'
 import { Tenants } from '../types'
+import { GenericReportType } from '../types/genericReport'
 import * as S from './Styles'
 export const SIAManager: SFC<AppProps> = ({ className }) => {
   const handlePathSelect = (path: string) => {
@@ -37,9 +39,16 @@ export const SIAManager: SFC<AppProps> = ({ className }) => {
             <S.Card>
               <Tenant />
             </S.Card>
-            <S.Card>
-              <Initialize />
-            </S.Card>
+            {activeTenant !== GenericReportType.E_JOURNAL && (
+              <S.Card>
+                <Initialize />
+              </S.Card>
+            )}
+            {activeTenant === GenericReportType.E_JOURNAL && (
+              <S.Card>
+                <EJournal />
+              </S.Card>
+            )}
             <div
               style={{
                 width: '100%',

@@ -15,6 +15,7 @@ import {
 } from '../../selectors'
 import { setActiveTenant, setAllianceCategory, setAllianceReportType } from '../../store/manager'
 import { TenantOption, Tenants } from '../../types'
+import { GenericReportType } from '../../types/genericReport'
 import * as S from './Styles'
 
 export const Tenant: SFC = ({ className }) => {
@@ -92,7 +93,9 @@ export const Tenant: SFC = ({ className }) => {
             </S.Col>
           </>
         )}
-        {activeTenant && <Card heading={`${activeTenant} Tenant`}>{renderContent()}</Card>}
+        {activeTenant && activeTenant !== GenericReportType.E_JOURNAL && (
+          <Card heading={`${activeTenant} Tenant`}>{renderContent()}</Card>
+        )}
       </S.Container>
       {renderModal()}
     </>

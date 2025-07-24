@@ -64,3 +64,12 @@ export const formatDateSlash = (date: Date): string => {
   const year = date.getFullYear()
   return `${month}/${day}/${year}`
 }
+export const formatDateFD = (CurrentDate: Date) => {
+  const month = String(CurrentDate.getMonth() + 1).padStart(2, '0') // Months are 0-based, add 1
+  const day = String(CurrentDate.getDate()).padStart(2, '0')
+  const year = CurrentDate.getFullYear()
+  const hour = String(CurrentDate.getHours()).padStart(2, '0')
+  const min = String(CurrentDate.getMinutes()).padStart(2, '0')
+  const sec = String(CurrentDate.getSeconds()).padStart(2, '0')
+  return `${month}/${day}/${year} ${hour}:${min}:${sec}`
+}

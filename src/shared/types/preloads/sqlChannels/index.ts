@@ -1,6 +1,7 @@
 export * from './alliance'
 export * from './auth'
 export * from './config'
+export * from './genericReport'
 export * from './master'
 export * from './megaworld'
 export * from './rlc'
