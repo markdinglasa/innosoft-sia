@@ -221,7 +221,7 @@ ${paymentsContent}
 CHANGE                                ${formatNumber(details?.ChangeAmount)}
 GROSS SALES                           ${formatNumber(details?.GrossSales)}
 --------------------------------------------
-                VAT ANAYLISIS
+                VAT ANAYLYSIS
 --------------------------------------------
                                       AMOUNT
 VAT EXEMPT                            ${formatNumber(details?.VATExempt) ?? 0}
