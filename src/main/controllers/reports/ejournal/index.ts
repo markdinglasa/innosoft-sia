@@ -64,20 +64,20 @@ ipcMain.handle(
 
         // Fetch all data needed for the current batch
         const [salesData, paymentData, detailData] = await Promise.all([
-          recordByQuery(`
+          recordByQuery(` 
             SELECT 
-              c.CollectionNumber,
-              i.ItemDescription,
-              STR(ROUND(ISNULL((si.Amount), 0), 2), 10, 2) AS Amount,
-              CONCAT(
-                STR(ROUND(ISNULL((si.Quantity), 0), 2), 4, 0), ' ',
-                u.Unit, ' @ ',
-                STR(ROUND(ISNULL((si.Price), 0), 2), 4, 2), ' - ',
-                CASE WHEN d.Discount = 'Senior Citizen Discount' OR d.Discount = 'PWD' 
-                  THEN CONCAT('Less P', STR(CAST((((si.Price-(si.Amount + si.DiscountAmount))+si.DiscountAmount)) AS VARCHAR),4,2)) 
-                  ELSE '' END, ' ',
-                CAST(t.TAX AS VARCHAR)
-              ) AS ItemDetails
+            c.CollectionNumber,
+            i.ItemDescription,
+            STR(ROUND(ISNULL((si.Amount), 0), 2), 10, 2) AS Amount,
+            STR(ROUND(ISNULL((si.Quantity), 0), 2), 4, 0)
+            + ' ' +
+            u.Unit + ' @ ' +
+            STR(ROUND(ISNULL((si.Price), 0), 2), 4, 2)+ ' - ' +
+            CASE WHEN d.Discount = 'Senior Citizen Discount' OR d.Discount = 'PWD' 
+              THEN ('Less P' + STR(CAST((((si.Price-(si.Amount + si.DiscountAmount))+si.DiscountAmount)) AS VARCHAR),4,2))
+              ELSE '' END + ' ' +
+            CAST(t.TAX AS VARCHAR)
+               AS ItemDetails
             FROM TrnCollection AS c
             LEFT JOIN TrnSales AS s ON s.Id = c.SalesId 
             LEFT JOIN TrnSalesLine AS si ON si.SalesId = s.Id
@@ -171,7 +171,7 @@ ipcMain.handle(
           items.push(item)
           salesMap.set(item.CollectionNumber, items)
         })
-
+        console.log('salesMap:', salesMap)
         paymentData?.List?.forEach((item: any) => {
           if (!item.CollectionNumber) return
           const items = paymentsMap.get(item.CollectionNumber) || []
