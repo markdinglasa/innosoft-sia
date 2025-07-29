@@ -7,6 +7,6 @@ export const windowNotification = (title: string, body: string, path?: string) =
   })
 
   notification.onclick = async () => {
-    await window.electron.dialog.openFolder(path ?? '')
+    if (path) await window.electron.dialog.openFolder(path)
   }
 }

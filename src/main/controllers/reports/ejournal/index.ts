@@ -171,7 +171,7 @@ ipcMain.handle(
           items.push(item)
           salesMap.set(item.CollectionNumber, items)
         })
-        console.log('salesMap:', salesMap)
+        //console.log('salesMap:', salesMap)
         paymentData?.List?.forEach((item: any) => {
           if (!item.CollectionNumber) return
           const items = paymentsMap.get(item.CollectionNumber) || []
@@ -221,11 +221,12 @@ ${paymentsContent}
 CHANGE                                ${formatNumber(details?.ChangeAmount)}
 GROSS SALES                           ${formatNumber(details?.GrossSales)}
 --------------------------------------------
-                VAT ANAYLYSIS
+                VAT ANALYSIS
 --------------------------------------------
                                       AMOUNT
 VAT EXEMPT                            ${formatNumber(details?.VATExempt) ?? 0}
 SERVICE CHARGE                        ${formatNumber(details?.ServiceCharge) ?? 0}
+VAT SALES                             ${formatNumber(details?.VATSales) ?? 0}
 VAT                                   ${formatNumber(details?.TaxAmount) ?? 0}
 --------------------------------------------
         SENIOR CITIZEN's INFORMATION

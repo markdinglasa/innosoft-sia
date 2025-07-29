@@ -101,7 +101,7 @@ M. No.: ${settings?.MachineNumber ?? ''}`
             type: ToastType.success
           })
         )
-        windowNotification('E-Journal Report', 'E-Journal Report Created Successfully')
+        windowNotification('E-Journal Report', 'E-Journal Report Created Successfully', path)
       }
     } catch (error: unknown) {
       console.error('Report creation failed:', error)
