@@ -1,4 +1,4 @@
-import { Input, SwitchButton } from '@shared/components'
+import { Input, SwitchButton, TextArea } from '@shared/components'
 import { useToggle } from '@shared/hooks'
 import { Error, Success } from '@shared/messages'
 import { getSettings } from '@shared/selectors'
@@ -16,7 +16,14 @@ interface DatabaseModalProps {
   close(): void
   theme?: Theme
 }
-
+export const InvoiceFooter = `
+--------------------------------------------
+    Cebu Innosoft Solutions Services Inc.
+    V. Rama Ave. Cebu City, Philippines
+          TIN: 261-481-387-000
+      ACCR: 082-261481387-000375-24583
+        ACCR Date: August 20, 2020
+--------------------------------------------`
 export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme }) => {
   const dispatch = useDispatch<AppDispatch>()
   const settings = useSelector(getSettings)
@@ -34,7 +41,8 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
     TIN: settings.TIN || null,
     AccreditationNumber: settings.AccreditationNumber || null,
     SerialNumber: settings.SerialNumber || null,
-    MachineNumber: settings.MachineNumber || null
+    MachineNumber: settings.MachineNumber || null,
+    InvoiceFooter: settings?.InvoiceFooter || InvoiceFooter
   }
 
   //type FormValues = typeof initialValues
@@ -60,7 +68,8 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
       TIN: yup.string().required('TIN is required'),
       AccreditationNumber: yup.string().required('Accreditation Number is required'),
       SerialNumber: yup.string().required('Serial Number is required'),
-      MachineNumber: yup.string().required('Machine Number is required')
+      MachineNumber: yup.string().required('Machine Number is required'),
+      InvoiceFooter: yup.string().nullable().optional()
     })
   }, [])
   const [IsDateRange, toggleDateRange] = useToggle(false)
@@ -85,6 +94,7 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
                 isValid,
                 values,
                 handleChange,
+                handleBlur,
                 setFieldValue
               }) => (
                 <Form>
@@ -214,10 +224,22 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
                             onChange={handleChange}
                             touched={touched}
                           />
+                          <S.Div>
+                            <TextArea
+                              label="Invoice Footer"
+                              value={values?.InvoiceFooter || ''}
+                              errors={errors}
+                              touched={touched}
+                              name="InvoiceFooter"
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                            />
+                          </S.Div>
                         </S.ZReadingCon>
                       </>
                     )}
                   </S.Div>
+
                   <S.Button
                     className={'width:100% !important;'}
                     dirty={dirty}

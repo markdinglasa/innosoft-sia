@@ -6,6 +6,7 @@ import { AppDispatch, ButtonColor, SFC, SqlChannel, ToastType } from '@shared/ty
 import { formatDates, windowNotification } from '@shared/utils'
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { InvoiceFooter } from '../../modals/SettingsForm'
 import { getPath } from '../../selectors'
 import { LoadingScreen } from '../LoadingScreen'
 import * as S from './Styles'
@@ -38,10 +39,10 @@ export const EJournal: SFC = ({ className }) => {
         )
         return
       }
-      // max cap should only 30 days
-      const diffInDays =
+      // max cap should only 1yr /365` days
+      /*const diffInDays =
         (new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)
-      if (diffInDays > 30) {
+      if (diffInDays > 366) {
         setIsLoading(false)
         dispatch(
           setSnackbar({
@@ -51,7 +52,7 @@ export const EJournal: SFC = ({ className }) => {
           })
         )
         return
-      }
+      }*/
       if (new Date(startDate) > new Date(endDate)) {
         setIsLoading(false)
         dispatch(
@@ -65,11 +66,6 @@ export const EJournal: SFC = ({ className }) => {
       }
 
       const header = `
-DHANIELA GRACE ALBA SERUNDO <3
-RUNNING FOR COUNSELOR
-FACEBOOK: @dhanielagracealbaserundo
-INTSAGRAM: @dhanielagracealbaserundo
-TIKTOK: @dhanielagracealbaserundo
 --------------------------------------------
 ${settings?.Name ?? ''}
 Operated By: ${settings?.Operator ?? ''}
@@ -84,7 +80,8 @@ M. No.: ${settings?.MachineNumber ?? ''}`
         dateStart: startDate,
         dateEnd: endDate,
         targetDir: path,
-        header: header
+        header: header,
+        footer: settings?.InvoiceFooter ?? InvoiceFooter
       })
       if (!response.IsSomething) {
         setIsLoading(false)

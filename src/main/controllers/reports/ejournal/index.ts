@@ -6,15 +6,6 @@ import paths from 'path'
 import { formatDateDash, formatDateFD, formatDateYYYYMMDDHHMMSS } from '../../../functions'
 import { recordByQuery } from '../../../model'
 
-const footer = `
---------------------------------------------
-    Cebu Innosoft Solutions Services Inc.
-    V. Rama Ave. Cebu City, Philippines
-          TIN: 261-481-387-000
-      ACCR: 082-261481387-000375-24583
-        ACCR Date: August 20, 2020
---------------------------------------------`
-
 const formatNumber = (value: number | undefined, defaultValue = 0): string =>
   (Math.round((value ?? defaultValue) * 100) / 100).toFixed(2)
 
@@ -29,8 +20,9 @@ ipcMain.handle(
       dateStart,
       dateEnd,
       targetDir,
-      header
-    }: { dateStart: string; dateEnd: string; targetDir: string; header?: string }
+      header,
+      footer
+    }: { dateStart: string; dateEnd: string; targetDir: string; header?: string; footer?: string }
   ): Promise<Response> => {
     const filePath = paths.join(targetDir, `e-journal_${formatDateYYYYMMDDHHMMSS(new Date())}.csv`)
 

@@ -24,6 +24,7 @@ export interface SettingsTable {
   AccreditationNumber: string | null
   SerialNumber: string | null
   MachineNumber: string | null
+  InvoiceFooter: string | null
 }
 
 export const settingsInitial: SettingsTable = {
@@ -40,5 +41,6 @@ export const settingsInitial: SettingsTable = {
   TIN: null,
   AccreditationNumber: null,
   SerialNumber: null,
-  MachineNumber: null
+  MachineNumber: null,
+  InvoiceFooter: null
 }
