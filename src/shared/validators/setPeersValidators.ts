@@ -6,6 +6,6 @@ export const setPeersValidator = yup
     return_value: yup
       .mixed()
       .nullable()
-      .test('is-null', 'Return value is not null', (return_value: any) => return_value === null)
+      .test('is-null', 'Return value is not null', (return_value: unknown) => return_value === null)
   })
   .noUnknown()

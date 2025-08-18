@@ -38,7 +38,7 @@ ipcMain.handle(
       }
       const salestypesQ = mwSalesType({ Dates: dates, Terminal: data.Terminal })
       const salestypeR = await recordByQuery(salestypesQ)
-      let salestypeD = (salestypeR?.List || []).map(
+      const salestypeD = (salestypeR?.List || []).map(
         (item: { SalesType: string; NetSalesAmount: number }) => {
           return [
             `21${item?.SalesType ?? 'NA'}`,

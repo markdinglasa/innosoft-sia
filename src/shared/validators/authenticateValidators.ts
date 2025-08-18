@@ -6,6 +6,6 @@ export const authenticateValidator = yup
     return_value: yup
       .boolean()
       .required()
-      .test('is-authenticated', 'Authentication failed', (return_value: any) => !!return_value)
+      .test('is-authenticated', 'Authentication failed', (return_value: unknown) => !!return_value)
   })
   .noUnknown()

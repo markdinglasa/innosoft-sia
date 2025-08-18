@@ -1,11 +1,11 @@
-export const AllianceTransactionOtherQuery = ({ Terminal, Dates }) => {
+export const AllianceTransactionQuery: Function = ({ Terminal, Dates }): string => {
   return `
-   WITH FilteredSales AS (
+    WITH FilteredSales AS (
         SELECT *
         FROM TrnSales
         WHERE TerminalId = ${Terminal}
-        AND IsLocked = 1
-        AND CAST(SalesDate AS DATE) = '${Dates}'
+          AND IsLocked = 1
+          AND CAST(SalesDate AS DATE) = '${Dates}'
     ),
     SalesLines AS (
         SELECT 
@@ -36,10 +36,10 @@ export const AllianceTransactionOtherQuery = ({ Terminal, Dates }) => {
             c.Id,
             c.SalesId,
             c.CollectionNumber,
-            ISNULL(c.IsCancelled,0) AS CollectionIsCancelled,
-            ISNULL(c.IsReturn,0) AS CollectionIsReturn,
-            ISNULL(c.Amount,0) AS CollectionAmount,
-            ISNULL(cl.Amount,0) AS CollectionLineAmount,
+            c.IsCancelled AS CollectionIsCancelled,
+            c.IsReturn AS CollectionIsReturn,
+            c.Amount AS CollectionAmount,
+            cl.Amount AS CollectionLineAmount,
             cl.PayTypeId,
             mstPay.PayType
         FROM TrnCollection c
@@ -53,36 +53,36 @@ export const AllianceTransactionOtherQuery = ({ Terminal, Dates }) => {
             CollectionNumber,
             SUM(CASE
                 WHEN CollectionIsCancelled = 0 AND CollectionIsReturn = 0
-                    AND PayType = 'Cash'
-                    THEN CASE 
+                     AND PayType = 'Cash'
+                     THEN CASE 
                             WHEN CollectionLineAmount > CollectionAmount 
-                                THEN CollectionAmount 
-                                ELSE CollectionLineAmount 
-                        END
+                                 THEN CollectionAmount 
+                                 ELSE CollectionLineAmount 
+                          END
                 ELSE 0
             END) AS cash,
             SUM(CASE
                 WHEN CollectionIsCancelled = 0 AND CollectionIsReturn = 0
-                    AND PayType = 'Credit Card'
-                    THEN CollectionLineAmount
+                     AND PayType = 'Credit Card'
+                     THEN CollectionLineAmount
                 ELSE 0
             END) AS credit,
             SUM(CASE
                 WHEN CollectionIsCancelled = 0 AND CollectionIsReturn = 0
-                    AND PayType = 'Charge'
-                    THEN CollectionLineAmount
+                     AND PayType = 'Charge'
+                     THEN CollectionLineAmount
                 ELSE 0
             END) AS charge,
             SUM(CASE
                 WHEN CollectionIsCancelled = 0 AND CollectionIsReturn = 0
-                    AND PayType = 'Gift Certificate'
-                    THEN CollectionLineAmount
+                     AND PayType = 'Gift Certificate'
+                     THEN CollectionLineAmount
                 ELSE 0
             END) AS giftcheck,
             SUM(CASE
                 WHEN CollectionIsCancelled = 0 AND CollectionIsReturn = 0
-                    AND PayType NOT IN ('Credit Card', 'Cash', 'Gift Certificate', 'Charge')
-                    THEN CollectionLineAmount
+                     AND PayType NOT IN ('Credit Card', 'Cash', 'Gift Certificate', 'Charge')
+                     THEN CollectionLineAmount
                 ELSE 0
             END) AS othertender
         FROM Collections
@@ -131,25 +131,25 @@ export const AllianceTransactionOtherQuery = ({ Terminal, Dates }) => {
         WHERE SaleId IN (SELECT Id FROM FilteredSales)
         GROUP BY SaleId
     ),
-
+    
     VatCalculations AS (
         SELECT
             v.SalesId,
             SUM(CASE
                 WHEN v.TaxRate > 0
-                    THEN v.TaxAmount
+                     THEN v.TaxAmount
                 ELSE 0
             END) AS vat,
             SUM(CASE
                 WHEN v.TaxRate > 0 
-                    AND v.Tax = 'LOCAL TAX'
-                    THEN v.TaxAmount
+                     AND v.Tax = 'LOCAL TAX'
+                     THEN v.TaxAmount
                 ELSE 0
             END) AS localtax,
             SUM(CASE
                 WHEN v.TaxRate > 0
-                    AND v.Tax = 'AMUSEMENT TAX'
-                    THEN v.TaxAmount
+                     AND v.Tax = 'AMUSEMENT TAX'
+                     THEN v.TaxAmount
                 ELSE 0
             END) AS amusement
         FROM (
@@ -174,12 +174,14 @@ export const AllianceTransactionOtherQuery = ({ Terminal, Dates }) => {
         pa.charge,
         pa.giftcheck,
         pa.othertender,
-        0 AS evat,
         SUM(DISTINCT CASE
-            WHEN c.CollectionIsCancelled = 0 AND c.CollectionIsReturn = 0 AND sl.TaxAmount > 0
-                THEN sl.Price * sl.Quantity
-            ELSE sl.Price2LessTax * sl.Quantity
+            WHEN c.CollectionIsCancelled = 0 AND c.CollectionIsReturn = 0 
+                 THEN c.CollectionAmount
+            ELSE 0
         END) AS subtotal,
+        da.linesenior AS senior,
+        da.linepwd AS pwd,
+        da.linediplomat AS diplomat,
         vc.vat,
         0 AS exvat,
         vc.vat AS incvat,
@@ -189,42 +191,45 @@ export const AllianceTransactionOtherQuery = ({ Terminal, Dates }) => {
         sc.ServiceCharge AS service,
         SUM(DISTINCT CASE
             WHEN c.CollectionIsCancelled = 0 AND c.CollectionIsReturn = 0 
-                AND sl.TaxAmount > 0
-                THEN sl.Amount - sl.TaxAmount
+                 AND sl.TaxAmount > 0
+                 THEN sl.Amount
             ELSE 0
         END) AS taxsale,
         SUM(DISTINCT CASE
             WHEN c.CollectionIsCancelled = 0 AND c.CollectionIsReturn = 0 
-                AND sl.TaxAmount <= 0
-                THEN c.CollectionAmount
+                 AND sl.TaxAmount <= 0
+                 THEN c.CollectionAmount
             ELSE 0
         END) AS notaxsale,
         0 AS taxexsale,
         SUM(DISTINCT CASE
             WHEN sl.TaxAmount > 0 AND (c.CollectionIsReturn = 0 AND s.IsCancelled = 0)
-                THEN sl.Amount - sl.TaxAmount
+                 THEN c.CollectionAmount
             ELSE 0
         END) AS taxincsale,
         0 AS zerosale,
         SUM(DISTINCT CASE
             WHEN sl.Price2 > 0 AND (c.CollectionIsReturn = 0 AND s.IsCancelled = 0)
-                THEN sl.Quantity * (sl.Price2LessTax - (sl.Price2LessTax * (sl.DiscountRate / 100)))
+                 THEN sl.Quantity * (sl.Price2LessTax - (sl.Price2LessTax * (sl.DiscountRate / 100)))
             ELSE CASE WHEN sl.TaxId = 5 THEN sl.Amount ELSE 0 END
         END) AS vatexempt,
         MAX(pt.TotalPax) AS customercnt,
         SUM(DISTINCT CASE
-            WHEN (ISNULL(s.IsReturn,0) = 0 AND ISNULL(s.IsCancelled,0) = 0) THEN c.CollectionAmount
-            ELSE 0
+            WHEN (s.IsReturn = 2 OR s.IsCancelled = 1) THEN 0
+            ELSE (CASE WHEN sl.Discount NOT IN ('Senior Citizen Discount', 'PWD') 
+                       THEN sl.Price 
+                       ELSE (sl.Price1 + sl.Price2LessTax) 
+                  END) * sl.Quantity
         END) AS gross,
-        SUM(DISTINCT CASE WHEN s.IsReturn = 2 THEN s.Amount ELSE 0 END) AS refund,
+        SUM(CASE WHEN s.IsReturn = 2 THEN sl.Amount ELSE 0 END) AS refund,
         MAX(CASE
             WHEN c.CollectionIsCancelled = 0 AND c.CollectionIsReturn = 0 
-                AND sl.Discount NOT IN ('Senior Citizen Discount', 'PWD')
-                THEN sl.TaxRate
+                 AND sl.Discount NOT IN ('Senior Citizen Discount', 'PWD')
+                 THEN sl.TaxRate
             ELSE 0
         END) AS taxrate,
         MIN(REPLACE(CONVERT(varchar, s.SalesDate, 23) 
-                + REPLACE(CONVERT(varchar, sl.SalesLineTimeStamp, 8), ':', ''), '-', '')) AS posted,
+                 + REPLACE(CONVERT(varchar, sl.SalesLineTimeStamp, 8), ':', ''), '-', '')) AS posted,
         tq.Quantity AS qty,
         1 AS created,
         'NA' AS memo
@@ -232,7 +237,7 @@ export const AllianceTransactionOtherQuery = ({ Terminal, Dates }) => {
     LEFT JOIN SalesLines sl ON s.Id = sl.SalesId
     LEFT JOIN Collections c ON s.Id = c.SalesId
     LEFT JOIN PaymentAggregates pa ON c.SalesId = pa.SalesId 
-                                AND c.CollectionNumber = pa.CollectionNumber
+                                  AND c.CollectionNumber = pa.CollectionNumber
     LEFT JOIN DiscountAggregates da ON s.Id = da.SalesId
     LEFT JOIN ServiceChargeAgg sc ON s.Id = sc.SalesId
     LEFT JOIN TotalQuantity tq ON s.Id = tq.SalesId
@@ -254,6 +259,7 @@ export const AllianceTransactionOtherQuery = ({ Terminal, Dates }) => {
         vc.vat,
         vc.localtax,
         vc.amusement,
-        sc.ServiceCharge
-`
+        sc.ServiceCharge;
+    
+      `
 }

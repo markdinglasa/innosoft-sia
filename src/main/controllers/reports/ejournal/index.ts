@@ -1,4 +1,4 @@
-import { Error, Success } from '@shared/messages'
+import { Error as err, Success } from '@shared/messages'
 import { Response, SqlChannel } from '@shared/types'
 import { ipcMain } from 'electron'
 import fs from 'fs'
@@ -12,6 +12,40 @@ const formatNumber = (value: number | undefined, defaultValue = 0): string =>
 // Escape single quotes for SQL safety
 const escapeSingleQuote = (str: string) => str.replace(/'/g, "''")
 
+interface Sale {
+  CollectionNumber: string
+  ItemDescription: string
+  Amount: number
+  ItemDetails: string
+}
+interface CollectionMethod {
+  CollectionNumber: string
+  PayType: string
+  Amount: number
+}
+interface VATAnalysis {
+  CollectionNumber: string
+  GrossSales: number
+  DiscountAmount: number
+  ChangeAmount: number
+  TaxAmount: number
+  VATSales: number
+  ServiceCharge: number
+  VATExempt: number
+}
+interface Details {
+  CollectionNumber: string
+  SeniorCitizenId: string
+  SeniorCitizenName: string
+  SeniorCitizenAge: string
+  Terminal: string
+  Customer: string
+  IsReward: boolean
+  PreparedBy: string
+  ServedBy: string
+  DateCreated: string
+  TableCode: string
+}
 ipcMain.handle(
   SqlChannel.E_JOURNAL,
   async (
@@ -57,13 +91,14 @@ ipcMain.handle(
       }
 
       // Process in batches
-      const BATCH_SIZE = 1000
+      const BATCH_SIZE = 250
       for (let i = 0; i < collectionNumbers.length; i += BATCH_SIZE) {
         const batch = collectionNumbers.slice(i, i + BATCH_SIZE)
         const inClause = batch.map((cn) => `'${escapeSingleQuote(cn)}'`).join(',')
 
         // Fetch all data needed for the current batch
-        const [salesData, paymentData, detailData] = await Promise.all([
+
+        const [salesData, paymentData, vaData, detailData] = await Promise.all([
           recordByQuery(` 
             SELECT 
             c.CollectionNumber,
@@ -103,6 +138,7 @@ ipcMain.handle(
               cm.PayTypeId,
               p.PayType
           `),
+
           recordByQuery(`
             SELECT 
               c.CollectionNumber,
@@ -116,6 +152,28 @@ ipcMain.handle(
                 ELSE 0
               END) AS TaxAmount,
               (SUM(si.Amount)-SUM(si.TaxAmount)) AS VATSales,
+              SUM(CASE WHEN (i.ItemDescription = 'SERVICE CHARGE') THEN si.Amount ELSE 0 END) AS ServiceCharge,
+              SUM(CASE
+                WHEN d.Discount IN ('Senior Citizen Discount', 'PWD') 
+                  THEN si.Amount 
+                ELSE 0
+              END) + SUM(si.DiscountAmount) AS VATExempt
+            FROM TrnCollection AS c
+            LEFT JOIN TrnSales AS s ON s.Id = c.SalesId 
+            LEFT JOIN TrnSalesLine AS si ON si.SalesId = s.Id
+            LEFT JOIN MstDiscount AS d ON d.Id = si.DiscountId
+            LEFT JOIN MstItem AS i ON i.Id = si.ItemId
+            WHERE c.CollectionNumber IN (${inClause})
+            GROUP BY 
+              c.CollectionNumber,
+              s.Amount,
+              c.ChangeAmount
+              
+            `),
+
+          recordByQuery(`
+            SELECT 
+              c.CollectionNumber,
               ISNULL(s.SeniorCitizenId,'NA') AS SeniorCitizenId, 
               ISNULL(s.SeniorCitizenName,'NA') AS SeniorCitizenName, 
               ISNULL(CAST(s.SeniorCitizenAge AS VARCHAR),'NA') AS SeniorCitizenAge,
@@ -125,13 +183,7 @@ ipcMain.handle(
               pb.FullName AS PreparedBy,
               sb.FullName AS ServedBy,
               ISNULL(c.UpdateDateTime, c.EntryDateTime) AS DateCreated,
-              tb.TableCode,
-              SUM(CASE WHEN (si.ItemId = 1) THEN si.Amount ELSE 0 END) AS ServiceCharge,
-              SUM(CASE
-                WHEN d.Discount IN ('Senior Citizen Discount', 'PWD') 
-                  THEN si.Amount 
-                ELSE 0
-              END) + SUM(si.DiscountAmount) AS VATExempt
+              tb.TableCode
             FROM TrnCollection AS c
             LEFT JOIN TrnSales AS s ON s.Id = c.SalesId 
             LEFT JOIN TrnSalesLine AS si ON si.SalesId = s.Id
@@ -144,8 +196,6 @@ ipcMain.handle(
             WHERE c.CollectionNumber IN (${inClause})
             GROUP BY 
               c.CollectionNumber,
-              s.Amount,
-              c.ChangeAmount,
               s.SeniorCitizenId,
               s.SeniorCitizenName,
               s.SeniorCitizenAge,
@@ -161,25 +211,33 @@ ipcMain.handle(
         ])
 
         // Create lookup maps
-        const salesMap = new Map<string, any[]>()
-        const paymentsMap = new Map<string, any[]>()
+        const salesMap = new Map<string, Sale[]>()
+        const paymentsMap = new Map<string, CollectionMethod[]>()
+        const vaMap = new Map<string, any>() // VAT Analysis
         const detailsMap = new Map<string, any>()
 
-        salesData?.List?.forEach((item: any) => {
+        salesData?.List?.forEach((item: Sale) => {
           if (!item.CollectionNumber) return
           const items = salesMap.get(item.CollectionNumber) || []
           items.push(item)
           salesMap.set(item.CollectionNumber, items)
         })
         //console.log('salesMap:', salesMap)
-        paymentData?.List?.forEach((item: any) => {
+        paymentData?.List?.forEach((item: CollectionMethod) => {
           if (!item.CollectionNumber) return
           const items = paymentsMap.get(item.CollectionNumber) || []
           items.push(item)
           paymentsMap.set(item.CollectionNumber, items)
         })
 
-        detailData?.List?.forEach((item: any) => {
+        vaData?.List?.forEach((item: VATAnalysis) => {
+          if (!item.CollectionNumber) return
+          const items = vaMap.get(item.CollectionNumber) || []
+          items.push(item)
+          vaMap.set(item.CollectionNumber, items)
+        })
+
+        detailData?.List?.forEach((item: Details) => {
           if (item.CollectionNumber) {
             detailsMap.set(item.CollectionNumber, item)
           }
@@ -190,7 +248,7 @@ ipcMain.handle(
           const salesItems = salesMap.get(cn) || []
           const paymentMethods = paymentsMap.get(cn) || []
           const details = detailsMap.get(cn) || {}
-
+          const va = vaMap.get(cn) || {}
           const itemsContent = salesItems
             .map(
               (item) =>
@@ -213,21 +271,21 @@ ipcMain.handle(
 --------------------------------------------
 Item                                  Amount
 ${itemsContent}
-TOTAL SALES:                          ${formatNumber(details?.NetSales)}
-TOTAL DISCOUNT                        ${formatNumber(details?.DiscountAmount)}
+TOTAL SALES:                          ${formatNumber(va?.NetSales)}
+TOTAL DISCOUNT                        ${formatNumber(va?.DiscountAmount)}
 --------------------------------------------
 ${paymentsContent}           
 --------------------------------------------
-CHANGE                                ${formatNumber(details?.ChangeAmount)}
-GROSS SALES                           ${formatNumber(details?.GrossSales)}
+CHANGE                                ${formatNumber(va?.ChangeAmount)}
+GROSS SALES                           ${formatNumber(va?.GrossSales)}
 --------------------------------------------
                 VAT ANALYSIS
 --------------------------------------------
                                       AMOUNT
-VAT EXEMPT                            ${formatNumber(details?.VATExempt) ?? 0}
-SERVICE CHARGE                        ${formatNumber(details?.ServiceCharge) ?? 0}
-VAT SALES                             ${formatNumber(details?.VATSales) ?? 0}
-VAT                                   ${formatNumber(details?.TaxAmount) ?? 0}
+VAT EXEMPT                            ${formatNumber(va?.VATExempt) ?? 0}
+SERVICE CHARGE                        ${formatNumber(va?.ServiceCharge) ?? 0}
+VAT SALES                             ${formatNumber(va?.VATSales) ?? 0}
+VAT                                   ${formatNumber(va?.TaxAmount) ?? 0}
 --------------------------------------------
         SENIOR CITIZEN's INFORMATION
 --------------------------------------------
@@ -254,9 +312,9 @@ TABLE NO.                      ${details?.TableCode ?? ''}`
       }
 
       return { IsSomething: true, Message: Success.s00x00 }
-    } catch (error: any) {
-      console.error('Error processing file:', error)
-      return { IsSomething: false, Message: Error.e00x02 }
+    } catch (error: unknown) {
+      console.error('Error processing file:', (error as Error).message)
+      return { IsSomething: false, Message: err.e00x02 }
     } finally {
       if (!hasRecords) {
         stream.write('NO RECORDS')

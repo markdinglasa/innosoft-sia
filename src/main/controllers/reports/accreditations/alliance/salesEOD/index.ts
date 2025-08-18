@@ -1,3 +1,4 @@
+import { formatNumber } from '@/utils'
 import { Error, Success } from '@shared/messages'
 import {
   AllianceProductLineQuery,
@@ -39,12 +40,9 @@ ipcMain.handle(
     category: string
   ): Promise<Response> => {
     try {
-      // Fetch records based on the provided query
       const salesResponse = await recordByQuery(salesQ)
-      //console.log('SalesQ:', salesQ)
-      //console.log('SalesQ:', salesResponse)
       const Terminal = data?.Terminal ?? 0
-      //console.log('Terminal:', Terminal)
+
       const Dates = formatDateDash(new Date(dates ?? ''))
       const ControlNumber = await recordByQuery(ZControlNumber({ Dates, Terminal }))
       const controlNumber = ControlNumber?.List?.[0]?.ControlNumber ?? 0
@@ -53,7 +51,6 @@ ipcMain.handle(
       const PreviousTax = PrevAmount?.List?.[0]?.previoustax ?? 0
       const PreviousTaxSale = PrevAmount?.List?.[0]?.previoustaxsale ?? 0
       const PreviousNoTaxSale = PrevAmount?.List?.[0]?.previousnotaxsale ?? 0
-      //console.log('Dates:', Dates)
 
       const trxDiscQ = AllianceTransactionDiscountsQuery({ Terminal, Dates })
       const trxVATQ = AllianceTransactionVATQuery({ Terminal, Dates })
@@ -61,7 +58,6 @@ ipcMain.handle(
 
       const trxDiscR = await recordByQuery(trxDiscQ)
       const trxVATR = await recordByQuery(trxVATQ)
-      //console.log('VATS:', trxVATR)
       const trxOthrR = await recordByQuery(trxOthrQ)
 
       // join all trx by receiptno
@@ -74,14 +70,7 @@ ipcMain.handle(
           (trxOthrR.List ?? []).find((oth: any) => oth.receiptno === item.receiptno) || {}
         return { ...item, ...other }
       })
-      //console.log(`transactions-[${Dates}]:`, merge2)
-      //const trxQuery = AllianceTransactionQuery({ Terminal, Dates })
-      //const trnResponse = await recordByQuery(trxQuery)
-      //console.log('trnResponse:', merge2)
-      //console.log('trnResponse:', trnResponse)
-      const formatNumber = (value: number | undefined, defaultValue = 0): string =>
-        (Math.round((value ?? defaultValue) * 100) / 100).toFixed(2)
-      // Generate the file name and path
+
       const fileName = generateAllianceFilename(
         AllianceType.salesEOD,
         data.TenantCode,
@@ -91,18 +80,14 @@ ipcMain.handle(
       )
       const filePath = paths.join(path, `${fileName}`)
 
-      // Remove existing file if it exists
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath)
-      }
       // Format the sales data
       const SalesId = `
-       <id>
-          <tenantid>${data.TenantCode ?? 'NA'}</tenantid>
-          <key>${data.POSKey ?? 'NA'}</key>
-          <tmid>${data.Terminal.toString().padStart(4, '0') ?? 1}</tmid>
-          <doc>${'SALES_EOD'}</doc>
-        </id>
+      <id>
+        <tenantid>${data.TenantCode ?? 'NA'}</tenantid>
+        <key>${data.POSKey ?? 'NA'}</key>
+        <tmid>${data.Terminal.toString().padStart(4, '0') ?? 1}</tmid>
+        <doc>${'SALES_EOD'}</doc>
+      </id>
       `
       const products = AllianceProductsQuery({ Terminal, Dates })
       const productsResponse = await recordByQuery(products)
@@ -298,7 +283,8 @@ ipcMain.handle(
           `<othertendercnt>${Number(0).toFixed(2) ?? '0.00'}</othertendercnt>`
         ].join('\n')
       }
-      const SalesEOD = `
+
+      const content: string = `
       <root>
         ${SalesId}
         <sales>
@@ -310,13 +296,16 @@ ipcMain.handle(
         </master>
       </root>
       `
-
+      // Remove existing file if it exists
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath)
+      }
       // Write the data to the file
-      fs.writeFileSync(filePath, SalesEOD, 'utf8')
+      fs.writeFileSync(filePath, content, 'utf8')
 
       // Return a success response
       return { IsSomething: true, Message: Success.s00x00 }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error writing file:', error)
       return { IsSomething: false, Message: Error.e00x02 }
     }
