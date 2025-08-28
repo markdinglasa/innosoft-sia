@@ -99,7 +99,7 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
               }) => (
                 <Form>
                   <S.Div>
-                    <SwitchButton
+                    {/*<SwitchButton
                       Name="IsDarkMode"
                       Label="Dark Mode"
                       Disabled={false}
@@ -107,7 +107,7 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
                       Values={values.IsDarkMode}
                       Errors={errors}
                       Touched={touched}
-                    />
+                    />*/}
                     <SwitchButton
                       Name="IsDateRange"
                       Label="Date Range"

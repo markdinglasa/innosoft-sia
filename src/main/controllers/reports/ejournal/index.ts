@@ -32,6 +32,7 @@ interface VATAnalysis {
   VATSales: number
   ServiceCharge: number
   VATExempt: number
+  NetSales: number
 }
 interface Details {
   CollectionNumber: string
@@ -87,7 +88,11 @@ ipcMain.handle(
 
       if (collectionNumbers.length === 0) {
         stream.write('NO RECORDS')
-        return { IsSomething: true, Message: Success.s00x00 }
+        return { IsSomething: false, Message: 'No records were found' }
+      }
+      if (collectionNumbers.length > 1000) {
+        stream.write('CONTENT TOO LARGE')
+        return { IsSomething: false, Message: 'Content were to large.' }
       }
 
       // Process in batches
@@ -210,6 +215,8 @@ ipcMain.handle(
           `)
         ])
 
+        //console.log('VAT Analysis-Data', vaData)
+
         // Create lookup maps
         const salesMap = new Map<string, Sale[]>()
         const paymentsMap = new Map<string, CollectionMethod[]>()
@@ -248,7 +255,8 @@ ipcMain.handle(
           const salesItems = salesMap.get(cn) || []
           const paymentMethods = paymentsMap.get(cn) || []
           const details = detailsMap.get(cn) || {}
-          const va = vaMap.get(cn) || {}
+          const va: VATAnalysis = vaMap.get(cn)[0] || []
+
           const itemsContent = salesItems
             .map(
               (item) =>
@@ -271,13 +279,13 @@ ipcMain.handle(
 --------------------------------------------
 Item                                  Amount
 ${itemsContent}
-TOTAL SALES:                          ${formatNumber(va?.NetSales)}
-TOTAL DISCOUNT                        ${formatNumber(va?.DiscountAmount)}
+TOTAL SALES:                          ${formatNumber(va?.NetSales ?? '0')}
+TOTAL DISCOUNT                        ${formatNumber(va?.DiscountAmount ?? '0')}
 --------------------------------------------
 ${paymentsContent}           
 --------------------------------------------
-CHANGE                                ${formatNumber(va?.ChangeAmount)}
-GROSS SALES                           ${formatNumber(va?.GrossSales)}
+CHANGE                                ${formatNumber(va?.ChangeAmount ?? '0')}
+GROSS SALES                           ${formatNumber(va?.GrossSales ?? '0')}
 --------------------------------------------
                 VAT ANALYSIS
 --------------------------------------------

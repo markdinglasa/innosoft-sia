@@ -14,6 +14,7 @@ import { getActiveTenant } from '../selectors'
 import { Tenants } from '../types'
 import { GenericReportType } from '../types/genericReport'
 import * as S from './Styles'
+
 export const SIAManager: SFC<AppProps> = ({ className }) => {
   const handlePathSelect = (path: string) => {
     console.log('Selected path:', path)
