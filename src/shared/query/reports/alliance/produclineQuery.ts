@@ -2,7 +2,7 @@ export const AllianceProductLineQuery: Function = ({ Terminal, Dates, ReceiptNum
   return `
       SELECT 
       REPLACE([TrnCollection].[CollectionNumber], '-', '') AS [receiptno],
-      ISNULL([MstItem].[BarCode],'NA') AS [sku],
+      REPLACE(ISNULL([MstItem].[BarCode],'NA'), '&', ' ') AS [sku],
       CAST(ROUND(ISNULL([TrnSalesLine].[Quantity], 0), 2) AS DECIMAL(10, 2)) AS [qty],
       CAST(ROUND(ISNULL([TrnSalesLine].[Price], 0), 2) AS DECIMAL(10, 2))  AS [unitprice],
       0 AS [disc],
@@ -12,10 +12,10 @@ export const AllianceProductLineQuery: Function = ({ Terminal, Dates, ReceiptNum
       0 AS [taxtype],
       CAST(ROUND(ISNULL([TrnSalesLine].[TaxAmount], 0), 2) AS DECIMAL(10, 2)) AS [tax],
       [TrnSales].[Remarks] AS [memo], 
-      SUM(CASE WHEN (TrnSalesLine.TaxAmount < 1) THEN  [TrnSalesLine].[Quantity] * [TrnSalesLine].[Price2LessTax] ELSE [TrnSalesLine].[Quantity] * [TrnSalesLine].[Price] END)  AS [total]
+      ([TrnSalesLine].[Quantity] * [TrnSalesLine].[Price] )  AS [total]
       FROM [TrnSales]
       LEFT JOIN [TrnSalesLine] ON [TrnSalesLine].[SalesId] = [TrnSales].[Id]
-        LEFT JOIN [TrnCollection] ON [TrnCollection].[SalesId] = [TrnSales].[Id]
+      LEFT JOIN [TrnCollection] ON [TrnCollection].[SalesId] = [TrnSales].[Id]
       LEFT JOIN [MstItem] ON [MstItem].[Id] = [TrnSalesLine].[ItemId] AND [TrnSalesLine].[ItemId] <> 1
       LEFT JOIN [MstItemGroupItem] ON [MstItemGroupItem].[ItemId] = [TrnSalesLine].[ItemId]
       LEFT JOIN [MstItemGroup] ON [MstItemGroup].[Id] = [MstItemGroupItem].[ItemGroupId]

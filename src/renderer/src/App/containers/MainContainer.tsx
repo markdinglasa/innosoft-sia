@@ -6,6 +6,7 @@ import { colors } from '@shared/styles'
 import { AppProps, SFC, Theme } from '@shared/types'
 import { useSelector } from 'react-redux'
 import { DatabaseCard, SelectPathButton, Tenant } from '../components'
+import { AccessControl } from '../components/AccessControl'
 import { EJournal } from '../components/EJournal'
 import { Initialize } from '../components/Initialize'
 import { SettingsModal } from '../modals'
@@ -39,24 +40,19 @@ export const SIAManager: SFC<AppProps> = ({ className }) => {
             <S.Card>
               <Tenant />
             </S.Card>
-            {activeTenant !== GenericReportType.E_JOURNAL && (
+            <AccessControl
+              condition={activeTenant !== GenericReportType.E_JOURNAL && !!activeTenant}
+            >
               <S.Card>
                 <Initialize />
               </S.Card>
-            )}
-            {activeTenant === GenericReportType.E_JOURNAL && (
+            </AccessControl>
+            <AccessControl condition={activeTenant === GenericReportType.E_JOURNAL}>
               <S.Card>
                 <EJournal />
               </S.Card>
-            )}
-            <div
-              style={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'flex-end'
-              }}
-            >
+            </AccessControl>
+            <S.SettingsContainer>
               <IconButton
                 onClick={toggleModal}
                 aria-label="settings"
@@ -64,7 +60,7 @@ export const SIAManager: SFC<AppProps> = ({ className }) => {
               >
                 <SettingsIcon sx={{ color: colors.primary }} />
               </IconButton>
-            </div>
+            </S.SettingsContainer>
           </S.Body>
           <S.Footer>
             <AppFooter />

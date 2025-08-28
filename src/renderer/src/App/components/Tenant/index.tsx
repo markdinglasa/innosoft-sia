@@ -63,7 +63,7 @@ export const Tenant: SFC = ({ className }) => {
             label="Select Tenant"
             name="Tenant"
             options={TenantOption}
-            onChange={(e) => dispatch(setActiveTenant(e.target.value))}
+            onChange={(e: any) => dispatch(setActiveTenant(e.target.value))}
             disabled={initialized}
           />
         </S.Div>
@@ -76,7 +76,7 @@ export const Tenant: SFC = ({ className }) => {
                   label="Select Category"
                   name="Category"
                   options={AllianceCategory}
-                  onChange={(e) => dispatch(setAllianceCategory(e.target.value))}
+                  onChange={(e: any) => dispatch(setAllianceCategory(e.target.value))}
                   disabled={initialized}
                 />
               </S.Div>
@@ -86,7 +86,7 @@ export const Tenant: SFC = ({ className }) => {
                   label="Select Report"
                   name="ReportType"
                   options={AllianceReportTypeOptions}
-                  onChange={(e) => dispatch(setAllianceReportType(e.target.value))}
+                  onChange={(e: any) => dispatch(setAllianceReportType(e.target.value))}
                   disabled={initialized}
                 />
               </S.Div>

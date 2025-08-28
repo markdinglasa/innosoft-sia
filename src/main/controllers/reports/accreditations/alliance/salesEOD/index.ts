@@ -1,4 +1,3 @@
-import { formatNumber } from '@/utils'
 import { Error, Success } from '@shared/messages'
 import {
   AllianceProductLineQuery,
@@ -28,12 +27,18 @@ import {
   generateAllianceFilename
 } from '../../../../../functions'
 import { recordByQuery } from '../../../../../model'
+import { formatNumber } from '../../../../../utils'
 
+interface Data {
+  Terminal: number
+  TenantCode: string
+  POSKey: string
+}
 ipcMain.handle(
   SqlChannel.getAllianceSalesEOD,
   async (
-    _event: any,
-    data: any,
+    _event: unknown,
+    data: Data,
     path: string,
     salesQ: string,
     dates: string,
@@ -43,7 +48,7 @@ ipcMain.handle(
       const salesResponse = await recordByQuery(salesQ)
       const Terminal = data?.Terminal ?? 0
 
-      const Dates = formatDateDash(new Date(dates ?? ''))
+      const Dates = formatDateDash(new Date(dates ?? new Date()))
       const ControlNumber = await recordByQuery(ZControlNumber({ Dates, Terminal }))
       const controlNumber = ControlNumber?.List?.[0]?.ControlNumber ?? 0
       const PrevAmount = await recordByQuery(PreviousAmountsQuery({ Dates, Terminal }))
@@ -61,13 +66,13 @@ ipcMain.handle(
       const trxOthrR = await recordByQuery(trxOthrQ)
 
       // join all trx by receiptno
-      const merge1 = (trxDiscR.List || []).map((disc: any) => {
-        const vats = (trxVATR.List ?? []).find((vat: any) => vat.receiptno === disc.receiptno) || {}
+      // eslint-disabled-next-line @typescript-eslint/no-explicit-any
+      const merge1 = (trxDiscR.List || []).map((disc) => {
+        const vats = (trxVATR.List ?? []).find((vat) => vat.receiptno === disc.receiptno) || {}
         return { ...disc, ...vats }
       })
-      const merge2 = merge1.map((item: any) => {
-        const other =
-          (trxOthrR.List ?? []).find((oth: any) => oth.receiptno === item.receiptno) || {}
+      const merge2 = merge1.map((item) => {
+        const other = (trxOthrR.List ?? []).find((oth) => oth.receiptno === item.receiptno) || {}
         return { ...item, ...other }
       })
 
@@ -180,7 +185,7 @@ ipcMain.handle(
                 <diplomat>${formatNumber(lineItem?.diplomat)}</diplomat>
                 <taxtype>${lineItem?.taxtype ?? 'NA'}</taxtype>
                 <tax>${formatNumber(lineItem?.tax)}</tax>
-                <memo>NA</memo>
+                <memo>${lineItem?.memo ?? 'NA'}</memo>
                 <total>${formatNumber(lineItem?.total)}</total>
                 <choicetype>${' '}</choicetype>
               </line>`

@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { InvoiceFooter } from '../../modals/SettingsForm'
 import { getPath } from '../../selectors'
 import { LoadingScreen } from '../LoadingScreen'
+import { UnderMaintenance } from '../UnderMaintenance'
 import * as S from './Styles'
 export const EJournal: SFC = ({ className }) => {
   const dispatch = useDispatch<AppDispatch>()
@@ -119,6 +120,7 @@ M. No.: ${settings?.MachineNumber ?? ''}`
       )
     }
   }
+  if (true) return <UnderMaintenance />
   return (
     <>
       <S.Container className={className}>

@@ -1,9 +1,8 @@
-import { mdiPause, mdiPlay, mdiRestart } from '@mdi/js'
-import { Error } from '@shared/messages'
+import { Error as err } from '@shared/messages'
 import { ControlNumberQuery } from '@shared/query'
 import { getSettings } from '@shared/selectors'
 import { setSnackbar } from '@shared/store/manager'
-import { AppDispatch, ButtonColor, SFC, SqlChannel, ToastType } from '@shared/types'
+import { AppDispatch, SFC, SqlChannel, ToastType } from '@shared/types'
 import { formatDates } from '@shared/utils'
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -19,13 +18,18 @@ import {
   getSelectedDate,
   getTenant
 } from '../../selectors'
-import { setDates, setInitialize } from '../../store/manager'
-import { setDateEnd, setDateStart } from '../../store/settings'
+import { setInitialize } from '../../store/manager'
 import { Tenants } from '../../types'
+import { AccessControl } from '../AccessControl'
+import { AllianceTenant } from '../AllicanceTenant'
+import { DateRange } from '../DateRange'
 import { LoadingScreen } from '../LoadingScreen'
+import { SingleDate } from '../SingleDate'
+import { SMTenant } from '../SMTenant'
 import { ZReading } from '../ZReading'
 import * as S from './Styles'
 
+// eslint-disable-next-line react/prop-types
 export const Initialize: SFC = ({ className }) => {
   const dispatch = useDispatch<AppDispatch>()
   const dates = useSelector(getSelectedDate)
@@ -59,7 +63,7 @@ export const Initialize: SFC = ({ className }) => {
       const ControlNumber = ControlNoResponse?.Data?.ControlNumber ?? 0
       if (typeof ControlNumber !== 'number' || ControlNumber === 0) return false
       else return true
-    } catch (error: any) {
+    } catch (error: unknown) {
       return false
     }
   }
@@ -67,10 +71,10 @@ export const Initialize: SFC = ({ className }) => {
   const checkFields = async (): Promise<boolean> => {
     try {
       if (!path) return false
-      const response: any = await window.electron.sql.get(SqlChannel.checkFields, path)
+      const response = await window.electron.sql.get(SqlChannel.checkFields, path)
       if (!response.IsSomething) return false
       return true
-    } catch (error: any) {
+    } catch (error: unknown) {
       return false
     }
   }
@@ -82,17 +86,17 @@ export const Initialize: SFC = ({ className }) => {
 
   const handleInitialize = async () => {
     if (!isConnected)
-      dispatch(setSnackbar({ display: true, message: Error.e00x14, type: ToastType.error }))
+      dispatch(setSnackbar({ display: true, message: err.e00x14, type: ToastType.error }))
     const fieldsValid = await checkFields()
     if (!fieldsValid)
-      dispatch(setSnackbar({ display: true, message: Error.e00x44, type: ToastType.error }))
+      dispatch(setSnackbar({ display: true, message: err.e00x44, type: ToastType.error }))
     if (!activeTenant)
-      dispatch(setSnackbar({ display: true, message: Error.e00x46, type: ToastType.error }))
+      dispatch(setSnackbar({ display: true, message: err.e00x46, type: ToastType.error }))
     if (!tenant)
-      dispatch(setSnackbar({ display: true, message: Error.e00x46, type: ToastType.error }))
+      dispatch(setSnackbar({ display: true, message: err.e00x46, type: ToastType.error }))
     const isEOD = await handleCheckEOD(tenant.Terminal, Dates)
     if (!isEOD) {
-      dispatch(setSnackbar({ display: true, message: Error.e00x48, type: ToastType.error }))
+      dispatch(setSnackbar({ display: true, message: err.e00x48, type: ToastType.error }))
     }
     if (tenant && fieldsValid && isConnected && activeTenant && isEOD) {
       dispatch(setInitialize(true))
@@ -120,7 +124,7 @@ export const Initialize: SFC = ({ className }) => {
         setLoading(false)
       }, 1000)
     } else {
-      dispatch(setSnackbar({ display: true, message: Error.e00x01, type: ToastType.error }))
+      dispatch(setSnackbar({ display: true, message: err.e00x01, type: ToastType.error }))
     }
   }
   const element = pointerRef.current
@@ -135,10 +139,10 @@ export const Initialize: SFC = ({ className }) => {
         AllianceReport(path, tenant, currentDate, allianceCategory, reportType)
         break
       /*case Tenants.AYALA:
-        dispatch(setSnackbar({ display: true, message: Error.e00x47, type: ToastType.error }))
+        dispatch(setSnackbar({ display: true, message: err.e00x47, type: ToastType.error }))
         break
       case Tenants.RLC:
-        dispatch(setSnackbar({ display: true, message: Error.e00x47, type: ToastType.error }))
+        dispatch(setSnackbar({ display: true, message: err.e00x47, type: ToastType.error }))
         break*/
       case Tenants.MW:
         MWReports(path, tenant, currentDate, element, settings.IsZReading)
@@ -149,23 +153,18 @@ export const Initialize: SFC = ({ className }) => {
   const loadData = async () => {
     try {
       await reports(activeTenant, Dates)
-    } catch (error: any) {
-      dispatch(setSnackbar({ display: true, message: Error.e00x01, type: ToastType.error }))
+    } catch (error: unknown) {
+      dispatch(
+        setSnackbar({
+          display: true,
+          message: (error as Error).message || err.e00x01,
+          type: ToastType.error
+        })
+      )
     }
   }
 
-  const handleGenerateNoSale = async () => {
-    setLoading(true)
-    try {
-      loadData()
-    } catch (error: any) {
-      dispatch(setSnackbar({ display: true, message: Error.e00x01, type: ToastType.error }))
-    }
-    setTimeout(() => {
-      setLoading(false)
-    }, 9000)
-  }
-
+  // use to continues generate of reports in date-range
   const handleGenerate = async () => {
     if (!dateRanges.DateStart || !dateRanges.DateEnd) {
       dispatch(
@@ -191,9 +190,35 @@ export const Initialize: SFC = ({ className }) => {
             }
           }
         }
-      } catch (error: any) {
-        dispatch(setSnackbar({ display: true, message: Error.e00x01, type: ToastType.error }))
+      } catch (error: unknown) {
+        dispatch(
+          setSnackbar({
+            display: true,
+            message: (error as Error).message || err.e00x01,
+            type: ToastType.error
+          })
+        )
       }
+    }
+    setTimeout(() => {
+      setLoading(false)
+    }, 9000)
+  }
+
+  //
+  // use for single generate of reports
+  const handleSingleGenerate = () => {
+    setLoading(true)
+    try {
+      loadData()
+    } catch (error: unknown) {
+      dispatch(
+        setSnackbar({
+          display: true,
+          message: (error as Error).message || err.e00x01,
+          type: ToastType.error
+        })
+      )
     }
     setTimeout(() => {
       setLoading(false)
@@ -212,110 +237,29 @@ export const Initialize: SFC = ({ className }) => {
   return (
     <>
       <S.Container className={className}>
-        {/*<S.TopTitle>
-          <S.Text>
-            <S.Icon path={mdiInformation} size="30px" />
-            <S.Span>Before starting, make sure the above items are ready.</S.Span>
-          </S.Text>
-        </S.TopTitle>*/}
-        {activeTenant && settings.IsDateRange && (
-          <>
-            <S.DateRangeCon>
-              <S.Div>
-                <S.DateCon>
-                  <S.Label>Date Start</S.Label>
-                  <S.InputDate
-                    type="date"
-                    name="datestart"
-                    value={formatDates(dateRanges.DateStart ?? new Date())}
-                    onChange={(e) => dispatch(setDateStart(new Date(e.target.value).toString()))}
-                    disabled={initialized}
-                  />
-                </S.DateCon>
-                <S.DateCon>
-                  <S.Label>Date End</S.Label>
-                  <S.InputDate
-                    type="date"
-                    name="dateend"
-                    value={formatDates(dateRanges.DateEnd ?? new Date())}
-                    onChange={(e) => dispatch(setDateEnd(new Date(e.target.value).toString()))}
-                    disabled={initialized}
-                  />
-                </S.DateCon>
-              </S.Div>
-              <S.DateCon>
-                <S.Button
-                  onClick={handleGenerate}
-                  iconLeft={mdiPlay}
-                  text="Generate"
-                  color={ButtonColor.blue}
-                />
-              </S.DateCon>
-            </S.DateRangeCon>
-          </>
-        )}
-        {activeTenant && !settings.IsDateRange && (
-          <>
-            <S.Div>
-              <S.DivBtn2>
-                <S.InputDate
-                  type="date"
-                  name="dates"
-                  value={formatDates(dates ?? new Date())}
-                  onChange={(e) => dispatch(setDates(new Date(e.target.value).toString()))}
-                  disabled={initialized}
-                />
-              </S.DivBtn2>
-              <S.DivBtn>
-                <S.Button
-                  onClick={() => dispatch(setDates(null))}
-                  text="System Date"
-                  //iconLeft={mdiCalendarBlank}
-                  color={ButtonColor.blue}
-                  disabled={initialized}
-                />
-              </S.DivBtn>
-            </S.Div>
-          </>
-        )}
-        {initialized && !settings.IsDateRange && (
-          <>
-            <S.Div>
-              <S.DivBtn2>
-                <S.Button
-                  onClick={handlePause}
-                  iconLeft={mdiPause}
-                  text="Pause"
-                  color={ButtonColor.green}
-                />
-              </S.DivBtn2>
-              <S.DivBtn>
-                <S.Button
-                  onClick={handleRestart}
-                  iconLeft={mdiRestart}
-                  text="Restart"
-                  color={ButtonColor.blue}
-                />
-              </S.DivBtn>
-            </S.Div>
-          </>
-        )}
-        {!initialized && !settings.IsDateRange && (
-          <S.Button
-            onClick={handleInitialize}
-            iconLeft={mdiPlay}
-            text="Start"
-            color={ButtonColor.blue}
+        <AccessControl condition={activeTenant && settings.IsDateRange}>
+          <DateRange
+            data={dateRanges}
+            isInitialized={initialized}
+            handleGenerate={handleGenerate}
           />
-        )}
-        {!initialized && !settings.IsDateRange && String(activeTenant) === Tenants.ALLIANCE && (
-          <S.Button
-            onClick={handleGenerateNoSale}
-            iconLeft={mdiPlay}
-            text="Generate No Sale"
-            color={ButtonColor.blue}
+        </AccessControl>
+        <AccessControl condition={activeTenant && !settings.IsDateRange}>
+          <SingleDate data={dates} isInitialized={initialized} />
+        </AccessControl>
+        <AccessControl condition={!settings.IsDateRange && String(activeTenant) === Tenants.SM}>
+          <SMTenant
+            pause={handlePause}
+            reStart={handleRestart}
+            start={handleInitialize}
+            isStarted={initialized}
           />
-        )}
+        </AccessControl>
+        <AccessControl
+          condition={!settings.IsDateRange && String(activeTenant) === Tenants.ALLIANCE}
+        >
+          <AllianceTenant generate={handleSingleGenerate} />
+        </AccessControl>
       </S.Container>
       {renderLoadingScreen()}
       <div style={{ display: 'none' }}>

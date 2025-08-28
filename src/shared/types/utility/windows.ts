@@ -6,6 +6,7 @@ export type AppDataHandlers = Dict<AppDataHandler>
 
 export interface AppPayload {
   fn: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params: any
   pid: string
 }

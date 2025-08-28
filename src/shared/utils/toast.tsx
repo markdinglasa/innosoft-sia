@@ -3,18 +3,18 @@ import { toast } from 'react-toastify'
 import { Toast } from '../components'
 import { ToastType } from '../types'
 
-export const displayErrorToast = (error: any) => {
+export const displayErrorToast = (error: unknown) => {
   let errorStr: string
 
   switch (error) {
     case typeof error === 'string':
-      errorStr = error
+      errorStr = String(error)
       break
-    case error?.response?.data:
-      errorStr = JSON.stringify(error.response.data)
+    case (error as { response: { data: string } })?.response?.data:
+      errorStr = JSON.stringify((error as { response?: { data?: string } })?.response?.data)
       break
-    case error?.message:
-      errorStr = error.message
+    case (error as Error)?.message:
+      errorStr = (error as unknown as Error).message
       break
     default:
       errorStr = JSON.stringify(error)
@@ -35,6 +35,6 @@ export const displayToast = (message: ReactNode, type: ToastType, className?: st
   )
 }
 
-export const loadStoreFailToast = (_: any, errorMessage: string) => {
+export const loadStoreFailToast = (_: unknown, errorMessage: string) => {
   displayErrorToast(`Could not load store data: ${errorMessage}`)
 }

@@ -11,5 +11,5 @@ export interface KeyPair extends AccountNumber, SigningKey {}
 export interface VerifySignatureParams {
   accountNumber: string
   signature: string
-  unsignedData: any
+  unsignedData: unknown
 }

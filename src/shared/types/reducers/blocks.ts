@@ -6,6 +6,7 @@ export interface Block extends UnsignedBlock {
 
 export interface UnsignedBlock extends Id {
   amount: number
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload: any
   recipient: string
   sender: string

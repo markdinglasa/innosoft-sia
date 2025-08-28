@@ -5,7 +5,13 @@ import { loadSystemData, loadWindowData } from '@shared/internal'
 import { getSnackbar, getStoreLoaded } from '@shared/selectors/state'
 import { setStoreLoadedTrue } from '@shared/store/internal'
 import { setSnackbar } from '@shared/store/manager'
-import { AppDispatch, IpcChannel, LocalElectronStore, ToastType } from '@shared/types'
+import {
+  AppDispatch,
+  GenericVoidFunction,
+  IpcChannel,
+  LocalElectronStore,
+  ToastType
+} from '@shared/types'
 import { loadStoreFailToast } from '@shared/utils'
 import { FC, useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -30,8 +36,8 @@ export const Wrapper: FC = () => {
 
   const loadStoreData = useReadIpc({
     channel: IpcChannel.loadStore,
-    failCallback: loadStoreFailToast,
-    successCallback: loadStoreSuccessCallback
+    failCallback: loadStoreFailToast as GenericVoidFunction,
+    successCallback: loadStoreSuccessCallback as GenericVoidFunction
   })
 
   useEffect(() => {

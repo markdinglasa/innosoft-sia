@@ -8,7 +8,7 @@ export const generateSignature = (message: string, signingKey: Uint8Array): stri
   return window.electron.fn.generateSignature(message, signingKey)
 }
 
-export const verifyBlockSignature = (block: any): boolean => {
+export const verifyBlockSignature = (block: unknown): boolean => {
   return window.electron.fn.verifyBlockSignature(block)
 }
 

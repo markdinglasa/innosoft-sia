@@ -14,7 +14,7 @@ export const closeApp = () => {
 }
 
 export function setLocalAndStateReducer<T>(sliceName: string) {
-  return (_: any, action: PayloadAction<T>) => {
+  return (_: unknown, action: PayloadAction<T>) => {
     window.electron.ipc.send(IpcChannel.setStoreValue, { key: sliceName, state: action.payload })
     return action.payload
   }

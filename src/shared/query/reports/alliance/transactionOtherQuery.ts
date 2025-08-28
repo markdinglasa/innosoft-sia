@@ -175,11 +175,7 @@ export const AllianceTransactionOtherQuery = ({ Terminal, Dates }) => {
         pa.giftcheck,
         pa.othertender,
         0 AS evat,
-        SUM(DISTINCT CASE
-            WHEN c.CollectionIsCancelled = 0 AND c.CollectionIsReturn = 0 AND sl.TaxAmount > 0
-                THEN sl.Price * sl.Quantity
-            ELSE sl.Price2LessTax * sl.Quantity
-        END) AS subtotal,
+        SUM(DISTINCT pa.cash + pa.credit + pa.charge + pa.giftcheck + pa.othertender) AS subtotal,
         vc.vat,
         0 AS exvat,
         vc.vat AS incvat,
@@ -227,7 +223,7 @@ export const AllianceTransactionOtherQuery = ({ Terminal, Dates }) => {
                 + REPLACE(CONVERT(varchar, sl.SalesLineTimeStamp, 8), ':', ''), '-', '')) AS posted,
         tq.Quantity AS qty,
         1 AS created,
-        'NA' AS memo
+        ISNULL(s.Remarks,'NA') AS memo
     FROM FilteredSales s
     LEFT JOIN SalesLines sl ON s.Id = sl.SalesId
     LEFT JOIN Collections c ON s.Id = c.SalesId
@@ -254,6 +250,7 @@ export const AllianceTransactionOtherQuery = ({ Terminal, Dates }) => {
         vc.vat,
         vc.localtax,
         vc.amusement,
-        sc.ServiceCharge
+        sc.ServiceCharge,
+        s.Remarks
 `
 }

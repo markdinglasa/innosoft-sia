@@ -1,8 +1,9 @@
 import { FC } from 'react'
 
-export type GenericFunction = GenericFunctionConstructor<any>
+export type GenericFunction = GenericFunctionConstructor<unknown>
 
-type GenericFunctionConstructor<T> = (...args: any[]) => T
+// eslint-disable-next-line
+type GenericFunctionConstructor<T> = (...args: unknown[]) => T
 
 export type GenericVoidFunction = GenericFunctionConstructor<void | Promise<void>>
 

@@ -48,3 +48,6 @@ export enum Error {
   e00x47 = 'This feature or function is still under construction.',
   e00x48 = 'EOD is not yet performed.'
 }
+export const ERROR = {
+  ...Error
+}
