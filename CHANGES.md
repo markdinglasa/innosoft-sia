@@ -1,9 +1,43 @@
-## UPDATE: 1.1.1
+## LATEST: 1.1.3
 
-- Date: 2025-09-02 | 03:37 PM
-- Fix SM-SIA reports with delimiters on values, remove invalid value & header
+```
+    Software: Innsoft Sales Insight & Analytics
+    Version: v1.1.4
+    Author: Mark Dinglasa
+    DatePublished: 2025-09-02 | 03:37 PM
 
-## UPDATE: 1.1.0
+    Note:
+       Fix SM-SIA reports with delimiters on values, remove invalid value & header
+```
 
-- Date: 2025-07-24 | 03:03 PM
-- Added new report 'E-Journal' this would create a CSV file of list of all collections from a range of dates.
+```
+    Software: Innsoft Sales Insight & Analytics
+    Version: v1.1.3
+    Author: Mark Dinglasa
+    DatePublished: 2025-08-28
+
+    Note:
+        fix Alliance accreditation report, updated productline & sale-EOD in XML.
+        fix e-journal generation of reports, put a limit the max records into 1000 that can be generated.
+        refactored few components, using AccessControl for better readability
+```
+
+```
+    Software: Innsoft Sales Insight & Analytics
+    Version: v1.1.2
+    Author: Mark Dinglasa
+    DatePublished: 2025-07-24 | 03:03 PM
+
+    Note:
+        forgotten to take notes
+```
+
+```
+    Software: Innsoft Sales Insight & Analytics
+    Version: v1.1.0
+    Author: Mark Dinglasa
+    DatePublished: 2025-07-24 | 03:03 PM
+
+    Note:
+        Added new report 'E-Journal' this would create a CSV file of list of all collections from a range of dates.
+```

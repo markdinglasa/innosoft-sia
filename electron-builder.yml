@@ -1,5 +1,5 @@
 appId: innosoft.SIA.v01.app
-productName: Innosoft SIA 1.0
+productName: Innosoft SIA 1.1.4
 directories:
   buildResources: build
 files:
@@ -21,6 +21,7 @@ nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
   license: build/LICENSE
+  perMachine: true
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
@@ -43,6 +44,6 @@ appImage:
 npmRebuild: false
 publish:
   provider: github
-  owner: emperorkira
-  repo: https://github.com/emperorkira/innosoft-sia
-  releaseType: draft
+  owner: markdinglasa
+  repo: https://github.com/markdinglasa/innosoft-sia
+  releaseType: release
