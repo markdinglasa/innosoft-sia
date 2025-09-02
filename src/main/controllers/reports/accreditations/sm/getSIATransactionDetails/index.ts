@@ -19,31 +19,22 @@ ipcMain.handle(
       const filePath = paths.join(path, fileName)
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
 
-      const csvData = response.List.map((item: SIATransactionDetail) => [
-        item.OrderNumber,
-        item.ItemId,
-        item.ItemName,
-        item.ItemParentCategory,
-        item.ItemCategory,
-        item.ItemSubCategory,
-        item.ItemQuantity,
-        item.TransactionItemPrice,
-        item.MenuItemPrice,
-        item.DiscountCode,
-        item.DiscountAmount,
-        item.Modifier1Name,
-        item.Modifier1Quantity,
-        item.Modifier2Name,
-        item.Modifier2Quantity,
-        item.Void,
-        item.VoidAmount,
-        item.Refund,
-        item.RefundAmount
-      ])
+      const csvData: any = response.List.map((item: SIATransactionDetail) => {
+        return Object.values(item).map((val: string | number) =>
+          typeof val === 'string' && !isNaN(Number(val)) && val.trim() !== ''
+            ? parseFloat(val ?? 0)
+            : val
+        )
+      })
+
       const csvWriter = createArrayCsvWriter({
         path: filePath,
-        header: csvHeaders
+        header: csvHeaders,
+        alwaysQuote: true,
+        fieldDelimiter: `,`,
+        recordDelimiter: '\n'
       })
+
       await csvWriter.writeRecords(csvData)
       return { IsSomething: true, Message: Success.s00x00 }
     } catch (error: any) {

@@ -53,21 +53,21 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
                 THEN  COALESCE(CONVERT(VARCHAR(20), ([TrnPaxTable].[TotalPax]), 1), '1')
                 ELSE '0'
             END
-		) AS [GuestCount],
+		) AS [GuessCount],
         MAX(
             CASE
                 WHEN [TrnSalesLine].[DiscountId] = [MstDiscount].[Id] AND [MstDiscount].[Discount] = 'Senior Citizen Discount'
                 THEN COALESCE(CONVERT(VARCHAR(20), ([TrnPaxTable].[DiscountedPax]), 1), '0')
                 ELSE '0'
             END
-        ) AS [GuestCountSenior],
+        ) AS [GuessCountSenior],
         MAX(
             CASE
                 WHEN [TrnSalesLine].[DiscountId] = [MstDiscount].[Id] AND [MstDiscount].[Discount] = 'PWD'
                 THEN COALESCE(CONVERT(VARCHAR(20), ([TrnPaxTable].[DiscountedPax]), 1), '0')
                 ELSE '0'
             END
-        ) AS [GuestCountPWD],
+        ) AS [GuessCountPWD],
         MAX(CASE 
 			WHEN (ISNULL([TrnCollection].[IsCancelled],0) = 2) OR (ISNULL([TrnCollection].[IsReturn],0) = 2) THEN
 			CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
@@ -577,21 +577,21 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
                 THEN  COALESCE(CONVERT(VARCHAR(20), ([TrnPaxTable].[TotalPax]), 1), '1')
                 ELSE '0'
             END
-		) AS [GuestCount],
+		) AS [GuessCount],
         MAX(
             CASE
                 WHEN [TrnSalesLine].[DiscountId] = [MstDiscount].[Id] AND [MstDiscount].[Discount] = 'Senior Citizen Discount'
                 THEN COALESCE(CONVERT(VARCHAR(20), ([TrnPaxTable].[DiscountedPax]), 1), '0')
                 ELSE '0'
             END
-        ) AS [GuestCountSenior],
+        ) AS [GuessCountSenior],
         MAX(
             CASE
                 WHEN [TrnSalesLine].[DiscountId] = [MstDiscount].[Id] AND [MstDiscount].[Discount] = 'PWD'
                 THEN COALESCE(CONVERT(VARCHAR(20), ([TrnPaxTable].[DiscountedPax]), 1), '0')
                 ELSE '0'
             END
-        ) AS [GuestCountPWD],
+        ) AS [GuessCountPWD],
         MAX(CASE 
 			WHEN (ISNULL([TrnCollection].[IsReturn],0) = 2) THEN
 			-CAST(ROUND(COALESCE([GrossSales].[GrossSalesAmount] + [TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2)) 

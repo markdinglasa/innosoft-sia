@@ -27,7 +27,7 @@ ipcMain.handle(
             : val
         )
       })
-      console.log('csv-data:', csvData)
+      //console.log('csv-data:', csvData)
 
       const csvWriter = createArrayCsvWriter({
         path: filePath,

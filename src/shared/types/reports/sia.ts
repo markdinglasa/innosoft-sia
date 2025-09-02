@@ -9,9 +9,9 @@ export interface SIATransaction {
   VoidAmount: number
   Refund: number
   RefundAmount: number
-  GuestCount: number
-  GuestCountSenior: number
-  GuestCountPWD: number
+  GuessCount: number
+  GuessCountSenior: number
+  GuessCountPWD: number
   GrossSalesAmount: number
   NetSalesAmount: number
   TotalTax: number
