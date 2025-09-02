@@ -126,7 +126,7 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
 			THEN [TrnSalesLine].[quantity]*([TrnSalesLine].[price2lesstax]-([TrnSalesLine].[price2lesstax]*([TrnSalesLine].[DiscountRate]/100)))
 			ELSE CASE WHEN ([TrnSalesLine].[TaxId]=5) THEN [TrnSalesLine].[Amount] 
 			ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) END
-        END) AS [TotalExemptSales],
+        END) AS [TaxExemptSales],
         MAX(
                CASE
                    WHEN ([TrnCollection].[IsCancelled] = 0 OR [TrnCollection].[IsCancelled] IS NULL)
@@ -203,14 +203,14 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
 				THEN CAST(ROUND(COALESCE([TotalDiscount].[TotalDiscountAmount], 0), 2) AS DECIMAL(10, 2)) 
 				ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2)) 
 			END) AS [SMACDiscountAmount], -- max
-           ' ' AS [OnlineDealsDiscountName],
+           '' AS [OnlineDealsDiscountName],
            '0.00' AS [OnlineDealsDiscountAmount],
-           ' ' AS [DiscountField1Name], 
-           ' ' AS [DiscountField2Name], 
-           ' ' AS [DiscountField3Name], 
-           ' ' AS [DiscountField4Name], 
-           ' ' AS [DiscountField5Name], 
-           ' ' AS [DiscountField6Name], 
+           '' AS [DiscountField1Name], 
+           '' AS [DiscountField2Name], 
+           '' AS [DiscountField3Name], 
+           '' AS [DiscountField4Name], 
+           '' AS [DiscountField5Name], 
+           '' AS [DiscountField6Name], 
            '0.00'  AS [DiscountField1Amount], 
            '0.00'  AS [DiscountField2Amount], 
            '0.00'  AS [DiscountField3Amount], 
@@ -240,7 +240,7 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
 						CAST(ROUND(0, 2) AS DECIMAL(10, 2))
 					WHEN PaymentRank = 2 AND ISNULL([TrnSales].[IsReturn], 0) = 0 AND ISNULL([TrnSales].[IsCancelled], 0) = 0 THEN 
 						[AggregatedPayments].[Amount]
-					ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+					--ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
 				END
 			END) AS [PaymentAmount2],
 
@@ -253,7 +253,7 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
 						CAST(ROUND(0, 2) AS DECIMAL(10, 2))
 					WHEN PaymentRank = 3 AND ISNULL([TrnSales].[IsReturn], 0) = 0 AND ISNULL([TrnSales].[IsCancelled], 0) = 0 THEN 
 						[AggregatedPayments].[Amount]
-					ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+					--ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
 				END
 			END) AS [PaymentAmount3],
             MAX(
@@ -266,7 +266,7 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
 						 AND [TrnCollectionLine].[PayTypeId] = [MstPayType].[Id]
 						 AND [MstPayType].[PayType] = 'Cash' THEN
 						CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
-					--ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+					ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
 				END
 			) AS [TotalCashSalesAmount],
 
@@ -280,7 +280,7 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
 						 AND [TrnCollectionLine].[PayTypeId] = [MstPayType].[Id]
 						 AND [MstPayType].[PayType] = 'Gift Certificate' THEN
 						CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
-					--ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+					ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
 				END
 			) AS [TotalGiftCertificateSalesAmount], --Total Gift Cheque / Gift Card Sales Amount
 			MAX(
@@ -293,7 +293,7 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
 						 AND [TrnCollectionLine].[PayTypeId] = [MstPayType].[Id]
 						 AND [MstPayType].[PayType] = 'Debit' THEN
 						CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
-					--ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+					ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
 				END
 			) AS [TotalDebitCardSalesAmount],
 
@@ -307,7 +307,7 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
 						 AND [TrnCollectionLine].[PayTypeId] = [MstPayType].[Id]
 						 AND [MstPayType].[PayType] = 'Gcash' OR [MstPayType].[PayType] = 'PayMaya' OR [MstPayType].[PayType] = 'GrabPay' OR [MstPayType].[PayType] = 'FoodPanda' THEN
 						CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
-					--ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+					ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
 				END
 			) AS [TotalEwalletOnlineSalesAmount],
             MAX(
@@ -332,7 +332,7 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
 						 AND [TrnCollectionLine].[PayTypeId] = [MstPayType].[Id]
 						 AND [MstPayType].[PayType] = 'Visa'  THEN
 						CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
-					--ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+					ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
 				END
 			) AS [TotalMastercardSalesAmount],
 						MAX(
@@ -345,7 +345,7 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
 						 AND [TrnCollectionLine].[PayTypeId] = [MstPayType].[Id]
 						 AND [MstPayType].[PayType] = 'Visa' THEN
 						CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
-					--ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+					ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
 				END
 			) AS [TotalVisaSalesAmount],
 			MAX(
@@ -358,7 +358,7 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
 						 AND [TrnCollectionLine].[PayTypeId] = [MstPayType].[Id]
 						 AND [MstPayType].[PayType] = 'American Express' THEN
 						CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
-					--ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+					ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
 				END
 			) AS [TotalAmericanExpressSalesAmount],
 			MAX(
@@ -371,7 +371,7 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
 						 AND [TrnCollectionLine].[PayTypeId] = [MstPayType].[Id]
 						 AND [MstPayType].[PayType] = 'Diners'  THEN
 						CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
-					--ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+					ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
 				END
 			) AS [TotalDinersSalesAmount],
 
@@ -385,7 +385,7 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
 						 AND [TrnCollectionLine].[PayTypeId] = [MstPayType].[Id]
 						 AND [MstPayType].[PayType] = 'JCB'  THEN
 						CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
-					--ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+					ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
 				END
 			) AS [TotalJCBSalesAmount],
 
@@ -399,7 +399,7 @@ export const SIATransactions = ({ Terminal, POSSerialNumber, SalesType, Dates })
 						 AND [TrnCollectionLine].[PayTypeId] = [MstPayType].[Id]
 						 AND [MstPayType].[PayType] = 'Credit Card'  THEN
 						CAST(ROUND(COALESCE([TrnCollectionLine].[Amount], 0), 2) AS DECIMAL(10, 2))
-					--ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
+					ELSE CAST(ROUND(0, 2) AS DECIMAL(10, 2))
 				END
 			) AS [TotalCreditCardSalesAmount],
 

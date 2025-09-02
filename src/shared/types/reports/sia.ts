@@ -21,7 +21,7 @@ export interface SIATransaction {
   TotalDiscount: number
   LessTaxAmount: number
   TaxExemptSales: number
-  TotalExemptSales: number
+  //TotalExemptSales: number
   RegularOtherDiscountName: string
   RegularOtherDiscountAmount: number
   EmployeeDiscountAmount: number
