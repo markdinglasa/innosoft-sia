@@ -30,5 +30,6 @@ export const Image = styled.img`
   width: 75px;
 `
 export const Span = styled.span`
+  font-size: 12px;
   color: ${colors.palette.gray[200]};
 `
