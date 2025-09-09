@@ -30,11 +30,11 @@ export const isDev: boolean = NODE_ENV === 'development'
 
 const createWindow = (url: string): BrowserWindow => {
   const primaryDisplay = screen.getPrimaryDisplay()
-  const { height } = primaryDisplay.size
+  const { height, width } = primaryDisplay.size
 
   mainWindow = new BrowserWindow({
-    width: 415,
-    height: height - 100,
+    width: isDev ? width : 410,
+    height: isDev ? height - 100 : 600,
     icon: path.join(__dirname, '../shared/assets/favicon.ico'),
     show: isDev ? true : false,
     autoHideMenuBar: isDev ? false : true,
@@ -44,7 +44,7 @@ const createWindow = (url: string): BrowserWindow => {
     fullscreenable: isDev ? true : false,
     fullscreen: false,
     vibrancy: isDev ? 'titlebar' : 'under-window',
-    title: 'Innsoft SIA',
+    title: 'Innosoft Sales Insights & Analytics',
     visualEffectState: isDev ? 'inactive' : 'active',
     titleBarStyle: isDev ? 'default' : 'hidden',
     trafficLightPosition: { x: 15, y: 10 },

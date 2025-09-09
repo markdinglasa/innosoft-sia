@@ -11,7 +11,6 @@ import { EJournal } from '../components/EJournal'
 import { Initialize } from '../components/Initialize'
 import { SettingsModal } from '../modals'
 import { getActiveTenant } from '../selectors'
-import { Tenants } from '../types'
 import { GenericReportType } from '../types/genericReport'
 import * as S from './Styles'
 
@@ -27,11 +26,6 @@ export const SIAManager: SFC<AppProps> = ({ className }) => {
         <S.Container>
           <S.Filler> 2024 © Mark Dinglasa </S.Filler>
           <S.Body>
-            {activeTenant !== Tenants.ALLIANCE && (
-              <S.Title>
-                <S.H2>Innosoft Sales and Insight Analytics</S.H2>
-              </S.Title>
-            )}
             <S.Card>
               <DatabaseCard />
             </S.Card>

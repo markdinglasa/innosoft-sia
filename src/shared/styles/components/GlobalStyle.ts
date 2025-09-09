@@ -3,9 +3,29 @@ import { createGlobalStyle } from 'styled-components'
 import { colors, fonts } from '../'
 
 export const GlobalStyle = createGlobalStyle`
-  html {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.1);
+  * {
+    scrollbar-width: thin; /* "auto", "thin", or "none" */
+    scrollbar-color: #888 inherit; /* thumb and track color */
+    overflow:none;
+  }
+  :host {
+    -webkit-text-size-adjust: 100%;
+  }
+  /* Customize the scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px; /* Width of the scrollbar */
+    background-color: #FFF; /* Background color of the scrollbar track */
+  }
+
+  /* Customize the scrollbar thumb (the draggable part) */
+  ::-webkit-scrollbar-thumb {
+    background-color: #14263e; /* Color of the scrollbar thumb */
+    border-radius: 5px; /* Rounded corners */
+  }
+
+  /* Customize the scrollbar thumb on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #14263e; /* Color of the scrollbar thumb on hover */
   }
 
   * {

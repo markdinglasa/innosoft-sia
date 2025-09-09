@@ -3,7 +3,13 @@ import { Response, SqlChannel } from '@shared/types'
 import { ipcMain } from 'electron'
 import fs from 'fs'
 import paths from 'path'
-import { formatDateDash, formatDateFD, formatDateYYYYMMDDHHMMSS } from '../../../functions'
+import {
+  calculateAge,
+  formatDateDash,
+  formatDateFD,
+  formatDateSlash,
+  formatDateYYYYMMDDHHMMSS
+} from '../../../functions'
 import { recordByQuery } from '../../../model'
 
 const formatNumber = (value: number | undefined, defaultValue = 0): string =>
@@ -33,19 +39,29 @@ interface VATAnalysis {
   ServiceCharge: number
   VATExempt: number
   NetSales: number
+  ZeroRated: number //
 }
 interface Details {
   CollectionNumber: string
+  TransactionNumber: string
   SeniorCitizenId: string
   SeniorCitizenName: string
   SeniorCitizenAge: string
+  SeniorCitizenChildName: string
+  SeniorCitizenTINNumber: string
+  SeniorCitizenBirthdate: string
+  PaxNumber: string
   Terminal: string
   Customer: string
+  CustomerTIN: string
+  CustomerAddress: string
   IsReward: boolean
   PreparedBy: string
   ServedBy: string
   DateCreated: string
   TableCode: string
+  BusinessStyle?: string
+  Signature?: string
 }
 ipcMain.handle(
   SqlChannel.E_JOURNAL,
@@ -177,13 +193,20 @@ ipcMain.handle(
             `),
 
           recordByQuery(`
-            SELECT 
-              c.CollectionNumber,
-              ISNULL(s.SeniorCitizenId,'NA') AS SeniorCitizenId, 
-              ISNULL(s.SeniorCitizenName,'NA') AS SeniorCitizenName, 
-              ISNULL(CAST(s.SeniorCitizenAge AS VARCHAR),'NA') AS SeniorCitizenAge,
-              tr.Terminal,
-              ct.Customer,
+           SELECT 
+              c.[CollectionNumber],
+              ISNULL(s.[SalesNumber],'NA') AS [TransactionNumber], 
+              ISNULL(s.[SeniorCitizenId],'NA') AS [SeniorCitizenId], 
+              ISNULL(s.[SeniorCitizenName],'NA') AS [SeniorCitizenName], 
+              ISNULL(CAST(s.[SeniorCitizenAge] AS VARCHAR),'NA') AS [SeniorCitizenAge],
+              ISNULL(CAST(s.[ChildName] AS VARCHAR),'NA') AS [SeniorCitizenChildName],
+              ISNULL(CAST(s.[DateOfBirth] AS VARCHAR),'NA') AS [SeniorCitizenBirthdate],
+			        ISNULL(CAST(s.[TINNumber] AS VARCHAR),'NA') AS [SeniorCitizenTINNumber],
+              ISNULL(CAST(s.[Pax] AS VARCHAR),'NA') AS [PaxNumber],
+              tr.[Terminal],
+              ct.[Customer],
+              ct.[TIN] AS [CustomerTIN],
+              ct.[Address] AS [CustomerAddress],
               CASE WHEN (ISNULL(ct.WithReward,0) = 1) THEN 'WITH REWARD' ELSE 'NO REWARD' END AS IsReward,
               pb.FullName AS PreparedBy,
               sb.FullName AS ServedBy,
@@ -204,14 +227,22 @@ ipcMain.handle(
               s.SeniorCitizenId,
               s.SeniorCitizenName,
               s.SeniorCitizenAge,
+              s.[SalesNumber],
+              s.[Pax],
+              s.[ChildName],
+              s.[DateOfBirth],
+              s.[TINNumber],
               tr.Terminal,
               ct.Customer,
               ct.WithReward,
+              ct.[TIN],
+              ct.[Address],
               pb.FullName,
               sb.FullName,
               c.UpdateDateTime,
               c.EntryDateTime,
               tb.TableCode
+              
           `)
         ])
 
@@ -249,10 +280,12 @@ ipcMain.handle(
             detailsMap.set(item.CollectionNumber, item)
           }
         })
+        // console.log('details:', detailData)
 
         // Generate receipts for the batch
         for (const cn of batch) {
           const salesItems = salesMap.get(cn) || []
+          const totalItem = salesItems?.length ?? 0
           const paymentMethods = paymentsMap.get(cn) || []
           const details = detailsMap.get(cn) || {}
           const va: VATAnalysis = vaMap.get(cn)[0] || []
@@ -277,44 +310,53 @@ ipcMain.handle(
               ${cn}
             ${formatDateFD(new Date(details?.DateCreated))}
 --------------------------------------------
-Item                                  Amount
+ITEM                                  AMOUNT
 ${itemsContent}
-TOTAL SALES:                          ${formatNumber(va?.NetSales ?? '0')}
+TOTAL SALES                           ${formatNumber(va?.NetSales ?? '0')}
 TOTAL DISCOUNT                        ${formatNumber(va?.DiscountAmount ?? '0')}
 --------------------------------------------
-${paymentsContent}           
+${paymentsContent}   
+# OF ITEMS                             ${totalItem}        
 --------------------------------------------
 CHANGE                                ${formatNumber(va?.ChangeAmount ?? '0')}
 GROSS SALES                           ${formatNumber(va?.GrossSales ?? '0')}
 --------------------------------------------
-                VAT ANALYSIS
---------------------------------------------
-                                      AMOUNT
+VAT ANALYSIS
 VAT EXEMPT                            ${formatNumber(va?.VATExempt) ?? 0}
 SERVICE CHARGE                        ${formatNumber(va?.ServiceCharge) ?? 0}
 VAT SALES                             ${formatNumber(va?.VATSales) ?? 0}
 VAT                                   ${formatNumber(va?.TaxAmount) ?? 0}
+Zero-Rated Sales                      ${formatNumber(va?.ZeroRated ?? 0)}
 --------------------------------------------
-        SENIOR CITIZEN's INFORMATION
+SENIOR / PWD / NAAC / SP INFORMATION
 --------------------------------------------
-ID NO.                         ${details?.SeniorCitizenId ?? ''}
-NAME                           ${details?.SeniorCitizenName ?? ''}
-AGE                            ${details?.SeniorCitizenAge ?? ''}
+TIN NO.                         ${details?.SeniorCitizenTINNumber ?? ''}
+ID NO.                          ${details?.SeniorCitizenId ?? ''}
+NAME                            ${details?.SeniorCitizenName ?? ''}
+CHILD NAME                      ${details?.SeniorCitizenChildName ?? ''}
+CHILD AGE                       ${details?.SeniorCitizenChildBirthdate ? calculateAge(details?.SeniorCitizenChildBirthdate ?? '') : ''}
+BIRTHDATE                       ${details?.SeniorCitizenChildBirthdate ? formatDateSlash(details?.SeniorCitizenChildBirthdate ?? '') : ''}
+
 --------------------------------------------
-PREPARED BY                    ${details?.PreparedBy ?? ''}
+TRN. NO.                       ${details?.TransactionNumber ?? ''}
+CASHIER                        ${details?.PreparedBy ?? ''}
 TERMINAL                       ${details?.Terminal ?? ''}
-CUSTOMER                       ${details?.Customer ?? ''}
-REWARD                         ${details?.IsReward ?? ''}
 SERVED BY                      ${details?.ServedBy ?? ''}
-TABLE NO.                      ${details?.TableCode ?? ''}`
+TABLE                          ${details?.TableCode ?? ''}
+NO. PAX                        ${details?.PaxNumber ?? ''}
+REWARD                         ${details?.IsReward ?? ''}
+NAME                           ${details?.Customer ?? '________________________'}
+ADDRESS                        ${details?.CustomerAddress ?? '________________________'}
+                               ________________________
+TIN                            ${details?.CustomerTIN ?? '________________________'}
+TIME                           ${formatDateFD(new Date(details?.DateCreated))}
+BUSINESS STYLE                 ${details?.BusinessStyle ?? '________________________'}
+SIGNATURE                      ${'________________________'}`
 
           const fullReceipt = `${header}${receiptContent}${footer}\n\n`
-
           if (!stream.write(fullReceipt)) {
-            // Handle backpressure
             await new Promise((resolve) => stream.once('drain', resolve))
           }
-
           hasRecords = true
         }
       }

@@ -1,11 +1,12 @@
 import { colors } from '@shared/styles'
 import styled from 'styled-components'
 export const Container = styled.div`
-  height: 80px;
+  height: 60px;
   width: 100%;
   background: #566272;
   padding: 5px 10px;
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
 `
@@ -22,8 +23,7 @@ export const TextContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: start;
-  justify-content: start;
-  padding: 10px 5px;
+  justify-content: center;
 `
 export const Image = styled.img`
   height: 75px;

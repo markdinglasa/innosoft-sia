@@ -6,6 +6,7 @@ export const Wrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: none;
 `
 export const LoadingScreen = styled.div`
   width: 100vw;
