@@ -69,12 +69,11 @@ export const EJournal: SFC = ({ className }) => {
       const header = `
 --------------------------------------------
 ${settings?.Name ?? ''}
+${settings?.Address ?? ''}
 Operated By: ${settings?.Operator ?? ''}
 TIN: ${settings?.TIN ?? ''}
-P. No.: ${settings?.PermitNumber ?? ''}
-A. No.: ${settings?.AccreditationNumber ?? ''}
-S. No.: ${settings?.SerialNumber ?? ''}
-M. No.: ${settings?.MachineNumber ?? ''}`
+S/N : ${settings?.SerialNumber ?? ''}
+MIN : ${settings?.MachineNumber ?? ''}`
 
       // this will call the main process to generate the E-Journal report
       const response = await window.electron.sql.get(SqlChannel.E_JOURNAL, {

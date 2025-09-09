@@ -336,7 +336,6 @@ NAME                            ${details?.SeniorCitizenName ?? ''}
 CHILD NAME                      ${details?.SeniorCitizenChildName ?? ''}
 CHILD AGE                       ${details?.SeniorCitizenChildBirthdate ? calculateAge(details?.SeniorCitizenChildBirthdate ?? '') : ''}
 BIRTHDATE                       ${details?.SeniorCitizenChildBirthdate ? formatDateSlash(details?.SeniorCitizenChildBirthdate ?? '') : ''}
-
 --------------------------------------------
 TRN. NO.                       ${details?.TransactionNumber ?? ''}
 CASHIER                        ${details?.PreparedBy ?? ''}
@@ -351,7 +350,8 @@ ADDRESS                        ${details?.CustomerAddress ?? '__________________
 TIN                            ${details?.CustomerTIN ?? '________________________'}
 TIME                           ${formatDateFD(new Date(details?.DateCreated))}
 BUSINESS STYLE                 ${details?.BusinessStyle ?? '________________________'}
-SIGNATURE                      ${'________________________'}`
+SIGNATURE                      ${'________________________'}
+`
 
           const fullReceipt = `${header}${receiptContent}${footer}\n\n`
           if (!stream.write(fullReceipt)) {

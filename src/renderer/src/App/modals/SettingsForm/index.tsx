@@ -23,6 +23,8 @@ export const InvoiceFooter = `
           TIN: 261-481-387-000
       ACCR: 082-261481387-000375-24583
         ACCR Date: August 20, 2020
+        Date Issued: January 01, 2026
+        PTU:FP032024-074-0438792-00000
 --------------------------------------------`
 export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme }) => {
   const dispatch = useDispatch<AppDispatch>()
@@ -140,10 +142,11 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
                       Touched={touched}
                     />
                   </S.Div>
-                  <S.Div>
-                    {values.IsZReading && (
-                      <>
-                        <S.ZReadingCon>
+
+                  {values.IsZReading && (
+                    <>
+                      <S.ZReadingCon>
+                        <div>
                           <Input
                             theme={theme}
                             errors={errors}
@@ -154,102 +157,102 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
                             onChange={handleChange}
                             touched={touched}
                           />
-                          <Input
-                            theme={theme}
+                        </div>
+                        <Input
+                          theme={theme}
+                          errors={errors}
+                          type="text"
+                          label="Store Address"
+                          name="Address"
+                          value={values?.Address || ''}
+                          onChange={handleChange}
+                          touched={touched}
+                        />
+                        <Input
+                          theme={theme}
+                          errors={errors}
+                          type="text"
+                          label="Operator"
+                          name="Operator"
+                          value={values?.Operator || ''}
+                          onChange={handleChange}
+                          touched={touched}
+                        />
+                        <Input
+                          theme={theme}
+                          errors={errors}
+                          type="text"
+                          label="PermitNumber"
+                          name="PermitNumber"
+                          value={values?.PermitNumber || ''}
+                          onChange={handleChange}
+                          touched={touched}
+                        />
+                        <Input
+                          theme={theme}
+                          errors={errors}
+                          type="text"
+                          label="TIN"
+                          name="TIN"
+                          value={values?.TIN || ''}
+                          onChange={handleChange}
+                          touched={touched}
+                        />
+                        <Input
+                          theme={theme}
+                          errors={errors}
+                          type="text"
+                          label="Accreditation Number"
+                          name="AccreditationNumber"
+                          value={values?.AccreditationNumber || ''}
+                          onChange={handleChange}
+                          touched={touched}
+                        />
+                        <Input
+                          theme={theme}
+                          errors={errors}
+                          type="text"
+                          label="Serial Number"
+                          name="SerialNumber"
+                          value={values?.SerialNumber || ''}
+                          onChange={handleChange}
+                          touched={touched}
+                        />
+                        <Input
+                          theme={theme}
+                          errors={errors}
+                          type="text"
+                          label="Machine Number"
+                          name="MachineNumber"
+                          value={values?.MachineNumber || ''}
+                          onChange={handleChange}
+                          touched={touched}
+                        />
+                        <S.TextAreaContainer>
+                          <TextArea
+                            label="Invoice Footer"
+                            value={values?.InvoiceFooter || ''}
                             errors={errors}
-                            type="text"
-                            label="Store Address"
-                            name="Address"
-                            value={values?.Address || ''}
-                            onChange={handleChange}
                             touched={touched}
-                          />
-                          <Input
-                            theme={theme}
-                            errors={errors}
-                            type="text"
-                            label="Operator"
-                            name="Operator"
-                            value={values?.Operator || ''}
+                            name="InvoiceFooter"
+                            onBlur={handleBlur}
                             onChange={handleChange}
-                            touched={touched}
                           />
-                          <Input
-                            theme={theme}
-                            errors={errors}
-                            type="text"
-                            label="PermitNumber"
-                            name="PermitNumber"
-                            value={values?.PermitNumber || ''}
-                            onChange={handleChange}
-                            touched={touched}
-                          />
-                          <Input
-                            theme={theme}
-                            errors={errors}
-                            type="text"
-                            label="TIN"
-                            name="TIN"
-                            value={values?.TIN || ''}
-                            onChange={handleChange}
-                            touched={touched}
-                          />
-                          <Input
-                            theme={theme}
-                            errors={errors}
-                            type="text"
-                            label="Accreditation Number"
-                            name="AccreditationNumber"
-                            value={values?.AccreditationNumber || ''}
-                            onChange={handleChange}
-                            touched={touched}
-                          />
-                          <Input
-                            theme={theme}
-                            errors={errors}
-                            type="text"
-                            label="Serial Number"
-                            name="SerialNumber"
-                            value={values?.SerialNumber || ''}
-                            onChange={handleChange}
-                            touched={touched}
-                          />
-                          <Input
-                            theme={theme}
-                            errors={errors}
-                            type="text"
-                            label="Machine Number"
-                            name="MachineNumber"
-                            value={values?.MachineNumber || ''}
-                            onChange={handleChange}
-                            touched={touched}
-                          />
-                          <S.Div>
-                            <TextArea
-                              label="Invoice Footer"
-                              value={values?.InvoiceFooter || ''}
-                              errors={errors}
-                              touched={touched}
-                              name="InvoiceFooter"
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                            />
-                          </S.Div>
-                        </S.ZReadingCon>
-                      </>
-                    )}
-                  </S.Div>
-
-                  <S.Button
-                    className={'width:100% !important;'}
-                    dirty={dirty}
-                    disabled={isSubmitting}
-                    isSubmitting={isSubmitting}
-                    isValid={isValid}
-                    text="Submit"
-                    color={ButtonColor.blue}
-                    type={ButtonType.submit}
-                  />
+                        </S.TextAreaContainer>
+                      </S.ZReadingCon>
+                    </>
+                  )}
+                  <S.ButtonContainer>
+                    <S.Button
+                      dirty={dirty}
+                      disabled={isSubmitting}
+                      isSubmitting={isSubmitting}
+                      isValid={isValid}
+                      text="Submit"
+                      color={ButtonColor.blue}
+                      type={ButtonType.submit}
+                    />
+                  </S.ButtonContainer>
                 </Form>
               )}
             </Formik>

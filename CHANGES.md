@@ -1,4 +1,14 @@
-## LATEST: 1.1.3
+## LATEST: 1.1.5
+
+```
+    Software: Innsoft Sales Insight & Analytics
+    Version: v1.1.5
+    Author: Mark Dinglasa
+    DatePublished: 2025-09-09 | 06:40 PM
+
+    Note:
+       Updated E-Journal according to BIR, and fix layout into responsive.
+```
 
 ```
     Software: Innsoft Sales Insight & Analytics
