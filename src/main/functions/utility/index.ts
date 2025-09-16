@@ -89,3 +89,6 @@ export const formatDateFD = (CurrentDate: Date) => {
   const sec = String(CurrentDate.getSeconds()).padStart(2, '0')
   return `${month}/${day}/${year} ${hour}:${min}:${sec} ${CurrentDate.getHours() > 12 ? 'PM' : 'AM'}`
 }
+
+export const formatNumber = (value: number | undefined, defaultValue = 0): string =>
+  (Math.round((value ?? defaultValue) * 100) / 100).toFixed(2)

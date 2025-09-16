@@ -1,4 +1,14 @@
-## LATEST: 1.1.5
+## LATEST: 1.1.6
+
+```
+    Software: Innsoft Sales Insight & Analytics
+    Version: v1.1.6
+    Author: Mark Dinglasa
+    DatePublished: 2025-09-12 | 08:40 PM
+
+    Note:
+       Updated E-Journal according to BIR, added Return Slip & Cancelled Sales Receipt  in E-Journal
+```
 
 ```
     Software: Innsoft Sales Insight & Analytics

@@ -67,6 +67,7 @@ export const EJournal: SFC = ({ className }) => {
       }
 
       const header = `
+      ${settings?.Name ?? ''}
 --------------------------------------------
 ${settings?.Name ?? ''}
 ${settings?.Address ?? ''}

@@ -3,33 +3,28 @@ import { Response, SqlChannel } from '@shared/types'
 import { ipcMain } from 'electron'
 import fs from 'fs'
 import paths from 'path'
-import {
-  calculateAge,
-  formatDateDash,
-  formatDateFD,
-  formatDateSlash,
-  formatDateYYYYMMDDHHMMSS
-} from '../../../functions'
+import { formatDateDash, formatDateYYYYMMDDHHMMSS, formatNumber } from '../../../functions'
 import { recordByQuery } from '../../../model'
-
-const formatNumber = (value: number | undefined, defaultValue = 0): string =>
-  (Math.round((value ?? defaultValue) * 100) / 100).toFixed(2)
+import { CancelReceipt } from './cancel-receipt'
+import { ReturnSlip } from './return-slip'
+import { SalesInvoice } from './sales-invoice'
 
 // Escape single quotes for SQL safety
 const escapeSingleQuote = (str: string) => str.replace(/'/g, "''")
 
-interface Sale {
+export interface Sale {
   CollectionNumber: string
   ItemDescription: string
   Amount: number
   ItemDetails: string
+  IsReturn: boolean
 }
 interface CollectionMethod {
   CollectionNumber: string
   PayType: string
   Amount: number
 }
-interface VATAnalysis {
+export interface VATAnalysis {
   CollectionNumber: string
   GrossSales: number
   DiscountAmount: number
@@ -40,16 +35,19 @@ interface VATAnalysis {
   VATExempt: number
   NetSales: number
   ZeroRated: number //
+  Tax: string
+  Discount: string
 }
-interface Details {
+export interface Details {
   CollectionNumber: string
-  TransactionNumber: string
+  TransactionNumber: string // sales-number
+  ReturnNumber?: string
   SeniorCitizenId: string
   SeniorCitizenName: string
   SeniorCitizenAge: string
   SeniorCitizenChildName: string
   SeniorCitizenTINNumber: string
-  SeniorCitizenBirthdate: string
+  SeniorCitizenChildBirthdate: string
   PaxNumber: string
   Terminal: string
   Customer: string
@@ -58,10 +56,14 @@ interface Details {
   IsReward: boolean
   PreparedBy: string
   ServedBy: string
+  UpdatedBy?: string
   DateCreated: string
   TableCode: string
   BusinessStyle?: string
   Signature?: string
+  IsReturn?: boolean
+  IsCancelled?: boolean
+  Terms?: string
 }
 ipcMain.handle(
   SqlChannel.E_JOURNAL,
@@ -91,8 +93,7 @@ ipcMain.handle(
         SELECT [CollectionNumber] 
         FROM [TrnCollection] 
         WHERE 
-          ISNULL(IsCancelled,0) = 0
-          AND ISNULL(IsLocked,0) = 1
+          ISNULL(IsLocked,0) = 1
           AND CAST([CollectionDate] AS DATE) 
             BETWEEN '${formatDateDash(new Date(dateStart))}' 
             AND '${formatDateDash(new Date(dateEnd))}'
@@ -123,24 +124,28 @@ ipcMain.handle(
           recordByQuery(` 
             SELECT 
             c.CollectionNumber,
+            i.ItemCode,
             i.ItemDescription,
             STR(ROUND(ISNULL((si.Amount), 0), 2), 10, 2) AS Amount,
-            STR(ROUND(ISNULL((si.Quantity), 0), 2), 4, 0)
+            CASE WHEN (stil.ItemId = i.Id ) THEN 1 ELSE 0 END AS IsReturn,
+            STR(ISNULL((si.Quantity), 0))
             + ' ' +
             u.Unit + ' @ ' +
             STR(ROUND(ISNULL((si.Price), 0), 2), 4, 2)+ ' - ' +
-            CASE WHEN d.Discount = 'Senior Citizen Discount' OR d.Discount = 'PWD' 
+            CASE WHEN d.IsVatExempt = 1
               THEN ('Less P' + STR(CAST((((si.Price-(si.Amount + si.DiscountAmount))+si.DiscountAmount)) AS VARCHAR),4,2))
               ELSE '' END + ' ' +
-            CAST(t.TAX AS VARCHAR)
+           CASE WHEN t.Tax NOT IN ('NON-VAT','VAT EXEMPT') THEN CAST(t.TAX AS VARCHAR) ELSE '' END
                AS ItemDetails
             FROM TrnCollection AS c
             LEFT JOIN TrnSales AS s ON s.Id = c.SalesId 
             LEFT JOIN TrnSalesLine AS si ON si.SalesId = s.Id
             LEFT JOIN MstDiscount AS d ON d.Id = si.DiscountId
             LEFT JOIN MstUnit AS u ON u.Id = si.UnitId
-            LEFT JOIN MstItem AS i ON i.Id = si.ItemId
+            INNER JOIN MstItem AS i ON i.Id = si.ItemId
             LEFT JOIN MstTax AS t ON t.Id = si.TaxId
+            LEFT JOIN TrnStockIn AS sti ON sti.CollectionId = c.Id
+            LEFT JOIn TrnStockInLine AS stil ON stil.StockInId = sti.Id
             WHERE c.CollectionNumber IN (${inClause})
           `),
           recordByQuery(`
@@ -172,10 +177,12 @@ ipcMain.handle(
                   THEN si.TaxAmount
                 ELSE 0
               END) AS TaxAmount,
-              (SUM(si.Amount)-SUM(si.TaxAmount)) AS VATSales,
+				t.Tax AS Tax,
+              CASE WHEN t.Tax = 'VAT' AND d.IsVatExempt = 0 THEN (SUM(si.Amount)-SUM(si.TaxAmount)) ELSE 0 END AS VATSales,
               SUM(CASE WHEN (i.ItemDescription = 'SERVICE CHARGE') THEN si.Amount ELSE 0 END) AS ServiceCharge,
+              d.Discount AS Discount,
               SUM(CASE
-                WHEN d.Discount IN ('Senior Citizen Discount', 'PWD') 
+                WHEN d.IsVatExempt = 1
                   THEN si.Amount 
                 ELSE 0
               END) + SUM(si.DiscountAmount) AS VATExempt
@@ -184,17 +191,23 @@ ipcMain.handle(
             LEFT JOIN TrnSalesLine AS si ON si.SalesId = s.Id
             LEFT JOIN MstDiscount AS d ON d.Id = si.DiscountId
             LEFT JOIN MstItem AS i ON i.Id = si.ItemId
-            WHERE c.CollectionNumber IN (${inClause})
+            LEFT JOIN MstTax AS t ON t.Id = si.TaxId
+			      WHERE c.CollectionNumber IN (${inClause})
             GROUP BY 
               c.CollectionNumber,
               s.Amount,
-              c.ChangeAmount
-              
+              c.ChangeAmount,
+              t.Tax,
+              d.Discount,
+              d.IsVatExempt
             `),
 
           recordByQuery(`
            SELECT 
               c.[CollectionNumber],
+              'Return Number:' + sti.StockInNumber AS ReturnNumber,
+              ISNULL(s.IsReturn,0) AS [IsReturn],
+              ISNULL(s.IsCancelled,0) AS [IsCancelled],
               ISNULL(s.[SalesNumber],'NA') AS [TransactionNumber], 
               ISNULL(s.[SeniorCitizenId],'NA') AS [SeniorCitizenId], 
               ISNULL(s.[SeniorCitizenName],'NA') AS [SeniorCitizenName], 
@@ -210,6 +223,7 @@ ipcMain.handle(
               CASE WHEN (ISNULL(ct.WithReward,0) = 1) THEN 'WITH REWARD' ELSE 'NO REWARD' END AS IsReward,
               pb.FullName AS PreparedBy,
               sb.FullName AS ServedBy,
+              upb.Fullname AS UpdatedBy,
               ISNULL(c.UpdateDateTime, c.EntryDateTime) AS DateCreated,
               tb.TableCode
             FROM TrnCollection AS c
@@ -220,7 +234,9 @@ ipcMain.handle(
             LEFT JOIN MstCustomer AS ct ON ct.Id = s.CustomerId
             LEFT JOIN MstUser AS sb ON sb.Id = s.SalesAgent
             LEFT JOIN MstUser AS pb ON pb.Id = s.PreparedBy
+            LEFT JOIN MstUser AS upb ON upb.Id = s.[UpdateUserId]
             LEFT JOIN MstTable AS tb ON tb.Id = s.TableId
+            LEFT JOIN TrnStockIn AS sti ON sti.CollectionId = c.Id
             WHERE c.CollectionNumber IN (${inClause})
             GROUP BY 
               c.CollectionNumber,
@@ -241,7 +257,11 @@ ipcMain.handle(
               sb.FullName,
               c.UpdateDateTime,
               c.EntryDateTime,
-              tb.TableCode
+              tb.TableCode,
+              upb.Fullname,
+              ISNULL(s.IsReturn,0),
+              ISNULL(s.IsCancelled,0),
+              sti.StockInNumber
               
           `)
         ])
@@ -284,74 +304,50 @@ ipcMain.handle(
 
         // Generate receipts for the batch
         for (const cn of batch) {
-          const salesItems = salesMap.get(cn) || []
-          const totalItem = salesItems?.length ?? 0
+          const saleItems = salesMap.get(cn) || []
+          const totalItem = saleItems.length || 0
           const paymentMethods = paymentsMap.get(cn) || []
           const details = detailsMap.get(cn) || {}
           const va: VATAnalysis = vaMap.get(cn)[0] || []
 
-          const itemsContent = salesItems
-            .map(
-              (item) =>
-                `${item?.ItemDescription ?? ''}                            ${formatNumber(item?.Amount)}\n${item?.ItemDetails ?? ''}`
-            )
-            .join('\n')
-
-          const paymentsContent = paymentMethods
+          const paymentsContent: string = paymentMethods
             .map(
               (pm) =>
                 `${pm?.PayType ?? ''}                              ${formatNumber(pm?.Amount)}`
             )
             .join('\n')
 
-          const receiptContent = `
+          const salesInvoice = SalesInvoice({
+            title: 'SALES INVOICE',
+            collectionNumber: cn,
+            saleItems: saleItems,
+            payments: paymentsContent,
+            details: details,
+            VATAnalysis: va,
+            totalItem: totalItem
+          })
 
-                SALES INVOICE
-              ${cn}
-            ${formatDateFD(new Date(details?.DateCreated))}
---------------------------------------------
-ITEM                                  AMOUNT
-${itemsContent}
-TOTAL SALES                           ${formatNumber(va?.NetSales ?? '0')}
-TOTAL DISCOUNT                        ${formatNumber(va?.DiscountAmount ?? '0')}
---------------------------------------------
-${paymentsContent}   
-# OF ITEMS                             ${totalItem}        
---------------------------------------------
-CHANGE                                ${formatNumber(va?.ChangeAmount ?? '0')}
-GROSS SALES                           ${formatNumber(va?.GrossSales ?? '0')}
---------------------------------------------
-VAT ANALYSIS
-VAT EXEMPT                            ${formatNumber(va?.VATExempt) ?? 0}
-SERVICE CHARGE                        ${formatNumber(va?.ServiceCharge) ?? 0}
-VAT SALES                             ${formatNumber(va?.VATSales) ?? 0}
-VAT                                   ${formatNumber(va?.TaxAmount) ?? 0}
-Zero-Rated Sales                      ${formatNumber(va?.ZeroRated ?? 0)}
---------------------------------------------
-SENIOR / PWD / NAAC / SP INFORMATION
---------------------------------------------
-TIN NO.                         ${details?.SeniorCitizenTINNumber ?? ''}
-ID NO.                          ${details?.SeniorCitizenId ?? ''}
-NAME                            ${details?.SeniorCitizenName ?? ''}
-CHILD NAME                      ${details?.SeniorCitizenChildName ?? ''}
-CHILD AGE                       ${details?.SeniorCitizenChildBirthdate ? calculateAge(details?.SeniorCitizenChildBirthdate ?? '') : ''}
-BIRTHDATE                       ${details?.SeniorCitizenChildBirthdate ? formatDateSlash(details?.SeniorCitizenChildBirthdate ?? '') : ''}
---------------------------------------------
-TRN. NO.                       ${details?.TransactionNumber ?? ''}
-CASHIER                        ${details?.PreparedBy ?? ''}
-TERMINAL                       ${details?.Terminal ?? ''}
-SERVED BY                      ${details?.ServedBy ?? ''}
-TABLE                          ${details?.TableCode ?? ''}
-NO. PAX                        ${details?.PaxNumber ?? ''}
-REWARD                         ${details?.IsReward ?? ''}
-NAME                           ${details?.Customer ?? '________________________'}
-ADDRESS                        ${details?.CustomerAddress ?? '________________________'}
-                               ________________________
-TIN                            ${details?.CustomerTIN ?? '________________________'}
-TIME                           ${formatDateFD(new Date(details?.DateCreated))}
-BUSINESS STYLE                 ${details?.BusinessStyle ?? '________________________'}
-SIGNATURE                      ${'________________________'}
-`
+          const cancelReceipt = CancelReceipt({
+            title: 'Cancelled Sales Receipt',
+            collectionNumber: cn,
+            saleItems: saleItems,
+            details: details,
+            VATAnalysis: va,
+            totalItem: totalItem
+          })
+
+          const returnSlip = ReturnSlip({
+            title: 'RETURN SLIP',
+            saleItems: saleItems,
+            details: details,
+            grossSales: va?.GrossSales
+          })
+
+          const receiptContent = Boolean(details?.IsCancelled ?? false)
+            ? cancelReceipt
+            : String(details?.ReturnNumber ?? '').length > 0
+              ? returnSlip
+              : salesInvoice
 
           const fullReceipt = `${header}${receiptContent}${footer}\n\n`
           if (!stream.write(fullReceipt)) {
