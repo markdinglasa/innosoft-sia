@@ -21,16 +21,21 @@ export const SalesInvoice = ({
   totalItem
 }: SalesInvoiceProps): string => {
   let va: string = ''
+  let less: string = ''
 
   switch (VATAnalysis?.Tax) {
     case 'VAT':
+      less = `LESS: 12% VAT                       ${formatNumber(VATAnalysis?.TaxAmount ?? '0')}`
       va = `VAT ANALYSIS
-VATatable SALES                             ${formatNumber(VATAnalysis?.VATSales) ?? 0}
-VAT                                   ${formatNumber(VATAnalysis?.TaxAmount) ?? 0}`
+VATatable Sales                             ${formatNumber(VATAnalysis?.VATSales) ?? 0}
+VAT                                   ${formatNumber(VATAnalysis?.TaxAmount) ?? 0}
+VAT-Exempt Sales                      ${formatNumber(VATAnalysis?.VATExempt) ?? 0}
+Zero-Rated Sales                      ${formatNumber(VATAnalysis?.ZeroRated) ?? 0}
+`
       break
     case 'NON-VAT':
     case 'VAT EXEMPT':
-      va = `VAT EXEMPT SALES                      ${formatNumber(VATAnalysis?.VATExempt) ?? 0}
+      va = `VAT-Exempt Sales                      ${formatNumber(VATAnalysis?.VATExempt) ?? 0}
 ${VATAnalysis?.ServiceCharge > 0 ? `SERVICE CHARGE                        ${formatNumber(VATAnalysis?.ServiceCharge) ?? 0}` : ''}
 THIS DOCUMENT IS NOT VALID FOR CLAIM OF INPUT TAX
 `
@@ -40,7 +45,7 @@ THIS DOCUMENT IS NOT VALID FOR CLAIM OF INPUT TAX
       break
     default:
       va = `VAT ANALYSIS
-VATatable SALES                             ${formatNumber(VATAnalysis?.VATSales) ?? 0}
+VATatable Sales                             ${formatNumber(VATAnalysis?.VATSales) ?? 0}
 VAT                                   ${formatNumber(VATAnalysis?.TaxAmount) ?? 0}`
       break
   }
@@ -61,16 +66,23 @@ VAT                                   ${formatNumber(VATAnalysis?.TaxAmount) ?? 
 --------------------------------------------
 ITEM                                  AMOUNT
 ${items}
-TOTAL SALES                           ${formatNumber(VATAnalysis?.NetSales ?? '0')}
-TOTAL DISCOUNT                        ${formatNumber(VATAnalysis?.DiscountAmount ?? '0')}
 --------------------------------------------
+TOTAL SALES                           ${formatNumber(VATAnalysis?.GrossSales ?? '0')}
+
+${less}
+LESS: DISCOUNT
+(SC/PWD/NAAC/SP)                      ${formatNumber(VATAnalysis?.DiscountAmount ?? '0')}
+
+TOTAL AMOUNT DUE                      ${formatNumber(VATAnalysis?.NetSales ?? '0')}
+
 ${payments}   
-# OF ITEMS                             ${totalItem}        
---------------------------------------------
 CHANGE                                ${formatNumber(VATAnalysis?.ChangeAmount ?? '0')}
+# OF ITEMS                             ${totalItem}
 --------------------------------------------
 ${va}
---------------------------------------------
+${
+  details?.SeniorCitizenId !== 'NA'
+    ? `--------------------------------------------
 SENIOR / PWD / NAAC / SP INFORMATION
 --------------------------------------------
 TIN NO.                         ${details?.SeniorCitizenTINNumber ?? ''}
@@ -78,7 +90,9 @@ ID NO.                          ${details?.SeniorCitizenId ?? ''}
 NAME                            ${details?.SeniorCitizenName ?? ''}
 CHILD NAME                      ${details?.SeniorCitizenChildName ?? ''}
 CHILD AGE                       ${details?.SeniorCitizenChildBirthdate ? calculateAge(details?.SeniorCitizenChildBirthdate ?? '') : ''}
-BIRTHDATE                       ${details?.SeniorCitizenChildBirthdate ? formatDateSlash(new Date(details?.SeniorCitizenChildBirthdate ?? '')) : ''}
+BIRTHDATE                       ${details?.SeniorCitizenChildBirthdate ? formatDateSlash(new Date(details?.SeniorCitizenChildBirthdate ?? '')) : ''}`
+    : ''
+}
 --------------------------------------------
 TRN. NO.                       ${details?.TransactionNumber ?? ''}
 CASHIER                        ${details?.PreparedBy ?? ''}
