@@ -35,10 +35,7 @@ Zero-Rated Sales                      ${formatNumber(VATAnalysis?.ZeroRated) ?? 
       break
     case 'NON-VAT':
     case 'VAT EXEMPT':
-      va = `VAT-Exempt Sales                      ${formatNumber(VATAnalysis?.VATExempt) ?? 0}
-${VATAnalysis?.ServiceCharge > 0 ? `SERVICE CHARGE                        ${formatNumber(VATAnalysis?.ServiceCharge) ?? 0}` : ''}
-THIS DOCUMENT IS NOT VALID FOR CLAIM OF INPUT TAX
-`
+      va = `           EXEMPT`
       break
     case 'ZERO RATED':
       va = ''
@@ -46,7 +43,10 @@ THIS DOCUMENT IS NOT VALID FOR CLAIM OF INPUT TAX
     default:
       va = `VAT ANALYSIS
 VATatable Sales                             ${formatNumber(VATAnalysis?.VATSales) ?? 0}
-VAT                                   ${formatNumber(VATAnalysis?.TaxAmount) ?? 0}`
+VAT                                   ${formatNumber(VATAnalysis?.TaxAmount) ?? 0}
+VAT-Exempt Sales                      ${formatNumber(VATAnalysis?.VATExempt) ?? 0}
+Zero-Rated Sales                      ${formatNumber(VATAnalysis?.ZeroRated) ?? 0}
+`
       break
   }
 
@@ -88,9 +88,11 @@ SENIOR / PWD / NAAC / SP INFORMATION
 TIN NO.                         ${details?.SeniorCitizenTINNumber ?? ''}
 ID NO.                          ${details?.SeniorCitizenId ?? ''}
 NAME                            ${details?.SeniorCitizenName ?? ''}
-CHILD NAME                      ${details?.SeniorCitizenChildName ?? ''}
-CHILD AGE                       ${details?.SeniorCitizenChildBirthdate ? calculateAge(details?.SeniorCitizenChildBirthdate ?? '') : ''}
-BIRTHDATE                       ${details?.SeniorCitizenChildBirthdate ? formatDateSlash(new Date(details?.SeniorCitizenChildBirthdate ?? '')) : ''}`
+CHILD NAME                      ${details?.SeniorCitizenChildName ?? 'NA'}
+CHILD AGE                       ${details?.SeniorCitizenChildBirthdate ? calculateAge(details?.SeniorCitizenChildBirthdate ?? '') : 'NA'}
+BIRTHDATE                       ${details?.SeniorCitizenChildBirthdate ? formatDateSlash(new Date(details?.SeniorCitizenChildBirthdate ?? '')) : 'NA'}
+SIGNATURE                       ${'________________________'}
+`
     : ''
 }
 --------------------------------------------
@@ -107,7 +109,7 @@ ADDRESS                        ${details?.CustomerAddress ?? '__________________
 TIN                            ${details?.CustomerTIN ?? '________________________'}
 TIME                           ${formatDateFD(new Date(details?.DateCreated))}
 BUSINESS STYLE                 ${details?.BusinessStyle ?? '________________________'}
-SIGNATURE                      ${'________________________'}
+
 `
   } catch (error: unknown) {
     return `${(error as Error).message}`
