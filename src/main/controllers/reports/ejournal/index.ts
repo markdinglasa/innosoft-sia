@@ -308,7 +308,7 @@ ipcMain.handle(
           const totalItem = saleItems.length || 0
           const paymentMethods = paymentsMap.get(cn) || []
           const details = detailsMap.get(cn) || {}
-          const va: VATAnalysis = vaMap.get(cn)[0] || []
+          const va: VATAnalysis = vaMap.get(cn)?.[0] || ({} as VATAnalysis)
 
           const paymentsContent: string = paymentMethods
             .map(
@@ -351,7 +351,7 @@ ipcMain.handle(
 
           const fullReceipt = `${header}${receiptContent}${footer}\n\n`
           if (!stream.write(fullReceipt)) {
-            await new Promise((resolve) => stream.once('drain', resolve))
+            await new Promise((resolve) => stream.once('drain', () => resolve(undefined)))
           }
           hasRecords = true
         }
