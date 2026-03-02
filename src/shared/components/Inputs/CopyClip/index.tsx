@@ -33,7 +33,7 @@ export const CopyClip: SFC<CopyClipProps> = ({ className, Value, Label, Theme })
         <S.Button
           onClick={copyToClipboard}
           iconLeft={copyStatus === 'Copy' ? mdiContentCopy : mdiClipboardCheckMultipleOutline}
-          color={ButtonColor.blue}
+          color={ButtonColor.green}
           type={ButtonType.button}
           text={copyStatus}
         />

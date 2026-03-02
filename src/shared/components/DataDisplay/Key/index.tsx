@@ -7,5 +7,5 @@ export interface KeyProps {
 }
 
 export const Key: SFC<KeyProps> = ({ className, theme, encryptedKey }) => {
-  return <CopyClip Value={encryptedKey} className={className} Label="Enrypted key" Theme={theme} />
+  return <CopyClip Value={encryptedKey} className={className} Label="Encrypted Key" Theme={theme} />
 }

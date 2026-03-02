@@ -1,6 +1,6 @@
 import { mdiLockPlus } from '@mdi/js'
 import { Input, Key } from '@shared/components'
-import { APP_VERSION } from "@shared/constants"
+import { APP_VERSION } from '@shared/constants'
 import { Error, Success } from '@shared/messages'
 import { setSnackbar } from '@shared/store/manager'
 import {
@@ -17,24 +17,20 @@ import { useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import * as yup from 'yup'
 import * as S from './Styles'
-import { encryptInput } from "./encryption"
+import { encryptInput } from './encryption'
 
 export const Encryptor: SFC = ({ className }) => {
   const dispatch = useDispatch<AppDispatch>()
   const [encryptedKey, setEncryptedKey] = useState('')
-  const initialValues = {
-    inputKey: ''
-  }
+  const initialValues = { inputKey: '' }
   type FormValues = typeof initialValues
 
   let sb: Snackbar, message: string, type: ToastType
   const handleSubmit = async (values: FormValues) => {
-    const data = {
-      inputKey: values.inputKey
-    }
+    const data = { inputKey: values.inputKey }
     try {
-      const ENCRYPTION_PASSPHRASE = 'clrpSecretK3y';
-     const response = encryptInput(data.inputKey, ENCRYPTION_PASSPHRASE)
+      const ENCRYPTION_PASSPHRASE = 'clrpSecretK3y'
+      const response = encryptInput(data.inputKey, ENCRYPTION_PASSPHRASE)
       console.log('resonse', response)
       if (response) {
         setEncryptedKey(response)
@@ -53,9 +49,7 @@ export const Encryptor: SFC = ({ className }) => {
   }
 
   const validationSchema = useMemo(() => {
-    return yup.object().shape({
-      inputKey: yup.string().required('Required')
-    })
+    return yup.object().shape({ inputKey: yup.string().required('Required') })
   }, [])
 
   return (
@@ -67,9 +61,7 @@ export const Encryptor: SFC = ({ className }) => {
             <S.CardTitle>Encrypt</S.CardTitle>
           </S.CardHeader>
           <S.CardBody className={className}>
-           {
-             encryptedKey && <Key theme={Theme.dark} encryptedKey={encryptedKey} />
-           }
+            {encryptedKey && <Key theme={Theme.dark} encryptedKey={encryptedKey} />}
             <Formik
               initialValues={initialValues}
               onSubmit={handleSubmit}
@@ -101,7 +93,7 @@ export const Encryptor: SFC = ({ className }) => {
             </Formik>
           </S.CardBody>
           <S.CardFooter>
-            <S.Span> { new Date().getFullYear() } @ Questnova Solutions Inc.</S.Span>
+            <S.Span> {new Date().getFullYear()} @ Landtrax Tech Solutions Corp</S.Span>
             <S.Span> Encryptor {APP_VERSION}</S.Span>
           </S.CardFooter>
         </S.CardContainer>

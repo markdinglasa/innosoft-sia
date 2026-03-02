@@ -32,7 +32,7 @@ export const Field = styled(UField)`
 `
 
 export const Label = styled.div<{ theme: Theme }>`
-  font-size: 10px;
+  font-size: 12px;
   margin-bottom: 8px;
   color: ${({ theme }) => {
     if (theme === Theme.dark) {
