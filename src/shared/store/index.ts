@@ -1,5 +1,5 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
-import { AppReducers } from '../../renderer/src/registry'
+
 import internalReducer from './internal'
 import managerReducer from './manager'
 
@@ -10,7 +10,6 @@ const systemReducer = combineReducers({
 
 const store = configureStore({
   reducer: {
-    ...AppReducers,
     system: systemReducer
   }
 })

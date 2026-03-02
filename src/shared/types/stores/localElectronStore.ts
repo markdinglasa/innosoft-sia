@@ -1,4 +1,3 @@
-import { SystemElectronStore } from '@shared/types'
-import { AppElectronStore } from '../../../renderer/src/registry' // main renderer
+import { SystemElectronStore } from '@shared/types';
 
-export interface LocalElectronStore extends AppElectronStore, SystemElectronStore {}
+export interface LocalElectronStore extends SystemElectronStore {}

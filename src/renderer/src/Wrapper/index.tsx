@@ -1,7 +1,7 @@
-import { MainArea } from '@renderer/MainArea'
+import { MainArea } from '@renderer/main/index'
 import { Snackbar as CSnackbar } from '@shared/components/'
 import { useReadIpc } from '@shared/hooks'
-import { loadSystemData, loadWindowData } from '@shared/internal'
+import { loadSystemData } from '@shared/internal'
 import { getSnackbar, getStoreLoaded } from '@shared/selectors/state'
 import { setStoreLoadedTrue } from '@shared/store/internal'
 import { setSnackbar } from '@shared/store/manager'
@@ -28,7 +28,6 @@ export const Wrapper: FC = () => {
     (store: LocalElectronStore) => {
       if (storeLoaded) return
       loadSystemData(dispatch, store)
-      loadWindowData(dispatch, store)
       dispatch(setStoreLoadedTrue())
     },
     [dispatch, storeLoaded]

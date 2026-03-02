@@ -43,11 +43,11 @@ const createWindow = (url: string): BrowserWindow => {
     resizable: isDev ? true : false,
     fullscreenable: isDev ? true : false,
     fullscreen: false,
-    vibrancy: isDev ? 'titlebar' : 'under-window',
-    title: 'Innosoft Sales Insights & Analytics',
-    visualEffectState: isDev ? 'inactive' : 'active',
-    titleBarStyle: isDev ? 'default' : 'hidden',
-    trafficLightPosition: { x: 15, y: 10 },
+    //vibrancy: isDev ? 'titlebar' : 'under-window',
+    title: 'encryptor',
+    //visualEffectState: isDev ? 'inactive' : 'active',
+    // titleBarStyle: isDev ? 'default' : 'hidden',
+    // trafficLightPosition: { x: 15, y: 10 },
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
@@ -109,9 +109,9 @@ if (!gotTheLock) {
       mainWindow.focus()
     }
   })
-  app.setAppUserModelId('innosoft SIA v1.0')
+  app.setAppUserModelId('encryptor v1.0')
   app.whenReady().then(async () => {
-    electronApp.setAppUserModelId('com.innosoft')
+    electronApp.setAppUserModelId('com.encryptor')
     app.on('browser-window-created', (_, window) => {
       optimizer.watchWindowShortcuts(window)
     })
@@ -142,7 +142,7 @@ if (!gotTheLock) {
       }
     ])
 
-    tray.setToolTip('iSIA')
+    tray.setToolTip('encryptor')
     tray.setContextMenu(contextMenu)
 
     tray.on('click', function () {
@@ -159,7 +159,7 @@ if (!gotTheLock) {
 
     // Auto-launch configuration
     const autoLaunch = new AutoLaunch({
-      name: 'iSIA',
+      name: 'encryptor',
       path: app.getPath('exe')
     })
 

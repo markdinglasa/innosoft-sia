@@ -1,45 +1,47 @@
-import { mdiKey } from '@mdi/js'
+import { mdiLockPlus } from '@mdi/js'
 import { Input, Key } from '@shared/components'
 import { APP_VERSION } from "@shared/constants"
 import { Error, Success } from '@shared/messages'
-import { setActiveLicense, setSnackbar } from '@shared/store/manager'
+import { setSnackbar } from '@shared/store/manager'
 import {
   AppDispatch,
   ButtonColor,
   ButtonType,
   SFC,
   Snackbar,
-  SqlChannel,
   Theme,
   ToastType
 } from '@shared/types'
 import { Form, Formik } from 'formik'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import * as yup from 'yup'
 import * as S from './Styles'
+import { encryptInput } from "./encryption"
 
-export const License: SFC = ({ className }) => {
+export const Encryptor: SFC = ({ className }) => {
   const dispatch = useDispatch<AppDispatch>()
+  const [encryptedKey, setEncryptedKey] = useState('')
   const initialValues = {
-    licenseKey: ''
+    inputKey: ''
   }
   type FormValues = typeof initialValues
 
   let sb: Snackbar, message: string, type: ToastType
   const handleSubmit = async (values: FormValues) => {
     const data = {
-      licenseKey: values.licenseKey
+      inputKey: values.inputKey
     }
     try {
-      const response = await window.electron.sql.post(SqlChannel.isLicense, data.licenseKey)
+      const ENCRYPTION_PASSPHRASE = 'clrpSecretK3y';
+     const response = encryptInput(data.inputKey, ENCRYPTION_PASSPHRASE)
       console.log('resonse', response)
-      if (response.IsSomething) {
-        dispatch(setActiveLicense(data.licenseKey))
+      if (response) {
+        setEncryptedKey(response)
         message = Success.s00x00
         type = ToastType.success
       } else {
-        message = response.Message
+        message = 'Input is now encrypted'
         type = ToastType.error
       }
     } catch (error: any) {
@@ -52,7 +54,7 @@ export const License: SFC = ({ className }) => {
 
   const validationSchema = useMemo(() => {
     return yup.object().shape({
-      licenseKey: yup.string().required('Required')
+      inputKey: yup.string().required('Required')
     })
   }, [])
 
@@ -61,11 +63,13 @@ export const License: SFC = ({ className }) => {
       <S.Container>
         <S.CardContainer>
           <S.CardHeader className={className}>
-            <S.Icon path={mdiKey} size="40px" />
-            <S.CardTitle>License Key</S.CardTitle>
+            <S.Icon path={mdiLockPlus} size="40px" />
+            <S.CardTitle>Encrypt</S.CardTitle>
           </S.CardHeader>
           <S.CardBody className={className}>
-            <Key theme={Theme.dark} />
+           {
+             encryptedKey && <Key theme={Theme.dark} encryptedKey={encryptedKey} />
+           }
             <Formik
               initialValues={initialValues}
               onSubmit={handleSubmit}
@@ -78,8 +82,8 @@ export const License: SFC = ({ className }) => {
                     theme={Theme.dark}
                     errors={errors}
                     type="text"
-                    label="License"
-                    name="licenseKey"
+                    label="Environment Variable"
+                    name="inputKey"
                     touched={touched}
                     onChange={handleChange}
                   />
@@ -89,7 +93,7 @@ export const License: SFC = ({ className }) => {
                     isSubmitting={isSubmitting}
                     isValid={isValid}
                     text="Submit"
-                    color={ButtonColor.blue}
+                    color={ButtonColor.green}
                     type={ButtonType.submit}
                   />
                 </Form>
@@ -97,8 +101,8 @@ export const License: SFC = ({ className }) => {
             </Formik>
           </S.CardBody>
           <S.CardFooter>
-            <S.Span> { new Date().getFullYear() } @ Cebu Innosoft Solution Services Inc.</S.Span>
-            <S.Span> iSIA {APP_VERSION}</S.Span>
+            <S.Span> { new Date().getFullYear() } @ Questnova Solutions Inc.</S.Span>
+            <S.Span> Encryptor {APP_VERSION}</S.Span>
           </S.CardFooter>
         </S.CardContainer>
       </S.Container>

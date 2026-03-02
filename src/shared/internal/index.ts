@@ -1,2 +1,2 @@
-export * from './loadSystemData'
-export * from './loadWindowData'
+export * from './loadSystemData';
+

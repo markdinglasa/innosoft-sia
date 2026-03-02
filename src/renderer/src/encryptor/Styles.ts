@@ -13,11 +13,12 @@ export const Container = styled.div`
 `
 export const CardContainer = styled.div`
   display: flex;
-  flex-direction: column;
+    width:100%;
+  flex-direction: column; 
   align-items: center;
   justify-content: flex-start;
   color: #a6b0cf;
-  padding: 24px 24px;
+  padding: 3rem;
 `
 
 export const CardBody = styled.div`
@@ -42,7 +43,7 @@ export const CardHeader = styled.div`
 `
 
 export const Icon = styled(UMdiIcon)`
-  border-radius: 50%;
+
   color: ${colors.palette.neutral['100']};
   margin-right: 5px;
   padding: 4px;

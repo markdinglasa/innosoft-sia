@@ -1,7 +1,8 @@
-appId: innosoft.SIA.v01.app
-productName: Innosoft SIA 1.1.4
+appId: com.encryptor
+productName: Encryptor
 directories:
   buildResources: build
+  output: dist
 files:
   - '!**/.vscode/*'
   - '!src/*'
@@ -9,10 +10,11 @@ files:
   - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+  - 'out/**/*'
 asarUnpack:
   - resources/**
 win:
-  executableName: iSIA
+  executableName: Encryptor
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
@@ -45,5 +47,5 @@ npmRebuild: false
 publish:
   provider: github
   owner: markdinglasa
-  repo: https://github.com/markdinglasa/innosoft-sia
+  repo: https://github.com/markdinglasa/encryptor
   releaseType: release
