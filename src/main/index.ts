@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import AutoLaunch from 'auto-launch'
 import {
@@ -43,11 +44,11 @@ const createWindow = (url: string): BrowserWindow => {
     resizable: isDev ? true : false,
     fullscreenable: isDev ? true : false,
     fullscreen: false,
-    vibrancy: isDev ? 'titlebar' : 'under-window',
+    //vibrancy: isDev ? 'titlebar' : 'under-window',
     title: 'Innosoft Sales Insights & Analytics',
-    visualEffectState: isDev ? 'inactive' : 'active',
-    titleBarStyle: isDev ? 'default' : 'hidden',
-    trafficLightPosition: { x: 15, y: 10 },
+    //visualEffectState: isDev ? 'inactive' : 'active',
+    //titleBarStyle: isDev ? 'default' : 'hidden',
+    //trafficLightPosition: { x: 15, y: 10 },
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
