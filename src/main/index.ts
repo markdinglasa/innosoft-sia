@@ -1,5 +1,5 @@
-import 'reflect-metadata'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
+import { APP_VERSION } from '@shared/constants'
 import AutoLaunch from 'auto-launch'
 import {
   app,
@@ -17,6 +17,7 @@ import installer, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devto
 import electronStore from 'electron-store'
 import fs from 'fs'
 import path, { join } from 'path'
+import 'reflect-metadata'
 import { NODE_ENV } from './constants'
 import './controllers'
 import './ipcMain'
@@ -110,7 +111,7 @@ if (!gotTheLock) {
       mainWindow.focus()
     }
   })
-  app.setAppUserModelId('innosoft SIA v1.0')
+  app.setAppUserModelId('innosoft SIA ' + APP_VERSION)
   app.whenReady().then(async () => {
     electronApp.setAppUserModelId('com.innosoft')
     app.on('browser-window-created', (_, window) => {

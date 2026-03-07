@@ -159,7 +159,7 @@ export const useMWReports = () => {
         if (IsZReading && element) {
           const options = {
             margin: 0.1,
-            jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
+            jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' as 'portrait' }
           }
           const pdfBlob = await html2pdf().from(element).set(options).outputPdf('blob')
           const arrayBuffer = await pdfBlob.arrayBuffer()

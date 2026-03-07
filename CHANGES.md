@@ -1,4 +1,17 @@
-## LATEST: 1.1.6
+## LATEST: 1.1.9
+
+```
+    Software: Innsoft Sales Insight & Analytics
+    Version: v1.1.9
+    Author: Mark Dinglasa
+    DatePublished: 2026-03-07 | 04:28 PM
+
+    Note:
+       Updated Megaworld reports from LF into CLRF. fix the generate button, hence on Megaworld as report-type on select
+       of it the generate button wont display.
+
+       on setting, on click of the date-range shouldn't  off/on the z-reading option.
+```
 
 ```
     Software: Innsoft Sales Insight & Analytics

@@ -34,6 +34,7 @@ export const ZReadingCon = styled.div`
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  padding-right: 0.5rem;
 `
 export const TextAreaContainer = styled.div`
   padding: 0 0 1rem 0;

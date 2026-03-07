@@ -24,7 +24,7 @@ export const SIAManager: SFC<AppProps> = ({ className }) => {
     <>
       <AppWindow className={className} display={true}>
         <S.Container>
-          <S.Filler> 2024 © Mark Dinglasa </S.Filler>
+          {/* <S.Filler> 2024 © Mark Dinglasa </S.Filler> */}
           <S.Body>
             <S.Card>
               <DatabaseCard />

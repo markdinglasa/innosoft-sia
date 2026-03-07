@@ -117,7 +117,7 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
                       OnChange={(_: any, _value: any) => {
                         toggleDateRange() // toggle first
                         setTimeout(() => {
-                          setFieldValue('IsZReading', false)
+                          //setFieldValue('IsZReading', false)
                           setFieldValue('IsDateRange', !IsDateRange) // use updated state
                         }, 0)
                       }}
@@ -134,7 +134,7 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
                         toggleZReading() // toggle first
                         setTimeout(() => {
                           setFieldValue('IsZReading', !IsZReading) // use updated state
-                          setFieldValue('IsDateRange', false)
+                          //setFieldValue('IsDateRange', false)
                         }, 0)
                       }}
                       Values={values.IsZReading}

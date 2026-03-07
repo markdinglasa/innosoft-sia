@@ -19,16 +19,6 @@ export const Content = styled.div<{ theme: Theme }>`
 
 export const Header = styled.div`
   align-items: center;
-  border-bottom: 1px solid
-    ${({ theme }) => {
-      if (theme === Theme.dark) {
-        return colors.palette.gray['100']
-      }
-      if (theme === Theme.light) {
-        return colors.primary
-      }
-      return colors.primary
-    }};
   color: ${({ theme }) => {
     if (theme === Theme.dark) {
       return colors.palette.gray['100']
@@ -73,13 +63,6 @@ export const Modal = styled.div<{ theme: Theme }>`
     }
     return colors.primary
   }};
-  border: 1px solid
-    ${({ theme }) => {
-      if (theme === Theme.dark) {
-        return colors.palette.gray['100']
-      }
-      return colors.primary
-    }};
   border-radius: 8px;
   left: 50%;
   position: fixed;

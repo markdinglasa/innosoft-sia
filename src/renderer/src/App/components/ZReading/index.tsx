@@ -124,6 +124,7 @@ export const ZReading: SFC<ZReadingProps> = ({ className, CurrentDate }) => {
     Number(regularDiscounts) +
     Number(GovDiscountAmount)
   //console.log(discounts)
+
   return (
     <>
       <S.Container className={`text-bold ${className}`}>

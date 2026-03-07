@@ -14,4 +14,5 @@ export const Button = styled(UButton)`
 export const Form = styled(F)`
   height: 500px;
   overflow: auto;
+  padding-right: 0.5rem;
 `

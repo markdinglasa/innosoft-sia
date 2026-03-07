@@ -1,5 +1,5 @@
 import { License } from '@renderer/License'
-import { DraggableTopBar, Splash } from '@shared/components'
+import { Splash } from '@shared/components'
 import { Error } from '@shared/messages'
 import { getActiveLicense } from '@shared/selectors'
 import { setSnackbar } from '@shared/store/manager'
@@ -59,7 +59,7 @@ export const MainArea: SFC = ({ className }) => {
 
   return (
     <S.Container className={className}>
-      <DraggableTopBar />
+      {/* <DraggableTopBar /> */}
       {renderContent()}
     </S.Container>
   )

@@ -260,9 +260,12 @@ export const Initialize: SFC = ({ className }) => {
         >
           <AllianceTenant generate={handleSingleGenerate} />
         </AccessControl>
+        <AccessControl condition={!settings.IsDateRange && String(activeTenant) === Tenants.MW}>
+          <AllianceTenant generate={handleSingleGenerate} />
+        </AccessControl>
       </S.Container>
       {renderLoadingScreen()}
-      <div style={{ display: 'none' }}>
+      <div style={{ display: 'block' }}>
         <div ref={pointerRef}>
           <ZReading CurrentDate={Dates} />
         </div>

@@ -13,7 +13,7 @@ SELECT
 		ELSE 0 
 	END) AS VATExempt,
 	SUM (
-		CASE WHEN (TrnSalesLine.TaxId = 9 OR TrnSalesLine.ItemId = 1)
+		CASE WHEN (MstTax.Tax = 'NON-VAT' OR MstItem.ItemDescription = 'SERVICE CHARGE')
 		THEN TrnSalesLine.Amount
 		ELSE 0 END
 	) AS NONVat
@@ -21,9 +21,10 @@ SELECT
 	LEFT JOIN TrnSalesLine ON TrnSalesLine.SalesId = TrnCollection.SalesId
 	LEFT JOIN MstDiscount ON MstDiscount.Id = TrnSalesLine.DiscountId
 	LEFT JOIN MstTax ON MstTax.Id = TrnSalesLine.TaxId
+	LEFT JOIN MstItem ON MstItem.Id = TrnSalesLine.ItemId
 	WHERE  
 		TrnCollection.[TerminalId] = ${Terminal}
-		AND ISNULL(TrnCollection.[IsReturn], 0) =  0
+		--AND ISNULL(TrnCollection.[IsReturn], 0) =  0
 		AND ISNULL(TrnCollection.[IsCancelled],0) = 0
 		AND TrnCollection.[IsLocked] = 1 
 		AND CAST(TrnCollection.CollectionDate AS DATE) = '${Dates}'
