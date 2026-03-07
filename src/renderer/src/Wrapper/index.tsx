@@ -17,7 +17,7 @@ import { FC, useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Bounce, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import * as S from './styles'
+import * as S from './Styles'
 
 export const Wrapper: FC = () => {
   const dispatch = useDispatch<AppDispatch>()

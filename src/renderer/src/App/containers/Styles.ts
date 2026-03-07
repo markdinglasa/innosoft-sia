@@ -20,7 +20,7 @@ export const Header = styled.div`
 export const Body = styled.div`
   width: 100%;
   height: calc(100vh - 70px);
-  padding: 2rem 10px 0 10px;
+  padding: 10px 10px 0 10px;
   display: flex;
   flex-direction: column;
   align-items: start;

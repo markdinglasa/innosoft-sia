@@ -265,7 +265,7 @@ export const Initialize: SFC = ({ className }) => {
         </AccessControl>
       </S.Container>
       {renderLoadingScreen()}
-      <div style={{ display: 'block' }}>
+      <div style={{ display: 'none' }}>
         <div ref={pointerRef}>
           <ZReading CurrentDate={Dates} />
         </div>

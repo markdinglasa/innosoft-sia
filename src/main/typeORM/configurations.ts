@@ -1,8 +1,5 @@
 import { DataSource } from 'typeorm'
 import { getConnection } from '../functions/configuration'
-import { MstBranchEntity } from '../entities/masterfiles/MstBranch.entity'
-import { TrnSalesEntity } from '../entities/transactions/TrnSales.entity'
-import { SysSalesLockedEntity } from '../entities/utilities/SysSalesLocked.entity'
 
 export const AppDataSource = new DataSource({
   type: 'mssql',
@@ -13,7 +10,7 @@ export const AppDataSource = new DataSource({
   database: getConnection().Data?.name || '',
   synchronize: false,
   logging: true,
-  entities: [MstBranchEntity, TrnSalesEntity, SysSalesLockedEntity],
+  entities: [],
   subscribers: [],
   migrations: [],
   extra: {
