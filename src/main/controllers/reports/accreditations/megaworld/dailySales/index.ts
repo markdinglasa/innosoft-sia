@@ -48,7 +48,7 @@ ipcMain.handle(
                 .toString()
                 .replace(/[^a-zA-Z0-9]/g, '') ?? 'NA'
             }`
-          ].join('\n')
+          ].join('\r\n')
         }
       )
       // console.log(salestypeR)
@@ -119,10 +119,10 @@ ipcMain.handle(
             `18${item?.CustomerCount ?? 'NA'}`,
             `19${item?.ControlNumber ?? 'NA'}`,
             `20${item?.NoSalesTransaction ?? 'NA'}`,
-            salestypeD.join('\n')
-          ].join('\n')
+            salestypeD.join('\r\n')
+          ].join('\r\n')
         })
-        .join('\n')
+        .join('\r\n')
 
       if (!dailySalesData || dailySalesData.length === 0)
         dailySalesData = [
@@ -151,7 +151,7 @@ ipcMain.handle(
           `200`,
           `210`,
           `22000`
-        ].join('\n')
+        ].join('\r\n')
 
       // Write the data to the file
       fs.writeFileSync(filePath, dailySalesData, 'utf8')

@@ -55,9 +55,9 @@ ipcMain.handle(
                 .replace(/[^a-zA-Z0-9]/g, '')}`, // Net Sales Amount for the Hour (formatted)
               `06${item.NoSalesTransactionHour}`, // Number of Sales Transactions for the Hour
               `07${item.CustomerCountHour}` // Customer Count for the Hour
-            ].join('\n')
+            ].join('\r\n')
           })
-          .join('\n') ?? ''
+          .join('\r\n') ?? ''
 
       let daySalesData =
         dayResponse
@@ -73,9 +73,9 @@ ipcMain.handle(
                 .replace(/[^a-zA-Z0-9]/g, '')}`, // Net Sales Amount for the Day (formatted)
               `09${item.NoSalesTransactionDay}`, // Number of Sales Transactions for the Day
               `10${item.CustomerCountDay}` // Customer Count for the Day
-            ].join('\n')
+            ].join('\r\n')
           })
-          .join('\n') ?? ''
+          .join('\r\n') ?? ''
       if (!daySalesData || daySalesData.length === 0)
         daySalesData = [
           `01${data.TenantCode ?? 'NA'}`,
@@ -88,7 +88,7 @@ ipcMain.handle(
           `08000`,
           `090`,
           `100`
-        ].join('\n')
+        ].join('\r\n')
 
       // Write the formatted data to the file
       fs.writeFileSync(filePath, daySalesData, 'utf8')

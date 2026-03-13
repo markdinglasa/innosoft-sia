@@ -32,7 +32,7 @@ ipcMain.handle(
       let dailyDiscountData = response.List.map(
         (item: DailyDiscount) =>
           `${item.DiscountCode}, ${item.DiscountDescription}, ${Number(item.DiscountAmount).toFixed(2)}`
-      ).join('\n')
+      ).join('\r\n')
 
       if (!dailyDiscountData || dailyDiscountData.length === 0) dailyDiscountData = `NA, NA, 0.00`
       fs.writeFileSync(filePath, dailyDiscountData, 'utf8')

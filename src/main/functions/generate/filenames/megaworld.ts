@@ -38,7 +38,7 @@ export const generateMWFilename = (
     const month = currentDate.getMonth() + 1
     const monthCode = month > 9 ? String.fromCharCode(64 + month - 9) : String(month)
     const day = String(currentDate.getDate()).padStart(2, '0')
-    return `${type}${formattedPartnerCode}${formattedTerminal}${batchNo}.${monthCode}${day}${type !== MWFileType.ZReading ? '.txt' : ''}`
+    return `${type}${formattedPartnerCode}${formattedTerminal}${batchNo}.${monthCode}${day}`
   } catch (error: unknown) {
     console.error((error as Error).message)
     return 'error.txt'
