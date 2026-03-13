@@ -1,6 +1,6 @@
 {
   "name": "innosoft-sia",
-  "version": "1.1.9",
+  "version": "1.1.10",
   "description": "Innosoft Sales Insights and Analytics",
   "main": "./out/main/index.js",
   "author": "Mark Dinglasa",
