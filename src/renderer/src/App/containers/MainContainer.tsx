@@ -7,11 +7,9 @@ import { AppProps, SFC, Theme } from '@shared/types'
 import { useSelector } from 'react-redux'
 import { DatabaseCard, SelectPathButton, Tenant } from '../components'
 import { AccessControl } from '../components/AccessControl'
-import { EJournal } from '../components/EJournal'
 import { Initialize } from '../components/Initialize'
 import { SettingsModal } from '../modals'
 import { getActiveTenant } from '../selectors'
-import { GenericReportType } from '../types/genericReport'
 import * as S from './Styles'
 
 export const SIAManager: SFC<AppProps> = ({ className }) => {
@@ -36,15 +34,10 @@ export const SIAManager: SFC<AppProps> = ({ className }) => {
               <Tenant />
             </S.Card>
             <AccessControl
-              condition={activeTenant !== GenericReportType.E_JOURNAL && !!activeTenant}
+              condition={!!activeTenant}
             >
               <S.Card>
                 <Initialize />
-              </S.Card>
-            </AccessControl>
-            <AccessControl condition={activeTenant === GenericReportType.E_JOURNAL}>
-              <S.Card>
-                <EJournal />
               </S.Card>
             </AccessControl>
             <S.SettingsContainer>

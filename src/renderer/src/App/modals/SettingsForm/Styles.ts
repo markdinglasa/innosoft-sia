@@ -13,14 +13,23 @@ export const UModal = styled(Modal)`
   min-height: fit;
 `
 export const Container = styled.div`
+  height: 100%;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow-y: auto;
+  flex-direction: column;
+    max-height: calc(80vh - 5rem);
+
+`
+export const Title = styled.span`
+  font-size: 14px;
+  font-weight: 600;
+  padding-bottom: 1rem;
+  color: ${colors.white};
 `
 export const CardBody = styled.div`
   width: 100%;
-  margin-bottom: 1rem;
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 0.5rem;
 `
 export const Button = styled(UButton)`
   width: 100%;
@@ -30,11 +39,9 @@ export const Div = styled.div`
 `
 export const ZReadingCon = styled.div`
   position: relative;
-  height: 300px;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  padding-right: 0.5rem;
+  padding: 1rem 0.5rem 0;
 `
 export const TextAreaContainer = styled.div`
   padding: 0 0 1rem 0;

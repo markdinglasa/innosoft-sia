@@ -1,10 +1,11 @@
-import { getActiveTenant } from '../../selectors'
 import { SFC } from '@shared/types'
 import { useSelector } from 'react-redux'
+import { getActiveTenant } from '../../selectors'
 import { Tenants } from '../../types'
+import { EJournal } from "../EJournal"
+import { AllianceReport } from './AllianceReport'
 import { MegaworldReport } from './MegaworldReport'
 import { SMReport } from './SMReport'
-import { AllianceReport } from './AllianceReport'
 
 export const Initialize: SFC = ({ className }) => {
   const activeTenant = useSelector(getActiveTenant)
@@ -17,6 +18,8 @@ export const Initialize: SFC = ({ className }) => {
         return <MegaworldReport className={className} />
       case Tenants.ALLIANCE:
         return <AllianceReport className={className} />
+      case Tenants.E_JOURNAL:
+        return <EJournal className={className} />
       default:
         return null
     }

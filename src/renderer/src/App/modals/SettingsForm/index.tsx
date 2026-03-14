@@ -1,3 +1,4 @@
+import { UpdateChecker } from "@renderer/App/components"
 import { Input, SwitchButton, TextArea } from '@shared/components'
 import { useToggle } from '@shared/hooks'
 import { Error, Success } from '@shared/messages'
@@ -10,7 +11,6 @@ import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setSettings } from '../../store/settings'
 import { settingsInitial, SettingsTable } from '../../types'
-import { UpdateChecker } from '../../components'
 import * as S from './Styles'
 
 interface DatabaseModalProps {
@@ -148,6 +148,7 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
                   {values.IsZReading && (
                     <>
                       <S.ZReadingCon>
+                        <S.Title>Z Reading Headers</S.Title>
                         <div>
                           <Input
                             theme={theme}
@@ -184,7 +185,7 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
                           theme={theme}
                           errors={errors}
                           type="text"
-                          label="PermitNumber"
+                          label="Permit Number"
                           name="PermitNumber"
                           value={values?.PermitNumber || ''}
                           onChange={handleChange}
