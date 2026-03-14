@@ -1,14 +1,11 @@
-import SettingsIcon from '@mui/icons-material/Settings'
-import IconButton from '@mui/material/IconButton'
 import { AppFooter, AppWindow } from '@shared/components'
 import { useToggle } from '@shared/hooks'
-import { colors } from '@shared/styles'
-import { AppProps, SFC, Theme } from '@shared/types'
+import { AppProps, SFC } from '@shared/types'
 import { useSelector } from 'react-redux'
 import { DatabaseCard, SelectPathButton, Tenant } from '../components'
 import { AccessControl } from '../components/AccessControl'
 import { Initialize } from '../components/Initialize'
-import { SettingsModal } from '../modals'
+import { Settings } from "../components/Settings"
 import { getActiveTenant } from '../selectors'
 import * as S from './Styles'
 
@@ -27,9 +24,10 @@ export const SIAManager: SFC<AppProps> = ({ className }) => {
             <S.Card>
               <DatabaseCard />
             </S.Card>
-            <S.Card>
-              <SelectPathButton onSelect={handlePathSelect} />
-            </S.Card>
+            <S.TwoColumnCard>
+              <SelectPathButton onSelect={handlePathSelect} className="w-full" />
+             <Settings />
+            </S.TwoColumnCard>
             <S.Card>
               <Tenant />
             </S.Card>
@@ -40,22 +38,13 @@ export const SIAManager: SFC<AppProps> = ({ className }) => {
                 <Initialize />
               </S.Card>
             </AccessControl>
-            <S.SettingsContainer>
-              <IconButton
-                onClick={toggleModal}
-                aria-label="settings"
-                sx={{ background: colors.secondary, '&:hover': { background: colors.pink } }}
-              >
-                <SettingsIcon sx={{ color: colors.primary }} />
-              </IconButton>
-            </S.SettingsContainer>
+          
           </S.Body>
           <S.Footer>
             <AppFooter />
           </S.Footer>
         </S.Container>
       </AppWindow>
-      {modalIsOpen && <SettingsModal close={toggleModal} theme={Theme.dark} />}
-    </>
+  </>
   )
 }

@@ -14,7 +14,7 @@ const addOverlay = keyframes`
 `
 
 export const Content = styled.div<{ theme: Theme }>`
-  padding: 16px;
+  padding: 1.6rem;
 `
 
 export const Header = styled.div`
@@ -26,10 +26,10 @@ export const Header = styled.div`
     return colors.primary
   }};
   display: flex;
-  font-size: 16px;
+  font-size: 1.6rem;
   font-weight: bold;
   justify-content: space-between;
-  padding: 8px 16px;
+  padding: 0.8rem 1.6rem;
   position: relative;
 `
 
@@ -63,7 +63,7 @@ export const Modal = styled.div<{ theme: Theme }>`
     }
     return colors.primary
   }};
-  border-radius: 8px;
+  border-radius: 0.8rem;
   left: 50%;
   position: fixed;
   top: 50%;

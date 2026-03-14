@@ -38,7 +38,7 @@ const createWindow = (url: string): BrowserWindow => {
 
   mainWindow = new BrowserWindow({
     width: isDev ? width : 410,
-    height: isDev ? height - 100 : 600,
+    height: isDev ? height - 100 : 700,
     icon: path.join(__dirname, '../shared/assets/favicon.ico'),
     show: isDev ? true : false,
     autoHideMenuBar: isDev ? false : true,

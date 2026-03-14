@@ -3,6 +3,9 @@ import { createGlobalStyle } from 'styled-components'
 import { colors, fonts } from '../'
 
 export const GlobalStyle = createGlobalStyle`
+  html {
+    font-size: 62.5%; /* 1rem = 10px */
+  }
   * {
     scrollbar-width: thin; /* "auto", "thin", or "none" */
     scrollbar-color: #888 inherit; /* thumb and track color */
@@ -13,14 +16,14 @@ export const GlobalStyle = createGlobalStyle`
   }
   /* Customize the scrollbar */
   ::-webkit-scrollbar {
-    width: 10px; /* Width of the scrollbar */
+    width: 1rem; /* Width of the scrollbar */
     background-color: #FFF; /* Background color of the scrollbar track */
   }
 
   /* Customize the scrollbar thumb (the draggable part) */
   ::-webkit-scrollbar-thumb {
     background-color: #14263e; /* Color of the scrollbar thumb */
-    border-radius: 5px; /* Rounded corners */
+    border-radius: 0.5rem; /* Rounded corners */
   }
 
   /* Customize the scrollbar thumb on hover */
@@ -36,7 +39,7 @@ export const GlobalStyle = createGlobalStyle`
     background: ${colors.palette.neutral['075']};
     color: ${colors.primary};
     font-family: ${fonts.family.default};
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: ${fonts.weight.regular};
     margin: 0;
   }
@@ -75,19 +78,19 @@ export const GlobalStyle = createGlobalStyle`
 
 
   h1 {
-    font-size: 24px;
+    font-size: 2.4rem;
   }
 
   h2 {
-    font-size: 20px;
+    font-size: 2.0rem;
   }
 
   h3 {
-    font-size: 16px;
+    font-size: 1.6rem;
   }
 
   h4 {
-    font-size: 14px;
+    font-size: 1.4rem;
   }
 
   p {
@@ -117,7 +120,7 @@ export const GlobalStyle = createGlobalStyle`
     display: flex;
     justify-content: end;
     align-items: center;
-    height: 30px;
+    height: 3rem;
     text-align: center;
     overflow: hidden; 
 
@@ -135,7 +138,7 @@ export const GlobalStyle = createGlobalStyle`
         flex: none;
     };
     & .MuiTablePagination-selectLabel; & .MuiTablePagination-displayedRows: {
-        margin-bottom:-0px;
+        margin-bottom:-0rem;
     };
   }
 `

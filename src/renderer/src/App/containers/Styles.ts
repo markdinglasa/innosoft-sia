@@ -19,8 +19,8 @@ export const Header = styled.div`
 `
 export const Body = styled.div`
   width: 100%;
-  height: calc(100vh - 70px);
-  padding: 10px 10px 0 10px;
+  height: calc(100vh - 7rem);
+  padding: 1rem 1rem 0 1rem;
   display: flex;
   flex-direction: column;
   align-items: start;
@@ -29,29 +29,42 @@ export const Body = styled.div`
   overflow-x: none;
 `
 export const Footer = styled.div`
-  height: 60px;
+  height: 6rem;
   position: fixed;
   width: 100vw;
   bottom: 0.1rem;
 `
 export const Card = styled.div`
   width: 100%;
-  padding: 10px 10px;
+  padding: 1rem 1rem;
   background: ${colors.palette.gray[500]};
-  border-radius: 10px;
-  margin-bottom: 10px;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
   &:last-child {
-    margin-bottom: 0px;
+    margin-bottom: 0rem;
+  }
+`
+export const TwoColumnCard= styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  padding: 1rem 1rem;
+  background: ${colors.palette.gray[500]};
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+  &:last-child {
+    margin-bottom: 0rem;
   }
 `
 export const Title = styled.div`
   width: 100%;
-  border-radius: 8px;
+  border-radius: 0.8rem;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin-bottom: 10px;
+  margin-bottom: 1rem;
 `
 export const H2 = styled.h2`
   color: ${colors.palette.neutral['100']};

@@ -1,5 +1,5 @@
-import { UpdateChecker } from "@renderer/App/components"
 import { Input, SwitchButton, TextArea } from '@shared/components'
+import { UpdateChecker } from '../../components'
 import { useToggle } from '@shared/hooks'
 import { Error, Success } from '@shared/messages'
 import { getSettings } from '@shared/selectors'
