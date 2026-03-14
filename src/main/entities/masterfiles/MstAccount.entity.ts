@@ -3,7 +3,7 @@ import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
 
 @Entity(POSEntity.MST_ACCOUNT)
-export class MstAccountEtity extends BaseEntity {
+export class MstAccountEntity extends BaseEntity {
   constructor() {
     super()
     this.code = ''

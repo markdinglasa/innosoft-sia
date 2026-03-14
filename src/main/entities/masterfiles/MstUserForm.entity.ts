@@ -16,8 +16,9 @@
 // 	[CanCancel] [bit] NOT NULL,
 // 	[CanReturn] [bit] NOT NULL,
 
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { POSEntity } from '../entity-names'
+import { MstUserEntity } from './MstUser.entity'
 
 @Entity(POSEntity.MST_USER_FORM)
 export class MstUserFormEntity {
@@ -38,6 +39,7 @@ export class MstUserFormEntity {
     this.canSplit = false
     this.canCancel = false
     this.canReturn = false
+    this.user = undefined
   }
 
   @PrimaryGeneratedColumn({ name: 'Id' })
@@ -51,6 +53,11 @@ export class MstUserFormEntity {
 
   @Column({ name: 'CanDelete', type: 'bit', nullable: false })
   canDelete: boolean
+
+  // FK Relationships
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'UserId' })
+  user?: MstUserEntity
 
   @Column({ name: 'CanAdd', type: 'bit', nullable: false })
   canAdd: boolean

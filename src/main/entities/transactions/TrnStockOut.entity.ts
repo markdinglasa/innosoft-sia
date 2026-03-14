@@ -1,6 +1,10 @@
-import { Column, Entity } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
+import { MstPeriodEntity } from '../masterfiles/MstPeriod.entity'
+import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
+import { MstBranchEntity } from '../masterfiles/MstBranch.entity'
+import { MstUserEntity } from '../masterfiles/MstUser.entity'
 
 @Entity(POSEntity.TRN_STOCK_OUT)
 export class TrnStockOutEntity extends BaseEntity {
@@ -43,4 +47,37 @@ export class TrnStockOutEntity extends BaseEntity {
 
   @Column({ name: 'BranchId', type: 'int', nullable: true })
   branchId: number | null
+
+  // FK Relationships
+  @ManyToOne(() => MstPeriodEntity)
+  @JoinColumn({ name: 'PeriodId' })
+  period?: MstPeriodEntity
+
+  @ManyToOne(() => MstAccountEntity)
+  @JoinColumn({ name: 'AccountId' })
+  account?: MstAccountEntity
+
+  @ManyToOne(() => MstBranchEntity)
+  @JoinColumn({ name: 'BranchId' })
+  branch?: MstBranchEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'PreparedBy' })
+  preparedByUser?: MstUserEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'CheckedBy' })
+  checkedByUser?: MstUserEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'ApprovedBy' })
+  approvedByUser?: MstUserEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'EntryUserId' })
+  entryUser?: MstUserEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'UpdateUserId' })
+  updateUser?: MstUserEntity
 }

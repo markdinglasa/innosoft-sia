@@ -1,6 +1,13 @@
-import { Column, Entity } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
+import { MstPeriodEntity } from '../masterfiles/MstPeriod.entity'
+import { MstSupplierEntity } from '../masterfiles/MstSupplier.entity'
+import { TrnCollectionEntity } from './TrnCollection.entity'
+import { TrnPurchaseOrderEntity } from './TrnPurchaseOrder.entity'
+import { TrnSalesEntity } from './TrnSales.entity'
+import { MstBranchEntity } from '../masterfiles/MstBranch.entity'
+import { MstUserEntity } from '../masterfiles/MstUser.entity'
 
 @Entity(POSEntity.TRN_STOCK_IN)
 export class TrnStockInEntity extends BaseEntity {
@@ -59,4 +66,49 @@ export class TrnStockInEntity extends BaseEntity {
 
   @Column({ name: 'BranchId', type: 'int', nullable: true })
   branchId: number | null
+
+  // FK Relationships
+  @ManyToOne(() => MstPeriodEntity)
+  @JoinColumn({ name: 'PeriodId' })
+  period?: MstPeriodEntity
+
+  @ManyToOne(() => MstSupplierEntity)
+  @JoinColumn({ name: 'SupplierId' })
+  supplier?: MstSupplierEntity
+
+  @ManyToOne(() => TrnCollectionEntity)
+  @JoinColumn({ name: 'CollectionId' })
+  collection?: TrnCollectionEntity
+
+  @ManyToOne(() => TrnPurchaseOrderEntity)
+  @JoinColumn({ name: 'PurchaseOrderId' })
+  purchaseOrder?: TrnPurchaseOrderEntity
+
+  @ManyToOne(() => TrnSalesEntity)
+  @JoinColumn({ name: 'SalesId' })
+  sales?: TrnSalesEntity
+
+  @ManyToOne(() => MstBranchEntity)
+  @JoinColumn({ name: 'BranchId' })
+  branch?: MstBranchEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'PreparedBy' })
+  preparedByUser?: MstUserEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'CheckedBy' })
+  checkedByUser?: MstUserEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'ApprovedBy' })
+  approvedByUser?: MstUserEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'EntryUserId' })
+  entryUser?: MstUserEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'UpdateUserId' })
+  updateUser?: MstUserEntity
 }

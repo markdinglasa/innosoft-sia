@@ -1,5 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { POSEntity } from '../entity-names'
+import { TrnSalesEntity } from './TrnSales.entity'
+import { MstItemEntity } from '../masterfiles/MstItem.entity'
+import { MstUnitEntity } from '../masterfiles/MstUnit.entity'
+import { MstDiscountEntity } from '../masterfiles/MstDiscount.entity'
+import { MstTaxEntity } from '../masterfiles/MstTax.entity'
+import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
+import { MstUserEntity } from '../masterfiles/MstUser.entity'
 
 @Entity(POSEntity.TRN_SALES_LINE)
 export class TrnSalesLineEntity {
@@ -105,4 +112,45 @@ export class TrnSalesLineEntity {
 
   @Column({ name: 'PriceSplitPercentage', type: 'decimal', precision: 18, scale: 5, nullable: false })
   priceSplitPercentage: number
+
+  // FK Relationships
+  @ManyToOne(() => TrnSalesEntity)
+  @JoinColumn({ name: 'SalesId' })
+  sales?: TrnSalesEntity
+
+  @ManyToOne(() => MstItemEntity)
+  @JoinColumn({ name: 'ItemId' })
+  item?: MstItemEntity
+
+  @ManyToOne(() => MstUnitEntity)
+  @JoinColumn({ name: 'UnitId' })
+  unit?: MstUnitEntity
+
+  @ManyToOne(() => MstDiscountEntity)
+  @JoinColumn({ name: 'DiscountId' })
+  discount?: MstDiscountEntity
+
+  @ManyToOne(() => MstTaxEntity)
+  @JoinColumn({ name: 'TaxId' })
+  tax?: MstTaxEntity
+
+  @ManyToOne(() => MstAccountEntity)
+  @JoinColumn({ name: 'SalesAccountId' })
+  salesAccount?: MstAccountEntity
+
+  @ManyToOne(() => MstAccountEntity)
+  @JoinColumn({ name: 'AssetAccountId' })
+  assetAccount?: MstAccountEntity
+
+  @ManyToOne(() => MstAccountEntity)
+  @JoinColumn({ name: 'CostAccountId' })
+  costAccount?: MstAccountEntity
+
+  @ManyToOne(() => MstAccountEntity)
+  @JoinColumn({ name: 'TaxAccountId' })
+  taxAccount?: MstAccountEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'UserId' })
+  user?: MstUserEntity
 }

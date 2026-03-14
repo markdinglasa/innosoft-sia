@@ -1,28 +1,11 @@
-// CREATE TABLE [dbo].[MstCustomer](
-// 	[Id] [int] IDENTITY(1,1) NOT NULL,
-// 	[Customer] [nvarchar](50) NOT NULL,
-// 	[Address] [nvarchar](255) NOT NULL,
-// 	[ContactPerson] [nvarchar](50) NOT NULL,
-// 	[ContactNumber] [nvarchar](50) NOT NULL,
-// 	[CreditLimit] [decimal](18, 5) NOT NULL,
-// 	[TermId] [int] NOT NULL,
-// 	[TIN] [nvarchar](50) NOT NULL,
-// 	[WithReward] [bit] NOT NULL,
-// 	[RewardNumber] [nvarchar](50) NULL,
-// 	[RewardConversion] [decimal](18, 5) NOT NULL,
-// 	[AccountId] [int] NOT NULL,
-// 	[EntryUserId] [int] NOT NULL,
-// 	[EntryDateTime] [datetime] NOT NULL,
-// 	[UpdateUserId] [int] NOT NULL,
-// 	[UpdateDateTime] [datetime] NOT NULL,
-// 	[IsLocked] [bit] NOT NULL,
-// 	[DefaultPriceDescription] [nvarchar](255) NULL,
-// 	[CustomerCode] [nvarchar](50) NULL,
-// 	[BusinessStyle] [nvarchar](max) NULL,
 
-import { Column, Entity } from 'typeorm'
+
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
+import { MstAccountEntity } from './MstAccount.entity'
+import { MstTermEntity } from './MstTerm.entity'
+import { MstUserEntity } from './MstUser.entity'
 
 @Entity(POSEntity.MST_CUSTOMER)
 export class MstCustomerEntity extends BaseEntity {
@@ -85,4 +68,21 @@ export class MstCustomerEntity extends BaseEntity {
 
   @Column({ name: 'BusinessStyle', type: 'nvarchar', nullable: true })
   businessStyle: string | null
+
+  // FK Relationships
+  @ManyToOne(() => MstTermEntity)
+  @JoinColumn({ name: 'TermId' })
+  term?: MstTermEntity
+
+  @ManyToOne(() => MstAccountEntity)
+  @JoinColumn({ name: 'AccountId' })
+  account?: MstAccountEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'EntryUserId' })
+  entryUser?: MstUserEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'UpdateUserId' })
+  updateUser?: MstUserEntity
 }

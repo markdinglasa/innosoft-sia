@@ -1,5 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { POSEntity } from '../entity-names'
+import { TrnCollectionEntity } from './TrnCollection.entity'
+import { MstPayTypeEntity } from '../masterfiles/MstPayType.entity'
+import { TrnStockInEntity } from './TrnStockIn.entity'
+import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
 
 @Entity(POSEntity.TRN_COLLECTION_LINE)
 export class TrnCollectionLineEntity {
@@ -77,4 +81,21 @@ export class TrnCollectionLineEntity {
 
   @Column({ name: 'CreditCardExpiry', type: 'nvarchar', length: 50, nullable: true })
   creditCardExpiry: string | null
+
+  // FK Relationships
+  @ManyToOne(() => TrnCollectionEntity)
+  @JoinColumn({ name: 'CollectionId' })
+  collection?: TrnCollectionEntity
+
+  @ManyToOne(() => MstPayTypeEntity)
+  @JoinColumn({ name: 'PayTypeId' })
+  payType?: MstPayTypeEntity
+
+  @ManyToOne(() => TrnStockInEntity)
+  @JoinColumn({ name: 'StockInId' })
+  stockIn?: TrnStockInEntity
+
+  @ManyToOne(() => MstAccountEntity)
+  @JoinColumn({ name: 'AccountId' })
+  account?: MstAccountEntity
 }

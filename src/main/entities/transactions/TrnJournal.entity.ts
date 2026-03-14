@@ -1,5 +1,13 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { POSEntity } from '../entity-names'
+import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
+import { TrnCollectionEntity } from './TrnCollection.entity'
+import { TrnDebitCreditMemoEntity } from './TrnDebitCreditMemo.entity'
+import { TrnDisbursementEntity } from './TrnDisbursement.entity'
+import { TrnSalesEntity } from './TrnSales.entity'
+import { TrnStockInEntity } from './TrnStockIn.entity'
+import { TrnStockOutEntity } from './TrnStockOut.entity'
+import { MstUserEntity } from '../masterfiles/MstUser.entity'
 
 @Entity(POSEntity.TRN_JOURNAL)
 export class TrnJournalEntity {
@@ -53,4 +61,41 @@ export class TrnJournalEntity {
 
   @Column({ name: 'DisbursementId', type: 'int', nullable: true })
   disbursementId: number | null
+
+  // FK Relationships
+  @ManyToOne(() => MstAccountEntity)
+  @JoinColumn({ name: 'AccountId' })
+  account?: MstAccountEntity
+
+  @ManyToOne(() => TrnCollectionEntity)
+  @JoinColumn({ name: 'CollectionId' })
+  collection?: TrnCollectionEntity
+
+  @ManyToOne(() => TrnDebitCreditMemoEntity)
+  @JoinColumn({ name: 'DCMemoId' })
+  dcMemo?: TrnDebitCreditMemoEntity
+
+  @ManyToOne(() => TrnDisbursementEntity)
+  @JoinColumn({ name: 'DisbursementId' })
+  disbursement?: TrnDisbursementEntity
+
+  @ManyToOne(() => TrnSalesEntity)
+  @JoinColumn({ name: 'SalesId' })
+  sales?: TrnSalesEntity
+
+  @ManyToOne(() => TrnStockInEntity)
+  @JoinColumn({ name: 'StockInId' })
+  stockIn?: TrnStockInEntity
+
+  @ManyToOne(() => TrnStockOutEntity)
+  @JoinColumn({ name: 'StockOutId' })
+  stockOut?: TrnStockOutEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'EntryUserId' })
+  entryUser?: MstUserEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'UpdateUserId' })
+  updateUser?: MstUserEntity
 }

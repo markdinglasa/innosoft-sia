@@ -1,5 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { POSEntity } from '../entity-names'
+import { TrnDebitCreditMemoEntity } from './TrnDebitCreditMemo.entity'
+import { TrnSalesEntity } from './TrnSales.entity'
+import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
 
 @Entity(POSEntity.TRN_DEBIT_CREDIT_MEMO_LINE)
 export class TrnDebitCreditMemoLineEntity {
@@ -33,4 +36,17 @@ export class TrnDebitCreditMemoLineEntity {
 
   @Column({ name: 'CreditAmount', type: 'decimal', precision: 18, scale: 5, nullable: false })
   creditAmount: number
+
+  // FK Relationships
+  @ManyToOne(() => TrnDebitCreditMemoEntity)
+  @JoinColumn({ name: 'DCMemoId' })
+  dcMemo?: TrnDebitCreditMemoEntity
+
+  @ManyToOne(() => TrnSalesEntity)
+  @JoinColumn({ name: 'SalesId' })
+  sales?: TrnSalesEntity
+
+  @ManyToOne(() => MstAccountEntity)
+  @JoinColumn({ name: 'AccountId' })
+  account?: MstAccountEntity
 }

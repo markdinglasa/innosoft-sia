@@ -1,6 +1,11 @@
-import { Column, Entity } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
+import { MstPeriodEntity } from '../masterfiles/MstPeriod.entity'
+import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
+import { MstPayTypeEntity } from '../masterfiles/MstPayType.entity'
+import { TrnStockInEntity } from './TrnStockIn.entity'
+import { MstUserEntity } from '../masterfiles/MstUser.entity'
 
 @Entity(POSEntity.TRN_DISBURSEMENT)
 export class TrnDisbursementEntity extends BaseEntity {
@@ -119,4 +124,41 @@ export class TrnDisbursementEntity extends BaseEntity {
 
   @Column({ name: 'Payee', type: 'nvarchar', length: 255, nullable: true })
   payee: string | null
+
+  // FK Relationships
+  @ManyToOne(() => MstPeriodEntity)
+  @JoinColumn({ name: 'PeriodId' })
+  period?: MstPeriodEntity
+
+  @ManyToOne(() => MstAccountEntity)
+  @JoinColumn({ name: 'AccountId' })
+  account?: MstAccountEntity
+
+  @ManyToOne(() => MstPayTypeEntity)
+  @JoinColumn({ name: 'PayTypeId' })
+  payType?: MstPayTypeEntity
+
+  @ManyToOne(() => TrnStockInEntity)
+  @JoinColumn({ name: 'StockInId' })
+  stockIn?: TrnStockInEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'PreparedBy' })
+  preparedByUser?: MstUserEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'CheckedBy' })
+  checkedByUser?: MstUserEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'ApprovedBy' })
+  approvedByUser?: MstUserEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'EntryUserId' })
+  entryUser?: MstUserEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'UpdateUserId' })
+  updateUser?: MstUserEntity
 }

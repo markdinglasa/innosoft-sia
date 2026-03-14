@@ -4,9 +4,10 @@
 // 	[AccountId] [int] NULL,
 // 	[SortNumber] [int] NULL,
 
-import { Column, Entity } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
+import { MstAccountEntity } from './MstAccount.entity'
 
 @Entity(POSEntity.MST_PAY_TYPE)
 export class MstPayTypeEntity extends BaseEntity {
@@ -26,5 +27,8 @@ export class MstPayTypeEntity extends BaseEntity {
   @Column({ name: 'SortNumber', type: 'int', nullable: true })
   sortNumber: number | null
 
-  // FK RELATIONSHIPS
+  // FK Relationships
+  @ManyToOne(() => MstAccountEntity)
+  @JoinColumn({ name: 'AccountId' })
+  account?: MstAccountEntity
 }

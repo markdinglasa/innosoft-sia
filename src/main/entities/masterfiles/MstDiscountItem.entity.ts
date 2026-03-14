@@ -1,12 +1,10 @@
-// CREATE TABLE [dbo].[MstDiscountItem](
-// 	[Id] [int] IDENTITY(1,1) NOT NULL,
-// 	[DiscountId] [int] NOT NULL,
-// 	[ItemId] [int] NOT NULL,
-// 	[IsAutoDiscount] [bit] NULL,
 
-import { Column, Entity } from 'typeorm'
+
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
+import { MstDiscountEntity } from './MstDiscount.entity'
+import { MstItemEntity } from './MstItem.entity'
 
 @Entity(POSEntity.MST_DISCOUNT_ITEM)
 export class MstDiscountItemEntity extends BaseEntity {
@@ -25,4 +23,13 @@ export class MstDiscountItemEntity extends BaseEntity {
 
   @Column({ name: 'IsAutoDiscount', type: 'bit', nullable: false })
   isAutoDiscount: boolean
+
+  // FK Relationships
+  @ManyToOne(() => MstDiscountEntity)
+  @JoinColumn({ name: 'DiscountId' })
+  discount?: MstDiscountEntity
+
+  @ManyToOne(() => MstItemEntity)
+  @JoinColumn({ name: 'ItemId' })
+  item?: MstItemEntity
 }

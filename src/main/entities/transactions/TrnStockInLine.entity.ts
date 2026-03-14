@@ -1,5 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { POSEntity } from '../entity-names'
+import { TrnStockInEntity } from './TrnStockIn.entity'
+import { MstItemEntity } from '../masterfiles/MstItem.entity'
+import { MstUnitEntity } from '../masterfiles/MstUnit.entity'
+import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
 
 @Entity(POSEntity.TRN_STOCK_IN_LINE)
 export class TrnStockInLineEntity {
@@ -53,4 +57,21 @@ export class TrnStockInLineEntity {
 
   @Column({ name: 'MarkUp', type: 'decimal', precision: 18, scale: 5, nullable: true })
   markUp: number | null
+
+  // FK Relationships
+  @ManyToOne(() => TrnStockInEntity)
+  @JoinColumn({ name: 'StockInId' })
+  stockIn?: TrnStockInEntity
+
+  @ManyToOne(() => MstItemEntity)
+  @JoinColumn({ name: 'ItemId' })
+  item?: MstItemEntity
+
+  @ManyToOne(() => MstUnitEntity)
+  @JoinColumn({ name: 'UnitId' })
+  unit?: MstUnitEntity
+
+  @ManyToOne(() => MstAccountEntity)
+  @JoinColumn({ name: 'AssetAccountId' })
+  assetAccount?: MstAccountEntity
 }

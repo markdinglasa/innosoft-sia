@@ -1,6 +1,9 @@
-import { Column, Entity } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
+import { MstPeriodEntity } from '../masterfiles/MstPeriod.entity'
+import { MstSupplierEntity } from '../masterfiles/MstSupplier.entity'
+import { MstUserEntity } from '../masterfiles/MstUser.entity'
 
 @Entity(POSEntity.TRN_PURCHASE_ORDER)
 export class TrnPurchaseOrderEntity extends BaseEntity {
@@ -47,4 +50,33 @@ export class TrnPurchaseOrderEntity extends BaseEntity {
 
   @Column({ name: 'RequestedBy', type: 'int', nullable: true })
   requestedBy: number | null
+
+  // FK Relationships
+  @ManyToOne(() => MstPeriodEntity)
+  @JoinColumn({ name: 'PeriodId' })
+  period?: MstPeriodEntity
+
+  @ManyToOne(() => MstSupplierEntity)
+  @JoinColumn({ name: 'SupplierId' })
+  supplier?: MstSupplierEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'PreparedBy' })
+  preparedByUser?: MstUserEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'CheckedBy' })
+  checkedByUser?: MstUserEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'ApprovedBy' })
+  approvedByUser?: MstUserEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'EntryUserId' })
+  entryUser?: MstUserEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'UpdateUserId' })
+  updateUser?: MstUserEntity
 }

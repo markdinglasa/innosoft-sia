@@ -5,8 +5,9 @@
 // 	[Rate] [decimal](18, 5) NOT NULL,
 // 	[AccountId] [int] NOT NULL,
 
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { POSEntity } from '../entity-names'
+import { MstAccountEntity } from './MstAccount.entity'
 
 @Entity(POSEntity.MST_TAX)
 export class MstTaxEntity {
@@ -32,4 +33,9 @@ export class MstTaxEntity {
 
   @Column({ name: 'AccountId', type: 'int', nullable: false })
   accountId: number
+
+  // FK Relationships
+  @ManyToOne(() => MstAccountEntity)
+  @JoinColumn({ name: 'AccountId' })
+  account?: MstAccountEntity
 }

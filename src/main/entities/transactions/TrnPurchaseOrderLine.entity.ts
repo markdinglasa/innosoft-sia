@@ -1,5 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { POSEntity } from '../entity-names'
+import { TrnPurchaseOrderEntity } from './TrnPurchaseOrder.entity'
+import { MstItemEntity } from '../masterfiles/MstItem.entity'
+import { MstUnitEntity } from '../masterfiles/MstUnit.entity'
 
 @Entity(POSEntity.TRN_PURCHASE_ORDER_LINE)
 export class TrnPurchaseOrderLineEntity {
@@ -33,4 +36,17 @@ export class TrnPurchaseOrderLineEntity {
 
   @Column({ name: 'Amount', type: 'decimal', precision: 18, scale: 5, nullable: false })
   amount: number
+
+  // FK Relationships
+  @ManyToOne(() => TrnPurchaseOrderEntity)
+  @JoinColumn({ name: 'PurchaseOrderId' })
+  purchaseOrder?: TrnPurchaseOrderEntity
+
+  @ManyToOne(() => MstItemEntity)
+  @JoinColumn({ name: 'ItemId' })
+  item?: MstItemEntity
+
+  @ManyToOne(() => MstUnitEntity)
+  @JoinColumn({ name: 'UnitId' })
+  unit?: MstUnitEntity
 }

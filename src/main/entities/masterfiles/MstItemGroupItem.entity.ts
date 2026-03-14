@@ -4,9 +4,11 @@
 // 	[ItemGroupId] [int] NOT NULL,
 // )
 
-import { Column, Entity } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
+import { MstItemEntity } from './MstItem.entity'
+import { MstItemGroupEntity } from './MstItemGroup.entity'
 
 @Entity(POSEntity.MST_ITEM_GROUP_ITEM)
 export class MstItemGroupItemEntity extends BaseEntity {
@@ -21,4 +23,13 @@ export class MstItemGroupItemEntity extends BaseEntity {
 
   @Column({ name: 'ItemGroupId', type: 'int', nullable: false })
   itemGroupId: number
+
+  // FK Relationships
+  @ManyToOne(() => MstItemEntity)
+  @JoinColumn({ name: 'ItemId' })
+  item?: MstItemEntity
+
+  @ManyToOne(() => MstItemGroupEntity)
+  @JoinColumn({ name: 'ItemGroupId' })
+  itemGroup?: MstItemGroupEntity
 }

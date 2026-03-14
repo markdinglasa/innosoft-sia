@@ -14,9 +14,12 @@
 // 	[UpdateDateTime] [datetime] NOT NULL,
 // 	[IsLocked] [bit] NOT NULL,
 
-import { Column, Entity } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
+import { MstAccountEntity } from './MstAccount.entity'
+import { MstTermEntity } from './MstTerm.entity'
+import { MstUserEntity } from './MstUser.entity'
 
 @Entity(POSEntity.MST_SUPPLIER)
 export class MstSupplierEntity extends BaseEntity {
@@ -55,4 +58,21 @@ export class MstSupplierEntity extends BaseEntity {
 
   @Column({ name: 'AccountId', type: 'int', nullable: false })
   accountId: number
+
+  // FK Relationships
+  @ManyToOne(() => MstTermEntity)
+  @JoinColumn({ name: 'TermId' })
+  term?: MstTermEntity
+
+  @ManyToOne(() => MstAccountEntity)
+  @JoinColumn({ name: 'AccountId' })
+  account?: MstAccountEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'EntryUserId' })
+  entryUser?: MstUserEntity
+
+  @ManyToOne(() => MstUserEntity)
+  @JoinColumn({ name: 'UpdateUserId' })
+  updateUser?: MstUserEntity
 }

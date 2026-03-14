@@ -45,5 +45,5 @@ export enum POSEntity {
   TRN_STOCK_IN = 'TrnStockIn',
   TRN_STOCK_IN_LINE = 'TrnStockInLine',
   TRN_STOCK_OUT = 'TrnStockOut',
-  TRN_STOCK_OUT_LLINE = 'TrnStockOutLine'
+  TRN_STOCK_OUT_LINE = 'TrnStockOutLine'
 }
