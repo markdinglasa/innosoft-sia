@@ -21,6 +21,7 @@ import 'reflect-metadata'
 import { NODE_ENV } from './constants'
 import './controllers'
 import './ipcMain'
+import './updater'
 
 electronStore.initRenderer()
 require('electron-debug')()

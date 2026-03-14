@@ -10,6 +10,7 @@ import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setSettings } from '../../store/settings'
 import { settingsInitial, SettingsTable } from '../../types'
+import { UpdateChecker } from '../../components'
 import * as S from './Styles'
 
 interface DatabaseModalProps {
@@ -81,6 +82,7 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
       <S.UModal className={className} close={close} header="Settings" theme={theme}>
         <S.Container className={className}>
           <S.CardBody>
+            <UpdateChecker />
             <Formik
               initialValues={initialValues}
               onSubmit={handleSubmit}
