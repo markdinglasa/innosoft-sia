@@ -1,4 +1,5 @@
 import { DataSource } from 'typeorm'
+import * as Entities from '../entities'
 import { getConnection } from '../functions/configuration'
 
 export const AppDataSource = new DataSource({
@@ -10,10 +11,10 @@ export const AppDataSource = new DataSource({
   database: getConnection().Data?.name || '',
   synchronize: false,
   logging: true,
-  entities: [],
+  entities: Object.values(Entities).filter((entity) => typeof entity === 'function'),
   subscribers: [],
   migrations: [],
-  extra: {
+  extra: {    
     trustServerCertificate: true,
     encrypt: false
   }

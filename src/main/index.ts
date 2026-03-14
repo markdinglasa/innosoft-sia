@@ -21,6 +21,7 @@ import 'reflect-metadata'
 import { NODE_ENV } from './constants'
 import './controllers'
 import './ipcMain'
+import { initializeDatabase } from './typeORM/configurations'
 import './updater'
 
 electronStore.initRenderer()
@@ -118,6 +119,13 @@ if (!gotTheLock) {
     app.on('browser-window-created', (_, window) => {
       optimizer.watchWindowShortcuts(window)
     })
+
+    try {
+      await initializeDatabase()
+    } catch (error) {
+      console.error('Failed to initialize database:', error)
+      // Optionally handle initialization failure (e.g. show a dialog)
+    }
 
     try {
       if (isDev) await installer(REDUX_DEVTOOLS)
