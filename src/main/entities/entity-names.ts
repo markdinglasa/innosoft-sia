@@ -24,6 +24,7 @@ export enum POSEntity {
   MST_USER_FORM = 'MstUserForm',
 
   SYS_AUDIT_TRAIL = 'SysAuditTrail',
+  SYS_FORM = 'SysForm',
   SYS_SETTINGS = 'SysSettings',
   SYS_SALES_LOCKED = 'SysSalesLocked',
 
@@ -37,6 +38,7 @@ export enum POSEntity {
   TRN_PURCHASE_ORDER = 'TrnPurchaseOrder',
   TRN_PURCHASE_ORDER_LINE = 'TrnPurchaseOrderline',
   TRN_SALES = 'TrnSales',
+  TRN_SALES_DRAFT = 'TrnSalesDraft',
   TRN_SALES_LINE = 'TrnSalesLine',
   TRN_STOCK_COUNT = 'TrnStockCount',
   TRN_STOCK_COUNT_LINE = 'TrnStockCountLine',

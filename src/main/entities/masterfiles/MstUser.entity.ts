@@ -1,0 +1,43 @@
+// CREATE TABLE [dbo].[MstUser](
+// 	[Id] [int] IDENTITY(1,1) NOT NULL,
+// 	[UserName] [nvarchar](50) NOT NULL,
+// 	[Password] [nvarchar](50) NOT NULL,
+// 	[FullName] [nvarchar](255) NOT NULL,
+// 	[UserCardNumber] [nvarchar](255) NULL,
+// 	[EntryUserId] [int] NOT NULL,
+// 	[EntryDateTime] [datetime] NOT NULL,
+// 	[UpdateUserId] [int] NOT NULL,
+// 	[UpdateDateTime] [datetime] NOT NULL,
+// 	[IsLocked] [bit] NOT NULL,
+// 	[Role] [nvarchar](50) NULL,
+
+import { Column, Entity } from 'typeorm'
+import { POSEntity } from '../entity-names'
+import { BaseEntity } from '../generic/base.entity'
+
+@Entity(POSEntity.MST_USER)
+export class MstUserEntity extends BaseEntity {
+  constructor() {
+    super()
+    this.userName = ''
+    this.password = ''
+    this.fullName = ''
+    this.userCardNumber = null
+    this.role = null
+  }
+
+  @Column({ name: 'UserName', type: 'nvarchar', length: 50, nullable: false })
+  userName: string
+
+  @Column({ name: 'Password', type: 'nvarchar', length: 50, nullable: false })
+  password: string
+
+  @Column({ name: 'FullName', type: 'nvarchar', length: 255, nullable: false })
+  fullName: string
+
+  @Column({ name: 'UserCardNumber', type: 'nvarchar', length: 255, nullable: true })
+  userCardNumber: string | null
+
+  @Column({ name: 'Role', type: 'nvarchar', length: 50, nullable: true })
+  role: string | null
+}

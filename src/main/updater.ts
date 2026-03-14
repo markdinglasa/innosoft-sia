@@ -1,6 +1,6 @@
 import { app, ipcMain } from 'electron'
-import { autoUpdater, UpdateInfo } from 'electron-updater'
 import log from 'electron-log'
+import { autoUpdater, UpdateInfo } from 'electron-updater'
 import { mainWindow } from './'
 
 // Configure logging
@@ -62,8 +62,8 @@ ipcMain.handle('updater:check-for-updates', async () => {
   try {
     const result = await autoUpdater.checkForUpdates()
     return { success: true, version: result?.updateInfo?.version }
-  } catch (error: any) {
-    return { success: false, message: error.message }
+  } catch (error: unknown) {
+    return { success: false, message: (error as Error).message }
   }
 })
 
@@ -71,8 +71,8 @@ ipcMain.handle('updater:download-update', async () => {
   try {
     await autoUpdater.downloadUpdate()
     return { success: true }
-  } catch (error: any) {
-    return { success: false, message: error.message }
+  } catch (error: unknown) {
+    return { success: false, message: (error as Error).message }
   }
 })
 
