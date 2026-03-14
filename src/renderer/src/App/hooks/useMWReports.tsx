@@ -65,5 +65,5 @@ export const useMWReports = () => {
     [dispatch, previousDate, BatchNo]
   )
 
-  return createReport
+  return { createReport, BatchNo }
 }

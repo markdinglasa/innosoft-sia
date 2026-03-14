@@ -1,5 +1,4 @@
 import { Error as err } from '@shared/messages'
-import { ControlNumberQuery } from '@shared/query'
 import { getSettings } from '@shared/selectors'
 import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, SFC, SqlChannel, ToastType } from '@shared/types'
@@ -14,7 +13,7 @@ import {
   getTenant
 } from '../../../selectors'
 import { AccessControl } from '../../AccessControl'
-import { AllianceTenant } from '../../AllicanceTenant'
+import { AllianceTenant } from "../../AllicanceTenant"
 import { DateRange } from '../../DateRange'
 import { LoadingScreen } from '../../LoadingScreen'
 import { SingleDate } from '../../SingleDate'
@@ -34,27 +33,13 @@ export const MegaworldReport: SFC = ({ className }) => {
   const [initialized] = useState<boolean>(false)
   const pointerRef = useRef<HTMLDivElement>(null)
 
-  const MWReports = useMWReports()
+  const { createReport, BatchNo } = useMWReports()
 
-  const handleCheckEOD = async (
-    Terminal: number = 0,
-    SelectedDate: string = formattedSelectedDate
-  ): Promise<boolean> => {
-    try {
-      const ControlNoQuery = ControlNumberQuery({ Terminal, Dates: SelectedDate })
-      const ControlNoResponse = await window.electron.sql.get(SqlChannel.getAmount, ControlNoQuery)
-      const ControlNumber = ControlNoResponse?.Data?.ControlNumber ?? 0
-      if (typeof ControlNumber !== 'number' || ControlNumber === 0) return false
-      else return true
-    } catch (error: unknown) {
-      return false
-    }
-  }
 
   const loadData = async (activeDates: string) => {
     try {
       const element = pointerRef.current
-      await MWReports(path, tenant, activeDates, element, settings.IsZReading)
+      await createReport(path, tenant, activeDates, element, settings.IsZReading)
     } catch (error: unknown) {
       dispatch(
         setSnackbar({
@@ -79,19 +64,18 @@ export const MegaworldReport: SFC = ({ className }) => {
       setLoading(true)
       try {
         if (settings.IsDateRange) {
-          for (
-            let d = new Date(dateRanges.DateStart);
-            d <= new Date(dateRanges.DateEnd);
-            d.setDate(d.getDate() + 1)
-          ) {
-            const isEOD = await handleCheckEOD(tenant.Terminal, formatDates(d).toString())
-            if (isEOD) {
-              await loadData(d.toString())
-              if (d >= new Date(dateRanges.DateEnd)) {
-                break
-              }
-            }
-          }
+          const startDate = formatDates(new Date(dateRanges.DateStart))
+          const endDate = formatDates(new Date(dateRanges.DateEnd))
+          
+          await window.electron.sql.get(
+            SqlChannel.generateMegaworldRange,
+            startDate,
+            endDate,
+            tenant,
+            path,
+            BatchNo,
+            settings.IsZReading
+          )
         }
       } catch (error: unknown) {
         dispatch(
@@ -142,8 +126,6 @@ export const MegaworldReport: SFC = ({ className }) => {
         </AccessControl>
         <AccessControl condition={!settings.IsDateRange}>
           <SingleDate data={selectedDate} isInitialized={initialized} />
-        </AccessControl>
-        <AccessControl condition={!settings.IsDateRange}>
           <AllianceTenant generate={handleSingleGenerate} />
         </AccessControl>
       </S.Container>

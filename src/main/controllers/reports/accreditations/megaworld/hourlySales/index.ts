@@ -13,11 +13,12 @@ ipcMain.handle(
     data: any,
     path: string,
     BatchNo: number,
-    dates: Date
+    dates: Date | string
   ): Promise<Response> => {
     try {
-      const { day: dayResponse, hourly: hourlyResponse } = 
-        await MegaworldReportService.getHourlySalesData(data.Terminal, data.TenantCode, dates)
+      const activeDate = new Date(dates)
+      const { day: dayResponse, hourly: hourlyResponse } =
+        await MegaworldReportService.getHourlySalesData(data.Terminal, data.TenantCode, activeDate)
 
       // Generate the filename based on provided parameters
       const fileName = generateMWFilename(
@@ -25,7 +26,7 @@ ipcMain.handle(
         data.TenantCode,
         data.Terminal,
         BatchNo ?? 0,
-        dates
+        activeDate
       )
       const filePath = paths.join(path, fileName)
 

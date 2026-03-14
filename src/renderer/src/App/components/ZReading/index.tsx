@@ -1,14 +1,3 @@
-import {
-  PreviousReading,
-  ZControlNumber,
-  ZCounter,
-  ZDiscount,
-  ZPayTypes,
-  ZTrx,
-  ZVATAnalysis,
-  ZVoid
-} from '@shared/query'
-import { mwNetSales } from '@shared/query/reports/megaworld/netsales'
 import { getSettings } from '@shared/selectors'
 import { SFC, SqlChannel } from '@shared/types'
 import { convertDate, formatDates, formatNumber } from '@shared/utils'
@@ -36,73 +25,22 @@ export const ZReading: SFC<ZReadingProps> = ({ className, CurrentDate }) => {
   const [controlNumber, setControlNumber] = useState<any>({})
 
   useEffect(() => {
-    const fetchPayTypes = async () => {
-      const paytypesQuery = ZPayTypes({ Dates, Terminal })
-      const payTypeResponse = await window.electron.sql.get(SqlChannel.getAmounts, paytypesQuery)
-      setPaytypes(payTypeResponse.Data ?? [])
+    const fetchData = async () => {
+      const response = await window.electron.sql.get(SqlChannel.getZReadingData, Terminal, Dates)
+      if (response.IsSomething && response.Data) {
+        setPaytypes(response.Data.paytypes || [])
+        setControlNumber(response.Data.controlNumber || {})
+        setDiscounts(response.Data.discounts || [])
+        setPreviousReading(response.Data.previousReading || {})
+        setTrx(response.Data.trx || {})
+        setGross(response.Data.gross || {})
+        setVATAnalysis(response.Data.VATAnalysis || {})
+        setCancelledTx(response.Data.CancelledTx || {})
+        setCollectionNumber(response.Data.collectionNumber || {})
+      }
     }
 
-    const fetchControlNumber = async () => {
-      const cnQuery = ZControlNumber({ Dates, Terminal })
-      const cnResponse = await window.electron.sql.get(SqlChannel.getAmount, cnQuery)
-      setControlNumber(cnResponse.Data ?? {})
-    }
-
-    const fetchDiscounts = async () => {
-      const dxQuery = ZDiscount({ Dates, Terminal })
-      const dxResponse = await window.electron.sql.get(SqlChannel.getAmounts, dxQuery)
-      setDiscounts(dxResponse.Data ?? [])
-    }
-
-    const fetchPreviousReading = async () => {
-      const PreviousReadingQuery = PreviousReading({ Dates, Terminal })
-      const PreviousReadingResponse = await window.electron.sql.get(
-        SqlChannel.getAmount,
-        PreviousReadingQuery
-      )
-      setPreviousReading(PreviousReadingResponse.Data ?? {})
-    }
-    const fetchTrx = async () => {
-      const trxQuery = ZTrx({ Dates, Terminal })
-      const trxResponse = await window.electron.sql.get(SqlChannel.getAmount, trxQuery)
-      setTrx(trxResponse.Data ?? {})
-    }
-
-    const fetchGross = async () => {
-      const GrossSalesQ = mwNetSales({ Dates, Terminal })
-      const GrossSalesResponse = await window.electron.sql.get(SqlChannel.getAmount, GrossSalesQ)
-      setGross(GrossSalesResponse.Data ?? {})
-    }
-    const fetchVATAnalysis = async () => {
-      const vaQuery = ZVATAnalysis({ Dates, Terminal })
-      const vaResponse = await window.electron.sql.get(SqlChannel.getAmount, vaQuery)
-      setVATAnalysis(vaResponse.Data ?? {})
-    }
-
-    const fetchCancelled = async () => {
-      const cxQuery = ZVoid({ Dates, Terminal })
-      const cxResponse = await window.electron.sql.get(SqlChannel.getAmount, cxQuery)
-      setCancelledTx(cxResponse.Data ?? {})
-    }
-
-    const fetchCollectionNumer = async () => {
-      const collectionNumberQuery = ZCounter({ Dates, Terminal })
-      const collectionNumberResponse = await window.electron.sql.get(
-        SqlChannel.getAmount,
-        collectionNumberQuery
-      )
-      setCollectionNumber(collectionNumberResponse.Data ?? {})
-    }
-
-    fetchControlNumber()
-    fetchCollectionNumer()
-    fetchPayTypes()
-    fetchCancelled()
-    fetchVATAnalysis()
-    fetchTrx()
-    fetchGross()
-    fetchPreviousReading()
-    fetchDiscounts()
+    fetchData()
   }, [CurrentDate, Terminal])
 
   //console.log(discounts)

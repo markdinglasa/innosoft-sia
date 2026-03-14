@@ -10,5 +10,7 @@ export enum MEGAWORLD {
   getPayTypes = 'get-paytypes',
   getVoidAmount = 'get-void-amount',
   getControlNumber = 'get-control-number',
-  getZReading = 'get-z-reading'
+   getZReading = 'get-z-reading',
+  generateMegaworldRange = 'generate-megaworld-range',
+  getZReadingData = 'get-z-reading-data'
 }

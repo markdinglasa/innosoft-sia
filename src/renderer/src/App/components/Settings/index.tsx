@@ -1,14 +1,11 @@
 import { mdiCog } from "@mdi/js"
-import { SettingsModal } from "@renderer/App/modals"
 import { useToggle } from "@shared/hooks"
 import { ButtonColor, ButtonType, SFC, Theme } from "@shared/types"
+import { SettingsModal } from "../../modals/SettingsForm"
 import * as S from './Styles'
 
 
-interface SettingsProps  {
-    
-}
-export const Settings: SFC<SettingsProps> = ({  }) => {
+export const Settings: SFC = () => {
     const [modalIsOpen, toggleModal] = useToggle(false)
   return (
     <>

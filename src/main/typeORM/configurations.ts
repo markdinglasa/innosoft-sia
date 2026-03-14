@@ -10,7 +10,7 @@ export const AppDataSource = new DataSource({
   password: '', // default settings
   database: '', // default settings
   synchronize: true,
-  logging: true,
+  logging: false,
   entities: Object.values(Entities).filter((entity) => typeof entity === 'function'),
   subscribers: [],
   migrations: [],

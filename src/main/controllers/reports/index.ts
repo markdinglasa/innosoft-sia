@@ -1,3 +1,4 @@
-export * from './accreditations'
-export * from './ejournal'
-export * from './zreading'
+import './accreditations'
+import './ejournal'
+import './zreading'
+

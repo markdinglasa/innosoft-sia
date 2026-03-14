@@ -13,22 +13,27 @@ ipcMain.handle(
     data: any,
     path: string,
     BatchNo: number,
-    dates: Date
+    dates: Date | string
   ): Promise<Response> => {
     try {
+      const activeDate = new Date(dates)
       const terminalId = data.Terminal
       const tenantCode = data.TenantCode
 
       // Fetch data using Service
-      const mainItem = await MegaworldReportService.getDailySalesData(terminalId, tenantCode, dates)
-      const salestypeResult = await MegaworldReportService.getSalesTypeData(terminalId, dates)
+      const mainItem = await MegaworldReportService.getDailySalesData(
+        terminalId,
+        tenantCode,
+        activeDate
+      )
+      const salestypeResult = await MegaworldReportService.getSalesTypeData(terminalId, activeDate)
 
       const fileName = generateMWFilename(
         MWFileType.DailySales,
         data.TenantCode,
         data.Terminal,
         BatchNo ?? 0,
-        dates
+        activeDate
       )
       const filePath = paths.join(path, `${fileName}`)
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath)

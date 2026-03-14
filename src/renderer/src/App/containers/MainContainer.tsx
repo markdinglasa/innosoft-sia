@@ -1,5 +1,4 @@
 import { AppFooter, AppWindow } from '@shared/components'
-import { useToggle } from '@shared/hooks'
 import { AppProps, SFC } from '@shared/types'
 import { useSelector } from 'react-redux'
 import { DatabaseCard, SelectPathButton, Tenant } from '../components'
@@ -14,7 +13,7 @@ export const SIAManager: SFC<AppProps> = ({ className }) => {
     console.log('Selected path:', path)
   }
   const activeTenant = useSelector(getActiveTenant)
-  const [modalIsOpen, toggleModal] = useToggle(false)
+
   return (
     <>
       <AppWindow className={className} display={true}>

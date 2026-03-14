@@ -1,4 +1,7 @@
-export * from './dailyDiscounts'
-export * from './dailySales'
-export * from './getAmount'
-export * from './hourlySales'
+import './dailyDiscounts'
+import './dailySales'
+import './getAmount'
+import './getZReadingData'
+import './hourlySales'
+import './range'
+

@@ -13,17 +13,18 @@ ipcMain.handle(
     data: any,
     path: string,
     BatchNo: number,
-    dates: Date
+    dates: Date | string
   ): Promise<Response> => {
     try {
-      const rawData = await MegaworldReportService.getDailyDiscountsData(data.Terminal, dates)
+      const activeDate = new Date(dates)
+      const rawData = await MegaworldReportService.getDailyDiscountsData(data.Terminal, activeDate)
 
       const fileName = generateMWFilename(
         MWFileType.DailyDiscount,
         data.TenantCode,
         data.Terminal,
         BatchNo ?? 0,
-        dates
+        activeDate
       )
 
       const filePath = paths.join(path, `${fileName}`)
