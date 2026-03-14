@@ -5,3 +5,9 @@ export interface Response {
   Option?: string | null
   Message: string
 }
+
+export interface CommonResponse {
+  success: boolean
+  message: string
+  data?: unknown
+} 

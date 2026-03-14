@@ -24,7 +24,7 @@
 // 	[IsLocked] [bit] NOT NULL,
 // 	[DiscountAlias] [nvarchar](100) NULL,
 
-import { Column, Entity } from 'typeorm'
+import { AfterLoad, Column, Entity } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
 
@@ -50,6 +50,7 @@ export class MstDiscountEntity extends BaseEntity {
     this.daySat = false
     this.daySun = false
     this.discountAlias = ''
+    this.mandated = false
   }
 
   @Column({ name: 'Discount', type: 'nvarchar', length: 250, nullable: false })
@@ -59,7 +60,7 @@ export class MstDiscountEntity extends BaseEntity {
   discountRate: number
 
   @Column({ name: 'IsVatExempt', type: 'bit', nullable: false })
-  isVatExempt: boolean  
+  isVatExempt: boolean
 
   @Column({ name: 'IsDateScheduled', type: 'bit', nullable: false })
   isDateScheduled: boolean
@@ -105,4 +106,21 @@ export class MstDiscountEntity extends BaseEntity {
 
   @Column({ name: 'DiscountAlias', type: 'nvarchar', length: 100, nullable: false })
   discountAlias: string
+
+  // Virtual property set after loading from DB
+  mandated: boolean
+
+  static mandatedDiscounts = [
+    'PWD',
+    'Senior Citizen Discount',
+    'MOV',
+    'Athlete Discount',
+    'National Athlete',
+    'Single Parent'
+  ]
+
+  @AfterLoad()
+  setMandated() {
+    this.mandated = MstDiscountEntity.mandatedDiscounts.includes(this.discount)
+  }
 }
