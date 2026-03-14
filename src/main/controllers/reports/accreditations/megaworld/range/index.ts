@@ -12,9 +12,10 @@ ipcMain.handle(
     tenant: any,
     path: string,
     batchNo: number,
-    isZReading: boolean
+    isZReading: boolean,
+    settings: any
   ): Promise<Response> => {
-    console.log('Generating Megaworld Range:', { startDate, endDate, tenant: tenant.TenantCode, path, batchNo })
+    console.log('Generating Megaworld Range:', { startDate, endDate, tenant: tenant.TenantCode, path, batchNo, isZReading })
     try {
       const results = await MegaworldOrchestrator.generateRange({
         startDate,
@@ -22,7 +23,8 @@ ipcMain.handle(
         tenant,
         path,
         batchNo,
-        isZReading
+        isZReading,
+        settings
       })
 
       return { IsSomething: true, Message: Success.s00x00, Data: results }

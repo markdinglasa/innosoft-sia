@@ -3,7 +3,7 @@ import { MWFileType } from '@shared/types'
 export const generateMWFilename = (
   type: MWFileType,
   partnerCode: string = '0000', // 8 digit
-  terminal: string = '01',
+  terminal: string | number = '01',
   batchNo = 0,
   dates = new Date()
 ): string => {
@@ -16,8 +16,8 @@ export const generateMWFilename = (
       throw new Error('Invalid partnerCode: must be a number between 0 and 9999.')
     }
 
-    if (typeof terminal !== 'number' || terminal < 0 || terminal > 99) {
-      throw new Error('Invalid terminal: must be a number between 0 and 99.')
+    if (typeof terminal !== 'number' && typeof terminal !== 'string') {
+      throw new Error('Invalid terminal: must be a number or string.')
     }
 
     if (typeof batchNo !== 'number' || batchNo < 0) {

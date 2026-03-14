@@ -3,6 +3,7 @@ import fs from 'fs'
 import paths from 'path'
 import { generateMWFilename } from '../../functions'
 import { MegaworldReportService } from './MegaworldReportService'
+import { MegaworldZReadingService } from './MegaworldZReadingService'
 import { formatDateMMDDYYYY } from '../../functions/utility'
 
 export class MegaworldOrchestrator {
@@ -14,9 +15,10 @@ export class MegaworldOrchestrator {
       path: string;
       batchNo: number;
       isZReading: boolean;
+      settings: any;
     }
   ) {
-    const { startDate, endDate, tenant, path, batchNo } = params
+    const { startDate, endDate, tenant, path, batchNo, isZReading, settings } = params
     const start = new Date(startDate)
     const end = new Date(endDate)
     const results: any[] = []
@@ -41,6 +43,25 @@ export class MegaworldOrchestrator {
 
       // 4. Generate Hourly Sales (H)
       await this.generateHourlySales(tenant, path, batchNo, activeDate)
+
+      // 5. Generate Z-Reading PDF (Z)
+      if (isZReading) {
+        try {
+          const pdfBuffer = await MegaworldZReadingService.generatePDFBuffer(terminalId, activeDate, settings)
+          const fileName = generateMWFilename(
+            MWFileType.ZReading,
+            tenant.TenantCode,
+            tenant.Terminal,
+            batchNo ?? 0,
+            activeDate
+          )
+          const filePath = paths.join(path, `${fileName}.pdf`)
+          console.log(`Writing Z-Reading report to: ${filePath}`)
+          fs.writeFileSync(filePath, pdfBuffer)
+        } catch (error) {
+          console.error(`Failed to generate Z-Reading for ${activeDate.toDateString()}:`, error)
+        }
+      }
 
       results.push({
         date: activeDate.toISOString(),

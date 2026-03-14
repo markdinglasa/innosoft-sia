@@ -74,7 +74,8 @@ export const MegaworldReport: SFC = ({ className }) => {
             tenant,
             path,
             BatchNo,
-            settings.IsZReading
+            settings.IsZReading,
+            settings
           )
         }
       } catch (error: unknown) {
