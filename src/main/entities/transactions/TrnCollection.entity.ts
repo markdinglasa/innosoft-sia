@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
 import { MstPeriodEntity } from '../masterfiles/MstPeriod.entity'
@@ -6,6 +6,7 @@ import { MstTerminalEntity } from '../masterfiles/MstTerminal.entity'
 import { MstCustomerEntity } from '../masterfiles/MstCustomer.entity'
 import { TrnSalesEntity } from './TrnSales.entity'
 import { MstUserEntity } from '../masterfiles/MstUser.entity'
+import { TrnCollectionLineEntity } from './TrnCollectionLine.entity'
 
 @Entity(POSEntity.TRN_COLLECTION)
 export class TrnCollectionEntity extends BaseEntity {
@@ -121,4 +122,7 @@ export class TrnCollectionEntity extends BaseEntity {
   @ManyToOne(() => MstUserEntity)
   @JoinColumn({ name: 'UpdateUserId' })
   updateUser?: MstUserEntity
+
+  @OneToMany(() => TrnCollectionLineEntity, (collectionLines) => collectionLines.collection)
+  collectionLines?: TrnCollectionLineEntity[]
 }

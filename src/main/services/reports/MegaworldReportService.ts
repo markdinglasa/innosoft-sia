@@ -16,7 +16,7 @@ export class MegaworldReportService {
     // 1. Control Number (Days with sales)
     const controlNumberResult = await AppDataSource.getRepository(TrnSalesEntity)
       .createQueryBuilder('sales')
-      .innerJoin('sales.salesLine', 'salesLine')
+      .innerJoin('sales.salesLines', 'salesLine')
       .innerJoin('salesLine.discount', 'discount')
       .select('CAST(sales.salesDate AS DATE)', 'SalesDate')
       .addSelect(
@@ -34,9 +34,9 @@ export class MegaworldReportService {
     const previousReadingResult = await AppDataSource.getRepository(TrnCollectionEntity)
       .createQueryBuilder('collection')
       .leftJoin('collection.sales', 'sales')
-      .leftJoin('sales.salesLine', 'salesLine')
+      .leftJoin('sales.salesLines', 'salesLine')
       .select(
-        'SUM(CASE WHEN collection.isCancelled = false AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.amount ELSE 0 END)',
+        'SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.amount ELSE 0 END)',
         'PreviousReading'
       )
       .where('collection.terminalId = :terminalId', { terminalId })
@@ -52,25 +52,25 @@ export class MegaworldReportService {
       .innerJoin('salesLine.sales', 'sales')
       .leftJoin(TrnCollectionEntity, 'collection', 'collection.salesId = salesLine.salesId')
       .select(
-        'SUM(CASE WHEN collection.isCancelled = false AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.amount ELSE 0 END)',
+        'SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.amount ELSE 0 END)',
         'NetSales'
       )
       .addSelect(
-        'SUM(CASE WHEN sales.isCancelled = true THEN salesLine.amount ELSE 0 END)',
+        'SUM(CASE WHEN sales.isCancelled = 1 THEN salesLine.amount ELSE 0 END)',
         'VoidAmount'
       )
       .addSelect(
-        'SUM(CASE WHEN sales.isCancelled = false AND COALESCE(collection.isReturned, 0) = 2 THEN salesLine.amount ELSE 0 END)',
+        'SUM(CASE WHEN sales.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 2 THEN salesLine.amount ELSE 0 END)',
         'RefundAmount'
       )
       .addSelect(
-        `SUM(CASE WHEN salesLine.price2 > 0 AND collection.isCancelled = false AND COALESCE(collection.isReturned, 0) = 0 
+        `SUM(CASE WHEN salesLine.price2 > 0 AND collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 
           THEN (salesLine.quantity * (salesLine.price2LessTax - (salesLine.price2LessTax * (salesLine.discountRate / 100)))) 
           ELSE CASE WHEN salesLine.taxId = 5 THEN salesLine.amount ELSE 0 END END)`,
         'VATExempt'
       )
       .addSelect(
-        'SUM(CASE WHEN salesLine.taxRate > 0 AND collection.isCancelled = false AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.taxAmount ELSE 0 END)',
+        'SUM(CASE WHEN salesLine.taxRate > 0 AND collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.taxAmount ELSE 0 END)',
         'VATAmount'
       )
       .where('sales.isLocked = :isLocked', { isLocked: true })
@@ -85,15 +85,15 @@ export class MegaworldReportService {
       .leftJoin('collection.collectionLines', 'cl')
       .leftJoin('cl.payType', 'pt')
       .select(
-        "SUM(CASE WHEN collection.isCancelled = false AND cl.amount > 0 AND pt.payType = 'Cash' THEN (CASE WHEN cl.amount > collection.amount THEN collection.amount ELSE cl.amount END) ELSE 0 END)",
+        "SUM(CASE WHEN collection.isCancelled = 0 AND cl.amount > 0 AND pt.payType = 'Cash' THEN (CASE WHEN cl.amount > collection.amount THEN collection.amount ELSE cl.amount END) ELSE 0 END)",
         'CashSales'
       )
       .addSelect(
-        "SUM(CASE WHEN collection.isCancelled = false AND cl.amount > 0 AND (pt.payType = 'Credit Card' OR pt.payType = 'Debit') THEN cl.amount ELSE 0 END)",
+        "SUM(CASE WHEN collection.isCancelled = 0 AND cl.amount > 0 AND (pt.payType = 'Credit Card' OR pt.payType = 'Debit') THEN cl.amount ELSE 0 END)",
         'CreditDebitsales'
       )
       .addSelect(
-        "SUM(CASE WHEN collection.isCancelled = false AND cl.amount > 0 AND pt.payType NOT IN ('Credit Card', 'Cash', 'Debit') THEN cl.amount ELSE 0 END)",
+        "SUM(CASE WHEN collection.isCancelled = 0 AND cl.amount > 0 AND pt.payType NOT IN ('Credit Card', 'Cash', 'Debit') THEN cl.amount ELSE 0 END)",
         'OtherPaymentSales'
       )
       .where('collection.isLocked = :isLocked', { isLocked: true })
@@ -110,13 +110,13 @@ export class MegaworldReportService {
       .leftJoin(TrnCollectionEntity, 'collection', 'collection.salesId = salesLine.salesId')
       .innerJoin('salesLine.discount', 'discount')
       .select(
-        `SUM(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = true) 
+        `SUM(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = 1) 
           AND discount.discount IN (:...mandated)
           THEN COALESCE(salesLine.discountAmount * salesLine.quantity, 0) ELSE 0 END)`,
         'GovMandatedDiscount'
       )
       .addSelect(
-        `SUM(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = true) 
+        `SUM(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = 1) 
           AND discount.discount NOT IN (:...mandated)
           THEN COALESCE(salesLine.discountAmount * salesLine.quantity, 0) ELSE 0 END)`,
         'OtherDiscount'
@@ -131,7 +131,7 @@ export class MegaworldReportService {
     // 6. Counts
     const countResult = await AppDataSource.getRepository(TrnSalesEntity)
       .createQueryBuilder('sales')
-      .leftJoin(TrnCollectionEntity, 'collection', 'collection.salesId = sales.id')
+      .leftJoin('sales.collections', 'collection')
       .leftJoin('sales.customer', 'customer')
       .select(
         `COUNT(DISTINCT CASE WHEN customer.customer = 'Walk In' THEN sales.id ELSE NULL END) + 
@@ -239,7 +239,7 @@ export class MegaworldReportService {
       .addSelect('collection.terminalId', 'Terminal')
       .addSelect(':dates', 'Date')
       .addSelect(
-        'SUM(CASE WHEN collection.isCancelled = false AND COALESCE(collection.isReturned, 0) = 0 THEN collection.amount ELSE 0 END)',
+        'SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN collection.amount ELSE 0 END)',
         'NetSalesAmountDay'
       )
       .addSelect('COUNT(DISTINCT collection.id)', 'NoSalesTransactionDay')

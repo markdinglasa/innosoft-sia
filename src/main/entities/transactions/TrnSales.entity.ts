@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
 import { MstPeriodEntity } from '../masterfiles/MstPeriod.entity'
@@ -9,6 +9,8 @@ import { MstTermEntity } from '../masterfiles/MstTerm.entity'
 import { MstTerminalEntity } from '../masterfiles/MstTerminal.entity'
 import { MstDiscountEntity } from '../masterfiles/MstDiscount.entity'
 import { MstUserEntity } from '../masterfiles/MstUser.entity'
+import { TrnSalesLineEntity } from './TrnSalesLine.entity'
+import { TrnCollectionEntity } from './TrnCollection.entity'
 
 @Entity(POSEntity.TRN_SALES)
 export class TrnSalesEntity extends BaseEntity {
@@ -188,4 +190,10 @@ export class TrnSalesEntity extends BaseEntity {
   @ManyToOne(() => MstUserEntity)
   @JoinColumn({ name: 'UpdateUserId' })
   updateUser?: MstUserEntity
+
+  @OneToMany(() => TrnSalesLineEntity, (salesLine) => salesLine.sales)
+  salesLines?: TrnSalesLineEntity[]
+
+  @OneToMany(() => TrnCollectionEntity, (collection) => collection.sales)
+  collections?: TrnCollectionEntity[]
 }
