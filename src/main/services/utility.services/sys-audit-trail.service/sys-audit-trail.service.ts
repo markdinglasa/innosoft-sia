@@ -7,7 +7,14 @@ import { BaseService } from '../../base.service'
 import { CreateSysAuditTrailDto, UpdateSysAuditTrailDto } from './dto'
 
 export interface ISysAuditTrailService {
-  // Add specific SysAuditTrail methods here later
+  log(payload: {
+    userId: number
+    tableInformation: string
+    recordInformation: string
+    actionInformation: string
+    oldData?: any
+    newData?: any
+  }): Promise<void>
 }
 
 export class SysAuditTrailService extends BaseService<SysAuditTrailEntity> implements ISysAuditTrailService {
@@ -20,6 +27,32 @@ export class SysAuditTrailService extends BaseService<SysAuditTrailEntity> imple
    */
   protected get searchFields(): string[] {
     return ['tableInformation', 'recordInformation', 'actionInformation']
+  }
+
+  /**
+   * Centralized method to log audit trail entries.
+   */
+  async log(payload: {
+    userId: number
+    tableInformation: string
+    recordInformation: string
+    actionInformation: string
+    oldData?: any
+    newData?: any
+  }): Promise<void> {
+    const { userId, tableInformation, recordInformation, actionInformation, oldData, newData } = payload
+
+    const auditEntry = this.repository.create({
+      userId,
+      tableInformation,
+      recordInformation,
+      actionInformation,
+      auditDate: new Date(),
+      oldData: oldData ? JSON.stringify(oldData) : null,
+      newData: newData ? JSON.stringify(newData) : null
+    })
+
+    await this.repository.save(auditEntry)
   }
 
   /**

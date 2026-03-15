@@ -30,4 +30,9 @@ export class SysAuditTrailEntity {
   @Column({ name: 'ActionInformation', type: 'nvarchar', length: 255, nullable: false })
   actionInformation: string
 
+  @Column({ name: 'OldData', type: 'nvarchar', length: 'max', nullable: true })
+  oldData?: string | null
+
+  @Column({ name: 'NewData', type: 'nvarchar', length: 'max', nullable: true })
+  newData?: string | null
 }

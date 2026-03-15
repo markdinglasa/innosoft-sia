@@ -12,7 +12,10 @@ import {
 } from 'typeorm'
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity'
 import { MutationResponse, PaginatedResponse, PaginationOptionsDto } from '../../shared/types/pagination'
+import { SysAuditTrailEntity } from '../entities/utilities/SysAuditTrail.entity'
 import { AppDataSource } from '../typeORM/configurations'
+import { SYSTEM_SELF } from '@shared/constants'
+import Store from '../store/Store'
 
 /**
  * Interface defining the standard CRUD operations for a service.
@@ -20,9 +23,9 @@ import { AppDataSource } from '../typeORM/configurations'
 export interface IBaseService<T> {
   list(options?: PaginationOptionsDto): Promise<T[] | PaginatedResponse<T>>
   get(id: any, options?: FindOneOptions<T>): Promise<T | null>
-  create(data: DeepPartial<T>): Promise<MutationResponse<T>>
-  update(id: any, data: QueryDeepPartialEntity<T>): Promise<MutationResponse<T>>
-  delete(id: any): Promise<MutationResponse<T>>
+  create(data: DeepPartial<T>, userId?: number): Promise<MutationResponse<T>>
+  update(id: any, data: QueryDeepPartialEntity<T>, userId?: number): Promise<MutationResponse<T>>
+  delete(id: any, userId?: number): Promise<MutationResponse<T>>
 }
 
 /**
@@ -40,6 +43,44 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
   }
 
   /**
+   * Private helper to log audit trail.
+   * Directly uses AppDataSource to avoid circular dependency with SysAuditTrailService.
+   */
+  private async audit(payload: {
+    userId?: number
+    action: string
+    recordId?: string
+    oldData?: any
+    newData?: any
+  }): Promise<void> {
+    // Avoid auditing the audit trail itself
+    if (this.entity === SysAuditTrailEntity) return
+
+    const currentUser = Store.get(SYSTEM_SELF)
+    const effectiveUserId = payload.userId || currentUser?.id || 1 // Fallback to 1 if no user found (though shouldn't happen)
+
+    const entityMetadata = AppDataSource.getMetadata(this.entity)
+    const tableName = entityMetadata.tableName
+
+    try {
+      const auditRepo = AppDataSource.getRepository(SysAuditTrailEntity)
+      const auditEntry = auditRepo.create({
+        userId: effectiveUserId,
+        tableInformation: tableName,
+        recordInformation: payload.recordId || 'none',
+        actionInformation: payload.action,
+        auditDate: new Date(),
+        oldData: payload.oldData ? JSON.stringify(payload.oldData) : null,
+        newData: payload.newData ? JSON.stringify(payload.newData) : null
+      })
+      await auditRepo.save(auditEntry)
+    } catch (error) {
+      console.error('Failed to save audit trail:', error)
+      // We don't want to fail the main transaction if auditing fails
+    }
+  }
+
+  /**
    * Optional search fields for the entity.
    * Child classes should override this to enable keyword searching.
    */
@@ -53,7 +94,7 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
    */
   async list(options?: PaginationOptionsDto): Promise<T[] | PaginatedResponse<T>> {
     const { page = 1, limit = 10, search = '', orderBy = 'id', order = 'DESC' } = options || {}
-
+    
     // If no pagination is requested (limit is explicitly null/0 or page is not provided), 
     // we could return everything, but for this app let's enforce pagination.
     const skip = (page - 1) * limit
@@ -123,6 +164,17 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
 
     const [items, totalItems] = await this.repository.findAndCount(findOptions)
 
+    await this.audit({
+      action: 'View List',
+      newData: {
+        totalItems,
+        page: findOptions.skip! / findOptions.take! + 1,
+        limit: findOptions.take,
+        search,
+        filters: options?.filters
+      }
+    })
+
     return {
       items,
       meta: {
@@ -144,8 +196,18 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
     if (options) {
       return await this.repository.findOne(options)
     }
+
+    const result = await this.repository.findOneBy({ id } as any)
+
+    // audit trail
+    await this.audit({
+      action: 'View Details',
+      recordId: id.toString(),
+      newData: result
+    })
+
     // We assume 'id' as the default primary key name for Base lookups.
-    return await this.repository.findOneBy({ id } as any)
+    return result
   }
 
   /**
@@ -169,15 +231,26 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
   /**
    * Creates and saves a new entity.
    * @param data Partial data for the new entity.
+   * @param userId ID of the user performing the action.
    */
-  async create(data: DeepPartial<T>): Promise<MutationResponse<T>> {
+  async create(data: DeepPartial<T>, userId?: number): Promise<MutationResponse<T>> {
     await this.validateCreate(data)
     const newItem = this.repository.create(data)
     const result = await this.repository.save(newItem)
+
+    if (userId) {
+      await this.audit({
+        userId,
+        action: 'CREATE',
+        recordId: (result as any).id?.toString() || 'unknown',
+        newData: result
+      })
+    }
+
     return {
       metadata: result,
       success: true,
-      message: 'Item created successfully'
+      message: 'Created successfully'
     }
   }
 
@@ -185,26 +258,62 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
    * Updates an existing entity by its ID.
    * @param id The primary key value.
    * @param data Partial data for updates.
+   * @param userId ID of the user performing the action.
    */
-  async update(id: any, data: QueryDeepPartialEntity<T>): Promise<MutationResponse<T>> {
+  async update(id: any, data: QueryDeepPartialEntity<T>, userId?: number): Promise<MutationResponse<T>> {
     await this.validateUpdate(id, data)
+
+    let oldData: T | null = null
+    if (userId) {
+      oldData = await this.get(id)
+    }
+
     await this.repository.update(id, data)
+    const result = await this.get(id)
+
+    if (userId && oldData && result) {
+      await this.audit({
+        userId,
+        action: 'UPDATE',
+        recordId: id.toString(),
+        oldData,
+        newData: result
+      })
+    }
+
     return {
       success: true,
-      message: 'Item updated successfully'
+      message: 'Updated successfully'
     }
   }
 
   /**
    * Deletes an entity by its ID.
    * @param id The primary key value.
+   * @param userId ID of the user performing the action.
    */
-  async delete(id: any): Promise<MutationResponse<T>> {
+  async delete(id: any, userId?: number): Promise<MutationResponse<T>> {
     await this.validateDelete(id)
+
+    let oldData: T | null = null
+    if (userId) {
+      oldData = await this.get(id)
+    }
+
     const result = await this.repository.delete(id)
+
+    if (userId && oldData && result.affected !== 0) {
+      await this.audit({
+        userId,
+        action: 'DELETE',
+        recordId: id.toString(),
+        oldData
+      })
+    }
+
     return {
       success: result.affected !== 0,
-      message: 'Item deleted successfully'
+      message: 'Deleted successfully'
     }
   }
 }

@@ -9,6 +9,8 @@ import {
   Typography
 } from '@mui/material'
 import { useIpcInvoke } from '@shared/hooks/ipc/useIpcInvoke'
+import { SYSTEM_SELF } from '@shared/constants'
+import { IpcChannel } from '@shared/types'
 
 export const Login = () => {
   const [userName, setUserName] = useState('')
@@ -24,7 +26,10 @@ export const Login = () => {
     const user = await login({ userName, password })
     
     if (user) {
-      // TODO: Integrate react-auth-kit or Redux store to save the session
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: SYSTEM_SELF,
+        state: user
+      })
       console.log('Login successful!', user)
     }
   }
