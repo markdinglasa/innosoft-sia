@@ -4,6 +4,7 @@ export interface IpcApi {
   on(channel: string, callback: GenericFunction): void
   removeListener(channel: string, callback: GenericFunction): void
   send(channel: string, payload?: any): void
+  invoke<T = any>(channel: string, ...args: any[]): Promise<T>
 }
 
 export enum IpcChannel {

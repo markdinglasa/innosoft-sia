@@ -35,8 +35,14 @@ const send = (channel: string, payload: any) => {
   }
 }
 
+const invoke = async (channel: string, ...args: any[]) => {
+  // Skipping validChannels check for invoke for now as it will mostly be dynamic
+  return await ipcRenderer.invoke(channel, ...args)
+}
+
 export const ipcApi: IpcApi = {
   on,
   removeListener,
-  send
+  send,
+  invoke
 }

@@ -22,11 +22,16 @@ export enum POSEntity {
   MST_TERMINAL = 'MstTerminal',
   MST_USER = 'MstUser',
   MST_USER_FORM = 'MstUserForm',
+  MST_PERMISSIONS = 'MstPermissions',
+  MST_ACCESS_RIGHT = 'MstAccessRight',
+  MST_ROLE = 'MstRole',
+  MST_USER_ROLES = 'MstUserRoles',
 
   SYS_AUDIT_TRAIL = 'SysAuditTrail',
   SYS_FORM = 'SysForm',
   SYS_SETTINGS = 'SysSettings',
   SYS_SALES_LOCKED = 'SysSalesLocked',
+  SYS_NOTIFICATION = 'SysNotification',
 
   TRN_COLLECTION = 'TrnCollection',
   TRN_COLLECTION_LINE = 'TrnCollectionLine',

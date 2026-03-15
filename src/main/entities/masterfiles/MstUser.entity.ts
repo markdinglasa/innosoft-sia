@@ -11,9 +11,10 @@
 // 	[IsLocked] [bit] NOT NULL,
 // 	[Role] [nvarchar](50) NULL,
 
-import { Column, Entity } from 'typeorm'
+import { Column, Entity, OneToMany } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
+import { MstUserRolesEntity } from './MstUserRoles.entity'
 
 @Entity(POSEntity.MST_USER)
 export class MstUserEntity extends BaseEntity {
@@ -23,14 +24,18 @@ export class MstUserEntity extends BaseEntity {
     this.password = ''
     this.fullName = ''
     this.userCardNumber = null
-    this.role = null
+    this.email = ''
+    this.userRoles = []
   }
 
   @Column({ name: 'UserName', type: 'nvarchar', length: 50, nullable: false })
   userName: string
 
-  @Column({ name: 'Password', type: 'nvarchar', length: 50, nullable: false })
+  @Column({ name: 'Password', type: 'text',  nullable: false })
   password: string
+
+    @Column({ name: 'Email', type: 'nvarchar', length:255,  nullable: false })
+  email: string
 
   @Column({ name: 'FullName', type: 'nvarchar', length: 255, nullable: false })
   fullName: string
@@ -38,6 +43,7 @@ export class MstUserEntity extends BaseEntity {
   @Column({ name: 'UserCardNumber', type: 'nvarchar', length: 255, nullable: true })
   userCardNumber: string | null
 
-  @Column({ name: 'Role', type: 'nvarchar', length: 50, nullable: true })
-  role: string | null
+  // FK Relationships
+  @OneToMany(() => MstUserRolesEntity, (userRole) => userRole.user)
+  userRoles: MstUserRolesEntity[]
 }
