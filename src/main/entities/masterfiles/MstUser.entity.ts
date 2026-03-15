@@ -14,6 +14,8 @@
 import { Column, Entity, OneToMany } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
+import { MstBranchAccessEntity } from './MstBranchAccess.entity'
+import { MstPermissionsEntity } from "./MstPermissions.entity"
 import { MstUserRolesEntity } from './MstUserRoles.entity'
 
 @Entity(POSEntity.MST_USER)
@@ -26,6 +28,9 @@ export class MstUserEntity extends BaseEntity {
     this.userCardNumber = null
     this.email = ''
     this.userRoles = []
+    this.branchAccesses = []
+    this.status = 'Active'
+    this.image = null
   }
 
   @Column({ name: 'UserName', type: 'nvarchar', length: 50, nullable: false })
@@ -43,7 +48,19 @@ export class MstUserEntity extends BaseEntity {
   @Column({ name: 'UserCardNumber', type: 'nvarchar', length: 255, nullable: true })
   userCardNumber: string | null
 
+  @Column({ name: 'Status', type: 'enum', enum: ['Active','Suspended','Deactivated','Terminated'], nullable: false })
+  status: string
+
+  @Column({ name: 'Image', type: 'text', nullable: true })
+  image: string | null
+
   // FK Relationships
   @OneToMany(() => MstUserRolesEntity, (userRole) => userRole.user)
-  userRoles: MstUserRolesEntity[]
+  userRoles?: MstUserRolesEntity[]
+
+  @OneToMany(() => MstBranchAccessEntity, (branchAccess) => branchAccess.user)
+  branchAccesses?: MstBranchAccessEntity[]
+
+  // virtual fields
+  permissions?: MstPermissionsEntity[]
 }

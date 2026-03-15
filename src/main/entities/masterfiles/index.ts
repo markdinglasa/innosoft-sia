@@ -1,6 +1,7 @@
 export * from './MstAccessRight.entity'
 export * from './MstAccount.entity'
 export * from './MstBranch.entity'
+export * from './MstBranchAccess.entity'
 export * from './MstCustomer.entity'
 export * from './MstDiscount.entity'
 export * from './MstDiscountItem.entity'

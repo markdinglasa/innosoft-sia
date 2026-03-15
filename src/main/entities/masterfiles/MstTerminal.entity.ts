@@ -2,19 +2,21 @@
 // 	[Id] [int] IDENTITY(1,1) NOT NULL,
 // 	[Terminal] [nvarchar](50) NOT NULL,
 
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity } from 'typeorm'
 import { POSEntity } from '../entity-names'
+import { BaseEntity } from '../generic'
 
 @Entity(POSEntity.MST_TERMINAL)
-export class MstTerminalEntity {
+export class MstTerminalEntity extends BaseEntity {
   constructor() {
-    this.id = 0
+    super()
     this.terminal = ''
+    this.isDefault = false
   }
-
-  @PrimaryGeneratedColumn({ name: 'Id' })
-  id: number
 
   @Column({ name: 'Terminal', type: 'nvarchar', length: 50, nullable: false })
   terminal: string
+
+  @Column({ name: 'IsDefault', type: 'bit', nullable: false })
+  isDefault: boolean
 }

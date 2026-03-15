@@ -5,7 +5,7 @@
 // 	[TopLocation] [int] NULL,
 // 	[LeftLocation] [int] NULL,
 
-import { Column, Entity, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
 import { MstTableGroupEntity } from './MstTableGroup.entity'
@@ -14,7 +14,7 @@ import { MstTableGroupEntity } from './MstTableGroup.entity'
 export class MstTableEntity extends BaseEntity {
   constructor() {
     super()
-    this.id = 0
+
     this.tableCode = ''
     this.tableGroupId = 0
     this.topLocation = null
@@ -22,8 +22,6 @@ export class MstTableEntity extends BaseEntity {
     this.isClean = false
   }
 
-  @PrimaryGeneratedColumn({ name: 'Id' })
-  id: number
 
   @Column({ name: 'TableCode', type: 'nvarchar', length: 50, nullable: false })
   tableCode: string

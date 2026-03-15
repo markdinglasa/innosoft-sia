@@ -1,26 +1,17 @@
-// CREATE TABLE [dbo].[MstTax](
-// 	[Id] [int] IDENTITY(1,1) NOT NULL,
-// 	[Code] [nvarchar](50) NOT NULL,
-// 	[Tax] [nvarchar](50) NOT NULL,
-// 	[Rate] [decimal](18, 5) NOT NULL,
-// 	[AccountId] [int] NOT NULL,
-
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
+import { BaseEntity } from '../generic/base.entity'
 import { MstAccountEntity } from './MstAccount.entity'
 
 @Entity(POSEntity.MST_TAX)
-export class MstTaxEntity {
+export class MstTaxEntity extends BaseEntity {
   constructor() {
-    this.id = 0
+    super()
     this.code = ''
     this.tax = ''
     this.rate = 0
     this.accountId = 0
   }
-
-  @PrimaryGeneratedColumn({ name: 'Id' })
-  id: number
 
   @Column({ name: 'Code', type: 'nvarchar', length: 50, nullable: false })
   code: string

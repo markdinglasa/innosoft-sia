@@ -1,0 +1,78 @@
+import { DeepPartial } from 'typeorm'
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity'
+import { BadRequestException } from '../../../common/exceptions'
+import { transformAndValidate } from '../../../common/utils/validator'
+import { MstUserEntity } from '../../../entities/masterfiles/MstUser.entity'
+import { BaseService } from '../../base.service'
+import { CreateUserDto, UpdateUserDto } from './dto'
+
+export interface IUserService {
+  // Add specific User methods here later
+}
+
+export class UserService extends BaseService<MstUserEntity> implements IUserService {
+  constructor() {
+    super(MstUserEntity)
+  }
+
+  /**
+   * Search fields for User keyword search.
+   */
+  protected get searchFields(): string[] {
+    return ['userName', 'fullName', 'email', 'userCardNumber']
+  }
+
+  /**
+   * Validates before creating a new User.
+   * Ensures UserName and Email are unique.
+   */
+  protected async validateCreate(data: DeepPartial<MstUserEntity>): Promise<void> {
+    const userDto = await transformAndValidate(CreateUserDto, data)
+
+    const existingUser = await this.repository.findOneBy({ userName: userDto.userName })
+    if (existingUser) {
+      throw new BadRequestException(`Username '${userDto.userName}' already exists.`)
+    }
+
+    const existingEmail = await this.repository.findOneBy({ email: userDto.email })
+    if (existingEmail) {
+      throw new BadRequestException(`Email '${userDto.email}' already exists.`)
+    }
+  }
+
+  /**
+   * Validates before updating an existing User.
+   */
+  protected async validateUpdate(id: any, data: QueryDeepPartialEntity<MstUserEntity>): Promise<void> {
+    const currentEntity = await this.get(id)
+    if (!currentEntity) {
+      throw new BadRequestException('User not found for update.')
+    }
+
+    const userDto = await transformAndValidate(UpdateUserDto, data)
+    
+    if (userDto.userName && userDto.userName !== currentEntity.userName) {
+      const existingUser = await this.repository.findOneBy({ userName: userDto.userName })
+      if (existingUser) {
+        throw new BadRequestException(`Username '${userDto.userName}' already exists.`)
+      }
+    }
+
+    if (userDto.email && userDto.email !== currentEntity.email) {
+      const existingEmail = await this.repository.findOneBy({ email: userDto.email })
+      if (existingEmail) {
+        throw new BadRequestException(`Email '${userDto.email}' already exists.`)
+      }
+    }
+  }
+
+  /**
+   * Validates before deleting a User.
+   */
+  protected async validateDelete(id: any): Promise<void> {
+    const currentEntity = await this.get(id)
+    if (!currentEntity) {
+      throw new BadRequestException('User not found for deletion.')
+    }
+  }
+}

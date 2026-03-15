@@ -1,6 +1,7 @@
 export enum POSEntity {
   MST_ACCOUNT = 'MstAccount',
   MST_BRANCH = 'MstBranch',
+  MST_BRANCH_ACCESS = 'MstBranchAccess',
   MST_CUSTOMER = 'MstCustomer',
   MST_DISCOUNT = 'MstDiscount',
   MST_DISCOUNT_ITEM = 'MstDiscountItem',

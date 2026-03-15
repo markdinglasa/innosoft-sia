@@ -1,19 +1,13 @@
-// CREATE TABLE [dbo].[MstUnit](
-// 	[Id] [int] IDENTITY(1,1) NOT NULL,
-// 	[Unit] [nvarchar](50) NOT NULL,
-
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity } from 'typeorm'
 import { POSEntity } from '../entity-names'
+import { BaseEntity } from '../generic/base.entity'
 
 @Entity(POSEntity.MST_UNIT)
-export class MstUnitEntity {
+export class MstUnitEntity extends BaseEntity {
   constructor() {
-    this.id = 0
+    super()
     this.unit = ''
   }
-
-  @PrimaryGeneratedColumn({ name: 'Id' })
-  id: number
 
   @Column({ name: 'Unit', type: 'nvarchar', length: 50, nullable: false })
   unit: string

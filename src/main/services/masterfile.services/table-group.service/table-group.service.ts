@@ -1,0 +1,65 @@
+import { DeepPartial } from 'typeorm'
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity'
+import { BadRequestException } from '../../../common/exceptions'
+import { transformAndValidate } from '../../../common/utils/validator'
+import { MstTableGroupEntity } from '../../../entities/masterfiles/MstTableGroup.entity'
+import { BaseService } from '../../base.service'
+import { CreateTableGroupDto, UpdateTableGroupDto } from './dto'
+
+export interface ITableGroupService {
+  // Add specific TableGroup methods here later
+}
+
+export class TableGroupService extends BaseService<MstTableGroupEntity> implements ITableGroupService {
+  constructor() {
+    super(MstTableGroupEntity)
+  }
+
+  /**
+   * Search fields for TableGroup keyword search.
+   */
+  protected get searchFields(): string[] {
+    return ['tableGroup']
+  }
+
+  /**
+   * Validates before creating a new TableGroup.
+   * Ensures TableGroup name is unique.
+   */
+  protected async validateCreate(data: DeepPartial<MstTableGroupEntity>): Promise<void> {
+    const tableGroupDto = await transformAndValidate(CreateTableGroupDto, data)
+
+    const existingName = await this.repository.findOneBy({ tableGroup: tableGroupDto.tableGroup })
+    if (existingName) {
+      throw new BadRequestException(`Table Group '${tableGroupDto.tableGroup}' already exists.`)
+    }
+  }
+
+  /**
+   * Validates before updating an existing TableGroup.
+   */
+  protected async validateUpdate(id: any, data: QueryDeepPartialEntity<MstTableGroupEntity>): Promise<void> {
+    const currentEntity = await this.get(id)
+    if (!currentEntity) {
+      throw new BadRequestException('Table Group not found for update.')
+    }
+
+    const tableGroupDto = await transformAndValidate(UpdateTableGroupDto, data)
+    if (tableGroupDto.tableGroup && tableGroupDto.tableGroup !== currentEntity.tableGroup) {
+      const existingName = await this.repository.findOneBy({ tableGroup: tableGroupDto.tableGroup })
+      if (existingName) {
+        throw new BadRequestException(`Table Group '${tableGroupDto.tableGroup}' already exists.`)
+      }
+    }
+  }
+
+  /**
+   * Validates before deleting a TableGroup.
+   */
+  protected async validateDelete(id: any): Promise<void> {
+    const currentEntity = await this.get(id)
+    if (!currentEntity) {
+      throw new BadRequestException('Table Group not found for deletion.')
+    }
+  }
+}
