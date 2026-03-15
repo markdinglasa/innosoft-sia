@@ -1,3 +1,4 @@
+import { AuthIpcChannel } from "@shared/types"
 import { BadRequestException } from '../../common/exceptions'
 import { registerIpcHandler } from '../../common/utils/ipc-handler'
 import { AuthService } from '../../services/auth.services'
@@ -10,7 +11,7 @@ const authService = new AuthService()
  * Incoming shape: args[0] = { userName: string, password: string }
  * Return shape: IpcResponseItem<LoginResponse>
  */
-registerIpcHandler('auth:login', async (_event, payload) => {
+registerIpcHandler(AuthIpcChannel.LOGIN, async (_event, payload) => {
   if (!payload || !payload.userName || !payload.password) {
     throw new BadRequestException('Username and Password are required')
   }
