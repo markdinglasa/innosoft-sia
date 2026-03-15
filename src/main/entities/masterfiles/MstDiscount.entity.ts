@@ -1,29 +1,3 @@
-// CREATE TABLE [dbo].[MstDiscount](
-// 	[Id] [int] IDENTITY(1,1) NOT NULL,
-// 	[Discount] [nvarchar](50) NOT NULL,
-// 	[DiscountRate] [decimal](18, 5) NOT NULL,
-// 	[IsVatExempt] [bit] NOT NULL,
-// 	[IsDateScheduled] [bit] NOT NULL,
-// 	[DateStart] [datetime] NULL,
-// 	[DateEnd] [datetime] NULL,
-// 	[IsTimeScheduled] [bit] NOT NULL,
-// 	[TimeStart] [datetime] NULL,
-// 	[TimeEnd] [datetime] NULL,
-// 	[IsDayScheduled] [bit] NOT NULL,
-// 	[DayMon] [bit] NOT NULL,
-// 	[DayTue] [bit] NOT NULL,
-// 	[DayWed] [bit] NOT NULL,
-// 	[DayThu] [bit] NOT NULL,
-// 	[DayFri] [bit] NOT NULL,
-// 	[DaySat] [bit] NOT NULL,
-// 	[DaySun] [bit] NOT NULL,
-// 	[EntryUserId] [int] NOT NULL,
-// 	[EntryDateTime] [datetime] NOT NULL,
-// 	[UpdateUserId] [int] NOT NULL,
-// 	[UpdateDateTime] [datetime] NOT NULL,
-// 	[IsLocked] [bit] NOT NULL,
-// 	[DiscountAlias] [nvarchar](100) NULL,
-
 import { AfterLoad, Column, Entity } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
