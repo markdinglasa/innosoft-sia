@@ -52,7 +52,7 @@ export class TrnSalesEntity extends BaseEntity {
   @Column({ name: 'PeriodId', type: 'int', nullable: false })
   periodId: number
 
-  @Column({ name: 'SalesDate', type: 'datetime', nullable: false })
+  @Column({ name: 'SalesDate', type: 'datetimeoffset', nullable: false })
   salesDate: Date
 
   @Column({ name: 'SalesNumber', type: 'nvarchar', length: 50, nullable: false })
@@ -133,7 +133,7 @@ export class TrnSalesEntity extends BaseEntity {
   @Column({ name: 'ChildName', type: 'nvarchar', length: 100, nullable: true })
   childName: string | null
 
-  @Column({ name: 'DateOfBirth', type: 'datetime', nullable: true })
+  @Column({ name: 'DateOfBirth', type: 'datetimeoffset', nullable: true })
   dateOfBirth: Date | null
 
   @Column({ name: 'TINNumber', type: 'nvarchar', length: 50, nullable: true })
@@ -183,13 +183,7 @@ export class TrnSalesEntity extends BaseEntity {
   @JoinColumn({ name: 'ApprovedBy' })
   approvedByUser?: MstUserEntity
 
-  @ManyToOne(() => MstUserEntity)
-  @JoinColumn({ name: 'EntryUserId' })
-  entryUser?: MstUserEntity
 
-  @ManyToOne(() => MstUserEntity)
-  @JoinColumn({ name: 'UpdateUserId' })
-  updateUser?: MstUserEntity
 
   @OneToMany(() => TrnSalesLineEntity, (salesLine) => salesLine.sales)
   salesLines?: TrnSalesLineEntity[]

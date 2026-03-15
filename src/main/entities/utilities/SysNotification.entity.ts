@@ -17,7 +17,7 @@ export class SysNotificationEntity {
   @PrimaryGeneratedColumn({ name: 'Id' })
   id: number
 
-  @Column({ name: 'NotificationDate', type: 'datetime', nullable: false })
+  @Column({ name: 'NotificationDate', type: 'datetimeoffset', nullable: false })
   notificationDate: Date
 
   @Column({ name: 'UserId', type: 'int', nullable: false })

@@ -13,7 +13,7 @@ export class MstItemInventoryEntity extends BaseEntity {
   constructor() {
     super()
     this.itemId = 0
-    this.inventoryDate = 0
+    this.inventoryDate = new Date()
     this.quantity = 0
   }
 
@@ -21,7 +21,7 @@ export class MstItemInventoryEntity extends BaseEntity {
   itemId: number
 
   @Column({ name: 'InventoryDate', type: 'datetimeoffset', nullable: false })
-  inventoryDate: number
+  inventoryDate: Date
 
   @Column({ name: 'Quantity', type: 'decimal', nullable: false })
   quantity: number

@@ -44,7 +44,7 @@ export class TrnDisbursementEntity extends BaseEntity {
   @Column({ name: 'PeriodId', type: 'int', nullable: false })
   periodId: number
 
-  @Column({ name: 'DisbursementDate', type: 'datetime', nullable: false })
+  @Column({ name: 'DisbursementDate', type: 'datetimeoffset', nullable: false })
   disbursementDate: Date
 
   @Column({ name: 'DisbursementNumber', type: 'nvarchar', length: 50, nullable: false })
@@ -154,11 +154,5 @@ export class TrnDisbursementEntity extends BaseEntity {
   @JoinColumn({ name: 'ApprovedBy' })
   approvedByUser?: MstUserEntity
 
-  @ManyToOne(() => MstUserEntity)
-  @JoinColumn({ name: 'EntryUserId' })
-  entryUser?: MstUserEntity
 
-  @ManyToOne(() => MstUserEntity)
-  @JoinColumn({ name: 'UpdateUserId' })
-  updateUser?: MstUserEntity
 }

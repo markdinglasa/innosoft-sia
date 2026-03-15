@@ -29,7 +29,7 @@ export class TrnJournalEntity {
   @PrimaryGeneratedColumn({ name: 'Id' })
   id: number
 
-  @Column({ name: 'JournalDate', type: 'datetime', nullable: false })
+  @Column({ name: 'JournalDate', type: 'datetimeoffset', nullable: false })
   journalDate: Date
 
   @Column({ name: 'JournalRefDocument', type: 'nvarchar', length: 50, nullable: false })

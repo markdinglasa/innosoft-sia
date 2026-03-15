@@ -43,7 +43,7 @@ export class TrnStockInLineEntity {
   @Column({ name: 'Amount', type: 'decimal', precision: 18, scale: 5, nullable: false })
   amount: number
 
-  @Column({ name: 'ExpiryDate', type: 'datetime', nullable: true })
+  @Column({ name: 'ExpiryDate', type: 'datetimeoffset', nullable: true })
   expiryDate: Date | null
 
   @Column({ name: 'LotNumber', type: 'nvarchar', length: 50, nullable: true })

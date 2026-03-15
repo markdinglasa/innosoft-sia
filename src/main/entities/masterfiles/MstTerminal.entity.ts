@@ -1,10 +1,8 @@
-// CREATE TABLE [dbo].[MstTerminal](
-// 	[Id] [int] IDENTITY(1,1) NOT NULL,
-// 	[Terminal] [nvarchar](50) NOT NULL,
-
-import { Column, Entity } from 'typeorm'
+import { Column, Entity, OneToMany } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic'
+import { SysSettingsEntity } from "../utilities"
+import { SysUserTerminalEntity } from '../utilities/SysUserTerminal.entity'
 
 @Entity(POSEntity.MST_TERMINAL)
 export class MstTerminalEntity extends BaseEntity {
@@ -19,4 +17,11 @@ export class MstTerminalEntity extends BaseEntity {
 
   @Column({ name: 'IsDefault', type: 'bit', nullable: false })
   isDefault: boolean
+
+  // FK RElationship
+  @OneToMany(() => SysUserTerminalEntity, (userTerminal) => userTerminal.terminal)
+  userTerminals?: SysUserTerminalEntity[] 
+
+  @OneToMany(() => SysSettingsEntity, (sysSettings) => sysSettings.terminal)
+  sysSettings?: SysSettingsEntity[]
 }

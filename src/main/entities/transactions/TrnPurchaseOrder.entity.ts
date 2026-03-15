@@ -24,7 +24,7 @@ export class TrnPurchaseOrderEntity extends BaseEntity {
   @Column({ name: 'PeriodId', type: 'int', nullable: false })
   periodId: number
 
-  @Column({ name: 'PurchaseOrderDate', type: 'datetime', nullable: false })
+  @Column({ name: 'PurchaseOrderDate', type: 'datetimeoffset', nullable: false })
   purchaseOrderDate: Date
 
   @Column({ name: 'PurchaseOrderNumber', type: 'nvarchar', length: 50, nullable: false })
@@ -72,11 +72,5 @@ export class TrnPurchaseOrderEntity extends BaseEntity {
   @JoinColumn({ name: 'ApprovedBy' })
   approvedByUser?: MstUserEntity
 
-  @ManyToOne(() => MstUserEntity)
-  @JoinColumn({ name: 'EntryUserId' })
-  entryUser?: MstUserEntity
 
-  @ManyToOne(() => MstUserEntity)
-  @JoinColumn({ name: 'UpdateUserId' })
-  updateUser?: MstUserEntity
 }

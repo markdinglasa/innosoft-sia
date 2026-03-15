@@ -33,6 +33,7 @@ export enum POSEntity {
   SYS_SETTINGS = 'SysSettings',
   SYS_SALES_LOCKED = 'SysSalesLocked',
   SYS_NOTIFICATION = 'SysNotification',
+  SYS_USER_TERMINAL = 'SysUserTerminal',
 
   TRN_COLLECTION = 'TrnCollection',
   TRN_COLLECTION_LINE = 'TrnCollectionLine',

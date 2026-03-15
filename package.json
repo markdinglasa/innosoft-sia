@@ -1,7 +1,7 @@
 {
-  "name": "innosoft-sia",
-  "version": "1.2.1",
-  "description": "Innosoft Sales Insights and Analytics",
+  "name": "innosoft-pos",
+  "version": "2.0.0",
+  "description": "Innosoft Point of Sale",
   "main": "./out/main/index.js",
   "author": "Mark Dinglasa",
   "homepage": "https://github.com/markdinglasa/innosoft-electron-boilerplate",
@@ -23,8 +23,8 @@
     "dist": "electron-builder --publish always"
   },
   "build": {
-    "appId": "com.innosoft.sia",
-    "productName": "iSIA",
+    "appId": "com.innosoft.pos",
+    "productName": "iPOS",
     "directories": {
       "output": "dist"
     },

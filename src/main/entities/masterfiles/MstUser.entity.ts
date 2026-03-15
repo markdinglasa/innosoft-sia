@@ -14,6 +14,7 @@
 import { Column, Entity, OneToMany } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
+import { SysUserTerminalEntity } from "../utilities/SysUserTerminal.entity"
 import { MstBranchAccessEntity } from './MstBranchAccess.entity'
 import { MstPermissionsEntity } from "./MstPermissions.entity"
 import { MstUserRolesEntity } from './MstUserRoles.entity'
@@ -60,6 +61,9 @@ export class MstUserEntity extends BaseEntity {
 
   @OneToMany(() => MstBranchAccessEntity, (branchAccess) => branchAccess.user)
   branchAccesses?: MstBranchAccessEntity[]
+
+  @OneToMany(() => SysUserTerminalEntity, (userTerminal) => userTerminal.user)
+  userTerminals?: SysUserTerminalEntity[]
 
   // virtual fields
   permissions?: MstPermissionsEntity[]

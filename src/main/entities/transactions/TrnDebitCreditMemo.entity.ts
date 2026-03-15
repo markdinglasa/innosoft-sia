@@ -23,7 +23,7 @@ export class TrnDebitCreditMemoEntity extends BaseEntity {
   @Column({ name: 'DCMemoNumber', type: 'nvarchar', length: 50, nullable: false })
   dcMemoNumber: string
 
-  @Column({ name: 'DCMemoDate', type: 'datetime', nullable: false })
+  @Column({ name: 'DCMemoDate', type: 'datetimeoffset', nullable: false })
   dcMemoDate: Date
 
   @Column({ name: 'Particulars', type: 'nvarchar', length: 255, nullable: false })
@@ -55,11 +55,5 @@ export class TrnDebitCreditMemoEntity extends BaseEntity {
   @JoinColumn({ name: 'ApprovedBy' })
   approvedByUser?: MstUserEntity
 
-  @ManyToOne(() => MstUserEntity)
-  @JoinColumn({ name: 'EntryUserId' })
-  entryUser?: MstUserEntity
 
-  @ManyToOne(() => MstUserEntity)
-  @JoinColumn({ name: 'UpdateUserId' })
-  updateUser?: MstUserEntity
 }

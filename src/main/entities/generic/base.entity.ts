@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { Column, CreateDateColumn, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { MstUserEntity } from "../masterfiles"
 
 export interface IBaseEntity {
   id: number
@@ -17,7 +18,7 @@ export class BaseEntity implements IBaseEntity {
     this.entryDateTime = new Date()
   }
 
-  @PrimaryGeneratedColumn({ name: 'Id' })
+  @PrimaryGeneratedColumn({ name: 'Id', type: 'int' })
   id: number
 
   @Column({ name: 'IsLocked', type: 'bit' })
@@ -26,12 +27,21 @@ export class BaseEntity implements IBaseEntity {
   @Column({ name: 'EntryUserId', type: 'int' })
   entryUserId: number
 
-  @CreateDateColumn({ name: 'EntryDateTime', type: 'datetime' })
+  @CreateDateColumn({ name: 'EntryDateTime', type: 'datetimeoffset' })
   entryDateTime: Date
 
   @Column({ name: 'UpdateUserId', type: 'int', nullable: true })
   updateUserId?: number | null
 
-  @UpdateDateColumn({ name: 'UpdateDateTime', type: 'datetime', nullable: true })
+  @UpdateDateColumn({ name: 'UpdateDateTime', type: 'datetimeoffset', nullable: true })
   updateDateTime?: Date | null
+
+  // FK Relationships
+  @ManyToOne(() => MstUserEntity, (user) => user.id)
+  @JoinColumn({ name: 'EntryUserId', referencedColumnName: 'id' })
+  entryUser?: MstUserEntity
+
+  @ManyToOne(() => MstUserEntity, (user) => user.id)
+  @JoinColumn({ name: 'UpdateUserId', referencedColumnName: 'id' })
+  updateUser?: MstUserEntity  
 }

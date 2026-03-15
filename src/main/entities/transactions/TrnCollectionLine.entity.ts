@@ -43,7 +43,7 @@ export class TrnCollectionLineEntity {
   @Column({ name: 'CheckNumber', type: 'nvarchar', length: 50, nullable: true })
   checkNumber: string | null
 
-  @Column({ name: 'CheckDate', type: 'datetime', nullable: true })
+  @Column({ name: 'CheckDate', type: 'datetimeoffset', nullable: true })
   checkDate: Date | null
 
   @Column({ name: 'CheckBank', type: 'nvarchar', length: 50, nullable: true })

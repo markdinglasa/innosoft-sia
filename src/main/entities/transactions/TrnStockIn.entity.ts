@@ -31,7 +31,7 @@ export class TrnStockInEntity extends BaseEntity {
   @Column({ name: 'PeriodId', type: 'int', nullable: false })
   periodId: number
 
-  @Column({ name: 'StockInDate', type: 'datetime', nullable: false })
+  @Column({ name: 'StockInDate', type: 'datetimeoffset', nullable: false })
   stockInDate: Date
 
   @Column({ name: 'StockInNumber', type: 'nvarchar', length: 50, nullable: false })
@@ -104,11 +104,5 @@ export class TrnStockInEntity extends BaseEntity {
   @JoinColumn({ name: 'ApprovedBy' })
   approvedByUser?: MstUserEntity
 
-  @ManyToOne(() => MstUserEntity)
-  @JoinColumn({ name: 'EntryUserId' })
-  entryUser?: MstUserEntity
 
-  @ManyToOne(() => MstUserEntity)
-  @JoinColumn({ name: 'UpdateUserId' })
-  updateUser?: MstUserEntity
 }

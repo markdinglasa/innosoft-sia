@@ -38,7 +38,6 @@ import { MstAccountEntity } from './MstAccount.entity'
 import { MstSupplierEntity } from './MstSupplier.entity'
 import { MstTaxEntity } from './MstTax.entity'
 import { MstUnitEntity } from './MstUnit.entity'
-import { MstUserEntity } from './MstUser.entity'
 
 @Entity(POSEntity.MST_ITEM)
 export class MstItemEntity extends BaseEntity {
@@ -65,6 +64,7 @@ export class MstItemEntity extends BaseEntity {
     this.onhandQuantity = 0
     this.isInventory = false
     this.isPackage = false
+    this.expiryDate = null
   }
 
   @Column({ name: 'ItemCode', type: 'nvarchar', length: 255 })
@@ -127,7 +127,7 @@ export class MstItemEntity extends BaseEntity {
   @Column({ name: 'IsInventory', type: 'bit' })
   isInventory: boolean
 
-  @Column({ name: 'ExpiryDate', type: 'datetime', nullable: true })
+  @Column({ name: 'ExpiryDate', type: 'datetimeoffset', nullable: true })
   expiryDate?: Date | null
 
   @Column({ name: 'LotNumber', type: 'nvarchar', length: 50, nullable: true })
@@ -171,11 +171,5 @@ export class MstItemEntity extends BaseEntity {
   @JoinColumn({ name: 'UnitId' })
   unit?: MstUnitEntity
 
-  @ManyToOne(() => MstUserEntity)
-  @JoinColumn({ name: 'EntryUserId' })
-  entryUser?: MstUserEntity
 
-  @ManyToOne(() => MstUserEntity)
-  @JoinColumn({ name: 'UpdateUserId' })
-  updateUser?: MstUserEntity
 }

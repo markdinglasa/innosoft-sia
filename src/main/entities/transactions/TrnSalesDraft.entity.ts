@@ -26,7 +26,7 @@ export class TrnSalesDraftEntity {
   @Column({ name: 'DocRef', type: 'nvarchar', length: 50, nullable: false })
   docRef: string
 
-  @Column({ name: 'DocDate', type: 'datetime', nullable: false })
+  @Column({ name: 'DocDate', type: 'datetimeoffset', nullable: false })
   docDate: Date
 
   @Column({ name: 'ItemCode', type: 'nvarchar', length: 50, nullable: false })

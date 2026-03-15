@@ -92,7 +92,7 @@ export class TrnSalesLineEntity {
   @Column({ name: 'TaxAccountId', type: 'int', nullable: false })
   taxAccountId: number
 
-  @Column({ name: 'SalesLineTimeStamp', type: 'datetime', nullable: false })
+  @Column({ name: 'SalesLineTimeStamp', type: 'datetimeoffset', nullable: false })
   salesLineTimeStamp: Date
 
   @Column({ name: 'UserId', type: 'int', nullable: true })

@@ -9,12 +9,7 @@ export class SysAuditTrailEntity {
     this.auditDate = new Date()
     this.tableInformation = ''
     this.recordInformation = ''
-    this.formInformation = ''
     this.actionInformation = ''
-    this.oldItem = null
-    this.newItem = null
-    this.oldPrice = null
-    this.newPrice = null
   }
 
   @PrimaryGeneratedColumn({ name: 'Id' })
@@ -23,7 +18,7 @@ export class SysAuditTrailEntity {
   @Column({ name: 'UserId', type: 'int', nullable: false })
   userId: number
 
-  @Column({ name: 'AuditDate', type: 'datetime', nullable: false })
+  @Column({ name: 'AuditDate', type: 'datetimeoffset', nullable: false })
   auditDate: Date
 
   @Column({ name: 'TableInformation', type: 'nvarchar', length: 255, nullable: false })
@@ -32,21 +27,7 @@ export class SysAuditTrailEntity {
   @Column({ name: 'RecordInformation', type: 'nvarchar', length: 255, nullable: false })
   recordInformation: string
 
-  @Column({ name: 'FormInformation', type: 'nvarchar', length: 255, nullable: false })
-  formInformation: string
-
   @Column({ name: 'ActionInformation', type: 'nvarchar', length: 255, nullable: false })
   actionInformation: string
 
-  @Column({ name: 'OldItem', type: 'nvarchar', length: 250, nullable: true })
-  oldItem: string | null
-
-  @Column({ name: 'NewItem', type: 'nvarchar', length: 250, nullable: true })
-  newItem: string | null
-
-  @Column({ name: 'OldPrice', type: 'decimal', precision: 18, scale: 2, nullable: true })
-  oldPrice: number | null
-
-  @Column({ name: 'NewPrice', type: 'decimal', precision: 18, scale: 2, nullable: true })
-  newPrice: number | null
 }

@@ -65,19 +65,19 @@ export class MstDiscountEntity extends BaseEntity {
   @Column({ name: 'IsDateScheduled', type: 'bit', nullable: false })
   isDateScheduled: boolean
 
-  @Column({ name: 'DateStart', type: 'datetime', nullable: false })
+  @Column({ name: 'DateStart', type: 'datetimeoffset', nullable: false })
   dateStart: Date
 
-  @Column({ name: 'DateEnd', type: 'datetime', nullable: false })
+  @Column({ name: 'DateEnd', type: 'datetimeoffset', nullable: false })
   dateEnd: Date
 
   @Column({ name: 'IsTimeScheduled', type: 'bit', nullable: false })
   isTimeScheduled: boolean
 
-  @Column({ name: 'TimeStart', type: 'datetime', nullable: false })
+  @Column({ name: 'TimeStart', type: 'datetimeoffset', nullable: false })
   timeStart: Date
 
-  @Column({ name: 'TimeEnd', type: 'datetime', nullable: false })
+  @Column({ name: 'TimeEnd', type: 'datetimeoffset', nullable: false })
   timeEnd: Date
 
   @Column({ name: 'IsDayScheduled', type: 'bit', nullable: false })

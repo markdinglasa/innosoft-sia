@@ -1,12 +1,12 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm'
+import { AfterLoad, Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
+import { MstCustomerEntity } from '../masterfiles/MstCustomer.entity'
 import { MstPeriodEntity } from '../masterfiles/MstPeriod.entity'
 import { MstTerminalEntity } from '../masterfiles/MstTerminal.entity'
-import { MstCustomerEntity } from '../masterfiles/MstCustomer.entity'
-import { TrnSalesEntity } from './TrnSales.entity'
 import { MstUserEntity } from '../masterfiles/MstUser.entity'
 import { TrnCollectionLineEntity } from './TrnCollectionLine.entity'
+import { TrnSalesEntity } from './TrnSales.entity'
 
 @Entity(POSEntity.TRN_COLLECTION)
 export class TrnCollectionEntity extends BaseEntity {
@@ -35,7 +35,7 @@ export class TrnCollectionEntity extends BaseEntity {
   @Column({ name: 'PeriodId', type: 'int', nullable: false })
   periodId: number
 
-  @Column({ name: 'CollectionDate', type: 'datetime', nullable: false })
+  @Column({ name: 'CollectionDate', type: 'datetimeoffset', nullable: false })
   collectionDate: Date
 
   @Column({ name: 'CollectionNumber', type: 'nvarchar', length: 50, nullable: false })
@@ -115,14 +115,13 @@ export class TrnCollectionEntity extends BaseEntity {
   @JoinColumn({ name: 'ApprovedBy' })
   approvedByUser?: MstUserEntity
 
-  @ManyToOne(() => MstUserEntity)
-  @JoinColumn({ name: 'EntryUserId' })
-  entryUser?: MstUserEntity
-
-  @ManyToOne(() => MstUserEntity)
-  @JoinColumn({ name: 'UpdateUserId' })
-  updateUser?: MstUserEntity
 
   @OneToMany(() => TrnCollectionLineEntity, (collectionLines) => collectionLines.collection)
   collectionLines?: TrnCollectionLineEntity[]
+
+  @AfterLoad()
+  calculateAmount() {
+    this.amount = this.collectionLines?.reduce((acc, line) => acc + line.amount, 0) ?? 0
+    this.changeAmount = this.tenderAmount - this.amount || 0
+  }
 }
