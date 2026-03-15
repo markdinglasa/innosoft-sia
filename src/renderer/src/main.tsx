@@ -6,11 +6,11 @@ import { Provider } from 'react-redux'
 import './tailwind.css'
 import { Wrapper } from './Wrapper'
 
-const queryClient = new QueryClient()
-
 const Root = () => {
+  const queryClient = new QueryClient()
+
   return (
-    <Provider store={store}>
+    <Provider store={store}>c
       <QueryClientProvider client={queryClient}>
         <GlobalStyle />
         <ToastifyStyle />

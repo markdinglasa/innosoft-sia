@@ -1,3 +1,4 @@
+import type { MstUserEntity } from "src/main/entities"
 import { DBConfig, Snackbar } from '@shared/types'
 
 export interface Manager {
@@ -6,4 +7,10 @@ export interface Manager {
   activeDBConfig: DBConfig | null
   activeKey: string | null
   activeSnackbar: Snackbar | null
+}
+
+export interface POSManager {
+  initialize: boolean
+  activePage: string | null
+  activeUser: MstUserEntity | null
 }

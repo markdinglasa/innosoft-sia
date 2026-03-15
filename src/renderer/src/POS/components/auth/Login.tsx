@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import {
   Box,
   Button,
@@ -8,9 +7,10 @@ import {
   TextField,
   Typography
 } from '@mui/material'
+import { SYSTEM_ACCESS_TOKEN, SYSTEM_REFRESH_TOKEN, SYSTEM_SELF } from '@shared/constants'
 import { useIpcInvoke } from '@shared/hooks/ipc/useIpcInvoke'
-import { SYSTEM_SELF, SYSTEM_ACCESS_TOKEN, SYSTEM_REFRESH_TOKEN } from '@shared/constants'
 import { IpcChannel } from '@shared/types'
+import { useState } from 'react'
 
 export const Login = () => {
   const [userName, setUserName] = useState('')
@@ -56,7 +56,6 @@ export const Login = () => {
               Please enter your credentials to login to iSIA
             </Typography>
           </Box>
-
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <TextField
               label="Username"

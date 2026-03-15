@@ -1,5 +1,6 @@
 export const SYSTEM_ACCOUNTS = 'system-accounts'
 export const SYSTEM_MANAGER = 'system-manager'
+export const POS_MANAGER = 'pos-manager'
 export const SYSTEM_INTERNAL = 'system-internal'
 export const SYSTEM_ACCOUNT_ONLINE_STATUSES = 'system-account-online-statuses'
 export const SYSTEM_BALANCES = 'system-balances'
@@ -13,3 +14,4 @@ export const SYSTEM_SELF = 'system-self'
 export const SYSTEM_SOCKET_STATUSES = 'system-socket-statuses'
 export const SYSTEM_ACCESS_TOKEN = 'system-access-token'
 export const SYSTEM_REFRESH_TOKEN = 'system-refresh-token'
+    

@@ -2,7 +2,7 @@ import { mdiKey } from '@mdi/js'
 import { Input, Key } from '@shared/components'
 import { APP_VERSION } from "@shared/constants"
 import { Error, Success } from '@shared/messages'
-import { setActiveLicense, setSnackbar } from '@shared/store/manager'
+import { setActiveLicense, setActiveWindow, setSnackbar } from '@shared/store/manager'
 import {
   AppDispatch,
   ButtonColor,
@@ -21,6 +21,7 @@ import * as S from './Styles'
 
 export const License: SFC = ({ className }) => {
   const dispatch = useDispatch<AppDispatch>()
+
   const initialValues = {
     licenseKey: ''
   }
@@ -55,6 +56,7 @@ export const License: SFC = ({ className }) => {
       licenseKey: yup.string().required('Required')
     })
   }, [])
+
 
   return (
     <>
@@ -98,7 +100,8 @@ export const License: SFC = ({ className }) => {
           </S.CardBody>
           <S.CardFooter>
             <S.Span> { new Date().getFullYear() } @ Cebu Innosoft Solution Services Inc.</S.Span>
-            <S.Span> iSIA {APP_VERSION}</S.Span>
+            <S.Span> iPOS {APP_VERSION}</S.Span>
+            <button onClick={() => dispatch(setActiveWindow('pos-manager'))} style={{ marginTop: '8px', padding: '6px 16px', cursor: 'pointer' }}>Go to POS App</button>
           </S.CardFooter>
         </S.CardContainer>
       </S.Container>
