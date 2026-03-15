@@ -1,5 +1,7 @@
 export * from './ipc'
 export * from './masterfile-ipc'
+export * from './transaction-ipc'
+export * from './utility-ipc'
 export * from './components'
 export * from './configurations'
 export * from './controllers'

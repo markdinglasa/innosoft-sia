@@ -1,2 +1,6 @@
+export * from './sys-audit-trail.controller'
 export * from './sys-mailer.controller'
+export * from './sys-notification.controller'
+export * from './sys-settings.controller'
 export * from './sys-storage.controller'
+export * from './sys-user-terminal.controller'
