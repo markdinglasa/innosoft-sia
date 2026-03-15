@@ -1,3 +1,5 @@
+import { MutationResponse } from "@shared/types/pagination"
+import * as bcrypt from 'bcrypt'
 import { DeepPartial } from 'typeorm'
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity'
 import { BadRequestException } from '../../../common/exceptions'
@@ -8,11 +10,20 @@ import { CreateUserDto, UpdateUserDto } from './dto'
 
 export interface IUserService {
   // Add specific User methods here later
+  registerUser(data: CreateUserDto): Promise<MutationResponse<MstUserEntity>>
 }
 
 export class UserService extends BaseService<MstUserEntity> implements IUserService {
   constructor() {
     super(MstUserEntity)
+  }
+
+   async registerUser(data: CreateUserDto): Promise<MutationResponse<MstUserEntity>> {
+    // encrypt password
+    const hashedPassword = await bcrypt.hash(data.password, 10)
+    const user = await this.create({...data, password: hashedPassword})
+
+  return user  
   }
 
   /**
