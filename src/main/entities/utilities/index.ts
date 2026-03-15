@@ -1,5 +1,5 @@
 export * from './SysAuditTrail.entity'
 export * from './SysForm.entity'
 export * from './SysNotification.entity'
-export * from './SysSalesLocked.entity'
+export * from './SysOrderLocked.entity'
 export * from './SysSettings.entity'

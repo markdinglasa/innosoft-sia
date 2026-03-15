@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { TrnDebitCreditMemoEntity } from './TrnDebitCreditMemo.entity'
-import { TrnSalesEntity } from './TrnSales.entity'
+import { TrnOrderEntity } from './TrnOrder.entity'
 import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
 
 @Entity(POSEntity.TRN_DEBIT_CREDIT_MEMO_LINE)
@@ -9,7 +9,7 @@ export class TrnDebitCreditMemoLineEntity {
   constructor() {
     this.id = 0
     this.dcMemoId = 0
-    this.salesId = null
+    this.orderId = null
     this.accountId = 0
     this.particulars = null
     this.debitAmount = 0
@@ -22,8 +22,8 @@ export class TrnDebitCreditMemoLineEntity {
   @Column({ name: 'DCMemoId', type: 'int', nullable: false })
   dcMemoId: number
 
-  @Column({ name: 'SalesId', type: 'int', nullable: true })
-  salesId: number | null
+  @Column({ name: 'OrderId', type: 'int', nullable: true })
+  orderId: number | null
 
   @Column({ name: 'AccountId', type: 'int', nullable: false })
   accountId: number
@@ -42,9 +42,9 @@ export class TrnDebitCreditMemoLineEntity {
   @JoinColumn({ name: 'DCMemoId' })
   dcMemo?: TrnDebitCreditMemoEntity
 
-  @ManyToOne(() => TrnSalesEntity)
-  @JoinColumn({ name: 'SalesId' })
-  sales?: TrnSalesEntity
+  @ManyToOne(() => TrnOrderEntity)
+  @JoinColumn({ name: 'OrderId' })
+  order?: TrnOrderEntity
 
   @ManyToOne(() => MstAccountEntity)
   @JoinColumn({ name: 'AccountId' })

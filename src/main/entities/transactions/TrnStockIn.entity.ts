@@ -5,7 +5,7 @@ import { MstPeriodEntity } from '../masterfiles/MstPeriod.entity'
 import { MstSupplierEntity } from '../masterfiles/MstSupplier.entity'
 import { TrnCollectionEntity } from './TrnCollection.entity'
 import { TrnPurchaseOrderEntity } from './TrnPurchaseOrder.entity'
-import { TrnSalesEntity } from './TrnSales.entity'
+import { TrnOrderEntity } from './TrnOrder.entity'
 import { MstBranchEntity } from '../masterfiles/MstBranch.entity'
 import { MstUserEntity } from '../masterfiles/MstUser.entity'
 
@@ -24,7 +24,7 @@ export class TrnStockInEntity extends BaseEntity {
     this.preparedBy = 0
     this.checkedBy = 0
     this.approvedBy = 0
-    this.salesId = null
+    this.orderId = null
     this.branchId = null
   }
 
@@ -61,8 +61,8 @@ export class TrnStockInEntity extends BaseEntity {
   @Column({ name: 'ApprovedBy', type: 'int', nullable: false })
   approvedBy: number
 
-  @Column({ name: 'SalesId', type: 'int', nullable: true })
-  salesId: number | null
+  @Column({ name: 'OrderId', type: 'int', nullable: true })
+  orderId: number | null
 
   @Column({ name: 'BranchId', type: 'int', nullable: true })
   branchId: number | null
@@ -84,9 +84,9 @@ export class TrnStockInEntity extends BaseEntity {
   @JoinColumn({ name: 'PurchaseOrderId' })
   purchaseOrder?: TrnPurchaseOrderEntity
 
-  @ManyToOne(() => TrnSalesEntity)
-  @JoinColumn({ name: 'SalesId' })
-  sales?: TrnSalesEntity
+  @ManyToOne(() => TrnOrderEntity)
+  @JoinColumn({ name: 'OrderId' })
+  order?: TrnOrderEntity
 
   @ManyToOne(() => MstBranchEntity)
   @JoinColumn({ name: 'BranchId' })

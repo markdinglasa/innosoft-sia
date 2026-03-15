@@ -5,7 +5,6 @@ import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
 import { MstAccountEntity } from './MstAccount.entity'
 import { MstTermEntity } from './MstTerm.entity'
-import { MstUserEntity } from './MstUser.entity'
 
 @Entity(POSEntity.MST_CUSTOMER)
 export class MstCustomerEntity extends BaseEntity {
@@ -77,12 +76,4 @@ export class MstCustomerEntity extends BaseEntity {
   @ManyToOne(() => MstAccountEntity)
   @JoinColumn({ name: 'AccountId' })
   account?: MstAccountEntity
-
-  @ManyToOne(() => MstUserEntity)
-  @JoinColumn({ name: 'EntryUserId' })
-  entryUser?: MstUserEntity
-
-  @ManyToOne(() => MstUserEntity)
-  @JoinColumn({ name: 'UpdateUserId' })
-  updateUser?: MstUserEntity
 }

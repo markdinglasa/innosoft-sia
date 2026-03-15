@@ -4,7 +4,7 @@ import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
 import { TrnCollectionEntity } from './TrnCollection.entity'
 import { TrnDebitCreditMemoEntity } from './TrnDebitCreditMemo.entity'
 import { TrnDisbursementEntity } from './TrnDisbursement.entity'
-import { TrnSalesEntity } from './TrnSales.entity'
+import { TrnOrderEntity } from './TrnOrder.entity'
 import { TrnStockInEntity } from './TrnStockIn.entity'
 import { TrnStockOutEntity } from './TrnStockOut.entity'
 import { MstUserEntity } from '../masterfiles/MstUser.entity'
@@ -18,7 +18,7 @@ export class TrnJournalEntity {
     this.accountId = 0
     this.debitAmount = 0
     this.creditAmount = 0
-    this.salesId = null
+    this.orderId = null
     this.stockInId = null
     this.stockOutId = null
     this.collectionId = null
@@ -44,8 +44,8 @@ export class TrnJournalEntity {
   @Column({ name: 'CreditAmount', type: 'decimal', precision: 18, scale: 5, nullable: false })
   creditAmount: number
 
-  @Column({ name: 'SalesId', type: 'int', nullable: true })
-  salesId: number | null
+  @Column({ name: 'OrderId', type: 'int', nullable: true })
+  orderId: number | null
 
   @Column({ name: 'StockInId', type: 'int', nullable: true })
   stockInId: number | null
@@ -79,9 +79,9 @@ export class TrnJournalEntity {
   @JoinColumn({ name: 'DisbursementId' })
   disbursement?: TrnDisbursementEntity
 
-  @ManyToOne(() => TrnSalesEntity)
-  @JoinColumn({ name: 'SalesId' })
-  sales?: TrnSalesEntity
+  @ManyToOne(() => TrnOrderEntity)
+  @JoinColumn({ name: 'OrderId' })
+  order?: TrnOrderEntity
 
   @ManyToOne(() => TrnStockInEntity)
   @JoinColumn({ name: 'StockInId' })

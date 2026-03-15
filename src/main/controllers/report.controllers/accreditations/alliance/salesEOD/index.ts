@@ -86,7 +86,7 @@ ipcMain.handle(
       const filePath = paths.join(path, `${fileName}`)
 
       // Format the sales data
-      const SalesId = `
+      const OrderId = `
       <id>
         <tenantid>${data.TenantCode ?? 'NA'}</tenantid>
         <key>${data.POSKey ?? 'NA'}</key>
@@ -111,7 +111,7 @@ ipcMain.handle(
         })
         .join('\n')
 
-      let sales = (salesResponse?.List || [])
+      let orders = (salesResponse?.List || [])
         .map((item: AllianceSalesEOD) => {
           return [
             `<date>${formatDateYYYYMMDD(new Date(dates)) ?? ''}</date>`,
@@ -171,8 +171,8 @@ ipcMain.handle(
           const ReceiptNumber = item?.receiptno
           const trxline = AllianceProductLineQuery({ Terminal, Dates, ReceiptNumber })
           const trxlineResponse = await recordByQuery(trxline)
-          // Generate SalesLine XML
-          const SalesLine = (trxlineResponse?.List || [])
+          // Generate OrderLine XML
+          const OrderLine = (trxlineResponse?.List || [])
             .map((lineItem: AllianceSalesTrxline) => {
               return `
               <line>
@@ -229,15 +229,15 @@ ipcMain.handle(
               <taxrate>${formatNumber(item?.taxrate)}</taxrate>
               <posted>${item?.posted ?? 'NA'}</posted>
               <memo>NA</memo>
-              ${SalesLine}
+              ${OrderLine}
             </trx>`
           ].join('\n')
         })
       )
       //console.log('trx:', trx)
       // NO SALES
-      if (!sales || sales.length === 0) {
-        sales = [
+      if (!orders || orders.length === 0) {
+        orders = [
           `<date>${formatDateYYYYMMDD(new Date(Dates))}</date>`,
           `<zcounter>${controlNumber}</zcounter>`,
           `<previousnrgt>${Number(PreviousReading).toFixed(2) ?? '0.00'}</previousnrgt>`,
@@ -291,9 +291,9 @@ ipcMain.handle(
 
       const content: string = `
       <root>
-        ${SalesId}
+        ${OrderId}
         <sales>
-        ${sales}
+        ${orders}
         ${trx ?? ''}
         </sales>
         <master>

@@ -1,5 +1,5 @@
-import { MstPermissionsEntity } from "@/entities"
 import { FindOneOptions } from 'typeorm'
+import { MstPermissionsEntity } from '../../entities/masterfiles'
 import { MstUserEntity } from '../../entities/masterfiles/MstUser.entity'
 import { AppDataSource } from '../../typeORM/configurations'
 import { BaseService, IBaseService } from '../base.service'
@@ -9,6 +9,7 @@ import { BaseService, IBaseService } from '../base.service'
  */
 export interface IAuthService extends IBaseService<MstUserEntity> {
   login(userName: string, password: string): Promise<MstUserEntity | null>
+  logout(userId: number): Promise<void>
   getPermissions(userId: number): Promise<MstPermissionsEntity[]>
   changePassword(userId: number, oldPassword: string, newPassword: string): Promise<boolean>
   currentUser(userId:number):Promise<MstUserEntity | null>
@@ -69,5 +70,15 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
     user.permissions = permissions ||[]
 
     return user
+  }
+
+  /**
+   * Logs out the user.
+   */
+  async logout(userId: number): Promise<void> {
+    const user = await this.get(userId)
+    if (!user) throw new Error('User not found')
+
+    await this.update(userId, { isLocked: true } as any)
   }
 }

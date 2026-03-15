@@ -86,7 +86,7 @@ ipcMain.handle(
         fs.unlinkSync(filePath)
       }
       // Format the sales data
-      const SalesId = `
+      const OrderId = `
        <id>
           <tenantid>${data.TenantCode ?? 'NA'}</tenantid>
           <key>${data.POSKey ?? 'NA'}</key>
@@ -120,8 +120,8 @@ ipcMain.handle(
           const trxline = AllianceProductLineQuery({ Terminal, Dates, ReceiptNumber })
           const trxlineResponse = await recordByQuery(trxline)
 
-          // Generate SalesLine XML
-          const SalesLine = (trxlineResponse?.List || [])
+          // Generate OrderLine XML
+          const OrderLine = (trxlineResponse?.List || [])
             .map((lineItem: AllianceSalesTrxline) => {
               return `
               <line>
@@ -176,14 +176,14 @@ ipcMain.handle(
               <taxrate>${formatNumber(item?.taxrate)}</taxrate>
               <posted>${item?.posted ?? 'NA'}</posted>
               <memo>NA</memo>
-              ${SalesLine}
+              ${OrderLine}
             </trx>`
         })
       )
 
-      const SalesEOD = `
+      const OrderEOD = `
       <root>
-        ${SalesId}
+        ${OrderId}
         <sales>
         <date>${formatDateYYYYMMDD(new Date(dates))}</date>
         ${trx}
@@ -195,7 +195,7 @@ ipcMain.handle(
       `
 
       // Write the data to the file
-      fs.writeFileSync(filePath, SalesEOD, 'utf8')
+      fs.writeFileSync(filePath, OrderEOD, 'utf8')
 
       // Return a success response
       return { IsSomething: true, Message: Success.s00x00 }

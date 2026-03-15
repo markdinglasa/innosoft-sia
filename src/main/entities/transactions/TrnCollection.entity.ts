@@ -6,7 +6,7 @@ import { MstPeriodEntity } from '../masterfiles/MstPeriod.entity'
 import { MstTerminalEntity } from '../masterfiles/MstTerminal.entity'
 import { MstUserEntity } from '../masterfiles/MstUser.entity'
 import { TrnCollectionLineEntity } from './TrnCollectionLine.entity'
-import { TrnSalesEntity } from './TrnSales.entity'
+import { TrnOrderEntity } from './TrnOrder.entity'
 
 @Entity(POSEntity.TRN_COLLECTION)
 export class TrnCollectionEntity extends BaseEntity {
@@ -19,7 +19,7 @@ export class TrnCollectionEntity extends BaseEntity {
     this.manualORNumber = ''
     this.customerId = 0
     this.remarks = null
-    this.salesId = null
+    this.orderId = null
     this.salesBalanceAmount = 0
     this.amount = 0
     this.tenderAmount = 0
@@ -53,8 +53,8 @@ export class TrnCollectionEntity extends BaseEntity {
   @Column({ name: 'Remarks', type: 'nvarchar', nullable: true })
   remarks: string | null
 
-  @Column({ name: 'SalesId', type: 'int', nullable: true })
-  salesId: number | null
+  @Column({ name: 'OrderId', type: 'int', nullable: true })
+  orderId: number | null
 
   @Column({ name: 'SalesBalanceAmount', type: 'decimal', precision: 18, scale: 5, nullable: false })
   salesBalanceAmount: number
@@ -99,9 +99,9 @@ export class TrnCollectionEntity extends BaseEntity {
   @JoinColumn({ name: 'CustomerId' })
   customer?: MstCustomerEntity
 
-  @ManyToOne(() => TrnSalesEntity)
-  @JoinColumn({ name: 'SalesId' })
-  sales?: TrnSalesEntity
+  @ManyToOne(() => TrnOrderEntity)
+  @JoinColumn({ name: 'OrderId' })
+  order?: TrnOrderEntity
 
   @ManyToOne(() => MstUserEntity)
   @JoinColumn({ name: 'PreparedBy' })

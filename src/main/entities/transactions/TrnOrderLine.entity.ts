@@ -1,18 +1,18 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { POSEntity } from '../entity-names'
-import { TrnSalesEntity } from './TrnSales.entity'
-import { MstItemEntity } from '../masterfiles/MstItem.entity'
-import { MstUnitEntity } from '../masterfiles/MstUnit.entity'
-import { MstDiscountEntity } from '../masterfiles/MstDiscount.entity'
-import { MstTaxEntity } from '../masterfiles/MstTax.entity'
 import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
+import { MstDiscountEntity } from '../masterfiles/MstDiscount.entity'
+import { MstItemEntity } from '../masterfiles/MstItem.entity'
+import { MstTaxEntity } from '../masterfiles/MstTax.entity'
+import { MstUnitEntity } from '../masterfiles/MstUnit.entity'
 import { MstUserEntity } from '../masterfiles/MstUser.entity'
+import { TrnOrderEntity } from './TrnOrder.entity'
 
-@Entity(POSEntity.TRN_SALES_LINE)
-export class TrnSalesLineEntity {
+@Entity(POSEntity.TRN_ORDER_LINE)
+export class TrnOrderLineEntity {
   constructor() {
     this.id = 0
-    this.salesId = 0
+    this.orderId = 0
     this.itemId = 0
     this.unitId = 0
     this.price = 0
@@ -29,7 +29,7 @@ export class TrnSalesLineEntity {
     this.assetAccountId = 0
     this.costAccountId = 0
     this.taxAccountId = 0
-    this.salesLineTimeStamp = new Date()
+    this.orderLineTimeStamp = new Date()
     this.userId = null
     this.preparation = null
     this.price1 = 0
@@ -41,8 +41,8 @@ export class TrnSalesLineEntity {
   @PrimaryGeneratedColumn({ name: 'Id' })
   id: number
 
-  @Column({ name: 'SalesId', type: 'int', nullable: false })
-  salesId: number
+  @Column({ name: 'OrderId', type: 'int', nullable: false })
+  orderId: number
 
   @Column({ name: 'ItemId', type: 'int', nullable: false })
   itemId: number
@@ -92,8 +92,8 @@ export class TrnSalesLineEntity {
   @Column({ name: 'TaxAccountId', type: 'int', nullable: false })
   taxAccountId: number
 
-  @Column({ name: 'SalesLineTimeStamp', type: 'datetimeoffset', nullable: false })
-  salesLineTimeStamp: Date
+  @Column({ name: 'OrderLineTimeStamp', type: 'datetimeoffset', nullable: false })
+  orderLineTimeStamp: Date
 
   @Column({ name: 'UserId', type: 'int', nullable: true })
   userId: number | null
@@ -114,9 +114,9 @@ export class TrnSalesLineEntity {
   priceSplitPercentage: number
 
   // FK Relationships
-  @ManyToOne(() => TrnSalesEntity)
-  @JoinColumn({ name: 'SalesId' })
-  sales?: TrnSalesEntity
+  @ManyToOne(() => TrnOrderEntity, (order: TrnOrderEntity) => order.orderLines)
+  @JoinColumn({ name: 'OrderId' })
+  order?: TrnOrderEntity
 
   @ManyToOne(() => MstItemEntity)
   @JoinColumn({ name: 'ItemId' })
@@ -153,4 +153,5 @@ export class TrnSalesLineEntity {
   @ManyToOne(() => MstUserEntity)
   @JoinColumn({ name: 'UserId' })
   user?: MstUserEntity
+
 }

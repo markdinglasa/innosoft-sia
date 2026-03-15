@@ -40,7 +40,7 @@ export interface VATAnalysis {
 }
 export interface Details {
   CollectionNumber: string
-  TransactionNumber: string // sales-number
+  TransactionNumber: string // order-number
   ReturnNumber?: string
   SeniorCitizenId: string
   SeniorCitizenName: string
@@ -138,14 +138,14 @@ ipcMain.handle(
            CASE WHEN t.Tax NOT IN ('NON-VAT','VAT EXEMPT') THEN CAST(t.TAX AS VARCHAR) ELSE '' END
                AS ItemDetails
             FROM TrnCollection AS c
-            LEFT JOIN TrnSales AS s ON s.Id = c.SalesId 
-            LEFT JOIN TrnSalesLine AS si ON si.SalesId = s.Id
+            LEFT JOIN TrnOrder AS s ON s.Id = c.OrderId 
+            LEFT JOIN TrnOrderLine AS si ON si.OrderId = s.Id
             LEFT JOIN MstDiscount AS d ON d.Id = si.DiscountId
             LEFT JOIN MstUnit AS u ON u.Id = si.UnitId
             INNER JOIN MstItem AS i ON i.Id = si.ItemId
             LEFT JOIN MstTax AS t ON t.Id = si.TaxId
             LEFT JOIN TrnStockIn AS sti ON sti.CollectionId = c.Id
-            LEFT JOIn TrnStockInLine AS stil ON stil.StockInId = sti.Id
+            LEFT JOIn TrnOrderLine AS stil ON stil.OrderId = sti.OrderId
             WHERE c.CollectionNumber IN (${inClause})
           `),
           recordByQuery(`
@@ -187,8 +187,8 @@ ipcMain.handle(
                 ELSE 0
               END) + SUM(si.DiscountAmount) AS VATExempt
             FROM TrnCollection AS c
-            LEFT JOIN TrnSales AS s ON s.Id = c.SalesId 
-            LEFT JOIN TrnSalesLine AS si ON si.SalesId = s.Id
+            LEFT JOIN TrnOrder AS s ON s.Id = c.OrderId 
+            LEFT JOIN TrnOrderLine AS si ON si.OrderId = s.Id
             LEFT JOIN MstDiscount AS d ON d.Id = si.DiscountId
             LEFT JOIN MstItem AS i ON i.Id = si.ItemId
             LEFT JOIN MstTax AS t ON t.Id = si.TaxId
@@ -203,12 +203,12 @@ ipcMain.handle(
             `),
 
           recordByQuery(`
-           SELECT 
+            SELECT 
               c.[CollectionNumber],
               'Return Number:' + sti.StockInNumber AS ReturnNumber,
               ISNULL(s.IsReturn,0) AS [IsReturn],
               ISNULL(s.IsCancelled,0) AS [IsCancelled],
-              ISNULL(s.[SalesNumber],'NA') AS [TransactionNumber], 
+              ISNULL(s.[OrderNumber],'NA') AS [TransactionNumber], 
               ISNULL(s.[SeniorCitizenId],'NA') AS [SeniorCitizenId], 
               ISNULL(s.[SeniorCitizenName],'NA') AS [SeniorCitizenName], 
               ISNULL(CAST(s.[SeniorCitizenAge] AS VARCHAR),'NA') AS [SeniorCitizenAge],
@@ -227,8 +227,8 @@ ipcMain.handle(
               ISNULL(c.UpdateDateTime, c.EntryDateTime) AS DateCreated,
               tb.TableCode
             FROM TrnCollection AS c
-            LEFT JOIN TrnSales AS s ON s.Id = c.SalesId 
-            LEFT JOIN TrnSalesLine AS si ON si.SalesId = s.Id
+            LEFT JOIN TrnOrder AS s ON s.Id = c.OrderId 
+            LEFT JOIN TrnOrderLine AS si ON si.OrderId = s.Id
             LEFT JOIN MstDiscount AS d ON d.Id = si.DiscountId
             LEFT JOIN MstTerminal AS tr ON tr.Id = s.TerminalId
             LEFT JOIN MstCustomer AS ct ON ct.Id = s.CustomerId
@@ -243,7 +243,7 @@ ipcMain.handle(
               s.SeniorCitizenId,
               s.SeniorCitizenName,
               s.SeniorCitizenAge,
-              s.[SalesNumber],
+              s.[OrderNumber],
               s.[Pax],
               s.[ChildName],
               s.[DateOfBirth],

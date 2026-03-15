@@ -2,8 +2,8 @@ import { DailyDiscount, DailyHourlySale, DailySale } from '@shared/types'
 import { format } from 'date-fns'
 import { MstDiscountEntity } from '../../entities/masterfiles/MstDiscount.entity'
 import { TrnCollectionEntity } from '../../entities/transactions/TrnCollection.entity'
-import { TrnSalesEntity } from '../../entities/transactions/TrnSales.entity'
-import { TrnSalesLineEntity } from '../../entities/transactions/TrnSalesLine.entity'
+import { TrnOrderEntity } from '../../entities/transactions/TrnOrder.entity'
+import { TrnOrderLineEntity } from '../../entities/transactions/TrnOrderLine.entity'
 import { AppDataSource } from '../../typeORM/configurations'
 
 export class MegaworldReportService {
@@ -28,10 +28,10 @@ export class MegaworldReportService {
     // 2. Old Accumulated Total (Previous Reading)
     const previousReadingResult = await AppDataSource.getRepository(TrnCollectionEntity)
       .createQueryBuilder('collection')
-      .leftJoin('collection.sales', 'sales')
-      .leftJoin('sales.salesLines', 'salesLine')
+      .leftJoin('collection.order', 'order')
+      .leftJoin('order.orderLines', 'orderLine')
       .select(
-        'SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.amount ELSE 0 END)',
+        'SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN orderLine.amount ELSE 0 END)',
         'PreviousReading'
       )
       .where('collection.terminalId = :terminalId', { terminalId })
@@ -42,33 +42,33 @@ export class MegaworldReportService {
       Math.round(Number(previousReadingResult?.PreviousReading || 0) * 100) / 100
 
     // 3. Current Day Aggregations
-    const dayAggResult = await AppDataSource.getRepository(TrnSalesLineEntity)
-      .createQueryBuilder('salesLine')
-      .innerJoin('salesLine.sales', 'sales')
-      .leftJoin(TrnCollectionEntity, 'collection', 'collection.salesId = salesLine.salesId')
+    const dayAggResult = await AppDataSource.getRepository(TrnOrderLineEntity)
+      .createQueryBuilder('orderLine')
+      .innerJoin('orderLine.order', 'order')
+      .leftJoin(TrnCollectionEntity, 'collection', 'collection.orderId = orderLine.orderId')
       .select(
-        'SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.amount ELSE 0 END)',
+        'SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN orderLine.amount ELSE 0 END)',
         'NetSales'
       )
       .addSelect(
-        'SUM(CASE WHEN sales.isCancelled = 1 THEN salesLine.amount ELSE 0 END)',
+        'SUM(CASE WHEN order.isCancelled = 1 THEN orderLine.amount ELSE 0 END)',
         'VoidAmount'
       )
       .addSelect(
-        'SUM(CASE WHEN sales.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 2 THEN salesLine.amount ELSE 0 END)',
+        'SUM(CASE WHEN order.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 2 THEN orderLine.amount ELSE 0 END)',
         'RefundAmount'
       )
       .addSelect(
-        `SUM(CASE WHEN salesLine.price2 > 0 AND collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 
-          THEN (salesLine.quantity * (salesLine.price2LessTax - (salesLine.price2LessTax * (salesLine.discountRate / 100)))) 
-          ELSE CASE WHEN salesLine.taxId = 5 THEN salesLine.amount ELSE 0 END END)`,
+        `SUM(CASE WHEN orderLine.price2 > 0 AND collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 
+          THEN (orderLine.quantity * (orderLine.price2LessTax - (orderLine.price2LessTax * (orderLine.discountRate / 100)))) 
+          ELSE CASE WHEN orderLine.taxId = 5 THEN orderLine.amount ELSE 0 END END)`,
         'VATExempt'
       )
       .addSelect(
-        'SUM(CASE WHEN salesLine.taxRate > 0 AND collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.taxAmount ELSE 0 END)',
+        'SUM(CASE WHEN orderLine.taxRate > 0 AND collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN orderLine.taxAmount ELSE 0 END)',
         'VATAmount'
       )
-      .where('sales.isLocked = :isLocked', { isLocked: true })
+      .where('order.isLocked = :isLocked', { isLocked: true })
       .andWhere('collection.isLocked = :isLocked', { isLocked: true })
       .andWhere('collection.terminalId = :terminalId', { terminalId })
       .andWhere('CAST(collection.collectionDate AS DATE) = :dates', { dates: formattedDate })
@@ -99,42 +99,42 @@ export class MegaworldReportService {
     // 5. Discount Calculations
     const mandatedDiscounts = MstDiscountEntity.mandatedDiscounts
 
-    const discCountResult = await AppDataSource.getRepository(TrnSalesLineEntity)
-      .createQueryBuilder('salesLine')
-      .innerJoin('salesLine.sales', 'sales')
-      .leftJoin(TrnCollectionEntity, 'collection', 'collection.salesId = salesLine.salesId')
-      .innerJoin('salesLine.discount', 'discount')
+    const discCountResult = await AppDataSource.getRepository(TrnOrderLineEntity)
+      .createQueryBuilder('orderLine')
+      .innerJoin('orderLine.order', 'order')
+      .leftJoin(TrnCollectionEntity, 'collection', 'collection.orderId = orderLine.orderId')
+      .innerJoin('orderLine.discount', 'discount')
       .select(
-        `SUM(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = 1) 
+        `SUM(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR order.isCancelled = 1) 
           AND discount.discount IN (:...mandated)
-          THEN COALESCE(salesLine.discountAmount * salesLine.quantity, 0) ELSE 0 END)`,
+          THEN COALESCE(orderLine.discountAmount * orderLine.quantity, 0) ELSE 0 END)`,
         'GovMandatedDiscount'
       )
       .addSelect(
-        `SUM(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = 1) 
+        `SUM(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR order.isCancelled = 1) 
           AND discount.discount NOT IN (:...mandated)
-          THEN COALESCE(salesLine.discountAmount * salesLine.quantity, 0) ELSE 0 END)`,
+          THEN COALESCE(orderLine.discountAmount * orderLine.quantity, 0) ELSE 0 END)`,
         'OtherDiscount'
       )
       .setParameter('mandated', mandatedDiscounts)
-      .where('sales.isLocked = :isLocked', { isLocked: true })
+      .where('order.isLocked = :isLocked', { isLocked: true })
       .andWhere('collection.isLocked = :isLocked', { isLocked: true })
       .andWhere('collection.terminalId = :terminalId', { terminalId })
       .andWhere('CAST(collection.collectionDate AS DATE) = :dates', { dates: formattedDate })
       .getRawOne()
 
     // 6. Counts
-    const countResult = await AppDataSource.getRepository(TrnSalesEntity)
-      .createQueryBuilder('sales')
-      .leftJoin('sales.collections', 'collection')
-      .leftJoin('sales.customer', 'customer')
+    const countResult = await AppDataSource.getRepository(TrnOrderEntity)
+      .createQueryBuilder('order')
+      .leftJoin('order.collections', 'collection')
+      .leftJoin('order.customer', 'customer')
       .select(
-        `COUNT(DISTINCT CASE WHEN customer.customer = 'Walk In' THEN sales.id ELSE NULL END) + 
-         COUNT(DISTINCT CASE WHEN customer.customer <> 'Walk In' THEN sales.customerId ELSE NULL END)`,
+        `COUNT(DISTINCT CASE WHEN customer.customer = 'Walk In' THEN order.id ELSE NULL END) + 
+         COUNT(DISTINCT CASE WHEN customer.customer <> 'Walk In' THEN order.customerId ELSE NULL END)`,
         'CustomerCount'
       )
-      .addSelect('COUNT(DISTINCT sales.id)', 'NoSalesTransaction')
-      .where('sales.isLocked = :isLocked', { isLocked: true })
+      .addSelect('COUNT(DISTINCT order.id)', 'NoSalesTransaction')
+      .where('order.isLocked = :isLocked', { isLocked: true })
       .andWhere('collection.isLocked = :isLocked', { isLocked: true })
       .andWhere('collection.terminalId = :terminalId', { terminalId })
       .andWhere('CAST(collection.collectionDate AS DATE) = :dates', { dates: formattedDate })
@@ -193,11 +193,11 @@ export class MegaworldReportService {
    */
   static async getDailyDiscountsData(terminalId: number, dates: Date) {
     const formattedDate = format(dates, 'yyyy-MM-dd')
-    return await AppDataSource.getRepository(TrnSalesLineEntity)
-      .createQueryBuilder('salesLine')
-      .innerJoin('salesLine.sales', 'sales')
-      .innerJoin('salesLine.discount', 'discount')
-      .leftJoin(TrnCollectionEntity, 'collection', 'collection.salesId = salesLine.salesId')
+    return await AppDataSource.getRepository(TrnOrderLineEntity)
+      .createQueryBuilder('orderLine')
+      .innerJoin('orderLine.order', 'order')
+      .innerJoin('orderLine.discount', 'discount')
+      .leftJoin(TrnCollectionEntity, 'collection', 'collection.orderId = orderLine.orderId')
       .select('collection.terminalId', 'TerminalId')
       .addSelect(
         "CASE WHEN discount.discount <> 'Zero Discount' THEN discount.discount ELSE 'NA' END",
@@ -208,10 +208,10 @@ export class MegaworldReportService {
         'DiscountDescription'
       )
       .addSelect(
-        "SUM(CASE WHEN salesLine.discountAmount > 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)",
+        "SUM(CASE WHEN orderLine.discountAmount > 0 AND COALESCE(collection.isReturned, 0) = 0 THEN orderLine.discountAmount * orderLine.quantity ELSE 0 END)",
         'DiscountAmount'
       )
-      .where('sales.isLocked = :isLocked', { isLocked: true })
+      .where('order.isLocked = :isLocked', { isLocked: true })
       .andWhere('collection.isLocked = :isLocked', { isLocked: true })
       .andWhere('collection.terminalId = :terminalId', { terminalId })
       .andWhere('collection.isCancelled = :isCancelled', { isCancelled: false })
@@ -254,16 +254,16 @@ export class MegaworldReportService {
       .groupBy('collection.terminalId')
       .getRawMany()
 
-    const hourlyResponse = await AppDataSource.getRepository(TrnSalesLineEntity)
-      .createQueryBuilder('salesLine')
-      .leftJoin(TrnCollectionEntity, 'collection', 'collection.salesId = salesLine.salesId')
+    const hourlyResponse = await AppDataSource.getRepository(TrnOrderLineEntity)
+      .createQueryBuilder('orderLine')
+      .leftJoin(TrnCollectionEntity, 'collection', 'collection.orderId = orderLine.orderId')
       .leftJoin('collection.customer', 'customer')
       .select(
         `CASE WHEN DATEPART(HOUR, collection.entryDateTime) = 0 THEN '24' ELSE RIGHT('0' + CAST(DATEPART(HOUR, collection.entryDateTime) AS VARCHAR), 2) END`,
         'HourCode'
       )
       .addSelect(
-        'SUM(CASE WHEN COALESCE(collection.isReturned, 0) = 2 THEN 0 ELSE COALESCE(salesLine.amount, 0) END)',
+        'SUM(CASE WHEN COALESCE(collection.isReturned, 0) = 2 THEN 0 ELSE COALESCE(orderLine.amount, 0) END)',
         'NetSalesAmountHour'
       )
       .addSelect('COUNT(DISTINCT collection.id)', 'NoSalesTransactionHour')
@@ -322,30 +322,30 @@ export class MegaworldReportService {
     // 3. Discounts
     const mandatedDiscounts = MstDiscountEntity.mandatedDiscounts
 
-    const discounts = await AppDataSource.getRepository(TrnSalesLineEntity)
-      .createQueryBuilder('salesLine')
-      .innerJoin('salesLine.sales', 'sales')
-      .leftJoin(TrnCollectionEntity, 'collection', 'collection.salesId = salesLine.salesId')
-      .innerJoin('salesLine.discount', 'discount')
+    const discounts = await AppDataSource.getRepository(TrnOrderLineEntity)
+      .createQueryBuilder('orderLine')
+      .innerJoin('orderLine.order', 'order')
+      .leftJoin(TrnCollectionEntity, 'collection', 'collection.orderId = orderLine.orderId')
+      .innerJoin('orderLine.discount', 'discount')
       .select('discount.discount', 'Discount')
       .addSelect(
         `CASE WHEN discount.discount IN (:...mandated) THEN 1 ELSE 0 END`,
         'IsGovernmentMandated'
       )
       .addSelect(
-        `SUM(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = 1) AND discount.discount IN (:...mandated) THEN COALESCE(salesLine.discountAmount * salesLine.quantity, 0) ELSE 0 END)`,
+        `SUM(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR order.isCancelled = 1) AND discount.discount IN (:...mandated) THEN COALESCE(orderLine.discountAmount * orderLine.quantity, 0) ELSE 0 END)`,
         'GovDiscountAmount'
       )
       .addSelect(
-        `SUM(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = 1) AND discount.discount NOT IN (:...mandated) THEN COALESCE(salesLine.discountAmount * salesLine.quantity, 0) ELSE 0 END)`,
+        `SUM(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR order.isCancelled = 1) AND discount.discount NOT IN (:...mandated) THEN COALESCE(orderLine.discountAmount * orderLine.quantity, 0) ELSE 0 END)`,
         'NonGovDiscountAmount'
       )
       .addSelect(
-        `SUM(CASE WHEN discount.discount IN ('Senior Citizen Discount', 'PWD') THEN (salesLine.price2LessTax - (salesLine.price2LessTax * (salesLine.discountRate / 100))) * salesLine.quantity ELSE 0 END)`,
+        `SUM(CASE WHEN discount.discount IN ('Senior Citizen Discount', 'PWD') THEN (orderLine.price2LessTax - (orderLine.price2LessTax * (orderLine.discountRate / 100))) * orderLine.quantity ELSE 0 END)`,
         'VATExempt'
       )
       .setParameter('mandated', mandatedDiscounts)
-      .where('sales.isLocked = :isLocked', { isLocked: true })
+      .where('order.isLocked = :isLocked', { isLocked: true })
       .andWhere('collection.isLocked = :isLocked', { isLocked: true })
       .andWhere('collection.terminalId = :terminalId', { terminalId })
       .andWhere('CAST(collection.collectionDate AS DATE) = :dates', { dates: formattedDate })
@@ -355,35 +355,35 @@ export class MegaworldReportService {
     // 4. Previous Reading
     const previousReadingResult = await AppDataSource.getRepository(TrnCollectionEntity)
       .createQueryBuilder('collection')
-      .leftJoin('collection.sales', 'sales')
-      .leftJoin('sales.salesLines', 'salesLine')
-      .select('SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.amount ELSE 0 END)', 'PreviousReading')
+      .leftJoin('collection.order', 'order')
+      .leftJoin('order.orderLines', 'orderLine')
+      .select('SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN orderLine.amount ELSE 0 END)', 'PreviousReading')
       .where('collection.terminalId = :terminalId', { terminalId })
       .andWhere('CAST(collection.collectionDate AS DATE) < :dates', { dates: formattedDate })
       .getRawOne()
 
     // 5. Trx/Gross
-    const trxAndGross = await AppDataSource.getRepository(TrnSalesLineEntity)
-      .createQueryBuilder('salesLine')
-      .leftJoin(TrnCollectionEntity, 'collection', 'collection.salesId = salesLine.salesId')
-      .select('SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.amount ELSE 0 END)', 'NetSales')
+    const trxAndGross = await AppDataSource.getRepository(TrnOrderLineEntity)
+      .createQueryBuilder('orderLine')
+      .leftJoin(TrnCollectionEntity, 'collection', 'collection.orderId = orderLine.orderId')
+      .select('SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN orderLine.amount ELSE 0 END)', 'NetSales')
       .addSelect('COUNT(DISTINCT collection.id)', 'TotalTrx')
-      .addSelect('COUNT(DISTINCT salesLine.id)', 'TotalSKU')
-      .addSelect('SUM(salesLine.quantity)', 'TotalQuantity')
+      .addSelect('COUNT(DISTINCT orderLine.id)', 'TotalSKU')
+      .addSelect('SUM(orderLine.quantity)', 'TotalQuantity')
       .where('collection.isLocked = :isLocked', { isLocked: true })
       .andWhere('collection.terminalId = :terminalId', { terminalId })
       .andWhere('CAST(collection.collectionDate AS DATE) = :dates', { dates: formattedDate })
       .getRawOne()
 
     // 6. VAT Analysis
-    const vatAnalysis = await AppDataSource.getRepository(TrnSalesLineEntity)
-      .createQueryBuilder('salesLine')
-      .leftJoin(TrnCollectionEntity, 'collection', 'collection.salesId = salesLine.salesId')
-      .select('SUM(CASE WHEN salesLine.taxId = 4 THEN salesLine.amount ELSE 0 END)', 'NONVat')
-      .addSelect('SUM(CASE WHEN salesLine.taxId = 1 THEN salesLine.amount ELSE 0 END)', 'VATSales')
-      .addSelect('SUM(CASE WHEN salesLine.taxId = 5 THEN salesLine.amount ELSE 0 END)', 'VATExempt')
-      .addSelect('SUM(CASE WHEN salesLine.taxId = 3 THEN salesLine.amount ELSE 0 END)', 'zerosale')
-      .addSelect('SUM(salesLine.taxAmount)', 'VATAmount')
+    const vatAnalysis = await AppDataSource.getRepository(TrnOrderLineEntity)
+      .createQueryBuilder('orderLine')
+      .leftJoin(TrnCollectionEntity, 'collection', 'collection.orderId = orderLine.orderId')
+      .select('SUM(CASE WHEN orderLine.taxId = 4 THEN orderLine.amount ELSE 0 END)', 'NONVat')
+      .addSelect('SUM(CASE WHEN orderLine.taxId = 1 THEN orderLine.amount ELSE 0 END)', 'VATSales')
+      .addSelect('SUM(CASE WHEN orderLine.taxId = 5 THEN orderLine.amount ELSE 0 END)', 'VATExempt')
+      .addSelect('SUM(CASE WHEN orderLine.taxId = 3 THEN orderLine.amount ELSE 0 END)', 'zerosale')
+      .addSelect('SUM(orderLine.taxAmount)', 'VATAmount')
       .where('collection.isLocked = :isLocked', { isLocked: true })
       .andWhere('collection.terminalId = :terminalId', { terminalId })
       .andWhere('CAST(collection.collectionDate AS DATE) = :dates', { dates: formattedDate })

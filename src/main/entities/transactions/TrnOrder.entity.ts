@@ -1,24 +1,24 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
+import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
+import { MstCustomerEntity } from '../masterfiles/MstCustomer.entity'
+import { MstDiscountEntity } from '../masterfiles/MstDiscount.entity'
 import { MstPeriodEntity } from '../masterfiles/MstPeriod.entity'
 import { MstTableEntity } from '../masterfiles/MstTable.entity'
-import { MstCustomerEntity } from '../masterfiles/MstCustomer.entity'
-import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
 import { MstTermEntity } from '../masterfiles/MstTerm.entity'
 import { MstTerminalEntity } from '../masterfiles/MstTerminal.entity'
-import { MstDiscountEntity } from '../masterfiles/MstDiscount.entity'
 import { MstUserEntity } from '../masterfiles/MstUser.entity'
-import { TrnSalesLineEntity } from './TrnSalesLine.entity'
 import { TrnCollectionEntity } from './TrnCollection.entity'
+import { TrnOrderLineEntity } from './TrnOrderLine.entity'
 
-@Entity(POSEntity.TRN_SALES)
-export class TrnSalesEntity extends BaseEntity {
+@Entity(POSEntity.TRN_ORDER)
+export class TrnOrderEntity extends BaseEntity {
   constructor() {
     super()
     this.periodId = 0
-    this.salesDate = new Date()
-    this.salesNumber = ''
+    this.orderDate = new Date()
+    this.orderNumber = ''
     this.manualInvoiceNumber = null
     this.amount = 0
     this.tableId = null
@@ -30,7 +30,7 @@ export class TrnSalesEntity extends BaseEntity {
     this.seniorCitizenName = null
     this.seniorCitizenAge = null
     this.remarks = null
-    this.salesAgent = 0
+    this.orderAgent = 0
     this.terminalId = 0
     this.preparedBy = 0
     this.checkedBy = 0
@@ -52,11 +52,11 @@ export class TrnSalesEntity extends BaseEntity {
   @Column({ name: 'PeriodId', type: 'int', nullable: false })
   periodId: number
 
-  @Column({ name: 'SalesDate', type: 'datetimeoffset', nullable: false })
-  salesDate: Date
+  @Column({ name: 'OrderDate', type: 'datetimeoffset', nullable: false })
+  orderDate: Date
 
-  @Column({ name: 'SalesNumber', type: 'nvarchar', length: 50, nullable: false })
-  salesNumber: string
+  @Column({ name: 'OrderNumber', type: 'nvarchar', length: 50, nullable: false })
+  orderNumber: string
 
   @Column({ name: 'ManualInvoiceNumber', type: 'nvarchar', length: 50, nullable: true })
   manualInvoiceNumber: string | null
@@ -91,8 +91,8 @@ export class TrnSalesEntity extends BaseEntity {
   @Column({ name: 'Remarks', type: 'nvarchar', nullable: true })
   remarks: string | null
 
-  @Column({ name: 'SalesAgent', type: 'int', nullable: false })
-  salesAgent: number
+  @Column({ name: 'OrderAgent', type: 'int', nullable: false })
+  orderAgent: number
 
   @Column({ name: 'TerminalId', type: 'int', nullable: false })
   terminalId: number
@@ -183,11 +183,9 @@ export class TrnSalesEntity extends BaseEntity {
   @JoinColumn({ name: 'ApprovedBy' })
   approvedByUser?: MstUserEntity
 
+  @OneToMany(() => TrnOrderLineEntity, (orderLine: TrnOrderLineEntity) => orderLine.order)
+  orderLines?: TrnOrderLineEntity[]
 
-
-  @OneToMany(() => TrnSalesLineEntity, (salesLine) => salesLine.sales)
-  salesLines?: TrnSalesLineEntity[]
-
-  @OneToMany(() => TrnCollectionEntity, (collection) => collection.sales)
+  @OneToMany(() => TrnCollectionEntity, (collection: TrnCollectionEntity) => collection.order)
   collections?: TrnCollectionEntity[]
 }
