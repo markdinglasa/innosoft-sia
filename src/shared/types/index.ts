@@ -1,3 +1,4 @@
+export * from './auth.types'
 export * from './ipc'
 export * from './masterfile-ipc'
 export * from './transaction-ipc'

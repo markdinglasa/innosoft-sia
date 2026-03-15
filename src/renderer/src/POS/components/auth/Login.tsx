@@ -9,7 +9,7 @@ import {
   Typography
 } from '@mui/material'
 import { useIpcInvoke } from '@shared/hooks/ipc/useIpcInvoke'
-import { SYSTEM_SELF } from '@shared/constants'
+import { SYSTEM_SELF, SYSTEM_ACCESS_TOKEN, SYSTEM_REFRESH_TOKEN } from '@shared/constants'
 import { IpcChannel } from '@shared/types'
 
 export const Login = () => {
@@ -23,14 +23,24 @@ export const Login = () => {
     e.preventDefault()
     
     // The hook automatically toasts errors if success is false
-    const user = await login({ userName, password })
+    const result = await login({ userName, password })
     
-    if (user) {
+    if (result) {
+      // Store user session
       window.electron.ipc.send(IpcChannel.setStoreValue, {
         key: SYSTEM_SELF,
-        state: user
+        state: result.user
       })
-      console.log('Login successful!', user)
+      // Store tokens
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: SYSTEM_ACCESS_TOKEN,
+        state: result.tokens.accessToken
+      })
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: SYSTEM_REFRESH_TOKEN,
+        state: result.tokens.refreshToken
+      })
+      console.log('Login successful!', result.user)
     }
   }
 
@@ -89,3 +99,4 @@ export const Login = () => {
     </Box>
   )
 }
+
