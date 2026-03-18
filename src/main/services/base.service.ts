@@ -16,6 +16,10 @@ import { SysAuditTrailEntity } from '../entities/utilities/SysAuditTrail.entity'
 import { AppDataSource } from '../typeORM/configurations'
 import { SYSTEM_SELF } from '@shared/constants'
 import Store from '../store/Store'
+import connectivityService from './connectivity.service'
+import syncQueueService from './sync-queue.service'
+import { LocalDataSource } from '../typeORM/local-configurations'
+import { getMirrorEntity } from './mirror-map'
 
 /**
  * Interface defining the standard CRUD operations for a service.
@@ -37,8 +41,16 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
 
   /**
    * Returns the TypeORM repository for the entity.
+   * Redirects to local SQLite mirror if offline and a mirror is available.
    */
   protected get repository(): Repository<T> {
+    if (!connectivityService.isOnline()) {
+      const mirrorEntity = getMirrorEntity(this.entity)
+      if (mirrorEntity) {
+        console.log(`[BaseService] Offline — falling back to local mirror for ${mirrorEntity.name}`)
+        return LocalDataSource.getRepository(mirrorEntity) as unknown as Repository<T>
+      }
+    }
     return AppDataSource.getRepository(this.entity)
   }
 
@@ -230,10 +242,25 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
 
   /**
    * Creates and saves a new entity.
+   * If offline, enqueues the operation to the local SQLite sync queue.
    * @param data Partial data for the new entity.
    * @param userId ID of the user performing the action.
    */
   async create(data: DeepPartial<T>, userId?: number): Promise<MutationResponse<T>> {
+    // --- OFFLINE FALLBACK ---
+    if (!connectivityService.isOnline()) {
+      const tableName = AppDataSource.hasMetadata(this.entity)
+        ? AppDataSource.getMetadata(this.entity).tableName
+        : String(this.entity)
+      await syncQueueService.enqueue(tableName, 'CREATE', data as Record<string, any>, null)
+      console.warn(`[BaseService] Offline — queued CREATE for ${tableName}`)
+      return {
+        metadata: data as T,
+        success: true,
+        message: 'Saved locally. Will sync when online.'
+      }
+    }
+    // --- ONLINE PATH (original behavior) ---
     await this.validateCreate(data)
     const newItem = this.repository.create(data)
     const result = await this.repository.save(newItem)
@@ -256,11 +283,22 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
 
   /**
    * Updates an existing entity by its ID.
+   * If offline, enqueues the operation to the local SQLite sync queue.
    * @param id The primary key value.
    * @param data Partial data for updates.
    * @param userId ID of the user performing the action.
    */
   async update(id: any, data: QueryDeepPartialEntity<T>, userId?: number): Promise<MutationResponse<T>> {
+    // --- OFFLINE FALLBACK ---
+    if (!connectivityService.isOnline()) {
+      const tableName = AppDataSource.hasMetadata(this.entity)
+        ? AppDataSource.getMetadata(this.entity).tableName
+        : String(this.entity)
+      await syncQueueService.enqueue(tableName, 'UPDATE', data as Record<string, any>, String(id))
+      console.warn(`[BaseService] Offline — queued UPDATE for ${tableName} id=${id}`)
+      return { success: true, message: 'Saved locally. Will sync when online.' }
+    }
+    // --- ONLINE PATH (original behavior) ---
     await this.validateUpdate(id, data)
 
     let oldData: T | null = null
@@ -289,10 +327,21 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
 
   /**
    * Deletes an entity by its ID.
+   * If offline, enqueues the operation to the local SQLite sync queue.
    * @param id The primary key value.
    * @param userId ID of the user performing the action.
    */
   async delete(id: any, userId?: number): Promise<MutationResponse<T>> {
+    // --- OFFLINE FALLBACK ---
+    if (!connectivityService.isOnline()) {
+      const tableName = AppDataSource.hasMetadata(this.entity)
+        ? AppDataSource.getMetadata(this.entity).tableName
+        : String(this.entity)
+      await syncQueueService.enqueue(tableName, 'DELETE', {}, String(id))
+      console.warn(`[BaseService] Offline — queued DELETE for ${tableName} id=${id}`)
+      return { success: true, message: 'Queued for deletion. Will sync when online.' }
+    }
+    // --- ONLINE PATH (original behavior) ---
     await this.validateDelete(id)
 
     let oldData: T | null = null

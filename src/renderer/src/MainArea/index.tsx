@@ -8,7 +8,10 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppMain } from '../registry'
 import * as S from './Styles'
+import { useSync } from '../App/hooks'
+import { SyncStatusBadge } from '../App/components'
 export const MainArea: SFC = ({ className }) => {
+  useSync()
   const dispatch = useDispatch<AppDispatch>()
   const license = useSelector(getActiveLicense)
   const [isLicenseValid, setIsLicenseValid] = useState<boolean | null>(null)
@@ -59,6 +62,9 @@ export const MainArea: SFC = ({ className }) => {
 
   return (
     <S.Container className={className}>
+      <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 9999 }}>
+        <SyncStatusBadge />
+      </div>
       {/* <DraggableTopBar /> */}
       {renderContent()}
     </S.Container>

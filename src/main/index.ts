@@ -22,6 +22,12 @@ import { NODE_ENV } from './constants'
 import './controllers'
 import './ipcMain'
 import { initializeDatabase } from './typeORM/configurations'
+import { initializeLocalDatabase } from './typeORM/local-configurations'
+import connectivityService from './services/connectivity.service'
+import { ConnectivityChannel } from '@shared/constants'
+import syncQueueService from './services/sync-queue.service'
+import syncEngine from './services/sync-engine.service'
+import syncDownService from './services/sync-down.service'
 import './updater'
 
 electronStore.initRenderer()
@@ -120,12 +126,42 @@ if (!gotTheLock) {
       optimizer.watchWindowShortcuts(window)
     })
 
+    // Initialize local SQLite DB first (always available, even offline)
+    try {
+      await initializeLocalDatabase()
+    } catch (error) {
+      console.error('Failed to initialize local database:', error)
+    }
+
     try {
       await initializeDatabase()
     } catch (error) {
       console.error('Failed to initialize database:', error)
       // Optionally handle initialization failure (e.g. show a dialog)
     }
+
+    // Start connectivity monitor (polls MSSQL, broadcasts status to renderer)
+    connectivityService.start()
+
+    // Register sync engine to auto-flush queue when connectivity is restored
+    syncEngine.register()
+
+    // Start background sync-down for master data mirroring
+    syncDownService.startPeriodicSync()
+
+    // Allow renderer to query current connectivity status on load
+    ipcMain.handle(ConnectivityChannel.getStatus, () => ({
+      online: connectivityService.isOnline()
+    }))
+
+    ipcMain.handle(ConnectivityChannel.getPendingByTable, async (_, tableName: string) => {
+      return await syncQueueService.getByTable(tableName)
+    })
+
+    ipcMain.handle(ConnectivityChannel.resetFailed, async () => {
+      await syncQueueService.resetFailed()
+      return { success: true }
+    })
 
     try {
       if (isDev) await installer(REDUX_DEVTOOLS)
