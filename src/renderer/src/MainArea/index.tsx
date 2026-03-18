@@ -1,4 +1,6 @@
 import { License } from '@renderer/License'
+import { SyncStatusBadge } from "@renderer/POS/components/feedback/sync-status-badge"
+import { useSync } from "@renderer/POS/hooks"
 import { Splash } from '@shared/components'
 import { Error } from '@shared/messages'
 import { getActiveLicense } from '@shared/selectors'
@@ -8,8 +10,7 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppMain } from '../registry'
 import * as S from './Styles'
-import { useSync } from '../App/hooks'
-import { SyncStatusBadge } from '../App/components'
+
 export const MainArea: SFC = ({ className }) => {
   useSync()
   const dispatch = useDispatch<AppDispatch>()
