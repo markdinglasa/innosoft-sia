@@ -1,6 +1,9 @@
 import { AppDataSource } from '../typeORM/configurations'
 import { LocalDataSource } from '../typeORM/local-configurations'
-import { MirrorItemEntity, MirrorUnitEntity, MirrorTaxEntity, MirrorUserEntity } from '../entities/mirror'
+import { 
+  MirrorItemEntity, MirrorUnitEntity, MirrorTaxEntity, MirrorUserEntity,
+  MirrorDiscountEntity, MirrorPayTypeEntity, MirrorBranchEntity, MirrorTerminalEntity, MirrorCustomerEntity 
+} from '../entities/mirror'
 import connectivityService from './connectivity.service'
 
 /**
@@ -24,6 +27,11 @@ class SyncDownService {
       await this.syncEntity('MstUnit', MirrorUnitEntity)
       await this.syncEntity('MstTax', MirrorTaxEntity)
       await this.syncEntity('MstUser', MirrorUserEntity)
+      await this.syncEntity('MstDiscount', MirrorDiscountEntity)
+      await this.syncEntity('MstPayType', MirrorPayTypeEntity)
+      await this.syncEntity('MstBranch', MirrorBranchEntity)
+      await this.syncEntity('MstTerminal', MirrorTerminalEntity)
+      await this.syncEntity('MstCustomer', MirrorCustomerEntity)
       console.log('[SyncDown] Full sync completed successfully.')
     } catch (err) {
       console.error('[SyncDown] Sync failed:', err)

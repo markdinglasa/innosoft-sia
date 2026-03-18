@@ -2,7 +2,10 @@ import { app } from 'electron'
 import path from 'path'
 import { DataSource } from 'typeorm'
 import { SyncQueueEntity } from '../entities/utilities/SyncQueue.entity'
-import { MirrorUnitEntity, MirrorTaxEntity, MirrorItemEntity, MirrorUserEntity } from '../entities/mirror'
+import { 
+  MirrorUnitEntity, MirrorTaxEntity, MirrorItemEntity, MirrorUserEntity,
+  MirrorDiscountEntity, MirrorPayTypeEntity, MirrorBranchEntity, MirrorTerminalEntity, MirrorCustomerEntity 
+} from '../entities/mirror'
 
 /**
  * Local SQLite DataSource — always available, even when MSSQL is offline.
@@ -31,7 +34,12 @@ export const LocalDataSource = new DataSource({
     MirrorUnitEntity,
     MirrorTaxEntity,
     MirrorItemEntity,
-    MirrorUserEntity
+    MirrorUserEntity,
+    MirrorDiscountEntity,
+    MirrorPayTypeEntity,
+    MirrorBranchEntity,
+    MirrorTerminalEntity,
+    MirrorCustomerEntity
   ]
 })
 

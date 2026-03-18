@@ -1,12 +1,11 @@
+import { ConnectivityChannel } from '@shared/constants'
+import { AppDispatch } from '@shared/types'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { AppDispatch } from '@shared/types'
-import { ConnectivityChannel } from '@shared/constants'
-import { 
-  setOnlineStatus, 
-  setSyncProgress, 
+import {
+  setOnlineStatus,
   setSyncComplete,
-  setPendingCount 
+  setSyncProgress
 } from '../store/sync'
 
 /**

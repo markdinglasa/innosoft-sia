@@ -1,4 +1,7 @@
-import { MirrorItemEntity, MirrorUnitEntity, MirrorTaxEntity, MirrorUserEntity } from '../entities/mirror'
+import { 
+  MirrorItemEntity, MirrorUnitEntity, MirrorTaxEntity, MirrorUserEntity,
+  MirrorDiscountEntity, MirrorPayTypeEntity, MirrorBranchEntity, MirrorTerminalEntity, MirrorCustomerEntity 
+} from '../entities/mirror'
 
 /**
  * Maps main MSSQL entity names to their local SQLite mirror entities.
@@ -8,7 +11,12 @@ export const MirrorMapping: Record<string, any> = {
   'MstItem': MirrorItemEntity,
   'MstUnit': MirrorUnitEntity,
   'MstTax': MirrorTaxEntity,
-  'MstUser': MirrorUserEntity
+  'MstUser': MirrorUserEntity,
+  'MstDiscount': MirrorDiscountEntity,
+  'MstPayType': MirrorPayTypeEntity,
+  'MstBranch': MirrorBranchEntity,
+  'MstTerminal': MirrorTerminalEntity,
+  'MstCustomer': MirrorCustomerEntity
 }
 
 /**

@@ -1,16 +1,14 @@
 import { MainArea } from '@renderer/MainArea'
-import { Snackbar as CSnackbar } from '@shared/components/'
+import { useSocketNotifications } from '@renderer/POS/hooks'
 import { useReadIpc } from '@shared/hooks'
 import { loadSystemData, loadWindowData } from '@shared/internal'
-import { getSnackbar, getStoreLoaded } from '@shared/selectors/state'
+import { getStoreLoaded } from '@shared/selectors/state'
 import { setStoreLoadedTrue } from '@shared/store/internal'
-import { setSnackbar } from '@shared/store/manager'
 import {
   AppDispatch,
   GenericVoidFunction,
   IpcChannel,
-  LocalElectronStore,
-  ToastType
+  LocalElectronStore
 } from '@shared/types'
 import { loadStoreFailToast } from '@shared/utils'
 import { FC, useCallback, useEffect } from 'react'
@@ -22,7 +20,8 @@ import * as S from './Styles'
 export const Wrapper: FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const storeLoaded = useSelector(getStoreLoaded)
-  const snackbar = useSelector(getSnackbar)
+
+  useSocketNotifications()
 
   const loadStoreSuccessCallback = useCallback(
     (store: LocalElectronStore) => {
@@ -46,28 +45,9 @@ export const Wrapper: FC = () => {
     }
   }, [loadStoreData, storeLoaded])
 
-  const handleCloseSnackbar = () => {
-    dispatch(
-      setSnackbar({
-        display: false,
-        message: '',
-        type: ToastType.error
-      })
-    )
-  }
-
-  const renderSnackbar = () => {
-    if (snackbar && snackbar.display)
-      return (
-        <CSnackbar message={snackbar.message} type={snackbar.type} onClose={handleCloseSnackbar} />
-      )
-    return null
-  }
-
   return (
     <S.Wrapper>
       <MainArea />
-      {renderSnackbar()}
       <ToastContainer
         autoClose={3000}
         closeOnClick

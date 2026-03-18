@@ -1,6 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit'
 import managerReducer from './manager'
-import syncReducer from '../../App/store/sync'
+import syncReducer from './sync'
 
 const posManagerReducer = combineReducers({
   manager: managerReducer,

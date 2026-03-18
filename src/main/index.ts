@@ -28,6 +28,7 @@ import { ConnectivityChannel } from '@shared/constants'
 import syncQueueService from './services/sync-queue.service'
 import syncEngine from './services/sync-engine.service'
 import syncDownService from './services/sync-down.service'
+import socketService from './services/socket.service'
 import './updater'
 
 electronStore.initRenderer()
@@ -171,6 +172,10 @@ if (!gotTheLock) {
     }
 
     mainWindow = createWindow('../renderer/index.html')
+
+    // Initialize Socket Service for real-time notifications
+    socketService.init(mainWindow)
+
     tray = new Tray(nativeImage.createFromPath(path.join(__dirname, '../../resources/favicon.ico')))
 
     const contextMenu = Menu.buildFromTemplate([

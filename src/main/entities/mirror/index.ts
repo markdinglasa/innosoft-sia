@@ -84,3 +84,106 @@ export class MirrorUserEntity extends MirrorBaseEntity {
   @Column({ name: 'UserType', type: 'nvarchar', length: 50 })
   userType: string
 }
+
+@Entity('MstDiscount')
+export class MirrorDiscountEntity extends MirrorBaseEntity {
+  constructor() {
+    super()
+    this.discount = ''
+    this.discountRate = 0
+    this.isVatExempt = false
+    this.discountAlias = ''
+  }
+
+  @Column({ name: 'Discount', type: 'nvarchar', length: 250 })
+  discount: string
+
+  @Column({ name: 'DiscountRate', type: 'decimal', precision: 18, scale: 5 })
+  discountRate: number
+
+  @Column({ name: 'IsVatExempt', type: 'boolean', default: false })
+  isVatExempt: boolean
+
+  @Column({ name: 'DiscountAlias', type: 'nvarchar', length: 100 })
+  discountAlias: string
+}
+
+@Entity('MstPayType')
+export class MirrorPayTypeEntity extends MirrorBaseEntity {
+  constructor() {
+    super()
+    this.payType = ''
+    this.accountId = null
+    this.sortNumber = null
+  }
+
+  @Column({ name: 'PayType', type: 'nvarchar', length: 50 })
+  payType: string
+
+  @Column({ name: 'AccountId', type: 'int', nullable: true })
+  accountId: number | null
+
+  @Column({ name: 'SortNumber', type: 'int', nullable: true })
+  sortNumber: number | null
+}
+
+@Entity('MstBranch')
+export class MirrorBranchEntity extends MirrorBaseEntity {
+  constructor() {
+    super()
+    this.name = ''
+    this.address = ''
+    this.isDefault = false
+  }
+
+  @Column({ name: 'Name', type: 'nvarchar', length: 250 })
+  name: string
+
+  @Column({ name: 'Address', type: 'text', nullable: true })
+  address: string
+
+  @Column({ name: 'IsDefault', type: 'boolean', default: false })
+  isDefault: boolean
+}
+
+@Entity('MstTerminal')
+export class MirrorTerminalEntity extends MirrorBaseEntity {
+  constructor() {
+    super()
+    this.terminal = ''
+    this.isDefault = false
+  }
+
+  @Column({ name: 'Terminal', type: 'nvarchar', length: 50 })
+  terminal: string
+
+  @Column({ name: 'IsDefault', type: 'boolean', default: false })
+  isDefault: boolean
+}
+
+@Entity('MstCustomer')
+export class MirrorCustomerEntity extends MirrorBaseEntity {
+  constructor() {
+    super()
+    this.customer = ''
+    this.address = ''
+    this.contactPerson = ''
+    this.contactNumber = ''
+    this.tin = ''
+  }
+
+  @Column({ name: 'Customer', type: 'nvarchar', length: 50 })
+  customer: string
+
+  @Column({ name: 'Address', type: 'nvarchar', length: 255 })
+  address: string
+
+  @Column({ name: 'ContactPerson', type: 'nvarchar', length: 50 })
+  contactPerson: string
+
+  @Column({ name: 'ContactNumber', type: 'nvarchar', length: 50 })
+  contactNumber: string
+
+  @Column({ name: 'TIN', type: 'nvarchar', length: 50 })
+  tin: string
+}
