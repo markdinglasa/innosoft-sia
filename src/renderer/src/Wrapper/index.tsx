@@ -11,13 +11,13 @@ import {
   LocalElectronStore
 } from '@shared/types'
 import { loadStoreFailToast } from '@shared/utils'
-import { FC, useCallback, useEffect } from 'react'
+import { FC, memo, useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Bounce, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import * as S from './Styles'
 
-export const Wrapper: FC = () => {
+ const Wrapper: FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const storeLoaded = useSelector(getStoreLoaded)
 
@@ -63,3 +63,5 @@ export const Wrapper: FC = () => {
     </S.Wrapper>
   )
 }
+
+export default memo(Wrapper)

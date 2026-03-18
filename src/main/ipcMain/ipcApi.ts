@@ -102,3 +102,32 @@ ipcMain.on(IpcChannel.closeApp, (event) => {
     }, 1000)
   }
 })
+
+ipcMain.handle(IpcChannel.login, async (_event, credentials) => {
+  const { username, password } = credentials
+  // Mock authentication logic - replace with actual DB check if needed
+  if (username === 'admin' && password === 'admin') {
+    return {
+      success: true,
+      data: {
+        user: { id: 1, name: 'Admin User', username: 'admin', role: 'admin' },
+        token: 'mock-jwt-token'
+      }
+    }
+  }
+  return { success: false, message: 'Invalid username or password' }
+})
+
+ipcMain.handle(IpcChannel.logout, async () => {
+  return { success: true }
+})
+
+ipcMain.handle(IpcChannel.verifySession, async () => {
+  // Mock session verification
+  return { 
+    success: true, 
+    data: { 
+      user: { id: 1, name: 'Admin User', username: 'admin', role: 'admin' } 
+    } 
+  }
+})

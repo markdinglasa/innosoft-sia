@@ -3,8 +3,11 @@ import { AppProps, SFC } from '@shared/types'
 import { SyncStatusBadge } from "./components/feedback/sync-status-badge"
 import { useSync } from "./hooks/useSync"
 import { useSelector } from 'react-redux'
-import LoginPage from "./app/(public)/login/page"
-// Import other pages as needed
+import { lazy, Suspense } from 'react'
+
+const LoginPage = lazy(() => import("./app/(public)/login/page"))
+// Future modules can be added here
+// const DashboardPage = lazy(() => import("./app/(protected)/dashboard/page"))
 
 export const POSMainArea: SFC<AppProps> = ({ className, display }) => {
   useSync()
@@ -38,7 +41,13 @@ export const POSMainArea: SFC<AppProps> = ({ className, display }) => {
       <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 9999 }}>
         <SyncStatusBadge />
       </div>
-      {renderContent()}
+      <Suspense fallback={
+        <Box className="flex h-screen w-full items-center justify-center">
+          <Typography>Loading module...</Typography>
+        </Box>
+      }>
+        {renderContent()}
+      </Suspense>
     </Box>
   )
 }
