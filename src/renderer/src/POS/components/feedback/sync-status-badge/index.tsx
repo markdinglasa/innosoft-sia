@@ -8,7 +8,7 @@ import { SyncManager } from "../../utils"
 import * as S from './Styles'
 
 export const SyncStatusBadge: SFC = memo(() => {
-  const { isOnline, isSyncing, totalToSync, syncedCount, pendingCount } = useSelector((state: any) => state.sync)
+  const { isOnline, isSyncing, totalToSync, syncedCount, pendingCount } = useSelector((state: any) => state.POS.sync)
   const [showManager, setShowManager] = useState(false)
 
   let icon = mdiCloudCheck

@@ -1,4 +1,4 @@
-import { MainArea } from '@renderer/MainArea'
+import { MainWindow } from '@renderer/MainWindow'
 import { useSocketNotifications } from '@renderer/POS/hooks'
 import { useReadIpc } from '@shared/hooks'
 import { loadSystemData, loadWindowData } from '@shared/internal'
@@ -47,7 +47,7 @@ export const Wrapper: FC = () => {
 
   return (
     <S.Wrapper>
-      <MainArea />
+      <MainWindow />
       <ToastContainer
         autoClose={3000}
         closeOnClick

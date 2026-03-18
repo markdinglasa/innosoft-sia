@@ -1,6 +1,6 @@
+import { ConnectivityChannel } from '@shared/constants'
 import { useCallback, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { ConnectivityChannel } from '@shared/constants'
 
 /**
  * Hook to fetch data with optimistic merging of pending offline sync items.
@@ -10,7 +10,7 @@ import { ConnectivityChannel } from '@shared/constants'
 export const useSyncData = <T extends { id?: number | string }>(tableName: string) => {
   const [data, setData] = useState<T[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const isOnline = useSelector((state: any) => state.sync.isOnline)
+  const isOnline = useSelector((state: any) => state.POS.sync.isOnline)
 
   const fetchData = useCallback(async (fetcher: () => Promise<T[]>) => {
     setIsLoading(true)

@@ -1,0 +1,73 @@
+import { License } from '@renderer/License'
+import { SyncStatusBadge } from "@renderer/POS/components/feedback/sync-status-badge"
+import { useSync } from "@renderer/POS/hooks"
+import { Splash } from '@shared/components'
+import { Error } from '@shared/messages'
+import { getActiveLicense } from '@shared/selectors'
+import { setSnackbar } from '@shared/store/manager'
+import { AppDispatch, Response, SFC, Snackbar, SqlChannel, ToastType } from '@shared/types'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppMain } from '../registry'
+import * as S from './Styles'
+
+export const MainWindow: SFC = ({ className }) => {
+  useSync()
+  const dispatch = useDispatch<AppDispatch>()
+  const license = useSelector(getActiveLicense)
+  const [isLicenseValid, setIsLicenseValid] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    const checkLicense = async () => {
+      try {
+        const response: Response = await window.electron.sql.post(SqlChannel.isLicense, license)
+        setIsLicenseValid(response.IsSomething!)
+        if (!response.IsSomething && response.IsSomething === false) {
+          const snackbar: Snackbar = {
+            display: true,
+            message: response.Message,
+            type: ToastType.error
+          }
+          dispatch(setSnackbar(snackbar))
+        }
+      } catch (error: any) {
+        setIsLicenseValid(false)
+        const snackbar: Snackbar = {
+          display: true,
+          message: Error.e00x02,
+          type: ToastType.error
+        }
+        dispatch(setSnackbar(snackbar))
+      }
+    }
+    checkLicense()
+  }, [license, dispatch])
+
+  const [showSplash, setShowSplash] = useState(true)
+
+  useEffect(() => {
+    const splashTimeout = setTimeout(() => {
+      setShowSplash(false)
+    }, 5000)
+
+    // Cleanup timeout when component unmounts
+    return () => clearTimeout(splashTimeout)
+  }, [])
+
+  const renderContent = () => {
+    if (showSplash || isLicenseValid === null) {
+      return <Splash message="Please wait..." />
+    }
+    return isLicenseValid ? <AppMain /> : <License />
+  }
+
+  return (
+    <S.Container className={className}>
+      <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 9999 }}>
+        <SyncStatusBadge />
+      </div>
+      {/* <DraggableTopBar /> */}
+      {renderContent()}
+    </S.Container>
+  )
+}

@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux'
 export const SyncManager: SFC<{ onClose: () => void }> = memo(({ onClose }) => {
   const [pendingItems, setPendingItems] = useState<any[]>([])
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const syncStatus = useSelector((state: any) => state.sync)
+  const syncStatus = useSelector((state: any) => state.POS.sync)
 
   const fetchQueue = async () => {
     setIsRefreshing(true)
