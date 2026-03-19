@@ -13,7 +13,7 @@ export class CreateCustomerDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
-  customer!: string
+  name!: string
 
   @ApiProperty({ description: 'Full address' })
   @IsString()

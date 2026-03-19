@@ -24,5 +24,6 @@ export * from './MstTerm.entity'
 export * from './MstTerminal.entity'
 export * from './MstUnit.entity'
 export * from './MstUser.entity'
+export * from './MstUserRoles.entity'
 
 

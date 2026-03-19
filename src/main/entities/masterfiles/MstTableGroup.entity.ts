@@ -15,7 +15,7 @@ import { BaseEntity } from '../generic/base.entity'
 export class MstTableGroupEntity extends BaseEntity {
   constructor() {
     super()
-    this.tableGroup = ''
+    this.name = ''
     this.isDefault = false
     this.branchId = 0
   }
@@ -23,8 +23,8 @@ export class MstTableGroupEntity extends BaseEntity {
   @Column({ name: 'BranchId', type: 'int', nullable: false })
   branchId: number
 
-  @Column({ name: 'TableGroup', type: 'nvarchar', length: 50, nullable: false })
-  tableGroup: string
+  @Column({ name: 'Name', type: 'nvarchar', length: 50, nullable: false })
+  name: string
 
     @Column({ name: 'IsDefault', type: 'bit', nullable: false })
   isDefault: boolean

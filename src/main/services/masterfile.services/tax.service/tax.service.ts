@@ -34,9 +34,9 @@ export class TaxService extends BaseService<MstTaxEntity> implements ITaxService
       throw new BadRequestException(`Tax Code '${taxDto.code}' already exists.`)
     }
 
-    const existingName = await this.repository.findOneBy({ tax: taxDto.tax })
+    const existingName = await this.repository.findOneBy({ name: taxDto.name })
     if (existingName) {
-      throw new BadRequestException(`Tax Name '${taxDto.tax}' already exists.`)
+      throw new BadRequestException(`Tax Name '${taxDto.name}' already exists.`)
     }
   }
 
@@ -58,10 +58,10 @@ export class TaxService extends BaseService<MstTaxEntity> implements ITaxService
       }
     }
 
-    if (taxDto.tax && taxDto.tax !== currentEntity.tax) {
-      const existingName = await this.repository.findOneBy({ tax: taxDto.tax })
+    if (taxDto.name && taxDto.name !== currentEntity.name) {
+      const existingName = await this.repository.findOneBy({ name: taxDto.name })
       if (existingName) {
-        throw new BadRequestException(`Tax Name '${taxDto.tax}' already exists.`)
+        throw new BadRequestException(`Tax Name '${taxDto.name}' already exists.`)
       }
     }
   }

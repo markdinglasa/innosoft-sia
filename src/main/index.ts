@@ -1,5 +1,5 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { APP_VERSION } from '@shared/constants'
+import { APP_VERSION, ConnectivityChannel } from '@shared/constants'
 import AutoLaunch from 'auto-launch'
 import {
   app,
@@ -21,14 +21,14 @@ import 'reflect-metadata'
 import { NODE_ENV } from './constants'
 import './controllers'
 import './ipcMain'
+import connectivityService from './services/connectivity.service'
+import socketService from './services/socket.service'
+import syncDownService from './services/sync-down.service'
+import syncEngine from './services/sync-engine.service'
+import syncQueueService from './services/sync-queue.service'
+import { seederService } from './services/utility.services'
 import { initializeDatabase } from './typeORM/configurations'
 import { initializeLocalDatabase } from './typeORM/local-configurations'
-import connectivityService from './services/connectivity.service'
-import { ConnectivityChannel } from '@shared/constants'
-import syncQueueService from './services/sync-queue.service'
-import syncEngine from './services/sync-engine.service'
-import syncDownService from './services/sync-down.service'
-import socketService from './services/socket.service'
 import './updater'
 
 electronStore.initRenderer()
@@ -120,7 +120,7 @@ if (!gotTheLock) {
       mainWindow.focus()
     }
   })
-  app.setAppUserModelId('innosoft SIA ' + APP_VERSION)
+  app.setAppUserModelId('innosoft POS ' + APP_VERSION)
   app.whenReady().then(async () => {
     electronApp.setAppUserModelId('com.innosoft')
     app.on('browser-window-created', (_, window) => {
@@ -136,8 +136,9 @@ if (!gotTheLock) {
 
     try {
       await initializeDatabase()
+      await seederService.seed()
     } catch (error) {
-      console.error('Failed to initialize database:', error)
+      console.error('Failed to initialize database or run seeder:', error)
       // Optionally handle initialization failure (e.g. show a dialog)
     }
 

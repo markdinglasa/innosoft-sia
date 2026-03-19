@@ -1,6 +1,8 @@
+export * from '../seeder.service/seeder.service'
 export * from './sys-audit-trail.service'
 export * from './sys-mailer.service'
 export * from './sys-notification.service'
 export * from './sys-settings.service'
 export * from './sys-storage.service'
 export * from './sys-user-terminal.service'
+

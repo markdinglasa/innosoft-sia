@@ -7,9 +7,9 @@ export class MstDiscountEntity extends BaseEntity {
   constructor() {
     super()
     this.branchId = 0
-    this.discount = ''
+    this.name = ''
     this.discountRate = 0
-    this.isVatExempt = false
+    this.isVATExempt = false
     this.isDateScheduled = false
     this.dateStart = new Date()
     this.dateEnd = new Date()
@@ -32,13 +32,13 @@ export class MstDiscountEntity extends BaseEntity {
   branchId: number
 
   @Column({ name: 'Discount', type: 'nvarchar', length: 250, nullable: false })
-  discount: string
+  name: string
 
   @Column({ name: 'DiscountRate', type: 'decimal', nullable: false })
   discountRate: number
 
-  @Column({ name: 'IsVatExempt', type: 'bit', nullable: false })
-  isVatExempt: boolean
+  @Column({ name: 'IsVATExempt', type: 'bit', nullable: false })
+  isVATExempt: boolean
 
   @Column({ name: 'IsDateScheduled', type: 'bit', nullable: false })
   isDateScheduled: boolean
@@ -103,6 +103,6 @@ export class MstDiscountEntity extends BaseEntity {
 
   @AfterLoad()
   setMandated() {
-    this.mandated = MstDiscountEntity.mandatedDiscounts.includes(this.discount)
+    this.mandated = MstDiscountEntity.mandatedDiscounts.includes(this.name)
   }
 }

@@ -24,7 +24,7 @@ import { MstTermEntity } from './MstTerm.entity'
 export class MstSupplierEntity extends BaseEntity {
   constructor() {
     super()
-    this.supplier = ''
+    this.name = ''
     this.address = ''
     this.telephoneNumber = ''
     this.cellphoneNumber = ''
@@ -35,8 +35,8 @@ export class MstSupplierEntity extends BaseEntity {
     this.isDefault = false
   }
 
-  @Column({ name: 'Supplier', type: 'nvarchar', length: 100, nullable: false })
-  supplier: string
+  @Column({ name: 'Name', type: 'nvarchar', length: 100, nullable: false })
+  name: string
 
   @Column({ name: 'Address', type: 'nvarchar', length: 255, nullable: false })
   address: string

@@ -1,34 +1,39 @@
 export const DEFAULT_PERIOD = [
     {
-        period: '2026',
+        branch:'Main', // branch.name
+        name: '2026',
         sortNumber: 1,
         isDefault: true,
         entryUser: 'admin', // user.username
         entryDateTime: new Date()
     },
     {
-        period: '2027',
+        branch:'Main', // branch.name
+        name: '2027',
         sortNumber: 2,
         isDefault: true,
         entryUser: 'admin', // user.username
         entryDateTime: new Date()
     },
     {
-        period: '2028',
+        branch:'Main', // branch.name
+        name: '2028',
         sortNumber: 3,
         isDefault: true,
         entryUser: 'admin', // user.username
         entryDateTime: new Date()
     },
     {
-        period: '2029',
+        branch:'Main', // branch.name
+        name: '2029',
         sortNumber: 4,
         isDefault: true,
         entryUser: 'admin', // user.username
         entryDateTime: new Date()
     },
     {
-        period: '2030',
+        branch:'Main', // branch.name
+        name: '2030',
         sortNumber: 5,
         isDefault: true,
         entryUser: 'admin', // user.username

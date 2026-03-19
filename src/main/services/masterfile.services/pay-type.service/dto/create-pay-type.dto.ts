@@ -6,7 +6,7 @@ export class CreatePayTypeDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
-  payType!: string
+  name!: string
 
   @ApiPropertyOptional({ description: 'Account ID' })
   @IsNumber()

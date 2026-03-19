@@ -29,9 +29,9 @@ export class ItemGroupService extends BaseService<MstItemGroupEntity> implements
   protected async validateCreate(data: DeepPartial<MstItemGroupEntity>): Promise<void> {
     const groupDto = await transformAndValidate(CreateItemGroupDto, data)
 
-    const existingName = await this.repository.findOneBy({ itemGroup: groupDto.itemGroup })
+    const existingName = await this.repository.findOneBy({ name: groupDto.name })
     if (existingName) {
-      throw new BadRequestException(`Item Group '${groupDto.itemGroup}' already exists.`)
+      throw new BadRequestException(`Item Group '${groupDto.name}' already exists.`)
     }
   }
 
@@ -45,10 +45,10 @@ export class ItemGroupService extends BaseService<MstItemGroupEntity> implements
     }
 
     const groupDto = await transformAndValidate(UpdateItemGroupDto, data)
-    if (groupDto.itemGroup && groupDto.itemGroup !== currentEntity.itemGroup) {
-      const existingName = await this.repository.findOneBy({ itemGroup: groupDto.itemGroup })
+    if (groupDto.name && groupDto.name !== currentEntity.name) {
+      const existingName = await this.repository.findOneBy({ name: groupDto.name })
       if (existingName) {
-        throw new BadRequestException(`Item Group '${groupDto.itemGroup}' already exists.`)
+        throw new BadRequestException(`Item Group '${groupDto.name}' already exists.`)
       }
     }
   }

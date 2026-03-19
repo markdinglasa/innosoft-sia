@@ -1,123 +1,171 @@
 export const DEFAULT_TABLE = [
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table01',
+    tableCode: 'Table01',
     isDefault:true,
+    entryUser: 'admin',
+    entryDateTime: new Date()
     
 },
 {   tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table02',
+    tableCode: 'Table02',
     isDefault:true,
+    entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table03',
+    tableCode: 'Table03',
     isDefault:true,
+     entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table04',
+    tableCode: 'Table04',
     isDefault:true,
+    entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table05',
+    tableCode: 'Table05',
     isDefault:true,
+      entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table06',
+    tableCode: 'Table06',
     isDefault:true,
+    entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table07',
+    tableCode: 'Table07',
     isDefault:true,
+    entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table08',
+    tableCode: 'Table08',
     isDefault:true,
+    entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table09',
+    tableCode: 'Table09',
     isDefault:true,
+     entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table10',
+    tableCode: 'Table10',
     isDefault:true,
+     entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table11',
+    tableCode: 'Table11',
     isDefault:true,
+     entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table12',
+    tableCode: 'Table12',
     isDefault:true,
+     entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table13',
+    tableCode: 'Table13',
     isDefault:true,
+     entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table14',
+    tableCode: 'Table14',
     isDefault:true,
+     entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table15',
+    tableCode: 'Table15',
     isDefault:true,
+     entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table16',
+    tableCode: 'Table16',
     isDefault:true,
+     entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table17',
+    tableCode: 'Table17',
     isDefault:true,
+     entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table18',
+    tableCode: 'Table18',
     isDefault:true,
+     entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table19',
+    tableCode: 'Table19',
     isDefault:true,
+     entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table20',
+    tableCode: 'Table20',
     isDefault:true,
+     entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table21',
+    tableCode: 'Table21',
     isDefault:true,
+     entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table22',
+    tableCode: 'Table22',
     isDefault:true,
+     entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table23',
+    tableCode: 'Table23',
     isDefault:true,
+     entryUser: 'admin',
+    entryDateTime: new Date()
 },
 {
     tableGroup:'Dine-In', // tableGroup.tableGroup
-    table: 'Table24',
+    tableCode: 'Table24',
     isDefault:true,
+     entryUser: 'admin',
+    entryDateTime: new Date()
 },
 
     ]

@@ -1,7 +1,7 @@
 
 export const DEFAULT_SUPPLIER = [
     {
-        supplier: 'Return from Customer',
+        name: 'Return from Customer',
         address: "NA",
         telephoneNumber: "NA",
         cellphoneNumber: "NA",

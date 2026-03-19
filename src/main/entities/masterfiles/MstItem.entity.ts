@@ -15,8 +15,8 @@ export class MstItemEntity extends BaseEntity {
     this.branchId = 0
     this.itemCode = ''
     this.barCode = ''
-    this.itemDescription = ''
-    this.alias = ''
+    this.name = ''
+    this.description = ''
     this.genericName = ''
     this.category = ''
     this.salesAccountId = 0
@@ -45,11 +45,11 @@ export class MstItemEntity extends BaseEntity {
   @Column({ name: 'BarCode', type: 'nvarchar', length: 255 })
   barCode: string
 
-  @Column({ name: 'ItemDescription', type: 'nvarchar', length: 255 })
-  itemDescription: string
+  @Column({ name: 'Name', type: 'nvarchar', length: 255 })
+  name: string
 
-  @Column({ name: 'Alias', type: 'nvarchar', length: 255 })
-  alias: string
+  @Column({ name: 'Description', type: 'nvarchar', length: 255 })
+  description: string
 
   @Column({ name: 'GenericName', type: 'nvarchar', length: 255 })
   genericName: string

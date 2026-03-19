@@ -6,13 +6,13 @@ import { BaseEntity } from '../generic/base.entity'
 export class MstTermEntity extends BaseEntity {
   constructor() {
     super()
-    this.term = ''
+    this.name = ''
     this.numberOfDays = 0
     this.isDefault = false
   }
 
-  @Column({ name: 'Term', type: 'nvarchar', length: 50, nullable: false })
-  term: string
+  @Column({ name: 'Name', type: 'nvarchar', length: 50, nullable: false })
+  name: string
 
   @Column({ name: 'NumberOfDays', type: 'decimal', precision: 18, scale: 5, nullable: false })
   numberOfDays: number

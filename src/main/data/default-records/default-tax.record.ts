@@ -1,9 +1,9 @@
  
 export const DEFAULT_TAX = [
     {
-        name: 'VAT',
+       name: 'VAT',
         description: 'Value Added Tax',
-        taxCode: 'Inclusive',
+        code: 'Inclusive',
         rate: 12,
         account: 'VAT payable - output', // account.account
         isDefault: true,
@@ -11,9 +11,9 @@ export const DEFAULT_TAX = [
         entryDateTime: new Date()
     },
     {
-        name: 'Non-VAT',
+       name: 'Non-VAT',
         description: 'Non-VATable',
-        taxCode: 'Inclusive',
+        code: 'Inclusive',
         rate: 0,
         account: 'VAT payable - output', // account.account
         isDefault: true,
@@ -21,9 +21,9 @@ export const DEFAULT_TAX = [
         entryDateTime: new Date()
     },
     {
-        name: 'LOCAL',
+       name: 'LOCAL',
         description: 'Value Added Tax',
-        taxCode: 'Exclusive',
+        code: 'Exclusive',
         rate: 5,
         account: 'VAT payable - output', // account.account
         isDefault: true,
@@ -31,9 +31,9 @@ export const DEFAULT_TAX = [
         entryDateTime: new Date()
     },
     {
-        name: 'VAT-Exclusive',
+       name: 'VAT-Exclusive',
         description: 'Value Added Tax - Exclusive',
-        taxCode: 'Exclusive',
+        code: 'Exclusive',
         rate: 0,
         account: 'VAT payable - output', // account.account
         isDefault: true,
@@ -41,9 +41,9 @@ export const DEFAULT_TAX = [
         entryDateTime: new Date()
     },
     {
-        name: 'VAT-Exempt',
+       name: 'VAT-Exempt',
         description: 'Value Added Tax - Exempted',
-        taxCode: 'Inclusive',
+        code: 'Inclusive',
         rate: 0,
         account: 'VAT payable - output', // account.account
         isDefault: true,
@@ -51,9 +51,9 @@ export const DEFAULT_TAX = [
         entryDateTime: new Date()
     },
     {
-        name: 'Zero Rated',
+       name: 'Zero Rated',
         description: 'Zero Rated Tax',
-        taxCode: 'Inclusive',
+        code: 'Inclusive',
         rate: 0,
         account: 'VAT payable - output', // account.account
         isDefault: true,

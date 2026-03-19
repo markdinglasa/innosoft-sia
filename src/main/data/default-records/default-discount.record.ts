@@ -1,6 +1,8 @@
 export const DEFAULT_DISCOUNT = [
     {
-        name: 'Variable',
+        branch: 'Main', // branch.name
+       name: 'Variable',
+        discountAlias:'Variable Discount',
         discountRate: 0,
         isVATExempt: false,
         isGovernmentMandated: false,
@@ -20,7 +22,9 @@ export const DEFAULT_DISCOUNT = [
         entryDateTime: new Date()
     },
     {
-        name: 'Senior Citizen',
+         branch: 'Main', // branch.name
+       name: 'Senior Citizen',
+        discountAlias:'Senior Citizen Discount',
         discountRate: 20,
         isVATExempt: true,
         isGovernmentMandated: true,
@@ -40,7 +44,9 @@ export const DEFAULT_DISCOUNT = [
         entryDateTime: new Date()
     },
     {
-        name: 'PWD',
+         branch: 'Main', // branch.name
+       name: 'PWD',
+        discountAlias:'PWD Discount',
         discountRate: 20,
         isVATExempt: true,
         isGovernmentMandated: true,
@@ -60,7 +66,9 @@ export const DEFAULT_DISCOUNT = [
         entryDateTime: new Date()
     },
     {
-        name: 'Solo Parent',
+         branch: 'Main', // branch.name
+       name: 'Solo Parent',
+        discountAlias:'Solo Parent Discount',
         discountRate: 10,
         isVATExempt: true,
         isGovernmentMandated: true,
@@ -80,7 +88,9 @@ export const DEFAULT_DISCOUNT = [
         entryDateTime: new Date()
     },
     {
-        name: 'NAAC/MOV', // National Athlete/Coach/Medal Of Valor
+         branch: 'Main', // branch.name
+       name: 'NAAC/MOV', // National Athlete/Coach/Medal Of Valor
+        discountAlias:'NAAC/MOV Discount',
         discountRate: 20,
         isVATExempt: true,
         isGovernmentMandated: true,

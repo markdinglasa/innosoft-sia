@@ -19,7 +19,7 @@ export class DiscountService extends BaseService<MstDiscountEntity> implements I
    * Search fields for Discount keyword search.
    */
   protected get searchFields(): string[] {
-    return ['discount', 'discountAlias']
+    return ['name', 'discountAlias']
   }
 
   /**
@@ -29,9 +29,9 @@ export class DiscountService extends BaseService<MstDiscountEntity> implements I
   protected async validateCreate(data: DeepPartial<MstDiscountEntity>): Promise<void> {
     const discountDto = await transformAndValidate(CreateDiscountDto, data)
 
-    const existingName = await this.repository.findOneBy({ discount: discountDto.discount })
+    const existingName = await this.repository.findOneBy({ name: discountDto.name })
     if (existingName) {
-      throw new BadRequestException(`Discount '${discountDto.discount}' already exists.`)
+      throw new BadRequestException(`Discount '${discountDto.name}' already exists.`)
     }
   }
 
@@ -45,10 +45,10 @@ export class DiscountService extends BaseService<MstDiscountEntity> implements I
     }
 
     const discountDto = await transformAndValidate(UpdateDiscountDto, data)
-    if (discountDto.discount && discountDto.discount !== currentEntity.discount) {
-      const existingName = await this.repository.findOneBy({ discount: discountDto.discount })
+    if (discountDto.name && discountDto.name !== currentEntity.name) {
+      const existingName = await this.repository.findOneBy({ name: discountDto.name })
       if (existingName) {
-        throw new BadRequestException(`Discount '${discountDto.discount}' already exists.`)
+        throw new BadRequestException(`Discount '${discountDto.name}' already exists.`)
       }
     }
   }

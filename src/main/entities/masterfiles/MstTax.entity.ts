@@ -8,7 +8,7 @@ export class MstTaxEntity extends BaseEntity {
   constructor() {
     super()
     this.code = ''
-    this.tax = ''
+    this.name = ''
     this.rate = 0
     this.accountId = 0
     this.isDefault = false
@@ -17,8 +17,8 @@ export class MstTaxEntity extends BaseEntity {
   @Column({ name: 'Code', type: 'nvarchar', length: 50, nullable: false })
   code: string
 
-  @Column({ name: 'Tax', type: 'nvarchar', length: 50, nullable: false })
-  tax: string
+  @Column({ name: 'Name', type: 'nvarchar', length: 50, nullable: false })
+  name: string
 
   @Column({ name: 'Rate', type: 'decimal', precision: 18, scale: 5, nullable: false })
   rate: number

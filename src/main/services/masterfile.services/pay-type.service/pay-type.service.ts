@@ -29,9 +29,9 @@ export class PayTypeService extends BaseService<MstPayTypeEntity> implements IPa
   protected async validateCreate(data: DeepPartial<MstPayTypeEntity>): Promise<void> {
     const payTypeDto = await transformAndValidate(CreatePayTypeDto, data)
 
-    const existingName = await this.repository.findOneBy({ payType: payTypeDto.payType })
+    const existingName = await this.repository.findOneBy({ name: payTypeDto.name })
     if (existingName) {
-      throw new BadRequestException(`Pay Type '${payTypeDto.payType}' already exists.`)
+      throw new BadRequestException(`Pay Type '${payTypeDto.name}' already exists.`)
     }
   }
 
@@ -45,10 +45,10 @@ export class PayTypeService extends BaseService<MstPayTypeEntity> implements IPa
     }
 
     const payTypeDto = await transformAndValidate(UpdatePayTypeDto, data)
-    if (payTypeDto.payType && payTypeDto.payType !== currentEntity.payType) {
-      const existingName = await this.repository.findOneBy({ payType: payTypeDto.payType })
+    if (payTypeDto.name && payTypeDto.name !== currentEntity.name) {
+      const existingName = await this.repository.findOneBy({ name: payTypeDto.name })
       if (existingName) {
-        throw new BadRequestException(`Pay Type '${payTypeDto.payType}' already exists.`)
+        throw new BadRequestException(`Pay Type '${payTypeDto.name}' already exists.`)
       }
     }
   }

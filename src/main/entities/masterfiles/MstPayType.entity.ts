@@ -14,7 +14,7 @@ export class MstPayTypeEntity extends BaseEntity {
   constructor() {
     super()
     this.branchId = 0
-    this.payType = 'NA'
+    this.name = 'NA'
     this.accountId = null
     this.sortNumber = null
     this.isDefault = false
@@ -23,8 +23,8 @@ export class MstPayTypeEntity extends BaseEntity {
   @Column({ name: 'BranchId', type: 'int', nullable: false })
   branchId: number
 
-  @Column({ name: 'PayType', type: 'nvarchar', length: 50, nullable: false })
-  payType: string
+  @Column({ name: 'Name', type: 'nvarchar', length: 50, nullable: false })
+  name: string
 
   @Column({ name: 'AccountId', type: 'int', nullable: true })
   accountId: number | null

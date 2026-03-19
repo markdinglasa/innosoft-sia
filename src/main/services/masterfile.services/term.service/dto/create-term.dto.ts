@@ -6,7 +6,7 @@ export class CreateTermDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
-  term!: string
+  name!: string
 
   @ApiProperty({ description: 'Number of days for the term' })
   @IsNumber()

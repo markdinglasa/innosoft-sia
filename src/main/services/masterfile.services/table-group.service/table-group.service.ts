@@ -29,9 +29,9 @@ export class TableGroupService extends BaseService<MstTableGroupEntity> implemen
   protected async validateCreate(data: DeepPartial<MstTableGroupEntity>): Promise<void> {
     const tableGroupDto = await transformAndValidate(CreateTableGroupDto, data)
 
-    const existingName = await this.repository.findOneBy({ tableGroup: tableGroupDto.tableGroup })
+    const existingName = await this.repository.findOneBy({ name: tableGroupDto.name })
     if (existingName) {
-      throw new BadRequestException(`Table Group '${tableGroupDto.tableGroup}' already exists.`)
+      throw new BadRequestException(`Table Group '${tableGroupDto.name}' already exists.`)
     }
   }
 
@@ -45,10 +45,10 @@ export class TableGroupService extends BaseService<MstTableGroupEntity> implemen
     }
 
     const tableGroupDto = await transformAndValidate(UpdateTableGroupDto, data)
-    if (tableGroupDto.tableGroup && tableGroupDto.tableGroup !== currentEntity.tableGroup) {
-      const existingName = await this.repository.findOneBy({ tableGroup: tableGroupDto.tableGroup })
+    if (tableGroupDto.name && tableGroupDto.name !== currentEntity.name) {
+      const existingName = await this.repository.findOneBy({ name: tableGroupDto.name })
       if (existingName) {
-        throw new BadRequestException(`Table Group '${tableGroupDto.tableGroup}' already exists.`)
+        throw new BadRequestException(`Table Group '${tableGroupDto.name}' already exists.`)
       }
     }
   }

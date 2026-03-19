@@ -6,20 +6,20 @@ import { BaseEntity } from '../generic/base.entity'
 export class MstAccountEntity extends BaseEntity {
   constructor() {
     super()
-    this.account = ''
-    this.accountType = ''
-    this.accountCode = ''
+    this.name = ''
+    this.type = ''
+    this.code = ''
     this.isDefault = false
   }
 
-  @Column({ name: 'AccountCode', type: 'nvarchar', length: 250 })
-  accountCode: string
+  @Column({ name: 'Code', type: 'nvarchar', length: 250 })
+  code: string
 
-  @Column({ name: 'Account', type: 'nvarchar', nullable: false })
-  account: string
+  @Column({ name: 'Name', type: 'nvarchar', nullable: false })
+  name: string
 
-  @Column({ name: 'AccountType', type: 'nvarchar', nullable: false })
-  accountType: string
+  @Column({ name: 'Type', type: 'nvarchar', nullable: false })
+  type: string
 
   @Column({ name: 'IsDefault', type: 'bit', nullable: false })
   isDefault: boolean

@@ -6,5 +6,5 @@ export class CreateTableGroupDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
-  tableGroup!: string
+  name!: string
 }

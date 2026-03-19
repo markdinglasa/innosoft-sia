@@ -7,15 +7,15 @@ export class MstItemGroupEntity extends BaseEntity {
   constructor() {
     super()
     this.branchId = 0
-    this.itemGroup = ''
+    this.name = ''
     this.imagePatch = null
     this.kitchenReport = ''
   }
     @Column({ name: 'BranchId', type: 'int', nullable: false })
   branchId: number
 
-  @Column({ name: 'ItemGroup', type: 'nvarchar', length: 50 })
-  itemGroup: string
+  @Column({ name: 'Name', type: 'nvarchar', length: 50 })
+  name: string
 
   @Column({ name: 'ImagePatch', type: 'nvarchar', length: 255, nullable: true })
   imagePatch: string | null

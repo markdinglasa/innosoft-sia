@@ -29,9 +29,9 @@ export class SupplierService extends BaseService<MstSupplierEntity> implements I
   protected async validateCreate(data: DeepPartial<MstSupplierEntity>): Promise<void> {
     const supplierDto = await transformAndValidate(CreateSupplierDto, data)
 
-    const existingName = await this.repository.findOneBy({ supplier: supplierDto.supplier })
+    const existingName = await this.repository.findOneBy({ name: supplierDto.name })
     if (existingName) {
-      throw new BadRequestException(`Supplier '${supplierDto.supplier}' already exists.`)
+      throw new BadRequestException(`Supplier '${supplierDto.name}' already exists.`)
     }
   }
 
@@ -46,10 +46,10 @@ export class SupplierService extends BaseService<MstSupplierEntity> implements I
     }
 
     const supplierDto = await transformAndValidate(UpdateSupplierDto, data)
-    if (supplierDto.supplier && supplierDto.supplier !== currentEntity.supplier) {
-      const existingName = await this.repository.findOneBy({ supplier: supplierDto.supplier })
+    if (supplierDto.name && supplierDto.name !== currentEntity.name) {
+      const existingName = await this.repository.findOneBy({ name: supplierDto.name })
       if (existingName) {
-        throw new BadRequestException(`Supplier '${supplierDto.supplier}' already exists.`)
+        throw new BadRequestException(`Supplier '${supplierDto.name}' already exists.`)
       }
     }
   }

@@ -2,20 +2,23 @@
     export const DEFAULT_TABLE_GROUP = [
         {
             branch:'Main',
-            tableGroup: 'Walk-In',
-
+           name: 'Walk-In',
+            entryUser: 'admin',
+            entryDateTime: new Date(),
             isDefault:true,
         },
         {
             branch:'Main',
-            tableGroup: 'Dine-In',
-            
+           name: 'Dine-In',
+            entryUser: 'admin',
+            entryDateTime: new Date(),
             isDefault:true,
         },
         {
             branch:'Main',
-            tableGroup: 'Delivery',
-            
+           name: 'Delivery',
+            entryUser: 'admin',
+            entryDateTime: new Date(),
             isDefault:true,
         }
     ]

@@ -1,8 +1,8 @@
 import { Column, Entity, OneToMany } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
-import { MstUserRolesEntity } from './MstUserRoles.entity'
 import { MstPermissionsEntity } from './MstPermissions.entity'
+import { MstUserRolesEntity } from './MstUserRoles.entity'
 
 @Entity(POSEntity.MST_ROLE)
 export class MstRoleEntity extends BaseEntity {

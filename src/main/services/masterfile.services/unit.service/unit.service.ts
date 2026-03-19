@@ -19,7 +19,7 @@ export class UnitService extends BaseService<MstUnitEntity> implements IUnitServ
    * Search fields for Unit keyword search.
    */
   protected get searchFields(): string[] {
-    return ['unit']
+    return ['name']
   }
 
   /**
@@ -29,9 +29,9 @@ export class UnitService extends BaseService<MstUnitEntity> implements IUnitServ
   protected async validateCreate(data: DeepPartial<MstUnitEntity>): Promise<void> {
     const unitDto = await transformAndValidate(CreateUnitDto, data)
 
-    const existingName = await this.repository.findOneBy({ unit: unitDto.unit })
+    const existingName = await this.repository.findOneBy({ name: unitDto.name })
     if (existingName) {
-      throw new BadRequestException(`Unit '${unitDto.unit}' already exists.`)
+      throw new BadRequestException(`Unit '${unitDto.name}' already exists.`)
     }
   }
 
@@ -46,10 +46,10 @@ export class UnitService extends BaseService<MstUnitEntity> implements IUnitServ
     }
 
     const unitDto = await transformAndValidate(UpdateUnitDto, data)
-    if (unitDto.unit && unitDto.unit !== currentEntity.unit) {
-      const existingName = await this.repository.findOneBy({ unit: unitDto.unit })
+    if (unitDto.name && unitDto.name !== currentEntity.name) {
+      const existingName = await this.repository.findOneBy({ name: unitDto.name })
       if (existingName) {
-        throw new BadRequestException(`Unit '${unitDto.unit}' already exists.`)
+        throw new BadRequestException(`Unit '${unitDto.name}' already exists.`)
       }
     }
   }

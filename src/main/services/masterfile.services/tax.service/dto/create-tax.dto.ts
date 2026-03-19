@@ -12,7 +12,7 @@ export class CreateTaxDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
-  tax!: string
+  name!: string
 
   @ApiProperty({ description: 'Tax rate' })
   @IsNumber()

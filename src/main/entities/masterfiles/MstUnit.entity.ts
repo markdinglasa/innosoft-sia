@@ -7,7 +7,7 @@ export class MstUnitEntity extends BaseEntity {
   constructor() {
     super()
     this.branchId = 0
-    this.unit = ''
+    this.name = ''
     this.description = null
     this.isDefault = false
 
@@ -15,8 +15,8 @@ export class MstUnitEntity extends BaseEntity {
   @Column({ name: 'BranchId', type: 'int', nullable: false })
   branchId: number
 
-  @Column({ name: 'Unit', type: 'nvarchar', length: 50, nullable: false })
-  unit: string
+  @Column({ name: 'Name', type: 'nvarchar', length: 50, nullable: false })
+  name: string
 
   @Column({ name: 'Description', type: 'text', nullable: true })
   description: string | null

@@ -29,9 +29,9 @@ export class TerminalService extends BaseService<MstTerminalEntity> implements I
   protected async validateCreate(data: DeepPartial<MstTerminalEntity>): Promise<void> {
     const terminalDto = await transformAndValidate(CreateTerminalDto, data)
 
-    const existingName = await this.repository.findOneBy({ terminal: terminalDto.terminal })
+    const existingName = await this.repository.findOneBy({ name: terminalDto.name })
     if (existingName) {
-      throw new BadRequestException(`Terminal '${terminalDto.terminal}' already exists.`)
+      throw new BadRequestException(`Terminal '${terminalDto.name}' already exists.`)
     }
   }
 
@@ -45,10 +45,10 @@ export class TerminalService extends BaseService<MstTerminalEntity> implements I
     }
 
     const terminalDto = await transformAndValidate(UpdateTerminalDto, data)
-    if (terminalDto.terminal && terminalDto.terminal !== currentEntity.terminal) {
-      const existingName = await this.repository.findOneBy({ terminal: terminalDto.terminal })
+    if (terminalDto.name && terminalDto.name !== currentEntity.name) {
+      const existingName = await this.repository.findOneBy({ name: terminalDto.name })
       if (existingName) {
-        throw new BadRequestException(`Terminal '${terminalDto.terminal}' already exists.`)
+        throw new BadRequestException(`Terminal '${terminalDto.name}' already exists.`)
       }
     }
   }

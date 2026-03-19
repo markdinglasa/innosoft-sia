@@ -2,7 +2,8 @@
 
     export const DEFAULT_PAY_TYPE = [
         {
-          payType: 'Cash',
+          branch:'Main', // branch.name 
+          name:'Cash',
           account: 'Cash on hand', // account.account
           sortNumber: null,
           isDefault: true,
@@ -10,7 +11,8 @@
           entryDateTime: new Date()
         },
         {
-          payType: 'Check',
+           branch:'Main', // branch.name 
+          name:'Check',
           account: 'Cash on hand', // account.account
           sortNumber: null,
           isDefault: true,
@@ -18,7 +20,8 @@
           entryDateTime: new Date()
         },
         {
-          payType: 'Credit Card',
+           branch:'Main', // branch.name 
+          name:'Credit Card',
           account: 'Cash on hand', // account.account
           sortNumber: null,
           isDefault: true,
@@ -26,7 +29,8 @@
           entryDateTime: new Date()
         },
         {
-          payType: 'Gift Check',
+           branch:'Main', // branch.name 
+          name:'Gift Check',
           account: 'Cash on hand', // account.account
           sortNumber: null,
           isDefault: true,
@@ -34,7 +38,8 @@
           entryDateTime: new Date()
         },
         {
-          payType: 'Exchange',
+           branch:'Main', // branch.name 
+          name:'Exchange',
           account: 'Cash on hand', // account.account
           sortNumber: null,
           isDefault: true,
@@ -42,7 +47,8 @@
           entryDateTime: new Date()
         },
         {
-          payType: 'Rewards',
+           branch:'Main', // branch.name 
+          name:'Rewards',
           account: 'Cash on hand', // account.account
           sortNumber: null,
           isDefault: true,
@@ -50,7 +56,8 @@
           entryDateTime: new Date()
         },
         {
-          payType: 'Charge',
+           branch:'Main', // branch.name 
+          name:'Charge',
           account: 'Cash on hand', // account.account
           sortNumber: null,
           isDefault: true,
@@ -58,7 +65,8 @@
           entryDateTime: new Date()
         },
         {
-          payType: 'Other',
+           branch:'Main', // branch.name 
+          name:'Other',
           account: 'Cash on hand', // account.account
           sortNumber: null,
           isDefault: true,

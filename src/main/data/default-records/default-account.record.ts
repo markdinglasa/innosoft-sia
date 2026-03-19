@@ -2,10 +2,10 @@
 export const DEFAULT_ACCOUNT = [
         {
             
-            account: 'Cash on hand',
-            accountType: 'Asset',
+            name: 'Cash on hand',
+            type: 'Asset',
            // code:'CASH_ON_HAND',
-            accountCode: '1100',
+            code: '1100',
             isDefault: true,
             entryUser: 'admin', // user.username
             entryDateTime: new Date(),
@@ -13,9 +13,9 @@ export const DEFAULT_ACCOUNT = [
         },
         {
             
-            account: 'Accounts Receivable - Sales',
-            accountType: 'Asset',
-            accountCode: '1200',
+            name: 'Accounts Receivable - Sales',
+            type: 'Asset',
+            code: '1200',
             //code:'ACCOUNTS_RECEIVABLE_SALES',
             isDefault: true,
              entryUser: 'admin', // user.username
@@ -24,9 +24,9 @@ export const DEFAULT_ACCOUNT = [
         },
         {
             
-            account: 'Inventory',
-            accountType: 'Asset',
-            accountCode: '1400',
+            name: 'Inventory',
+            type: 'Asset',
+            code: '1400',
             //code:'INVENTORY',
             isDefault: true,
              entryUser: 'admin', // user.username
@@ -35,9 +35,9 @@ export const DEFAULT_ACCOUNT = [
         },
         {
             
-            account: 'VAT payable - output',
-            accountType: 'Liability',
-            accountCode: '2200',
+            name: 'VAT payable - output',
+            type: 'Liability',
+            code: '2200',
             //code:'VAT_PAYABLE_OUTPUT',
             isDefault: true,
              entryUser: 'admin', // user.username
@@ -46,9 +46,9 @@ export const DEFAULT_ACCOUNT = [
         },
         {
             
-            account: 'VAT payable - input',
-            accountType: 'Liability',
-            accountCode: '2300',
+            name: 'VAT payable - input',
+            type: 'Liability',
+            code: '2300',
            // code:'VAT_PAYABLE_INPUT',
             isDefault: true,
              entryUser: 'admin', // user.username
@@ -57,9 +57,9 @@ export const DEFAULT_ACCOUNT = [
         },
         {
             
-            account: 'Sales',
-            accountType: 'Sales',
-            accountCode: '4100',
+            name: 'Sales',
+            type: 'Sales',
+            code: '4100',
             //code:'SALES',
             isDefault: true,
              entryUser: 'admin', // user.username
@@ -68,9 +68,9 @@ export const DEFAULT_ACCOUNT = [
         },
         {
             
-            account: 'Cost of Sales',
-            accountType: 'Expenses',
-            accountCode: '5100',
+            name: 'Cost of Sales',
+            type: 'Expenses',
+            code: '5100',
            // code:'COST_OF_SALES',
             isDefault: true,
              entryUser: 'admin', // user.username
@@ -79,9 +79,9 @@ export const DEFAULT_ACCOUNT = [
         },
         {
             
-            account: 'Local tax payable',
-            accountType: 'Liability',
-            accountCode: '2400',
+            name: 'Local tax payable',
+            type: 'Liability',
+            code: '2400',
             //code:'LOCAL_TAX_PAYABLE',
             isDefault: true,
              entryUser: 'admin', // user.username
@@ -90,9 +90,9 @@ export const DEFAULT_ACCOUNT = [
         },
         {
             
-            account: 'Accounts payable',
-            accountType: 'Liability',
-            accountCode: '2100',
+            name: 'Accounts payable',
+            type: 'Liability',
+            code: '2100',
            // code:'ACCOUNTS_PAYABLE',
             isDefault: true,
              entryUser: 'admin', // user.username
@@ -101,9 +101,9 @@ export const DEFAULT_ACCOUNT = [
         },
         {
             
-            account: 'Accounts receivable - others',
-            accountType: 'Asset',
-            accountCode: '1300',
+            name: 'Accounts receivable - others',
+            type: 'Asset',
+            code: '1300',
             //code:'ACCOUNTS_RECEIVABLE_OTHERS',
             isDefault: true,
              entryUser: 'admin', // user.username
@@ -112,9 +112,9 @@ export const DEFAULT_ACCOUNT = [
         },
         {
             
-            account: 'Returns',
-            accountType: 'Expenses',
-            accountCode: '5101',
+            name: 'Returns',
+            type: 'Expenses',
+            code: '5101',
            // code:'RETURNS',
             isDefault: true,
              entryUser: 'admin', // user.username

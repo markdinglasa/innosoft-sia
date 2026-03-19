@@ -11,10 +11,10 @@ export class CreateAccountDto {
   @ApiProperty({ description: 'Account name' })
   @IsString()
   @IsNotEmpty()
-  account!: string
+  name!: string
 
   @ApiProperty({ description: 'Type of account (e.g., Asset, Liability)' })
   @IsString()
   @IsNotEmpty()
-  accountType!: string
+  type!: string
 }

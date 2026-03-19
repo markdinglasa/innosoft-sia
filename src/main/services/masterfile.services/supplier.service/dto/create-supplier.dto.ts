@@ -11,7 +11,7 @@ export class CreateSupplierDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(100)
-  supplier!: string
+    name!: string
 
   @ApiProperty({ description: 'Physical address of the supplier' })
   @IsString()

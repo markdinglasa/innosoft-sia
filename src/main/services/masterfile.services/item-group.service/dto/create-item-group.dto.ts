@@ -6,7 +6,7 @@ export class CreateItemGroupDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
-  itemGroup!: string
+  name!: string
 
   @ApiPropertyOptional({ description: 'Path to group image' })
   @IsString()

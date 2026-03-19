@@ -29,9 +29,9 @@ export class TermService extends BaseService<MstTermEntity> implements ITermServ
   protected async validateCreate(data: DeepPartial<MstTermEntity>): Promise<void> {
     const termDto = await transformAndValidate(CreateTermDto, data)
 
-    const existingName = await this.repository.findOneBy({ term: termDto.term })
+    const existingName = await this.repository.findOneBy({ name: termDto.name })
     if (existingName) {
-      throw new BadRequestException(`Term '${termDto.term}' already exists.`)
+      throw new BadRequestException(`Term '${termDto.name}' already exists.`)
     }
   }
 
@@ -45,10 +45,10 @@ export class TermService extends BaseService<MstTermEntity> implements ITermServ
     }
 
     const termDto = await transformAndValidate(UpdateTermDto, data)
-    if (termDto.term && termDto.term !== currentEntity.term) {
-      const existingName = await this.repository.findOneBy({ term: termDto.term })
+    if (termDto.name && termDto.name !== currentEntity.name) {
+      const existingName = await this.repository.findOneBy({ name: termDto.name })
       if (existingName) {
-        throw new BadRequestException(`Term '${termDto.term}' already exists.`)
+        throw new BadRequestException(`Term '${termDto.name}' already exists.`)
       }
     }
   }

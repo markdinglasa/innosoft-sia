@@ -1,13 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsString, MaxLength } from 'class-validator'
 import { Type } from 'class-transformer'
+import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsString, MaxLength } from 'class-validator'
 
 export class CreateDiscountDto {
   @ApiProperty({ description: 'Discount name' })
   @IsString()
   @IsNotEmpty()
   @MaxLength(250)
-  discount!: string
+  name!: string
 
   @ApiProperty({ description: 'Discount rate' })
   @IsNumber()

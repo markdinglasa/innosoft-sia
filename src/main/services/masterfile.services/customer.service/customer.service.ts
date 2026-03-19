@@ -19,7 +19,7 @@ export class CustomerService extends BaseService<MstCustomerEntity> implements I
    * Search fields for Customer keyword search.
    */
   protected get searchFields(): string[] {
-    return ['customer', 'address', 'contactPerson', 'contactNumber', 'tin']
+    return ['name', 'address', 'contactPerson', 'contactNumber', 'tin']
   }
 
   /**
@@ -29,9 +29,9 @@ export class CustomerService extends BaseService<MstCustomerEntity> implements I
   protected async validateCreate(data: DeepPartial<MstCustomerEntity>): Promise<void> {
     const customerDto = await transformAndValidate(CreateCustomerDto, data)
 
-    const existingName = await this.repository.findOneBy({ customer: customerDto.customer })
+    const existingName = await this.repository.findOneBy({ name: customerDto.name })
     if (existingName) {
-      throw new BadRequestException(`Customer '${customerDto.customer}' already exists.`)
+      throw new BadRequestException(`Customer '${customerDto.name}' already exists.`)
     }
   }
 
@@ -46,10 +46,10 @@ export class CustomerService extends BaseService<MstCustomerEntity> implements I
     }
 
     const customerDto = await transformAndValidate(UpdateCustomerDto, data)
-    if (customerDto.customer && customerDto.customer !== currentEntity.customer) {
-      const existingName = await this.repository.findOneBy({ customer: customerDto.customer as string })
+    if (customerDto.name && customerDto.name !== currentEntity.name) {
+      const existingName = await this.repository.findOneBy({ name: customerDto.name })
       if (existingName) {
-        throw new BadRequestException(`Customer '${customerDto.customer}' already exists.`)
+        throw new BadRequestException(`Customer '${customerDto.name}' already exists.`)
       }
     }
   }

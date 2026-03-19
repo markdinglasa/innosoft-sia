@@ -6,7 +6,7 @@ export class CreateTerminalDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
-  terminal!: string
+  name!: string
 
   @ApiProperty({ description: 'Is this the default terminal?' })
   @IsBoolean()

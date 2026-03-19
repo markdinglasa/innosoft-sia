@@ -9,14 +9,14 @@ export class MstTerminalEntity extends BaseEntity {
   constructor() {
     super()
     this.branchId = 0
-    this.terminal = ''
+    this.name = ''
     this.isDefault = false
   }
     @Column({ name: 'BranchId', type: 'int', nullable: false })
   branchId: number
 
-  @Column({ name: 'Terminal', type: 'nvarchar', length: 50, nullable: false })
-  terminal: string
+  @Column({ name: 'Name', type: 'nvarchar', length: 50, nullable: false })
+  name: string
 
   @Column({ name: 'IsDefault', type: 'bit', nullable: false })
   isDefault: boolean

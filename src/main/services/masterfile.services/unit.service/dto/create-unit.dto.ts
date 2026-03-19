@@ -6,5 +6,5 @@ export class CreateUnitDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
-  unit!: string
+  name!: string
 }
