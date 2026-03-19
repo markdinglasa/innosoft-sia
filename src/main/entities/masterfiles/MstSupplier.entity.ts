@@ -32,6 +32,7 @@ export class MstSupplierEntity extends BaseEntity {
     this.termId = 0
     this.tin = ''
     this.accountId = 0
+    this.isDefault = false
   }
 
   @Column({ name: 'Supplier', type: 'nvarchar', length: 100, nullable: false })
@@ -57,6 +58,9 @@ export class MstSupplierEntity extends BaseEntity {
 
   @Column({ name: 'AccountId', type: 'int', nullable: false })
   accountId: number
+
+    @Column({ name: 'IsDefault', type: 'bit', nullable: false })
+  isDefault: boolean
 
   // FK Relationships
   @ManyToOne(() => MstTermEntity)

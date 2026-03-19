@@ -17,10 +17,12 @@ export class MstTableEntity extends BaseEntity {
 
     this.tableCode = ''
     this.tableGroupId = 0
-    this.topLocation = null
-    this.leftLocation = null
-    this.isClean = false
+    // this.topLocation = null
+    // this.leftLocation = null
+    // this.isClean = false
+    this.isDefault = false
   }
+  
 
 
   @Column({ name: 'TableCode', type: 'nvarchar', length: 50, nullable: false })
@@ -29,14 +31,17 @@ export class MstTableEntity extends BaseEntity {
   @Column({ name: 'TableGroupId', type: 'int', nullable: false })
   tableGroupId: number
 
-  @Column({ name: 'IsClean', type: 'bit', nullable: false })
-  isClean: boolean
+  // @Column({ name: 'IsClean', type: 'bit', nullable: false })
+  // isClean: boolean
 
-  @Column({ name: 'TopLocation', type: 'int', nullable: true })
-  topLocation: number | null
+  // @Column({ name: 'TopLocation', type: 'int', nullable: true })
+  // topLocation: number | null
 
-  @Column({ name: 'LeftLocation', type: 'int', nullable: true })
-  leftLocation: number | null
+  // @Column({ name: 'LeftLocation', type: 'int', nullable: true })
+  // leftLocation: number | null
+
+    @Column({ name: 'IsDefault', type: 'bit', nullable: false })
+  isDefault: boolean
 
   // FK Relationships
   @ManyToOne(() => MstTableGroupEntity)

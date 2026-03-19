@@ -9,6 +9,7 @@ import { MstUserEntity } from '../masterfiles/MstUser.entity'
 export class TrnPurchaseOrderEntity extends BaseEntity {
   constructor() {
     super()
+    this.branchId = 0
     this.periodId = 0
     this.purchaseOrderDate = new Date()
     this.purchaseOrderNumber = ''
@@ -20,6 +21,9 @@ export class TrnPurchaseOrderEntity extends BaseEntity {
     this.approvedBy = 0
     this.requestedBy = null
   }
+
+    @Column({ name: 'BranchId', type: 'int', nullable: false })
+  branchId: number
 
   @Column({ name: 'PeriodId', type: 'int', nullable: false })
   periodId: number

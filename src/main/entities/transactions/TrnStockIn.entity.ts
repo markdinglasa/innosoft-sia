@@ -1,13 +1,13 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
+import { MstBranchEntity } from '../masterfiles/MstBranch.entity'
 import { MstPeriodEntity } from '../masterfiles/MstPeriod.entity'
 import { MstSupplierEntity } from '../masterfiles/MstSupplier.entity'
-import { TrnCollectionEntity } from './TrnCollection.entity'
-import { TrnPurchaseOrderEntity } from './TrnPurchaseOrder.entity'
-import { TrnOrderEntity } from './TrnOrder.entity'
-import { MstBranchEntity } from '../masterfiles/MstBranch.entity'
 import { MstUserEntity } from '../masterfiles/MstUser.entity'
+import { TrnCollectionEntity } from './TrnCollection.entity'
+import { TrnOrderEntity } from './TrnOrder.entity'
+import { TrnPurchaseOrderEntity } from './TrnPurchaseOrder.entity'
 
 @Entity(POSEntity.TRN_STOCK_IN)
 export class TrnStockInEntity extends BaseEntity {
@@ -25,8 +25,11 @@ export class TrnStockInEntity extends BaseEntity {
     this.checkedBy = 0
     this.approvedBy = 0
     this.orderId = null
-    this.branchId = null
+    this.branchId = 0
   }
+
+  @Column({ name: 'BranchId', type: 'int', nullable: false })
+  branchId: number
 
   @Column({ name: 'PeriodId', type: 'int', nullable: false })
   periodId: number
@@ -63,9 +66,6 @@ export class TrnStockInEntity extends BaseEntity {
 
   @Column({ name: 'OrderId', type: 'int', nullable: true })
   orderId: number | null
-
-  @Column({ name: 'BranchId', type: 'int', nullable: true })
-  branchId: number | null
 
   // FK Relationships
   @ManyToOne(() => MstPeriodEntity)

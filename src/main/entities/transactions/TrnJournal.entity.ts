@@ -1,13 +1,13 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
+import { MstUserEntity } from '../masterfiles/MstUser.entity'
 import { TrnCollectionEntity } from './TrnCollection.entity'
 import { TrnDebitCreditMemoEntity } from './TrnDebitCreditMemo.entity'
 import { TrnDisbursementEntity } from './TrnDisbursement.entity'
 import { TrnOrderEntity } from './TrnOrder.entity'
 import { TrnStockInEntity } from './TrnStockIn.entity'
 import { TrnStockOutEntity } from './TrnStockOut.entity'
-import { MstUserEntity } from '../masterfiles/MstUser.entity'
 
 @Entity(POSEntity.TRN_JOURNAL)
 export class TrnJournalEntity {
@@ -24,10 +24,14 @@ export class TrnJournalEntity {
     this.collectionId = null
     this.dcMemoId = null
     this.disbursementId = null
+    this.branchId = 0
   }
-
+  
   @PrimaryGeneratedColumn({ name: 'Id' })
   id: number
+
+  @Column({ name: 'BranchId', type: 'int', nullable: false })
+  branchId: number
 
   @Column({ name: 'JournalDate', type: 'datetimeoffset', nullable: false })
   journalDate: Date

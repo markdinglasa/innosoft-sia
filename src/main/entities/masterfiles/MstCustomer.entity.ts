@@ -24,6 +24,7 @@ export class MstCustomerEntity extends BaseEntity {
     this.defaultPriceDescription = null
     this.customerCode = null
     this.businessStyle = null
+    this.isDefault = false
   }
 
   @Column({ name: 'Customer', type: 'nvarchar', length: 50, nullable: false })
@@ -67,6 +68,10 @@ export class MstCustomerEntity extends BaseEntity {
 
   @Column({ name: 'BusinessStyle', type: 'nvarchar', nullable: true })
   businessStyle: string | null
+
+
+  @Column({ name: 'IsDefault', type: 'bit', nullable: false })
+  isDefault: boolean
 
   // FK Relationships
   @ManyToOne(() => MstTermEntity)

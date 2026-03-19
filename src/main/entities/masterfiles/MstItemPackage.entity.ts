@@ -16,12 +16,15 @@ import { MstUnitEntity } from './MstUnit.entity'
 export class MstItemPackageEntity extends BaseEntity {
   constructor() {
     super()
+    this.branchId = 0
     this.itemId = 0
     this.packageItemId = 0
     this.unitId = 0
     this.quantity = 0
     this.isOptional = false
   }
+  @Column({ name: 'BranchId', type: 'int', nullable: false })
+  branchId: number
 
   @Column({ name: 'ItemId', type: 'int', nullable: false })
   itemId: number

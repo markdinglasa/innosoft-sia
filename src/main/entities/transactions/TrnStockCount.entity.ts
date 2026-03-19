@@ -8,6 +8,7 @@ import { MstUserEntity } from '../masterfiles/MstUser.entity'
 export class TrnStockCountEntity extends BaseEntity {
   constructor() {
     super()
+    this.branchId = 0
     this.periodId = 0
     this.stockCountDate = new Date()
     this.stockCountNumber = ''
@@ -16,6 +17,8 @@ export class TrnStockCountEntity extends BaseEntity {
     this.checkedBy = 0
     this.approvedBy = 0
   }
+  @Column({ name: 'BranchId', type: 'int', nullable: false })
+  branchId: number
 
   @Column({ name: 'PeriodId', type: 'int', nullable: false })
   periodId: number

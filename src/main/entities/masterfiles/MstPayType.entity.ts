@@ -13,10 +13,15 @@ import { MstAccountEntity } from './MstAccount.entity'
 export class MstPayTypeEntity extends BaseEntity {
   constructor() {
     super()
+    this.branchId = 0
     this.payType = 'NA'
     this.accountId = null
     this.sortNumber = null
+    this.isDefault = false
   }
+
+  @Column({ name: 'BranchId', type: 'int', nullable: false })
+  branchId: number
 
   @Column({ name: 'PayType', type: 'nvarchar', length: 50, nullable: false })
   payType: string
@@ -26,6 +31,9 @@ export class MstPayTypeEntity extends BaseEntity {
 
   @Column({ name: 'SortNumber', type: 'int', nullable: true })
   sortNumber: number | null
+
+    @Column({ name: 'IsDefault', type: 'bit', nullable: false })
+  isDefault: boolean
 
   // FK Relationships
   @ManyToOne(() => MstAccountEntity)

@@ -6,10 +6,13 @@ import { BaseEntity } from '../generic/base.entity'
 export class MstItemGroupEntity extends BaseEntity {
   constructor() {
     super()
+    this.branchId = 0
     this.itemGroup = ''
     this.imagePatch = null
     this.kitchenReport = ''
   }
+    @Column({ name: 'BranchId', type: 'int', nullable: false })
+  branchId: number
 
   @Column({ name: 'ItemGroup', type: 'nvarchar', length: 50 })
   itemGroup: string

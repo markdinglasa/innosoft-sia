@@ -6,6 +6,7 @@ import { BaseEntity } from '../generic/base.entity'
 export class MstDiscountEntity extends BaseEntity {
   constructor() {
     super()
+    this.branchId = 0
     this.discount = ''
     this.discountRate = 0
     this.isVatExempt = false
@@ -25,7 +26,10 @@ export class MstDiscountEntity extends BaseEntity {
     this.daySun = false
     this.discountAlias = ''
     this.mandated = false
+    this.isDefault = false
   }
+  @Column({ name: 'BranchId', type: 'int', nullable: false })
+  branchId: number
 
   @Column({ name: 'Discount', type: 'nvarchar', length: 250, nullable: false })
   discount: string
@@ -80,6 +84,10 @@ export class MstDiscountEntity extends BaseEntity {
 
   @Column({ name: 'DiscountAlias', type: 'nvarchar', length: 100, nullable: false })
   discountAlias: string
+
+
+  @Column({ name: 'IsDefault', type: 'bit', nullable: false })
+  isDefault: boolean
 
   // Virtual property set after loading from DB
   mandated: boolean

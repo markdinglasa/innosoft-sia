@@ -11,19 +11,20 @@
 // 	[IsLocked] [bit] NOT NULL,
 // 	[Role] [nvarchar](50) NULL,
 
-import { Column, Entity, OneToMany } from 'typeorm'
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { POSEntity } from '../entity-names'
-import { BaseEntity } from '../generic/base.entity'
 import { SysUserTerminalEntity } from "../utilities/SysUserTerminal.entity"
 import { MstBranchAccessEntity } from './MstBranchAccess.entity'
 import { MstPermissionsEntity } from "./MstPermissions.entity"
 import { MstUserRolesEntity } from './MstUserRoles.entity'
 
 @Entity(POSEntity.MST_USER)
-export class MstUserEntity extends BaseEntity {
+export class MstUserEntity {
   constructor() {
-    super()
-    this.userName = ''
+    this.id = 0
+    this.type = 'Teller' // | 'Cashier' | 'Administrator'
+    this.isLocked = false
+    this.username = ''
     this.password = ''
     this.fullName = ''
     this.userCardNumber = null
@@ -32,10 +33,30 @@ export class MstUserEntity extends BaseEntity {
     this.branchAccesses = []
     this.status = 'Active'
     this.image = null
+    this.entryDateTime = new Date()
+    this.isDefault = false
   }
 
+    @PrimaryGeneratedColumn({ name: 'Id', type: 'int' })
+    id: number
+  
+    @Column({ name: 'IsLocked', type: 'bit' })
+    isLocked: boolean
+
+    @Column({ name: 'IsDefault', type: 'bit' })
+    isDefault: boolean
+  
+    @CreateDateColumn({ name: 'EntryDateTime', type: 'datetimeoffset' })
+    entryDateTime: Date
+
+    @UpdateDateColumn({ name: 'UpdateDateTime', type: 'datetimeoffset', nullable: true })
+    updateDateTime?: Date | null
+  
+ @Column({ name: 'Type', type: 'nvarchar', length: 50, nullable: false })
+  type: string
+
   @Column({ name: 'UserName', type: 'nvarchar', length: 50, nullable: false })
-  userName: string
+  username: string
 
   @Column({ name: 'Password', type: 'text',  nullable: false })
   password: string

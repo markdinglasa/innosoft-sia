@@ -16,8 +16,16 @@ export class MstTableGroupEntity extends BaseEntity {
   constructor() {
     super()
     this.tableGroup = ''
+    this.isDefault = false
+    this.branchId = 0
   }
+
+  @Column({ name: 'BranchId', type: 'int', nullable: false })
+  branchId: number
 
   @Column({ name: 'TableGroup', type: 'nvarchar', length: 50, nullable: false })
   tableGroup: string
+
+    @Column({ name: 'IsDefault', type: 'bit', nullable: false })
+  isDefault: boolean
 }

@@ -8,9 +8,12 @@ import { SysUserTerminalEntity } from '../utilities/SysUserTerminal.entity'
 export class MstTerminalEntity extends BaseEntity {
   constructor() {
     super()
+    this.branchId = 0
     this.terminal = ''
     this.isDefault = false
   }
+    @Column({ name: 'BranchId', type: 'int', nullable: false })
+  branchId: number
 
   @Column({ name: 'Terminal', type: 'nvarchar', length: 50, nullable: false })
   terminal: string

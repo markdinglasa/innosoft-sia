@@ -40,9 +40,9 @@ export class UserService extends BaseService<MstUserEntity> implements IUserServ
   protected async validateCreate(data: DeepPartial<MstUserEntity>): Promise<void> {
     const userDto = await transformAndValidate(CreateUserDto, data)
 
-    const existingUser = await this.repository.findOneBy({ userName: userDto.userName })
+    const existingUser = await this.repository.findOneBy({ username: userDto.username })
     if (existingUser) {
-      throw new BadRequestException(`Username '${userDto.userName}' already exists.`)
+      throw new BadRequestException(`Username '${userDto.username}' already exists.`)
     }
 
     const existingEmail = await this.repository.findOneBy({ email: userDto.email })
@@ -62,10 +62,10 @@ export class UserService extends BaseService<MstUserEntity> implements IUserServ
 
     const userDto = await transformAndValidate(UpdateUserDto, data)
     
-    if (userDto.userName && userDto.userName !== currentEntity.userName) {
-      const existingUser = await this.repository.findOneBy({ userName: userDto.userName })
+    if (userDto.username && userDto.username !== currentEntity.username) {
+      const existingUser = await this.repository.findOneBy({ username: userDto.username })
       if (existingUser) {
-        throw new BadRequestException(`Username '${userDto.userName}' already exists.`)
+        throw new BadRequestException(`Username '${userDto.username}' already exists.`)
       }
     }
 

@@ -6,10 +6,13 @@ import { BaseEntity } from '../generic/base.entity'
 export class MstItemInventoryEntity extends BaseEntity {
   constructor() {
     super()
+    this.branchId = 0
     this.itemId = 0
     this.inventoryDate = new Date()
     this.quantity = 0
   }
+  @Column({ name: 'BranchId', type: 'int', nullable: false })
+  branchId: number
 
   @Column({ name: 'ItemId', type: 'int', nullable: false })
   itemId: number

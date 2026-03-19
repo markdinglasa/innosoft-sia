@@ -1,0 +1,42 @@
+
+export const DEFAULT_USERS = [
+    {
+        username: 'admin',
+        password: 'Innosoft@123456',
+        fullName: 'Administrator',
+        type:'Administrator',
+        userCardNumber: null,
+        email: 'innosoft.inquiry@gmail.com',
+        status: 'Active',
+        image: null,
+        isLocked: true,
+        entryDateTime:  new Date(),
+        isDefault: true,
+    },
+    {
+        username: 'cashier',
+        password: 'Innosoft@123456',
+        fullName: 'Cashier',
+        type:'Cashier',
+        userCardNumber: null,
+        email: 'innosoft.inquiry@gmail.com',
+        status: 'Active',
+        image: null,
+        isLocked: true,
+        entryDateTime:  new Date(),
+        isDefault: true,
+    },
+    {
+        username: 'teller',
+        password: 'Innosoft@123456',
+        fullName: 'Teller',
+        type:'Teller',
+        userCardNumber: null,
+        email: 'innosoft.inquiry@gmail.com',
+        status: 'Active',
+        image: null,
+        isLocked: true,
+        entryDateTime:  new Date(),
+        isDefault: true,
+    }
+]

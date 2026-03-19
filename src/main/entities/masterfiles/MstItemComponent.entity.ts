@@ -18,6 +18,7 @@ import { MstUnitEntity } from './MstUnit.entity'
 export class MstItemComponentEntity extends BaseEntity {
   constructor() {
     super()
+    this.branchId = 0
     this.itemId = 0
     this.componentItemId = 0
     this.unitId = 0
@@ -26,6 +27,8 @@ export class MstItemComponentEntity extends BaseEntity {
     this.amount = 0
     this.isPrinted = false
   }
+    @Column({ name: 'BranchId', type: 'int', nullable: false })
+  branchId: number
 
   @Column({ name: 'ItemId', type: 'int' })
   itemId: number

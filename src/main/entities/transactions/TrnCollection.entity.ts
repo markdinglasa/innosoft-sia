@@ -12,6 +12,7 @@ import { TrnOrderEntity } from './TrnOrder.entity'
 export class TrnCollectionEntity extends BaseEntity {
   constructor() {
     super()
+    this.branchId = 0
     this.periodId = 0
     this.collectionDate = new Date()
     this.collectionNumber = ''
@@ -31,6 +32,8 @@ export class TrnCollectionEntity extends BaseEntity {
     this.isCancelled = false
     this.postCode = null
   }
+  @Column({ name: 'BranchId', type: 'int', nullable: false })
+  branchId: number
 
   @Column({ name: 'PeriodId', type: 'int', nullable: false })
   periodId: number

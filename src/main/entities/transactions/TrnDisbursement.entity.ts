@@ -1,16 +1,17 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
-import { MstPeriodEntity } from '../masterfiles/MstPeriod.entity'
 import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
 import { MstPayTypeEntity } from '../masterfiles/MstPayType.entity'
-import { TrnStockInEntity } from './TrnStockIn.entity'
+import { MstPeriodEntity } from '../masterfiles/MstPeriod.entity'
 import { MstUserEntity } from '../masterfiles/MstUser.entity'
+import { TrnStockInEntity } from './TrnStockIn.entity'
 
 @Entity(POSEntity.TRN_DISBURSEMENT)
 export class TrnDisbursementEntity extends BaseEntity {
   constructor() {
     super()
+    this.branchId = 0
     this.periodId = 0
     this.disbursementDate = new Date()
     this.disbursementNumber = ''
@@ -40,6 +41,8 @@ export class TrnDisbursementEntity extends BaseEntity {
     this.amount001 = null
     this.payee = null
   }
+    @Column({ name: 'BranchId', type: 'int', nullable: false })
+  branchId: number
 
   @Column({ name: 'PeriodId', type: 'int', nullable: false })
   periodId: number

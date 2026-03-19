@@ -1,15 +1,16 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
-import { MstPeriodEntity } from '../masterfiles/MstPeriod.entity'
 import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
 import { MstBranchEntity } from '../masterfiles/MstBranch.entity'
+import { MstPeriodEntity } from '../masterfiles/MstPeriod.entity'
 import { MstUserEntity } from '../masterfiles/MstUser.entity'
 
 @Entity(POSEntity.TRN_STOCK_OUT)
 export class TrnStockOutEntity extends BaseEntity {
   constructor() {
     super()
+    this.branchId = 0
     this.periodId = 0
     this.stockOutDate = new Date()
     this.stockOutNumber = ''
@@ -18,8 +19,9 @@ export class TrnStockOutEntity extends BaseEntity {
     this.preparedBy = 0
     this.checkedBy = 0
     this.approvedBy = 0
-    this.branchId = null
   }
+    @Column({ name: 'BranchId', type: 'int', nullable: false })
+  branchId: number
 
   @Column({ name: 'PeriodId', type: 'int', nullable: false })
   periodId: number
@@ -44,9 +46,6 @@ export class TrnStockOutEntity extends BaseEntity {
 
   @Column({ name: 'ApprovedBy', type: 'int', nullable: false })
   approvedBy: number
-
-  @Column({ name: 'BranchId', type: 'int', nullable: true })
-  branchId: number | null
 
   // FK Relationships
   @ManyToOne(() => MstPeriodEntity)

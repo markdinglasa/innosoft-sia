@@ -6,7 +6,7 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
-  userName!: string
+  username!: string
 
   @ApiProperty({ description: 'User password' })
   @IsString()

@@ -7,7 +7,7 @@ export class MstAccessRightEntity {
   constructor() {
     this.id = 0
     this.action = ''
-    this.permissions = []
+    this.category = ''
   }
 
   @PrimaryGeneratedColumn({ name: 'Id' })
@@ -16,7 +16,11 @@ export class MstAccessRightEntity {
   @Column({ name: 'Action', type: 'nvarchar', length: 255, nullable: false })
   action: string
 
+
+  @Column({ name: 'Category', type: 'nvarchar', length: 255, nullable: false })
+  category: string
+
   // FK Relationships
   @OneToMany(() => MstPermissionsEntity, (permission) => permission.accessRight)
-  permissions: MstPermissionsEntity[]
+  permissions?: MstPermissionsEntity[]
 }

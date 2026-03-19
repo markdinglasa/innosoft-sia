@@ -11,6 +11,7 @@ export class MstTaxEntity extends BaseEntity {
     this.tax = ''
     this.rate = 0
     this.accountId = 0
+    this.isDefault = false
   }
 
   @Column({ name: 'Code', type: 'nvarchar', length: 50, nullable: false })
@@ -24,6 +25,9 @@ export class MstTaxEntity extends BaseEntity {
 
   @Column({ name: 'AccountId', type: 'int', nullable: false })
   accountId: number
+
+    @Column({ name: 'IsDefault', type: 'bit', nullable: false })
+  isDefault: boolean
 
   // FK Relationships
   @ManyToOne(() => MstAccountEntity)

@@ -16,6 +16,7 @@ import { TrnOrderLineEntity } from './TrnOrderLine.entity'
 export class TrnOrderEntity extends BaseEntity {
   constructor() {
     super()
+    this.branchId = 0
     this.periodId = 0
     this.orderDate = new Date()
     this.orderNumber = ''
@@ -48,6 +49,9 @@ export class TrnOrderEntity extends BaseEntity {
     this.tinNumber = null
     this.isBilledOut = false
   }
+
+    @Column({ name: 'BranchId', type: 'int', nullable: false })
+  branchId: number
 
   @Column({ name: 'PeriodId', type: 'int', nullable: false })
   periodId: number

@@ -8,6 +8,7 @@ export class MstTermEntity extends BaseEntity {
     super()
     this.term = ''
     this.numberOfDays = 0
+    this.isDefault = false
   }
 
   @Column({ name: 'Term', type: 'nvarchar', length: 50, nullable: false })
@@ -15,4 +16,7 @@ export class MstTermEntity extends BaseEntity {
 
   @Column({ name: 'NumberOfDays', type: 'decimal', precision: 18, scale: 5, nullable: false })
   numberOfDays: number
+
+  @Column({ name: 'IsDefault', type: 'bit', nullable: false })
+  isDefault: boolean
 }

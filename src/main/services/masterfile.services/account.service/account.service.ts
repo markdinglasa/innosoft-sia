@@ -19,19 +19,19 @@ export class AccountService extends BaseService<MstAccountEntity> implements IAc
    * Search fields for Account keyword search.
    */
   protected get searchFields(): string[] {
-    return ['code', 'account', 'accountType']
+    return ['account', 'accountCode', 'accountType']
   }
 
   /**
    * Validates before creating a new Account.
-   * Ensures Account Code is unique.
+   * Ensures Account account is unique.
    */
   protected async validateCreate(data: DeepPartial<MstAccountEntity>): Promise<void> {
     const accountDto = await transformAndValidate(CreateAccountDto, data)
 
-    const existingCode = await this.repository.findOneBy({ code: accountDto.code })
-    if (existingCode) {
-      throw new BadRequestException(`Account Code '${accountDto.code}' already exists.`)
+    const existingaccount = await this.repository.findOneBy({ account: accountDto.account })
+    if (existingaccount) {
+      throw new BadRequestException(`Account account '${accountDto.account}' already exists.`)
     }
   }
 
@@ -45,10 +45,10 @@ export class AccountService extends BaseService<MstAccountEntity> implements IAc
     }
 
     const accountDto = await transformAndValidate(UpdateAccountDto, data)
-    if (accountDto.code && accountDto.code !== currentEntity.code) {
-      const existingCode = await this.repository.findOneBy({ code: accountDto.code })
-      if (existingCode) {
-        throw new BadRequestException(`Account Code '${accountDto.code}' already exists.`)
+    if (accountDto.account && accountDto.account !== currentEntity.account) {
+      const existingaccount = await this.repository.findOneBy({ account: accountDto.account })
+      if (existingaccount) {
+        throw new BadRequestException(`Account account '${accountDto.account}' already exists.`)
       }
     }
   }
