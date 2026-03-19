@@ -1,14 +1,14 @@
+import { SYSTEM_ACCESS_TOKEN, SYSTEM_REFRESH_TOKEN, SYSTEM_SELF } from '@shared/constants'
+import { LoginResponse, TokenPayload } from '@shared/types/auth.types'
 import * as bcrypt from 'bcrypt'
 import { FindOneOptions } from 'typeorm'
+import { UnauthorizedException } from '../../common/exceptions'
+import { generateAccessToken, generateRefreshToken, verifyToken } from '../../common/utils/jwt.util'
 import { MstPermissionsEntity } from '../../entities/masterfiles'
 import { MstUserEntity } from '../../entities/masterfiles/MstUser.entity'
+import Store from '../../store/Store'
 import { AppDataSource } from '../../typeORM/configurations'
 import { BaseService, IBaseService } from '../base.service'
-import { LoginResponse, TokenPayload } from '@shared/types/auth.types'
-import { generateAccessToken, generateRefreshToken, verifyToken } from '../../common/utils/jwt.util'
-import { SYSTEM_ACCESS_TOKEN, SYSTEM_REFRESH_TOKEN, SYSTEM_SELF } from '@shared/constants'
-import Store from '../../store/Store'
-import { UnauthorizedException } from '../../common/exceptions'
 
 /**
  * Interface defining the Authentication and Authorization service.
@@ -34,11 +34,11 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
   /**
    * Verifies credentials using bcrypt, generates JWT tokens, and stores them.
    */
-  async login(userName: string, password: string): Promise<LoginResponse> {
+  async login(username: string, password: string): Promise<LoginResponse> {
     // Find user by username only (not by password)
     const options: FindOneOptions<MstUserEntity> = {
       where: {
-        userName,
+        username,
         isLocked: false
       }
     }
@@ -55,7 +55,7 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
     }
 
     // Generate tokens
-    const tokenPayload: TokenPayload = { userId: user.id, userName: user.userName }
+    const tokenPayload: TokenPayload = { userId: user.id, username: user.username }
     const accessToken = generateAccessToken(tokenPayload)
     const refreshToken = generateRefreshToken(tokenPayload)
 
@@ -113,7 +113,7 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
     }
 
     // Generate new tokens
-    const tokenPayload: TokenPayload = { userId: user.id, userName: user.userName }
+    const tokenPayload: TokenPayload = { userId: user.id, username: user.username }
     const newAccessToken = generateAccessToken(tokenPayload)
     const newRefreshToken = generateRefreshToken(tokenPayload)
 

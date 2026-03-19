@@ -5,7 +5,7 @@ export interface AuthTokens {
 
 export interface TokenPayload {
   userId: number
-  userName: string
+  username: string
 }
 
 export interface LoginResponse {
