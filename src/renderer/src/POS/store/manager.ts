@@ -28,13 +28,22 @@ const manager = createSlice({
         state: current(state)
       })
     },
-    setManager: setLocalAndStateReducer<POSManagerState>(POS_MANAGER)
-  }
+    setManager: setLocalAndStateReducer<POSManagerState>(POS_MANAGER),
+
+      setActivePage: (state: POSManagerState, { payload: page }: PayloadAction<string>) => {
+        state.activePage = page === state.activePage ? null : page
+        window.electron.ipc.send(IpcChannel.setStoreValue, {
+          key: POS_MANAGER,
+          state: current(state)
+        })
+      },
+        },
 })
 
 export const {
   setInitialize,
-  setManager
+  setManager,
+  setActivePage
 } = manager.actions
 
 export default manager.reducer

@@ -1,6 +1,6 @@
 import { AppRegistration } from '@shared/types'
+import { RootPage } from './app/page'
 import { POS_MANAGER } from './constants'
-import { POSMainArea } from './pos-main-area'
 import posManagerReducer from './store'
 import { loadPOSManagerStoreData } from './store/initializer'
 import { POSElectronStore } from "./types"
@@ -12,6 +12,6 @@ const POSManagerRegistration: AppRegistration = {
   reducer: posManagerReducer
 }
 
-export { POSMainArea, POSManagerRegistration }
+export { POSManagerRegistration, RootPage }
 export type { POSElectronStore }
 

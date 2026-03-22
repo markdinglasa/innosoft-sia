@@ -1,9 +1,15 @@
 import { Button, Paper, TextField, Typography } from "@mui/material";
+import { AppDispatch } from "@shared/types";
 import { memo, useState } from "react";
+import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
+import { setActivePage } from "../../../store/manager";
+import { POSPages } from "../../../types/pages";
 import { useAuth } from "../hooks/use-auth";
 
 function LoginForm() {
+    const dispatch = useDispatch<AppDispatch>()
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -21,6 +27,14 @@ function LoginForm() {
       setIsLoading(false);
     }
   };
+
+  const handleDatabaseLink = () => {
+    try {
+      dispatch(setActivePage(POSPages.DATABASE_LINK))
+    } catch(error:unknown) {
+ toast.error((error as Error).message || "Sorry, Something went wrong.");
+    }
+  }
 
   return (
     <Paper elevation={3} sx={{ p: 4, maxWidth: 400, width: "100%", mx: "auto", mt: 8 }}>
@@ -55,6 +69,7 @@ function LoginForm() {
           {isLoading ? "Logging in..." : "Login"}
         </Button>
       </form>
+      <Button onClick={handleDatabaseLink}>Database Link</Button>
     </Paper>
   );
 }

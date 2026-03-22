@@ -1,5 +1,4 @@
 import { License } from '@renderer/License'
-import { SyncStatusBadge } from "@renderer/POS/components/feedback/sync-status-badge"
 import { useSync } from "@renderer/POS/hooks"
 import { Splash } from '@shared/components'
 import { Error } from '@shared/messages'
@@ -54,7 +53,7 @@ export const MainWindow: SFC = ({ className }) => {
     return () => clearTimeout(splashTimeout)
   }, [])
 
-  const renderContent = () => {
+  const Content = () => {
     if (showSplash || isLicenseValid === null) {
       return <Splash message="Please wait..." />
     }
@@ -63,11 +62,8 @@ export const MainWindow: SFC = ({ className }) => {
 
   return (
     <S.Container className={className}>
-      <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 9999 }}>
-        <SyncStatusBadge />
-      </div>
       {/* <DraggableTopBar /> */}
-      {renderContent()}
+      <Content/>
     </S.Container>
   )
 }

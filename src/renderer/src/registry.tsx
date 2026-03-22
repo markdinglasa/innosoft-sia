@@ -4,7 +4,7 @@ import { AppDataHandlers, AppDispatch, AppRegistration, SFC } from '@shared/type
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { POSMainArea, POSManagerRegistration } from './POS'
+import { POSManagerRegistration, RootPage as POSPage } from './POS'
 
 export interface AppElectronStore  {}
 export const AppReducers = { 
@@ -27,7 +27,7 @@ export const AppMain: SFC = () => {
 
   return (
     <>
-      <POSMainArea display={activeWindow === POSManagerRegistration.appId} />
+      <POSPage display={activeWindow === POSManagerRegistration.appId} />
     </>
   )
 }
