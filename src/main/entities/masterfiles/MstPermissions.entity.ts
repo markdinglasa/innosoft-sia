@@ -1,8 +1,8 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
+import { AfterLoad, Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
-import { MstRoleEntity } from './MstRole.entity'
 import { MstAccessRightEntity } from './MstAccessRight.entity'
+import { MstRoleEntity } from './MstRole.entity'
 
 @Entity(POSEntity.MST_PERMISSIONS)
 export class MstPermissionsEntity extends BaseEntity {
@@ -28,5 +28,15 @@ export class MstPermissionsEntity extends BaseEntity {
   @ManyToOne(() => MstRoleEntity, (role) => role.permissions)
   @JoinColumn({ name: 'RoleId' })
   role?: MstRoleEntity
+
+  // virtual fields
+
+  action?:string
+  @AfterLoad()
+  set(){
+    this.action = this.accessRight?.action
+  }
 }
+
+
 

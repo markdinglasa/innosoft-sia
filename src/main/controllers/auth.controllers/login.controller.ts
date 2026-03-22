@@ -12,11 +12,8 @@ const authService = new AuthService()
  * Return shape: IpcResponseItem<LoginResponse>
  */
 registerIpcHandler(AuthIpcChannel.LOGIN, async (_event, payload) => {
-  if (!payload || !payload.userName || !payload.password) {
+  if (!payload || !payload.username || !payload.password) {
     throw new BadRequestException('Username and Password are required')
   }
-
-  const result = await authService.login(payload.userName, payload.password)
-  console.log('result', result)
-  return result
+  return await authService.login(payload.username, payload.password)
 })

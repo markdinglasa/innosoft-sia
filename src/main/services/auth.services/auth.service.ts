@@ -38,20 +38,20 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
     // Find user by username only (not by password)
     const options: FindOneOptions<MstUserEntity> = {
       where: {
-        username,
-        isLocked: false
+        username
       }
     }
+    console.log('options-', options)
     const user = await this.repository.findOne(options)
     console.log('user-', user)
     if (!user) {
-      throw new UnauthorizedException('Invalid username or password')
+      throw new UnauthorizedException('User not found.')
     }
 
     // Compare hashed password
     const isPasswordValid = await bcrypt.compare(password, user.password)
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid username or password')
+      throw new UnauthorizedException('Invalid username or password.')
     }
 
     // Generate tokens
@@ -154,9 +154,12 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
    * Fetches the permissions (forms) allowed for a specific user.
    */
   async getPermissions(userId: number): Promise<MstPermissionsEntity[]> {
-    return await AppDataSource.getRepository(MstPermissionsEntity).find({
+    const permissions = await AppDataSource.getRepository(MstPermissionsEntity).find({
       where: { role: { userRoles: { user: { id: userId } } } },
+      withDeleted:false,
+      relations:['accessRight']
     })
+    return permissions?.map((p)=>{ return p.action}) as unknown as MstPermissionsEntity[]
   }
 
   /**

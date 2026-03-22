@@ -1,8 +1,8 @@
-import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '@shared/types'
+import { useCallback } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { setManager } from '../../../store/manager'
 import { login as apiLogin, logout as apiLogout } from '../api/auth-api'
-import { useCallback } from 'react'
 
 export const useAuth = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -12,6 +12,7 @@ export const useAuth = () => {
   const handleLogin = useCallback(async (credentials: any) => {
     try {
       const data = await apiLogin(credentials)
+      console.log('data:', data)
       dispatch(setManager({
         initialize: true,
         activeUser: data.user,
