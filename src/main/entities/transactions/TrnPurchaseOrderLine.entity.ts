@@ -1,13 +1,14 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
-import { TrnPurchaseOrderEntity } from './TrnPurchaseOrder.entity'
+import { BaseEntity } from "../generic"
 import { MstItemEntity } from '../masterfiles/MstItem.entity'
 import { MstUnitEntity } from '../masterfiles/MstUnit.entity'
+import { TrnPurchaseOrderEntity } from './TrnPurchaseOrder.entity'
 
 @Entity(POSEntity.TRN_PURCHASE_ORDER_LINE)
-export class TrnPurchaseOrderLineEntity {
+export class TrnPurchaseOrderLineEntity  extends BaseEntity{
   constructor() {
-    this.id = 0
+    super()
     this.purchaseOrderId = 0
     this.itemId = 0
     this.unitId = 0
@@ -15,9 +16,6 @@ export class TrnPurchaseOrderLineEntity {
     this.cost = 0
     this.amount = 0
   }
-
-  @PrimaryGeneratedColumn({ name: 'Id' })
-  id: number
 
   @Column({ name: 'PurchaseOrderId', type: 'int', nullable: false })
   purchaseOrderId: number

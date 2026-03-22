@@ -4,7 +4,6 @@ import { POSEntity } from '../entity-names'
 @Entity(POSEntity.SYS_AUDIT_TRAIL)
 export class SysAuditTrailEntity {
   constructor() {
-    this.id = 0
     this.userId = 0
     this.auditDate = new Date()
     this.tableInformation = ''
@@ -13,7 +12,7 @@ export class SysAuditTrailEntity {
   }
 
   @PrimaryGeneratedColumn({ name: 'Id' })
-  id: number
+  id!: number
 
   @Column({ name: 'UserId', type: 'int', nullable: false })
   userId: number

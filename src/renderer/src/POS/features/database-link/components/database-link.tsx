@@ -1,7 +1,7 @@
 import { Box, Container } from '@mui/material'
 import { memo } from 'react'
 import { useGetConnections } from '../api/react-queries/connection.queries'
-import { ConnectionList } from './index'
+import ConnectionList from './connection-list'
 
 function DatabaseLink() {
   const { data: connections = [], refetch, isLoading: loading } = useGetConnections()

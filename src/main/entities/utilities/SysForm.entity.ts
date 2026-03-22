@@ -4,13 +4,12 @@ import { POSEntity } from '../entity-names'
 @Entity(POSEntity.SYS_FORM)
 export class SysFormEntity {
   constructor() {
-    this.id = 0
     this.form = ''
     this.formDescription = ''
   }
 
   @PrimaryGeneratedColumn({ name: 'Id' })
-  id: number
+  id!: number
 
   @Column({ name: 'Form', type: 'nvarchar', length: 50, nullable: false })
   form: string

@@ -5,13 +5,13 @@ import { MstPermissionsEntity } from './MstPermissions.entity'
 @Entity(POSEntity.MST_ACCESS_RIGHT)
 export class MstAccessRightEntity {
   constructor() {
-    this.id = 0
+  
     this.action = ''
     this.category = ''
   }
 
   @PrimaryGeneratedColumn({ name: 'Id' })
-  id: number
+  id!: number
 
   @Column({ name: 'Action', type: 'nvarchar', length: 255, nullable: false })
   action: string

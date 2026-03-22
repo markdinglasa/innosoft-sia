@@ -1,14 +1,15 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
-import { TrnStockInEntity } from './TrnStockIn.entity'
+import { BaseEntity } from "../generic"
+import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
 import { MstItemEntity } from '../masterfiles/MstItem.entity'
 import { MstUnitEntity } from '../masterfiles/MstUnit.entity'
-import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
+import { TrnStockInEntity } from './TrnStockIn.entity'
 
 @Entity(POSEntity.TRN_STOCK_IN_LINE)
-export class TrnStockInLineEntity {
+export class TrnStockInLineEntity extends BaseEntity{
   constructor() {
-    this.id = 0
+    super()
     this.stockInId = 0
     this.itemId = 0
     this.unitId = 0
@@ -21,9 +22,6 @@ export class TrnStockInLineEntity {
     this.price = null
     this.markUp = null
   }
-
-  @PrimaryGeneratedColumn({ name: 'Id' })
-  id: number
 
   @Column({ name: 'StockInId', type: 'int', nullable: false })
   stockInId: number

@@ -12,7 +12,6 @@ import { TrnStockOutEntity } from './TrnStockOut.entity'
 @Entity(POSEntity.TRN_JOURNAL)
 export class TrnJournalEntity {
   constructor() {
-    this.id = 0
     this.journalDate = new Date()
     this.journalRefDocument = ''
     this.accountId = 0
@@ -28,7 +27,7 @@ export class TrnJournalEntity {
   }
   
   @PrimaryGeneratedColumn({ name: 'Id' })
-  id: number
+  id!: number
 
   @Column({ name: 'BranchId', type: 'int', nullable: false })
   branchId: number

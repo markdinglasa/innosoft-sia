@@ -4,13 +4,12 @@ import { POSEntity } from '../entity-names'
 @Entity(POSEntity.SYS_ORDER_LOCKED)
 export class SysOrderLockedEntity {
   constructor() {
-    this.id = 0
     this.orderId = 0
     this.userId = 0
   }
 
   @PrimaryGeneratedColumn({ name: 'Id' })
-  id: number
+  id!: number
 
   @Column({ name: 'OrderId', type: 'int', nullable: false })
   orderId: number

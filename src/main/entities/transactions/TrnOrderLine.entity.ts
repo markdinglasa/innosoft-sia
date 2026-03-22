@@ -1,5 +1,6 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
+import { BaseEntity } from "../generic"
 import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
 import { MstDiscountEntity } from '../masterfiles/MstDiscount.entity'
 import { MstItemEntity } from '../masterfiles/MstItem.entity'
@@ -9,9 +10,9 @@ import { MstUserEntity } from '../masterfiles/MstUser.entity'
 import { TrnOrderEntity } from './TrnOrder.entity'
 
 @Entity(POSEntity.TRN_ORDER_LINE)
-export class TrnOrderLineEntity {
+export class TrnOrderLineEntity extends BaseEntity{
   constructor() {
-    this.id = 0
+    super()
     this.orderId = 0
     this.itemId = 0
     this.unitId = 0
@@ -37,9 +38,6 @@ export class TrnOrderLineEntity {
     this.price2LessTax = 0
     this.priceSplitPercentage = 0
   }
-
-  @PrimaryGeneratedColumn({ name: 'Id' })
-  id: number
 
   @Column({ name: 'OrderId', type: 'int', nullable: false })
   orderId: number

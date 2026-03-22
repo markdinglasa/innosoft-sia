@@ -1,13 +1,14 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
+import { BaseEntity } from "../generic"
+import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
 import { TrnDebitCreditMemoEntity } from './TrnDebitCreditMemo.entity'
 import { TrnOrderEntity } from './TrnOrder.entity'
-import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
 
 @Entity(POSEntity.TRN_DEBIT_CREDIT_MEMO_LINE)
-export class TrnDebitCreditMemoLineEntity {
+export class TrnDebitCreditMemoLineEntity extends BaseEntity {
   constructor() {
-    this.id = 0
+    super()
     this.dcMemoId = 0
     this.orderId = null
     this.accountId = 0
@@ -15,9 +16,6 @@ export class TrnDebitCreditMemoLineEntity {
     this.debitAmount = 0
     this.creditAmount = 0
   }
-
-  @PrimaryGeneratedColumn({ name: 'Id' })
-  id: number
 
   @Column({ name: 'DCMemoId', type: 'int', nullable: false })
   dcMemoId: number

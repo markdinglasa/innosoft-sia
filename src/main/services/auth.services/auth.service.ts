@@ -43,7 +43,7 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
       }
     }
     const user = await this.repository.findOne(options)
-
+    console.log('user-', user)
     if (!user) {
       throw new UnauthorizedException('Invalid username or password')
     }

@@ -12,14 +12,13 @@ export interface IBaseEntity {
 
 export class BaseEntity implements IBaseEntity {
   constructor() {
-    this.id = 0
     this.isLocked = false
     this.entryUserId = 0
     this.entryDateTime = new Date()
   }
 
   @PrimaryGeneratedColumn({ name: 'Id', type: 'int' })
-  id: number
+  id!: number
 
   @Column({ name: 'IsLocked', type: 'bit' })
   isLocked: boolean

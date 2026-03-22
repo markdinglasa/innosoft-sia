@@ -21,7 +21,6 @@ import { MstUserRolesEntity } from './MstUserRoles.entity'
 @Entity(POSEntity.MST_USER)
 export class MstUserEntity {
   constructor() {
-    this.id = 0
     this.type = 'Teller' // | 'Cashier' | 'Administrator'
     this.isLocked = false
     this.username = ''
@@ -36,7 +35,7 @@ export class MstUserEntity {
   }
 
     @PrimaryGeneratedColumn({ name: 'Id', type: 'int' })
-    id: number
+    id!: number
   
     @Column({ name: 'IsLocked', type: 'bit' })
     isLocked: boolean

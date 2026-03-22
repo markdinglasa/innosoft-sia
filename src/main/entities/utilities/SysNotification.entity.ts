@@ -5,7 +5,6 @@ import { POSEntity } from '../entity-names'
 @Entity(POSEntity.SYS_NOTIFICATION)
 export class SysNotificationEntity {
   constructor() {
-    this.id = 0
     this.notificationDate = new Date()
     this.userId = 0
     this.link = ''
@@ -15,7 +14,7 @@ export class SysNotificationEntity {
   }
 
   @PrimaryGeneratedColumn({ name: 'Id' })
-  id: number
+  id!: number
 
   @Column({ name: 'NotificationDate', type: 'datetimeoffset', nullable: false })
   notificationDate: Date

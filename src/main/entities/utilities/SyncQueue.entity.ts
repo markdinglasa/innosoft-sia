@@ -6,7 +6,6 @@ export type SyncStatus = 'pending' | 'synced' | 'failed'
 @Entity('SyncQueue')
 export class SyncQueueEntity {
   constructor() {
-    this.id = 0
     this.tableName = ''
     this.operation = 'CREATE'
     this.payload = ''
@@ -19,7 +18,7 @@ export class SyncQueueEntity {
   }
 
   @PrimaryGeneratedColumn()
-  id: number
+  id!: number
 
   /** The MSSQL table name the operation targets */
   @Column({ type: 'text' })

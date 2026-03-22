@@ -51,10 +51,10 @@ export class SeederService {
     
     try {
       // 1. Independent Core
+      await this.seedUsers()
       await this.seedAccessRights()
       await this.seedBranches()
       await this.seedAccounts()
-       await this.seedUsers()
       
       // 2. Secondary Masterfiles
       await this.seedRoles()

@@ -1,13 +1,14 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
-import { TrnStockCountEntity } from './TrnStockCount.entity'
+import { BaseEntity } from "../generic"
 import { MstItemEntity } from '../masterfiles/MstItem.entity'
 import { MstUnitEntity } from '../masterfiles/MstUnit.entity'
+import { TrnStockCountEntity } from './TrnStockCount.entity'
 
 @Entity(POSEntity.TRN_STOCK_COUNT_LINE)
-export class TrnStockCountLineEntity {
+export class TrnStockCountLineEntity extends BaseEntity {
   constructor() {
-    this.id = 0
+    super()
     this.stockCountId = 0
     this.itemId = 0
     this.unitId = 0
@@ -16,8 +17,6 @@ export class TrnStockCountLineEntity {
     this.amount = 0
   }
 
-  @PrimaryGeneratedColumn({ name: 'Id' })
-  id: number
 
   @Column({ name: 'StockCountId', type: 'int', nullable: false })
   stockCountId: number

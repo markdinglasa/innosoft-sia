@@ -6,7 +6,6 @@ import { MstTerminalEntity } from "../masterfiles"
 @Entity(POSEntity.SYS_SETTINGS)
 export class SysSettingsEntity {
   constructor() {
-    this.id = 0
     this.terminalId = 0
     this.isPartialPrint = 0
     this.isComponentEditing = 0
@@ -52,7 +51,7 @@ export class SysSettingsEntity {
   }
 
   @PrimaryColumn({ name: 'Id', type: 'int', nullable: false })
-  id: number
+  id!: number
 
   @Column({ name: 'TerminalId', type: 'int', nullable: false })
   terminalId: number

@@ -4,14 +4,13 @@ import { POSEntity } from '../entity-names'
 @Entity(POSEntity.TRN_PAX_TABLE)
 export class TrnPaxTableEntity {
   constructor() {
-    this.id = 0
     this.orderId = 0
     this.totalPax = 0
     this.discountedPax = 0
   }
 
   @PrimaryGeneratedColumn({ name: 'Id' })
-  id: number
+  id!: number
 
   @Column({ name: 'OrderId', type: 'int', nullable: false })
   orderId: number

@@ -7,14 +7,13 @@ import { Column, CreateDateColumn, PrimaryColumn, UpdateDateColumn } from 'typeo
  */
 export abstract class MirrorBaseEntity {
   constructor() {
-    this.id = 0
     this.isLocked = false
     this.entryUserId = 0
     this.entryDateTime = new Date()
   }
 
   @PrimaryColumn({ name: 'Id', type: 'int' })
-  id: number
+  id!: number
 
   @Column({ name: 'IsLocked', type: 'boolean', default: false })
   isLocked: boolean

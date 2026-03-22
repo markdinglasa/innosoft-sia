@@ -17,5 +17,6 @@ registerIpcHandler(AuthIpcChannel.LOGIN, async (_event, payload) => {
   }
 
   const result = await authService.login(payload.userName, payload.password)
+  console.log('result', result)
   return result
 })

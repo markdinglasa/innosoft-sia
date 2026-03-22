@@ -1,14 +1,15 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
-import { TrnCollectionEntity } from './TrnCollection.entity'
-import { MstPayTypeEntity } from '../masterfiles/MstPayType.entity'
-import { TrnStockInEntity } from './TrnStockIn.entity'
+import { BaseEntity } from "../generic"
 import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
+import { MstPayTypeEntity } from '../masterfiles/MstPayType.entity'
+import { TrnCollectionEntity } from './TrnCollection.entity'
+import { TrnStockInEntity } from './TrnStockIn.entity'
 
 @Entity(POSEntity.TRN_COLLECTION_LINE)
-export class TrnCollectionLineEntity {
+export class TrnCollectionLineEntity extends BaseEntity {
   constructor() {
-    this.id = 0
+    super()
     this.collectionId = 0
     this.amount = 0
     this.payTypeId = 0
@@ -27,9 +28,6 @@ export class TrnCollectionLineEntity {
     this.creditCardHolderName = null
     this.creditCardExpiry = null
   }
-
-  @PrimaryGeneratedColumn({ name: 'Id' })
-  id: number
 
   @Column({ name: 'CollectionId', type: 'int', nullable: false })
   collectionId: number

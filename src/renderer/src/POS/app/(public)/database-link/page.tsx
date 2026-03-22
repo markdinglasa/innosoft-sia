@@ -1,11 +1,15 @@
-import { memo } from 'react'
+import { Splash } from "@shared/components"
+import { lazy, memo, Suspense } from 'react'
 import PublicLayout from '../../../components/layout/public-layout'
-import DatabaseLink from '../../../features/database-link/components/database-link'
+
+const DatabaseLink = lazy(() => import('../../../features/database-link/components/database-link'))
 
 function DatabaseLinkPage() {
   return (
     <PublicLayout>
-      <DatabaseLink />
+      <Suspense fallback={<Splash />}>
+        <DatabaseLink />
+      </Suspense>
     </PublicLayout>
   )
 }

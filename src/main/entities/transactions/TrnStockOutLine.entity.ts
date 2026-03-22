@@ -1,14 +1,15 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { POSEntity } from '../entity-names'
+import { BaseEntity } from "../generic"
 import { MstAccountEntity } from '../masterfiles/MstAccount.entity'
 import { MstItemEntity } from '../masterfiles/MstItem.entity'
 import { MstUnitEntity } from '../masterfiles/MstUnit.entity'
 import { TrnStockOutEntity } from './TrnStockOut.entity'
 
 @Entity(POSEntity.TRN_STOCK_OUT_LINE)
-export class TrnStockOutLineEntity {
+export class TrnStockOutLineEntity extends BaseEntity {
   constructor() {
-    this.id = 0
+    super()
     this.stockOutId = 0
     this.itemId = 0
     this.unitId = 0
@@ -17,9 +18,6 @@ export class TrnStockOutLineEntity {
     this.amount = 0
     this.assetAccountId = 0
   }
-
-  @PrimaryGeneratedColumn({ name: 'Id' })
-  id: number
 
   @Column({ name: 'StockOutId', type: 'int', nullable: false })
   stockOutId: number
