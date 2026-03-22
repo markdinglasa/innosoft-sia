@@ -1,11 +1,11 @@
-import DatabaseLinkForm from "@renderer/POS/features/database-link/components/database-link-form"
 import { memo } from 'react'
 import PublicLayout from '../../../components/layout/public-layout'
+import DatabaseLink from '../../../features/database-link/components/database-link'
 
 function DatabaseLinkPage() {
   return (
     <PublicLayout>
-      <DatabaseLinkForm />
+      <DatabaseLink />
     </PublicLayout>
   )
 }

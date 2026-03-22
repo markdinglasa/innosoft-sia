@@ -1,3 +1,4 @@
+import { CssBaseline, ThemeProvider } from '@mui/material'
 import { Splash } from "@shared/components"
 import store from '@shared/store'
 import { GlobalStyle, ToastifyStyle } from '@shared/styles'
@@ -6,6 +7,7 @@ import { Suspense } from "react"
 import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'
 import './tailwind.css'
+import theme from './theme'
 import Wrapper from './Wrapper'
 
 const Root = () => {
@@ -13,15 +15,18 @@ const Root = () => {
 
   return (
     <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <GlobalStyle />
-        <ToastifyStyle />
-        <Suspense fallback={
-         <Splash message="Please wait..." />
-        }>
-          <Wrapper />
-        </Suspense>
-      </QueryClientProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <QueryClientProvider client={queryClient}>
+          <GlobalStyle />
+          <ToastifyStyle />
+          <Suspense fallback={
+           <Splash message="Please wait..." />
+          }>
+            <Wrapper />
+          </Suspense>
+        </QueryClientProvider>
+      </ThemeProvider>
     </Provider>
   )
 }

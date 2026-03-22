@@ -19,6 +19,7 @@ All rules MUST be followed unless explicitly overridden by the user.
 - Follow modular structure under `/modules`
 - NO cross-module direct imports (use service layer)
 - DO NOT restructure entire modules
+- Follow pattern structure on `.agent_rules/patterns`
 
 ## Electron Security
 - Renderer MUST NOT access Node APIs directly

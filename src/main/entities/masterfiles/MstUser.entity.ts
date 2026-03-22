@@ -29,8 +29,6 @@ export class MstUserEntity {
     this.fullName = ''
     this.userCardNumber = null
     this.email = ''
-    this.userRoles = []
-    this.branchAccesses = []
     this.status = 'Active'
     this.image = null
     this.entryDateTime = new Date()
@@ -70,7 +68,7 @@ export class MstUserEntity {
   @Column({ name: 'UserCardNumber', type: 'nvarchar', length: 255, nullable: true })
   userCardNumber: string | null
 
-  @Column({ name: 'Status', type: 'enum', enum: ['Active','Suspended','Deactivated','Terminated'], nullable: false })
+  @Column({ name: 'Status', type: 'nvarchar', length: 50, nullable: false })
   status: string
 
   @Column({ name: 'Image', type: 'text', nullable: true })

@@ -1,9 +1,20 @@
-import { IpcChannel, LocalElectronStore, SetStoreValuePayload } from '@shared/types'
+import { IpcChannel, LocalElectronStore, Response, SetStoreValuePayload } from '@shared/types'
 import { getFailChannel, getSuccessChannel } from '@shared/utils/ipc'
 import { OpenDialogOptions, SaveDialogOptions, dialog, ipcMain } from 'electron'
 import fs from 'fs'
 import { isQuitting, mainWindow } from '../'
+import { databaseService } from '../services/database.service'
 import Store from '../store/Store'
+
+
+ipcMain.handle('sync-database-schema', async (): Promise<Response> => {
+  try {
+    const result = await databaseService.syncSchema()
+    return { IsSomething: result.success, Message: result.message }
+  } catch (error: any) {
+    return { IsSomething: false, Message: error.message || 'Failed to sync database schema' }
+  }
+})
 
 ipcMain.on(IpcChannel.clearStore, (event) => {
   try {

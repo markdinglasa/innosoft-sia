@@ -1,3 +1,4 @@
+import { Save } from "@mui/icons-material"
 import {
   Alert,
   Box,
@@ -5,6 +6,7 @@ import {
   CircularProgress,
   Container,
   Paper,
+  Stack,
   TextField,
   Typography
 } from '@mui/material'
@@ -12,14 +14,21 @@ import { memo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { DBConfig, SqlChannel } from '../../../../../../shared/types'
 
-function DatabaseLinkPage() {
+interface DatabaseLinkFormProps {
+  onCancel: () => void
+  onSuccess: () => void
+}
+
+function DatabaseLinkForm({ onCancel, onSuccess }: DatabaseLinkFormProps) {
   const [loading, setLoading] = useState(false)
+  const [testing, setTesting] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors }
   } = useForm<DBConfig>({
     defaultValues: {
@@ -31,23 +40,50 @@ function DatabaseLinkPage() {
     }
   })
 
+  const onTest = async (data: DBConfig) => {
+    try {
+      setTesting(true)
+      setError('')
+      setSuccess('')
+      const response = await window.electron.sql.post(SqlChannel.testConnection, {
+        ...data,
+        port: Number(data.port)
+      })
+      if (response.IsSomething) {
+        setSuccess('Connection test successful!')
+      } else {
+        setError(response.Message || 'Connection test failed')
+      }
+    } catch (err: any) {
+      setError(err.message || 'An unexpected error occurred')
+    } finally {
+      setTesting(false)
+    }
+  }
+
   const onSubmit = async (data: DBConfig) => {
     try {
       setLoading(true)
       setError('')
       setSuccess('')
       
-      const payload: DBConfig = {
+      const response = await window.electron.sql.post(SqlChannel.saveConnection, {
         ...data,
         port: Number(data.port)
-      }
-
-      const response = await window.electron.sql.post(SqlChannel.setConnection, payload)
+      })
       
       if (response.IsSomething) {
-        setSuccess('Database connection configured successfully!')
+        setSuccess('Database connection saved successfully!')
+        reset({
+          server: '',
+          name: '',
+          user: '',
+          password: '',
+          port: 1433
+        })
+        onSuccess()
       } else {
-        setError(response.Message || 'Failed to configure database connection')
+        setError(response.Message || 'Failed to save database connection')
       }
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred')
@@ -57,128 +93,159 @@ function DatabaseLinkPage() {
   }
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 8 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          Database Link
-        </Typography>
-        <Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 4, fontSize:16}}>
-          Configure your Database connection details.
-        </Typography>
+    <Container maxWidth="md" sx={{ mt: 2, mb: 2 }}>
+      <Stack spacing={4}>
+        <Paper elevation={3} sx={{ p: 4, borderRadius: '2rem' }}>
+          <Typography variant="h4" component="h1" gutterBottom align="center">
+             New Connection
+          </Typography>
+          <Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 4 }}>
+            Configure a new Database connection.
+          </Typography>
 
-        {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
-        {success && <Alert severity="success" sx={{ mb: 3 }}>{success}</Alert>}
+          {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+          {success && <Alert severity="success" sx={{ mb: 3 }}>{success}</Alert>}
 
-        <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
-          <Controller
-            name="server"
-            control={control}
-            rules={{ required: 'Server is required' }}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                sx={{fontSize:16}}
-                fullWidth
-                margin="normal"
-                label="Server"
-                placeholder="e.g., localhost or 192.168.1.100"
-                error={!!errors.server}
-                helperText={errors.server?.message}
-                disabled={loading}
+          <Box component="form" noValidate>
+            <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+              <Controller
+                name="server"
+                control={control}
+                rules={{ required: 'Server is required' }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    margin="normal"
+                    label="Server"
+                    placeholder="e.g., localhost"
+                    error={!!errors.server}
+                    helperText={errors.server?.message}
+                    disabled={loading || testing}
+                  />
+                )}
               />
-            )}
-          />
-
-          <Controller
-            name="name"
-            control={control}
-            rules={{ required: 'Database name is required' }}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                fullWidth
-                margin="normal"
-                label="Database Name"
-                placeholder="e.g., INNOSOFT_POS"
-                error={!!errors.name}
-                helperText={errors.name?.message}
-                disabled={loading}
+              <Controller
+                name="name"
+                control={control}
+                rules={{ required: 'Database name is required' }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    margin="normal"
+                    label="Database Name"
+                    placeholder="e.g., INNOSOFT_POS"
+                    error={!!errors.name}
+                    helperText={errors.name?.message}
+                    disabled={loading || testing}
+                  />
+                )}
               />
-            )}
-          />
+            </Stack>
 
-          <Controller
-            name="user"
-            control={control}
-            rules={{ required: 'Username is required' }}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                fullWidth
-                margin="normal"
-                label="Username"
-                placeholder="e.g., sa"
-                error={!!errors.user}
-                helperText={errors.user?.message}
-                disabled={loading}
+            <Stack direction="row" spacing={2}>
+              <Controller
+                name="user"
+                control={control}
+                rules={{ required: 'Username is required' }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    margin="normal"
+                    label="Username"
+                    placeholder="e.g., sa"
+                    error={!!errors.user}
+                    helperText={errors.user?.message}
+                    disabled={loading || testing}
+                  />
+                )}
               />
-            )}
-          />
-
-          <Controller
-            name="password"
-            control={control}
-            rules={{ required: 'Password is required' }}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                fullWidth
-                margin="normal"
-                label="Password"
-                type="password"
-                error={!!errors.password}
-                helperText={errors.password?.message}
-                disabled={loading}
+              <Controller
+                name="password"
+                control={control}
+                rules={{ required: 'Password is required' }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    margin="normal"
+                    label="Password"
+                    type="password"
+                    error={!!errors.password}
+                    helperText={errors.password?.message}
+                    disabled={loading || testing}
+                  />
+                )}
               />
-            )}
-          />
+            </Stack>
 
-          <Controller
-            name="port"
-            control={control}
-            rules={{ 
-              required: 'Port is required',
-              min: { value: 1, message: 'Port must be greater than 0' }
-            }}
-            render={({ field }) => (
-              <TextField
-                {...field}
+            <Controller
+              name="port"
+              control={control}
+              rules={{ 
+                required: 'Port is required',
+                min: { value: 1, message: 'Port must be greater than 0' }
+              }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  margin="normal"
+                  label="Port"
+                  type="number"
+                  error={!!errors.port}
+                  helperText={errors.port?.message}
+                  disabled={loading || testing}
+                />
+              )}
+            />
+
+            <Stack direction="row" justifyContent="space-between" spacing={2} sx={{ mt: 4 }}>
+              <Button
+                variant="outlined"
+                color="inherit"
+                size="large"
+                disabled={loading || testing}
+                onClick={handleSubmit(onTest)}
+                sx={{ height: '4rem' }}
+              >
+                {testing ? <CircularProgress size={24} color="inherit" /> : 'Test Connection'}
+              </Button>
+              <Stack direction="row" spacing={2}>
+                 <Button
                 fullWidth
-                margin="normal"
-                label="Port"
-                type="number"
-                error={!!errors.port}
-                helperText={errors.port?.message}
-                disabled={loading}
-              />
-            )}
-          />
-
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            size="large"
-            disabled={loading}
-            sx={{ mt: 4, mb: 2 }}
-          >
-            {loading ? <CircularProgress size={24} color="inherit" /> : 'Save Connection'}
-          </Button>
-        </Box>
-      </Paper>
+                variant="outlined"
+                color="inherit"
+                size="large"
+                disabled={loading || testing}
+                onClick={onCancel}
+                sx={{ height: '4rem' }}
+              >
+                Cancel
+              </Button>
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                size="large"
+                disabled={loading || testing}
+                onClick={handleSubmit(onSubmit)}
+                sx={{ height: '4rem', gap:'1rem' , width:'fit'}}
+              >
+                {loading ? <CircularProgress size={24} color="inherit" /> : <>
+                <Save sx={{width:'2rem', height:'2rem'}}/>
+                Save Connection
+                </>}
+              </Button>
+              </Stack>
+            </Stack>
+          </Box>
+        </Paper>
+      </Stack>
     </Container>
   )
 }
 
-export default memo(DatabaseLinkPage)
+export default memo(DatabaseLinkForm)

@@ -12,8 +12,6 @@ export class MstRoleEntity extends BaseEntity {
     this.name = ''  
     this.description = null
     this.isDefault = false
-    this.userRoles = []
-    this.permissions = []
   }
 
   @Column({ name: 'Code ', type: 'nvarchar', length: 255, nullable: false })
@@ -30,8 +28,8 @@ export class MstRoleEntity extends BaseEntity {
 
   // FK Relationships
   @OneToMany(() => MstUserRolesEntity, (userRole) => userRole.role)
-  userRoles: MstUserRolesEntity[]
+  userRoles?: MstUserRolesEntity[]
 
   @OneToMany(() => MstPermissionsEntity, (permission) => permission.role)
-  permissions: MstPermissionsEntity[]
+  permissions?: MstPermissionsEntity[]
 }

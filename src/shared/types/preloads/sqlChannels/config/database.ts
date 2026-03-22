@@ -1,7 +1,12 @@
 export enum Database {
-  setConnection = 'set-database-connection',
+  saveConnection = 'save-database-connection',
+  getConnections = 'get-database-connections',
+  testConnection = 'test-database-connection',
+  activateConnection = 'activate-database-connection',
+  deleteConnection = 'delete-database-connection',
+  dbConfig = 'database-configuration',
   getConnection = 'get-database-connection',
   isConnected = 'validate-database-connection',
-  dbConfig = 'database-configuration',
-  checkFields = 'check-database-fields'
+  checkFields = 'check-database-fields',
+  syncSchema = 'sync-database-schema'
 }

@@ -21,7 +21,7 @@ export class MstUnitEntity extends BaseEntity {
   @Column({ name: 'Description', type: 'text', nullable: true })
   description: string | null
 
-  @Column({ name: 'IsDefault', type: 'boolean', nullable: false })
+  @Column({ name: 'IsDefault', type: 'bit', nullable: false })
   isDefault: boolean
 
 }

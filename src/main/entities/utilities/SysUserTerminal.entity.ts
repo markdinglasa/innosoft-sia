@@ -10,6 +10,7 @@ export class SysUserTerminalEntity extends BaseEntity {
     super()
     this.userId = 0
     this.terminalId = 0
+    this.isActive = false
   }
 
   @Column({ name: 'UserId', type: 'int', nullable: false })
@@ -17,6 +18,9 @@ export class SysUserTerminalEntity extends BaseEntity {
 
   @Column({ name: 'TerminalId', type: 'int', nullable: false })
   terminalId: number
+
+  @Column({ name: 'IsActive', type: 'bit', nullable: false })
+  isActive: boolean
 
   //FK RElationship
   @ManyToOne(() => MstUserEntity, (user) => user.userTerminals)

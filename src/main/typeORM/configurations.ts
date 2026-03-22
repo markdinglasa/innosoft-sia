@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm'
 import * as Entities from '../entities'
-import { getConnection } from '../functions/configuration'
+import { databaseService } from '../services/database.service'
 
 export const AppDataSource = new DataSource({
   type: 'mssql',
@@ -22,17 +22,17 @@ export const AppDataSource = new DataSource({
 
 export const initializeDatabase = async () => {
   if (!AppDataSource.isInitialized) {
-    const connectionInfo = getConnection()
-    if (!connectionInfo.Data) {
-      console.error('Database connection settings are missing:', connectionInfo.Message)
+    const activeConfig = await databaseService.getActiveConfig()
+    if (!activeConfig) {
+      console.warn('No active database connection configured.')
       return
     }
 
-    const { server, port, user, password, name } = connectionInfo.Data
+    const { server, port, user, password, name } = activeConfig
 
     Object.assign(AppDataSource.options, {
       host: server,
-      port: parseInt(port || '1433', 10),
+      port: port,
       username: user,
       password: password,
       database: name
