@@ -55,7 +55,7 @@ The agent is NOT allowed to modify:
 - Avoid global state pollution
 
 ## Validation
-- Use Joi for validation
+- Use Joi/yup for validation
 - Validate all inputs before processing
 
 ---

@@ -1,4 +1,4 @@
-import { Save } from "@mui/icons-material"
+import { Save } from '@mui/icons-material'
 import {
   Alert,
   Box,
@@ -12,18 +12,25 @@ import {
 } from '@mui/material'
 import { memo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { DBConfig, SqlChannel } from '../../../../../../shared/types'
+import { DBConfig } from '../../../../../../shared/types'
+import { AccessControl } from "../../../components/utils"
+import { useSaveConnection, useTestConnection } from '../api/react-queries/connection.queries'
 
 interface DatabaseLinkFormProps {
   onCancel: () => void
   onSuccess: () => void
 }
 
-function DatabaseLinkForm({ onCancel, onSuccess }: DatabaseLinkFormProps) {
-  const [loading, setLoading] = useState(false)
-  const [testing, setTesting] = useState(false)
+function DatabaseLinkForm(props: DatabaseLinkFormProps) {
+  const { onCancel, onSuccess: onSuccessCb } = props
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+
+  const testMutation = useTestConnection()
+  const saveMutation = useSaveConnection()
+
+  const loading = saveMutation.isPending
+  const testing = testMutation.isPending
 
   const {
     control,
@@ -40,56 +47,32 @@ function DatabaseLinkForm({ onCancel, onSuccess }: DatabaseLinkFormProps) {
     }
   })
 
-  const onTest = async (data: DBConfig) => {
-    try {
-      setTesting(true)
-      setError('')
-      setSuccess('')
-      const response = await window.electron.sql.post(SqlChannel.testConnection, {
-        ...data,
-        port: Number(data.port)
-      })
-      if (response.IsSomething) {
-        setSuccess('Connection test successful!')
-      } else {
-        setError(response.Message || 'Connection test failed')
+  const onTest = (data: DBConfig) => {
+    setError('')
+    setSuccess('')
+    testMutation.mutate(
+      { ...data, port: Number(data.port) },
+      {
+        onSuccess: () => setSuccess('Connection test successful!'),
+        onError: (err: any) => setError(err.message || 'Connection test failed')
       }
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred')
-    } finally {
-      setTesting(false)
-    }
+    )
   }
 
-  const onSubmit = async (data: DBConfig) => {
-    try {
-      setLoading(true)
-      setError('')
-      setSuccess('')
-      
-      const response = await window.electron.sql.post(SqlChannel.saveConnection, {
-        ...data,
-        port: Number(data.port)
-      })
-      
-      if (response.IsSomething) {
-        setSuccess('Database connection saved successfully!')
-        reset({
-          server: '',
-          name: '',
-          user: '',
-          password: '',
-          port: 1433
-        })
-        onSuccess()
-      } else {
-        setError(response.Message || 'Failed to save database connection')
+  const onSubmit = (data: DBConfig) => {
+    setError('')
+    setSuccess('')
+    saveMutation.mutate(
+      { ...data, port: Number(data.port) },
+      {
+        onSuccess: () => {
+          setSuccess('Database connection saved successfully!')
+          reset({ server: '', name: '', user: '', password: '', port: 1433 })
+          onSuccessCb()
+        },
+        onError: (err: any) => setError(err.message || 'Failed to save database connection')
       }
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred')
-    } finally {
-      setLoading(false)
-    }
+    )
   }
 
   return (
@@ -97,15 +80,21 @@ function DatabaseLinkForm({ onCancel, onSuccess }: DatabaseLinkFormProps) {
       <Stack spacing={4}>
         <Paper elevation={3} sx={{ p: 4, borderRadius: '2rem' }}>
           <Typography variant="h4" component="h1" gutterBottom align="center">
-             New Connection
+            New Connection
           </Typography>
           <Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 4 }}>
             Configure a new Database connection.
           </Typography>
-
-          {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
-          {success && <Alert severity="success" sx={{ mb: 3 }}>{success}</Alert>}
-
+          <AccessControl condition={!!error}>
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {error}
+            </Alert>
+          </AccessControl>
+          <AccessControl condition={!!success}>
+            <Alert severity="success" sx={{ mb: 3 }}>
+              {success}
+            </Alert>
+          </AccessControl>
           <Box component="form" noValidate>
             <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
               <Controller
@@ -143,7 +132,6 @@ function DatabaseLinkForm({ onCancel, onSuccess }: DatabaseLinkFormProps) {
                 )}
               />
             </Stack>
-
             <Stack direction="row" spacing={2}>
               <Controller
                 name="user"
@@ -180,11 +168,10 @@ function DatabaseLinkForm({ onCancel, onSuccess }: DatabaseLinkFormProps) {
                 )}
               />
             </Stack>
-
             <Controller
               name="port"
               control={control}
-              rules={{ 
+              rules={{
                 required: 'Port is required',
                 min: { value: 1, message: 'Port must be greater than 0' }
               }}
@@ -201,7 +188,6 @@ function DatabaseLinkForm({ onCancel, onSuccess }: DatabaseLinkFormProps) {
                 />
               )}
             />
-
             <Stack direction="row" justifyContent="space-between" spacing={2} sx={{ mt: 4 }}>
               <Button
                 variant="outlined"
@@ -214,31 +200,35 @@ function DatabaseLinkForm({ onCancel, onSuccess }: DatabaseLinkFormProps) {
                 {testing ? <CircularProgress size={24} color="inherit" /> : 'Test Connection'}
               </Button>
               <Stack direction="row" spacing={2}>
-                 <Button
-                fullWidth
-                variant="outlined"
-                color="inherit"
-                size="large"
-                disabled={loading || testing}
-                onClick={onCancel}
-                sx={{ height: '4rem' }}
-              >
-                Cancel
-              </Button>
-              <Button
-                fullWidth
-                variant="contained"
-                color="primary"
-                size="large"
-                disabled={loading || testing}
-                onClick={handleSubmit(onSubmit)}
-                sx={{ height: '4rem', gap:'1rem' , width:'fit'}}
-              >
-                {loading ? <CircularProgress size={24} color="inherit" /> : <>
-                <Save sx={{width:'2rem', height:'2rem'}}/>
-                Save Connection
-                </>}
-              </Button>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  color="inherit"
+                  size="large"
+                  disabled={loading || testing}
+                  onClick={onCancel}
+                  sx={{ height: '4rem' }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  disabled={loading || testing}
+                  onClick={handleSubmit(onSubmit)}
+                  sx={{ height: '4rem', gap: '1rem', width: 'fit' }}
+                >
+                  {loading ? (
+                    <CircularProgress size={24} color="inherit" />
+                  ) : (
+                    <>
+                      <Save sx={{ width: '2rem', height: '2rem' }} />
+                      Save Connection
+                    </>
+                  )}
+                </Button>
               </Stack>
             </Stack>
           </Box>

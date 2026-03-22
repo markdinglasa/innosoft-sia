@@ -4,14 +4,10 @@
 /features
     /feature-name
         /api
-            react-queries
+            tanstack-queries <!--API Fetch, API Mutations-->
             query-keys
         /components
-            cards
-            list
-            forms
-        /hooks
-            filter-hooks
+        /hooks <!--Custom Hooks, filter hooks-->
         /store
         /types
         /validators

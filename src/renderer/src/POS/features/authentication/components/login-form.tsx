@@ -32,7 +32,7 @@ function LoginForm() {
     try {
       dispatch(setActivePage(POSPages.DATABASE_LINK))
     } catch(error:unknown) {
- toast.error((error as Error).message || "Sorry, Something went wrong.");
+      toast.error((error as Error).message || "Sorry, Something went wrong.");
     }
   }
 
