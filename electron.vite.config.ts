@@ -25,9 +25,7 @@ export default defineConfig({
     assetsInclude: ['src/renderer/assets/**', 'src/shared/assets/**'],
     resolve: {
       alias: {
-        '@renderer': resolve(__dirname, 'src/renderer/src'),
-        '@renderers': resolve(__dirname, 'src/renderer'),
-        '@windows': resolve(__dirname, 'src/renderer/src/windows'),
+        '@pos': resolve(__dirname, 'src/renderer/src/POS'),
         '@shared': resolve(__dirname, 'src/shared'),
         '@/asset': resolve(__dirname, 'src/renderer/assets'),
         '@/registry': resolve(__dirname, 'src/renderer/src/registry'),

@@ -5,7 +5,7 @@ import { AuthUser, LoginResponse } from "../types"
  * Simulates or calls the actual IPC/API for login.
  * In this Electron setup, we might be calling a main process handler via IPC.
  */
-interface LoginProps {
+export interface LoginProps {
     username: string
     password: string
 }

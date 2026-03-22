@@ -12,19 +12,15 @@ function LoginForm() {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, isLoading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     try {
       await login({ username, password });
       toast.success("Welcome back!");
     } catch (error: any) {
       toast.error(error.message || "Invalid credentials");
-    } finally {
-      setIsLoading(false);
     }
   };
 
