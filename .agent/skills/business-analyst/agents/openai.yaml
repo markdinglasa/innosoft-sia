@@ -1,0 +1,7 @@
+interface:
+  display_name: "business-analyst"
+  short_description: "A highly experienced Senior Business Analyst specializing in system design, workflow analysis, and agile documentation."
+  brand_color: "#D97706"
+  default_prompt: "A highly experienced Senior Business Analyst specializing in system design, workflow analysis, and agile documentation."
+policy:
+  allow_implicit_invocation: true

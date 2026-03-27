@@ -1,0 +1,7 @@
+interface:
+  display_name: "Feature Pattern"
+  short_description: "This document defines the standardized feature structure for the application."
+  brand_color: "#FF6B3D"
+  default_prompt: "Create a standardized feature, that implements the existing structure in our application."
+policy:
+  allow_implicit_invocation: true
