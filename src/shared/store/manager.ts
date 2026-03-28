@@ -6,6 +6,7 @@ import { setLocalAndStateReducer } from '@shared/utils'
 export const initialState: Manager = {
   activeWindow: null,
   activeLicense: null,
+  activeLicenseStatus: null,
   activeDBConfig: null,
   activeKey: null,
   activeSnackbar: null
@@ -20,6 +21,16 @@ const manager = createSlice({
       { payload: activeLicense }: PayloadAction<string | null>
     ) => {
       state.activeLicense = activeLicense
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: SYSTEM_MANAGER,
+        state: current(state)
+      })
+    },
+    setActiveLicenseStatus: (
+      state: Manager,
+      { payload: activeLicenseStatus }: PayloadAction<string | null>
+    ) => {
+      state.activeLicenseStatus = activeLicenseStatus
       window.electron.ipc.send(IpcChannel.setStoreValue, {
         key: SYSTEM_MANAGER,
         state: current(state)
@@ -65,7 +76,9 @@ export const {
   setActiveDatabaseConfig,
   setActiveKey,
   setActiveLicense,
+  setActiveLicenseStatus,
   setSnackbar,
   setManager
 } = manager.actions
 export default manager.reducer
+
