@@ -1,9 +1,9 @@
 import { AppDispatch } from '@shared/types'
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { AuthUser, LoginProps } from '../types'
 import { setManager } from '../../../store/manager'
 import { useLoginMutation, useLogoutMutation } from '../api'
+import { LoginProps } from '../types'
 
 export const useAuth = () => {
   const dispatch = useDispatch<AppDispatch>()

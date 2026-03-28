@@ -4,12 +4,12 @@ import * as bcrypt from 'bcrypt'
 import { FindOneOptions } from 'typeorm'
 import { ClosedDateException, UnauthorizedException } from '../../common/exceptions'
 import { generateAccessToken, generateRefreshToken, verifyToken } from '../../common/utils/jwt.util'
-import { MstPermissionsEntity } from '../../entities/masterfiles'
-import { MstUserEntity } from '../../entities/masterfiles/MstUser.entity'
+import { MstPermissionsEntity, MstUserEntity } from '../../entities/masterfiles'
 import Store from '../../store/Store'
 import { AppDataSource } from '../../typeORM/configurations'
 import { BaseService, IBaseService } from '../base.service'
 import { FingerprintService } from '../licensing/fingerprint.service'
+import { TrnCollectionEntity } from '../../entities/transactions'
 import { SysAuditTrailService } from '../utility.services/sys-audit-trail.service/sys-audit-trail.service'
 
 /**
@@ -171,7 +171,6 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
    * Checks if a date has any "Locked" collections.
    */
   private async checkIsDateClosed(dateStr: string): Promise<boolean> {
-    const { TrnCollectionEntity } = await import('../../entities/transactions/TrnCollection.entity')
     const date = new Date(dateStr)
     const formattedDate = date.toISOString().split('T')[0]
 

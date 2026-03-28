@@ -1,8 +1,8 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { AuthService } from './auth.service'
-import { MstUserEntity } from '../../entities/masterfiles/MstUser.entity'
 import * as bcrypt from 'bcrypt'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { MstUserEntity } from '../../entities/masterfiles/MstUser.entity'
 import Store from '../../store/Store'
+import { AuthService } from './auth.service'
 
 // Mock dependencies
 vi.mock('../../store/Store')
@@ -45,7 +45,7 @@ describe('AuthService', () => {
       findOneBy: vi.fn(),
       find: vi.fn()
     }
-    const { AppDataSource } = await import('@main/typeORM/configurations')
+    const { AppDataSource } = await import('../../typeORM/configurations')
     ;(AppDataSource.getRepository as any).mockReturnValue(mockRepo)
     
     // Reset Store mock

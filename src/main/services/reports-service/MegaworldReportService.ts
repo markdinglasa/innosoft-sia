@@ -1,9 +1,7 @@
 import { DailyDiscount, DailyHourlySale, DailySale } from '@shared/types'
 import { format } from 'date-fns'
-import { MstDiscountEntity } from '../../entities/masterfiles/MstDiscount.entity'
-import { TrnCollectionEntity } from '../../entities/transactions/TrnCollection.entity'
-import { TrnOrderEntity } from '../../entities/transactions/TrnOrder.entity'
-import { TrnOrderLineEntity } from '../../entities/transactions/TrnOrderLine.entity'
+import { MstDiscountEntity } from '../../entities/masterfiles'
+import { TrnCollectionEntity, TrnOrderEntity, TrnOrderLineEntity } from '../../entities/transactions'
 import { AppDataSource } from '../../typeORM/configurations'
 
 export class MegaworldReportService {
