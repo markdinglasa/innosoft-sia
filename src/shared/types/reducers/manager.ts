@@ -14,4 +14,6 @@ export interface POSManager {
   initialize: boolean
   activePage: string | null
   activeUser: MstUserEntity | null
+  activePermissions: string[]
+  loginDate: string | null
 }

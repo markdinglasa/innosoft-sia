@@ -92,7 +92,8 @@
           "acceptance_criteria": [
             "Given a valid checkout, When committed, Then the system MUST record TrxOrder, TrxOrderLine, and update InventoryLedger in one DB transaction.",
             "Given a failure in updating the InventoryLedger, When committing, Then the entire Order MUST be rolled back and an error returned.",
-            "Given a successful commit, When finished, Then the current order memory must be cleared and the Receipt service triggered."
+            "Given a successful commit, When finished, Then the current order memory must be cleared and the Receipt service triggered.",
+            "Given a transaction save, When committed, Then the record MUST store BOTH the 'SystemDateTime' (Real clock) and the 'BusinessDate' (from the user's login session) for auditing."
           ],
           "priority": "Critical"
         }

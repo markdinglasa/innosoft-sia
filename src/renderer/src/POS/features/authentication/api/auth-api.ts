@@ -1,14 +1,6 @@
 import { AuthIpcChannel, IpcChannel } from "@shared/types"
-import { AuthUser, LoginResponse } from "../types"
+import { AuthUser, LoginProps, LoginResponse } from "../types"
 
-/**
- * Simulates or calls the actual IPC/API for login.
- * In this Electron setup, we might be calling a main process handler via IPC.
- */
-export interface LoginProps {
-    username: string
-    password: string
-}
 export const login = async (credentials: LoginProps): Promise<LoginResponse> => {
   try {
     const response = await window.electron.ipc.invoke(AuthIpcChannel.LOGIN, credentials)

@@ -34,3 +34,15 @@ export class InternalServerErrorException extends AppException {
     super(message, 500, metadata)
   }
 }
+
+export class ForbiddenException extends AppException {
+  constructor(message: string = 'Forbidden', metadata?: any) {
+    super(message, 403, metadata)
+  }
+}
+
+export class ClosedDateException extends ForbiddenException {
+  constructor(message: string = 'The selected business date is already closed.', metadata?: any) {
+    super(message, metadata)
+  }
+}

@@ -14,4 +14,5 @@ export const SYSTEM_SELF = 'system-self'
 export const SYSTEM_SOCKET_STATUSES = 'system-socket-statuses'
 export const SYSTEM_ACCESS_TOKEN = 'system-access-token'
 export const SYSTEM_REFRESH_TOKEN = 'system-refresh-token'
+export const SYSTEM_LOGIN_DATE = 'system-login-date'
     

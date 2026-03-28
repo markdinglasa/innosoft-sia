@@ -15,5 +15,10 @@ registerIpcHandler(AuthIpcChannel.LOGIN, async (_event, payload) => {
   if (!payload || !payload.username || !payload.password) {
     throw new BadRequestException('Username and Password are required')
   }
-  return await authService.login(payload.username, payload.password)
+  return await authService.login(
+    payload.username,
+    payload.password,
+    payload.loginDate,
+    payload.override
+  )
 })

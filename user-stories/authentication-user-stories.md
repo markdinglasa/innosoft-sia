@@ -138,6 +138,25 @@
       ],
       "assumptions": [],
       "open_questions": []
+    },
+    {
+      "id": "FEAT-AUT-007",
+      "epic_id": "EPIC-AUT-003",
+      "title": "Business Date Selection",
+      "description": "Allow users to define the operational date for the current session.",
+      "user_stories": [
+        {
+          "title": "Select Login Business Date",
+          "story": "As a user, I want to select a business date during login so that I can ensure my transactions are recorded in the correct accounting period.",
+          "acceptance_criteria": [
+            "Given the login screen, When loaded, Then the 'Business Date' MUST default to the current system date.",
+            "Given a date change, When the user selects a date in the past, Then the system MUST verify if that date has already been 'Closed' (Z-Read).",
+            "Given a closed date, When selected, Then the system MUST require a Manager Override code before allowing the login.",
+            "Given any login, When successful, Then the selected 'loginDate' MUST be embedded in the session object and used for all subsequent transactions."
+          ],
+          "priority": "High"
+        }
+      ]
     }
   ]
 }

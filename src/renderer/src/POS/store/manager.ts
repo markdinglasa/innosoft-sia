@@ -9,12 +9,16 @@ export interface POSManagerState {
   initialize: boolean
   activePage: string | null
   activeUser: MstUserEntity | null
+  activePermissions: string[]
+  loginDate: string | null
 }
 
 export const initialState: POSManagerState = {
   initialize: false,
   activePage: null,
-  activeUser: null
+  activeUser: null,
+  activePermissions: [],
+  loginDate: null
 }
 
 const manager = createSlice({

@@ -15,7 +15,6 @@ import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Up
 import { POSEntity } from '../entity-names'
 import { SysUserTerminalEntity } from "../utilities/SysUserTerminal.entity"
 import { MstBranchAccessEntity } from './MstBranchAccess.entity'
-import { MstPermissionsEntity } from "./MstPermissions.entity"
 import { MstUserRolesEntity } from './MstUserRoles.entity'
 
 @Entity(POSEntity.MST_USER)
@@ -84,5 +83,5 @@ export class MstUserEntity {
   userTerminals?: SysUserTerminalEntity[]
 
   // virtual fields
-  permissions?: MstPermissionsEntity[]
+  permissions?: string[]
 }
