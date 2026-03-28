@@ -50,8 +50,8 @@ export class SysUserTerminalService extends BaseService<SysUserTerminalEntity> i
 
     const linkDto = await transformAndValidate(UpdateSysUserTerminalDto, data)
     
-    const userId = linkDto.userId ?? currentEntity.userId
-    const terminalId = linkDto.terminalId ?? currentEntity.terminalId
+    const userId = linkDto?.userId ?? currentEntity.userId
+    const terminalId = linkDto?.terminalId ?? currentEntity.terminalId
 
     if (userId !== currentEntity.userId || terminalId !== currentEntity.terminalId) {
       const existingLink = await this.repository.findOneBy({ 

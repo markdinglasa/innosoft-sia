@@ -1,4 +1,3 @@
-import { PartialType } from '@nestjs/swagger'
-import { CreateDebitCreditMemoDto } from './create-debit-credit-memo.dto'
+import { CreateDebitCreditMemoDto } from './create-debit-credit-memo.dto';
 
-export class UpdateDebitCreditMemoDto extends PartialType(CreateDebitCreditMemoDto) {}
+export class UpdateDebitCreditMemoDto extends (CreateDebitCreditMemoDto) {}

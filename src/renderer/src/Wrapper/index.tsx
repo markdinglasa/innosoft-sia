@@ -1,5 +1,3 @@
-import { MainWindow } from '@renderer/MainWindow'
-import { useSocketNotifications } from '@renderer/POS/hooks'
 import { useReadIpc } from '@shared/hooks'
 import { loadSystemData, loadWindowData } from '@shared/internal'
 import { getStoreLoaded } from '@shared/selectors/state'
@@ -15,6 +13,8 @@ import { FC, memo, useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Bounce, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { MainWindow } from '../MainWindow'
+import { useSocketNotifications } from '../POS/hooks'
 import * as S from './Styles'
 
  const Wrapper: FC = () => {

@@ -45,7 +45,7 @@ export class AccountService extends BaseService<MstAccountEntity> implements IAc
     }
 
     const accountDto = await transformAndValidate(UpdateAccountDto, data)
-    if (accountDto.name && accountDto.name !== currentEntity.name) {
+    if (accountDto?.name && accountDto.name !== currentEntity.name) {
       const existingaccount = await this.repository.findOneBy({ name: accountDto.name })
       if (existingaccount) {
         throw new BadRequestException(`Account name '${accountDto.name}' already exists.`)

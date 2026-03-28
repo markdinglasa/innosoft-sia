@@ -1,5 +1,3 @@
-import { License } from '@renderer/License'
-import { useSync } from "@renderer/POS/hooks"
 import { Splash } from '@shared/components'
 import { Error } from '@shared/messages'
 import { getActiveLicense } from '@shared/selectors'
@@ -7,6 +5,8 @@ import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, Response, SFC, Snackbar, SqlChannel, ToastType } from '@shared/types'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { License } from "../License"
+import { useSync } from "../POS/hooks"
 import { AppMain } from '../registry'
 import * as S from './Styles'
 
