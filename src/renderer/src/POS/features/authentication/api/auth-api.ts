@@ -4,10 +4,16 @@ import { AuthUser, LoginProps, LoginResponse } from "../types"
 export const login = async (credentials: LoginProps): Promise<LoginResponse> => {
   try {
     const response = await window.electron.ipc.invoke(AuthIpcChannel.LOGIN, credentials)
-    console.log('response:', response)
+
     if (!response.success) {
-      throw new Error(response.message || 'Login failed')
+      throw {
+        message: response.error?.message || response.message || 'Sorry, Something went wrong.',
+        error: response.error,
+        metadata: response.metadata,
+        statusCode: response.statusCode || 403
+      }
     }
+    
     return response.data
   } catch (error: any) {
     throw error

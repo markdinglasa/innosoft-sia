@@ -1,0 +1,69 @@
+import { Box, styled, useMediaQuery, useTheme } from '@mui/material'
+import { useToggle } from "@shared/hooks"
+import { FC, memo, ReactNode } from 'react'
+import { Footer } from './footer'
+import { Header } from './header'
+
+interface POSLayoutProps {
+  children: ReactNode
+}
+
+const LayoutWrapper = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  height: '100vh',
+  width: '100vw',
+  flexDirection: 'column',
+  gridTemplateAreas: `
+    "header header"
+    "main sidebar"
+    "footer footer"
+  `,
+  gridTemplateColumns: '1fr 400px',
+  gridTemplateRows: '64px 1fr 3rem',
+  backgroundColor: theme.palette.background.default,
+  [theme.breakpoints.down('lg')]: {
+    gridTemplateAreas: `
+      "header"
+      "main"
+      "footer"
+    `,
+    gridTemplateColumns: '1fr',
+  },
+}))
+
+const MainContent = styled(Box)({
+  gridArea: 'main',
+  overflowY: 'auto',
+  padding: '2rem',
+  width:'100vw',
+  height:'calc(100vh - 6rem)'
+})
+
+export const POSLayout: FC<POSLayoutProps> = memo(({ children }) => {
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('lg'))
+  const [openSidebar, toggleSidebard] = useToggle(false)
+
+  return (
+    <LayoutWrapper>
+      <Box gridArea="header" data-testid="pos-header">
+        <Header onMenuClick={toggleSidebard} />
+      </Box>
+      <Box gridArea="main" data-testid="pos-main">
+       
+        <MainContent>
+          {children}
+        </MainContent>
+      </Box>
+   
+      {/* {!isMobile && (
+        <Box gridArea="sidebar" data-testid="pos-sidebar" sx={{ borderLeft: '1px solid divider', background: (theme) => theme.palette.background.paper }}>
+          <Sidebar />
+        </Box>
+      )} */}
+      <Box gridArea="footer" data-testid="pos-footer">
+        <Footer />
+      </Box>
+    </LayoutWrapper>
+  )
+})

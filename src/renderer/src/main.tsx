@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Suspense } from "react"
 import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'
+import { ScannerProvider } from './POS/providers/ScannerProvider'
 import './tailwind.css'
 import theme from './theme'
 import Wrapper from './Wrapper'
@@ -15,18 +16,20 @@ const Root = () => {
 
   return (
     <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <QueryClientProvider client={queryClient}>
-          <GlobalStyle />
-          <ToastifyStyle />
-          <Suspense fallback={
-           <Splash message="Please wait..." />
-          }>
-            <Wrapper />
-          </Suspense>
-        </QueryClientProvider>
-      </ThemeProvider>
+      <ScannerProvider>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <QueryClientProvider client={queryClient}>
+            <GlobalStyle />
+            <ToastifyStyle />
+            <Suspense fallback={
+              <Splash message="Please wait..." />
+            }>
+              <Wrapper />
+            </Suspense>
+          </QueryClientProvider>
+        </ThemeProvider>
+      </ScannerProvider>
     </Provider>
   )
 }

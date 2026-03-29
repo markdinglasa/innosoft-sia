@@ -10,23 +10,25 @@ export const ToastifyStyle = createGlobalStyle`
 
     &__toast {
       && {
-        border-radius: 3px;
-        box-shadow: 0 0 3px rgba(4, 34, 53, 0.3);
-        min-height: 42px;
-        padding: 0;
+        border-radius: 8px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        min-height: 56px;
+        padding: 16px;
+        font-size: 1.5rem;
       }
     }
 
     &__toast-container {
       && {
-        width: 300px;
-        padding: 0;
+        width: 360px;
+        padding: 1rem;
       }
     }
 
     &__toast-body {
       && {
-        padding: 0;
+        margin: 0;
+        padding: 0 8px;
       }
     }
   }

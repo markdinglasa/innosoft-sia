@@ -3,9 +3,6 @@ import { createGlobalStyle } from 'styled-components'
 import { colors, fonts } from '../'
 
 export const GlobalStyle = createGlobalStyle`
-  html {
-    font-size: 62.5%; /* 1rem = 10px */
-  }
   * {
     scrollbar-width: thin; /* "auto", "thin", or "none" */
     scrollbar-color: #888 inherit; /* thumb and track color */

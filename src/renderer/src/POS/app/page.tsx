@@ -8,8 +8,7 @@ import { POSPages } from "../types/pages"
 
 const LoginPage = lazy(() => import("./(public)/login/page"))
 const DatabaseLinkPage = lazy(() => import("./(public)/database-link/page"))
-// Future modules can be added here
-// const DashboardPage = lazy(() => import("./app/(protected)/dashboard/page"))
+const ProtectedPage = lazy(() => import("./(protected)/page"))
 
 export const RootPage: SFC<AppProps> = ({ className }) => {
   useSync()
@@ -21,30 +20,14 @@ export const RootPage: SFC<AppProps> = ({ className }) => {
       if (activePage === POSPages.DATABASE_LINK) return <DatabaseLinkPage />
       return <LoginPage />
     }
-
-    // Router logic based on activePage
-    switch (activePage) {
-      case POSPages.DATABASE_LINK:
-        return <DatabaseLinkPage />
-      case 'dashboard':
-      default:
-        return (
-          <Box className="flex h-screen w-full flex-col items-center justify-center bg-gray-100">
-            <Typography variant="h2" className="text-blue-600 font-bold mb-4">
-              iPOS Subsystem
-            </Typography>
-            <Typography variant="h5" className="text-gray-600">
-              Welcome, {activeUser?.name}!
-            </Typography>
-          </Box>
-        )
-    }
+    return <ProtectedPage />
   }
 
+
   return (
-    <Box className={className} sx={{ position: 'relative', width: '100vw', height: '100vh', border:'1px solid red' }}>
+    <Box className={className} sx={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 9999 }}>
-        <SyncStatusBadge />
+        {!isAuthenticated && <SyncStatusBadge />}
       </div>
       <Suspense fallback={
         <Box className="flex h-screen w-full items-center justify-center">

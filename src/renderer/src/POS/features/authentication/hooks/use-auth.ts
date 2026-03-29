@@ -54,6 +54,7 @@ export const useAuth = () => {
     isAuthenticated,
     permissions: activePermissions,
     hasPermission,
+    error: loginMutation?.error || logoutMutation?.error,
     login: handleLogin,
     logout: handleLogout,
     isLoading: loginMutation.isPending || logoutMutation.isPending

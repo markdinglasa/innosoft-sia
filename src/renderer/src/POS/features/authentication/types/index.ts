@@ -20,6 +20,7 @@ export interface LoginResponse {
   }
   permissions: string[]
   loginDate: string
+  error?: string
 }
 
 export interface AuthState {

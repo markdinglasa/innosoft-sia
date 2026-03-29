@@ -56,7 +56,7 @@ import * as S from './Styles'
         newestOnTop
         pauseOnFocusLoss
         pauseOnHover
-        position="bottom-left"
+        position="bottom-right"
         rtl={false}
         transition={Bounce}
       />

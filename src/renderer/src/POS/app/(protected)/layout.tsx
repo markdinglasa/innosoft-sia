@@ -1,5 +1,6 @@
 "use client"
 
+import { POSLayout } from "@renderer/POS/components/layout/pos-layout"
 import { memo } from "react"
 // import { useAuth } from "@/features/authentication/hooks/useAuth" // Placeholder for auth hook
 // import { redirect } from "next/navigation" // Or whatever routing logic is used
@@ -15,10 +16,9 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
   // }
 
   return (
-    <div className="protected-container">
-      {/* Add shared protected UI elements like Sidebars/Headers here */}
+    <POSLayout>
       {children}
-    </div>
+    </POSLayout>
   )
 }
 

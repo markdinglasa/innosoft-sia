@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   Dialog,
@@ -6,6 +7,7 @@ import {
   DialogContent,
   DialogTitle,
   Paper,
+  Stack,
   TextField,
   Typography
 } from '@mui/material'
@@ -29,8 +31,9 @@ function LoginForm() {
   const [showOverride, setShowOverride] = useState(false)
   const [overrideUsername, setOverrideUsername] = useState('')
   const [overridePassword, setOverridePassword] = useState('')
-
-  const { login, isLoading } = useAuth()
+  const [error, setError]  = useState<string|null>(null)
+  // mutations
+  const { login, isLoading, error: authError } = useAuth()
 
   const handleSubmit = async (e?: React.FormEvent, override?: any) => {
     e?.preventDefault()
@@ -43,11 +46,13 @@ function LoginForm() {
       })
       toast.success('Welcome back!')
       setShowOverride(false)
-    } catch (error: any) {
-      if (error.statusCode === 403 && error.metadata?.requireOverride) {
+    } catch (err: any) {
+      const errMessage = authError?.message || err?.message || err?.error?.message || err?.toString() || 'Sorry, Something went wrong.'
+      
+      if (err?.statusCode === 403 && err?.metadata?.requireOverride) {
         setShowOverride(true)
       } else {
-        toast.error(error.message || 'Invalid credentials')
+        setError(errMessage)
       }
     }
   }
@@ -70,11 +75,31 @@ function LoginForm() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Paper elevation={3} sx={{ p: 4, maxWidth: 400, width: '100%', mx: 'auto', mt: 8 }}>
+      <Paper elevation={3} sx={{ p: 4, maxWidth: '45rem', width: '100%', mx: 'auto', mt: 8 }}>
         <Typography variant="h4" align="center" gutterBottom color="primary" fontWeight="bold">
-          iPOS Login
+          Sign In
         </Typography>
+        {error && <Alert severity="error" color="error" sx={{mb:'1rem'}}>{error}</Alert>}
         <form onSubmit={handleSubmit}>
+        <Stack direction={'row'} gap={'2rem'} alignItems={'center'}>
+          <TextField
+            fullWidth
+            label="Business Date"
+            type="date"
+            margin="normal"
+            value={loginDate}
+            onChange={(e) => setLoginDate(e.target.value)}
+            required
+          />
+          <Button
+            variant="contained"
+            type="submit"
+            sx={{mt:'7px'}}
+           onClick={() => setLoginDate(format(new Date(), 'yyyy-MM-dd'))}
+          >
+           Today
+          </Button>
+        </Stack>
           <TextField
             fullWidth
             label="Username"
@@ -93,29 +118,19 @@ function LoginForm() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <TextField
-            fullWidth
-            label="Business Date"
-            type="date"
-            margin="normal"
-            value={loginDate}
-            onChange={(e) => setLoginDate(e.target.value)}
-            required
-            InputLabelProps={{ shrink: true }}
-          />
           <Button
             fullWidth
             variant="contained"
             type="submit"
             disabled={isLoading}
-            sx={{ mt: 3, py: 1.5 }}
+            sx={{ mt: 2, py: 1.5,width:'100%' }}
           >
             {isLoading ? 'Logging in...' : 'Login'}
           </Button>
         </form>
         <Box sx={{ mt: 2, textAlign: 'center' }}>
-          <Button onClick={handleDatabaseLink} color="inherit" size="small">
-            Database Link
+          <Button onClick={handleDatabaseLink} color="inherit" size="medium" sx={{width:'100%'}}>
+            Connections
           </Button>
         </Box>
       </Paper>

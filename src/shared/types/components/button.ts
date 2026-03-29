@@ -7,5 +7,7 @@ export enum ButtonColor {
   blue = 'blue',
   gray = 'gray',
   red = 'red',
-  green = 'green'
+  green = 'green',
+  default = 'default',
+  white = 'white'
 }
