@@ -1,0 +1,57 @@
+/* From Uiverse.io by AatreyuShau */ 
+.segment {
+  stroke: rgba(0, 0, 0, 0);
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.joint {
+  fill: #FFF;
+  stroke-width: 5px;
+}
+
+#mir {
+  scale: -0.25;
+}
+
+/* Animate first arm segment rotation */
+.arm {
+  filter: url("#metaball");
+  scale: 0.25;
+  transform-origin: 250px 250px;
+  animation: rotate 31s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(-90deg);
+  }
+  25% {
+    transform: rotate(360deg);
+  }
+  50% {
+    transform: rotate(90deg);
+  }
+  75% {
+    transform: rotate(-360deg);
+  }
+  100% {
+    transform: rotate(-90deg);
+  }
+}
+
+/* Animate second arm segment relative to elbow */
+.arm1 {
+  transform-origin: 300px 200px;
+  animation: rotate 23s ease-in-out infinite;
+}
+
+.arm2 {
+  transform-origin: 400px 200px;
+  animation: rotate 17s ease-in-out infinite;
+}
+
+.arm3 {
+  transform-origin: 490px 200px;
+  animation: rotate 11s ease-in-out infinite;
+}

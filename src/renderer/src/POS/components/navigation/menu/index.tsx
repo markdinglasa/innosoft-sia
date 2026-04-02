@@ -1,22 +1,28 @@
 import { mdiChevronDown, mdiChevronRight } from '@mdi/js';
 import {
-  ButtonColor,
-  ButtonType,
+  AppDispatch,
   GenericFunction,
-  SFC,
+  SFC
 } from '@shared/types';
-import { memo, ReactNode, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import { getActivePage } from "../../../selectors/pos-pages";
+import { setActivePage } from "../../../store/manager";
 import * as S from './Styles';
 
 export interface MenuProps {
   icon?: string;
   label: string;
   onClick?: GenericFunction;
-  isCollapse: boolean;
   isParent?: boolean;
-  children?: ReactNode;
+  children?: {
+    label:string
+    page:string
+  }[];
+  page?:string
   isChild?: boolean;
   isActive?: boolean;
+  category: string
 }
 
 export const Menu: SFC<MenuProps> = memo(
@@ -24,31 +30,37 @@ export const Menu: SFC<MenuProps> = memo(
     className,
     icon,
     label,
-    onClick,
     isParent = false,
-    isActive = false,
     children,
+    page
   }) => {
+    const activePage = useSelector(getActivePage)
     const [isDisplay, toggleDisplay] = useState(false);
+    const dispatch = useDispatch<AppDispatch>()
+
+    const isCurrentActive = page === activePage;
+    const hasActiveChild = children?.some(child => child.page === activePage);
+
+    // Auto-expand if a child is active
+    useEffect(() => {
+      if (hasActiveChild) {
+        toggleDisplay(true);
+      }
+    }, [hasActiveChild]);
+
     return (
       <>
           <S.Container
             $isParent={isParent}
             className={className}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (isParent) {
-                // Toggle the parent menu only if it's directly clicked
-                toggleDisplay(!isDisplay);
-              } else if (!isParent) {
-                // Trigger the onClick prop for navigation if it's a child menu
-                if (onClick) onClick();
-              }
-            }}
+            onClick={(e) => e.stopPropagation()}
           >
             {isParent ? (
               <>
-                <S.Menu>
+                <S.Menu onClick={(e) => {
+                  e.stopPropagation();
+                  toggleDisplay(!isDisplay);
+                }}>
                   <S.MenuContent>
                     <S.Icon path={icon ?? ''} size="30px" />
                     <S.Text>
@@ -62,17 +74,35 @@ export const Menu: SFC<MenuProps> = memo(
                   </S.MenuContent>
                 </S.Menu>
                 <S.ChildContent
-                  $isActive={isActive}
                   $isDisplay={isDisplay}
                   onClick={(e) => e.stopPropagation()}
                 >
-                  {children}
-                </S.ChildContent>
+                   {
+                  children && children.map((child,index)=>{
+                    return(
+                      <S.ChildMenu key={index} $isActive={child.page === activePage} onClick={(e) => {
+                            e.stopPropagation();
+                            // Trigger the onClick prop for navigation if it's a child menu
+                            if (child.page) dispatch(setActivePage(child.page));
+                        }}>
+                        <S.ChildLabel className="ml-[2rem]">{child.label}</S.ChildLabel>
+                      </S.ChildMenu>
+                    )
+                  })
+                }
+                </S.ChildContent> 
               </>
             ) : (
-              <S.ChildMenu $isActive={isActive}>
+              <S.ChildMenu $isActive={isCurrentActive} 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // Trigger the onClick prop for navigation if it's a child menu
+                  if (page) dispatch(setActivePage(page));
+                }}>
                 <S.Icon path={icon ?? ''} size="30px" />
-                <S.ChildLabel>{label}</S.ChildLabel>
+                <S.Text>
+                  <S.Label>{label}</S.Label>
+                </S.Text>
               </S.ChildMenu>
             )}
           </S.Container>

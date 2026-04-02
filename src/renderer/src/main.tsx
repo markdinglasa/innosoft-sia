@@ -1,5 +1,5 @@
 import { CssBaseline, ThemeProvider } from '@mui/material'
-import { Splash } from "@shared/components"
+import { Loader } from "@shared/components"
 import store from '@shared/store'
 import { GlobalStyle, ToastifyStyle } from '@shared/styles'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -23,7 +23,7 @@ const Root = () => {
             <GlobalStyle />
             <ToastifyStyle />
             <Suspense fallback={
-              <Splash message="Please wait..." />
+              <Loader />
             }>
               <Wrapper />
             </Suspense>

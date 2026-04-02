@@ -1,141 +1,144 @@
 import { createGlobalStyle } from 'styled-components'
 
-import { colors, fonts } from '../'
 
 export const GlobalStyle = createGlobalStyle`
-  * {
-    scrollbar-width: thin; /* "auto", "thin", or "none" */
-    scrollbar-color: #888 inherit; /* thumb and track color */
-    overflow:none;
-  }
-  :host {
-    -webkit-text-size-adjust: 100%;
-  }
-  /* Customize the scrollbar */
-  ::-webkit-scrollbar {
-    width: 1rem; /* Width of the scrollbar */
-    background-color: #FFF; /* Background color of the scrollbar track */
-  }
+/* Customize the scrollbar in Firefox */
+* {
+  scrollbar-width: thin; /* "auto", "thin", or "none" */
+  scrollbar-color: #888 inherit; /* thumb and track color */
+}
+:host {
+  -webkit-text-size-adjust: 100%;
+}
+/* Customize the scrollbar */
+::-webkit-scrollbar {
+  width: 10px; /* Width of the scrollbar */
+  background-color: #14263e; /* Background color of the scrollbar track */
+}
 
-  /* Customize the scrollbar thumb (the draggable part) */
-  ::-webkit-scrollbar-thumb {
-    background-color: #14263e; /* Color of the scrollbar thumb */
-    border-radius: 0.5rem; /* Rounded corners */
-  }
+/* Customize the scrollbar thumb (the draggable part) */
+::-webkit-scrollbar-thumb {
+  background-color: #14263e; /* Color of the scrollbar thumb */
+  border-radius: 5px; /* Rounded corners */
+}
 
-  /* Customize the scrollbar thumb on hover */
-  ::-webkit-scrollbar-thumb:hover {
-    background-color: #14263e; /* Color of the scrollbar thumb on hover */
-  }
+/* Customize the scrollbar thumb on hover */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #14263e; /* Color of the scrollbar thumb on hover */
+}
+:root {
+  font-family: 'Montserrat', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  background: #14263e;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  --muted: #a1a1aa;
+  --text: #18181b;
+  --blue: #2d4c70;
+  --indigo: #5603ad;
+  --light-blue: #c6d9f1;
+  --purple: #8965e0;
+  --pink: #d99694;
+  --red: #ed5f74;
+  --red-dark: #cd3d64;
+  --light-red: #f02849;
+  --orange: #fb6340;
+  --yellow: #ffd600;
+  --green: #33c27f;
+  --green-dark: #1ea672;
+  --light-green: #90ee90;
+  --default-light: #f1f5f9;
+  --default: #e2e9ef;
+  --default-dark: #c1cad2;
+  --teal: #11cdef;
+  --cyan: #2bffc6;
+  --white: #fff;
+  --gray: #bababa;
+  --gray-dark: #32325d;
+  --lighter: #f0f2f5;
+  --light: #e6e8eb;
+  --primary: #14263e;
+  --primary-dark: #0d1929;
+  --secondary: #93cddd;
+  --success: #2dce89;
+  --info: #11cdef;
+  --warning: #fb6340;
+  --danger: #f5365c;
+  --dark: #212529;
+  --white: #fff;
+  --neutral: #fff;
+  --darker: black;
+  --tw-shadow-color: inherit;
+}
 
-  * {
-    box-sizing: border-box;
-  }
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
 
-  body {
-    background: ${colors.palette.neutral['075']};
-    color: ${colors.primary};
-    font-family: ${fonts.family.default};
-    font-size: 1.4rem;
-    font-weight: ${fonts.weight.regular};
-    margin: 0;
-  }
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
 
-  a {
-    color: ${colors.palette.blue['500']};
-  }
+.border-red {
+  border: 1px solid red !important;
+}
 
-  b,
-  strong {
-    font-weight: ${fonts.weight.bold};
-  }
+.bg-primary {
+  background: #14263e;
+}
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    line-height: ${fonts.lineHeight.default};
-    margin: 0;
-  }
+.text-primary {
+  color: #14263e;
+}
 
-  .mb-1{
-    margin-bottom: 5px;
-  }
-  .mb-2{
-    margin-bottom: 10px;
-  }
-  .mb-3{
-    margin-bottom: 15px;
-  }
-  .mb-4{
-    margin-bottom: 20px;
-  }
+.btn-primary {
+  min-width: 120px;
+  min-height: 30px;
+  background: #14263e;
+}
 
+.h-40px {
+  height: 40px;
+}
+.border-primary {
+  border: 2px solid #14263e;
+}
+.border-pbottom {
+  border-bottom: 1px solid #14263e;
+}
+.border-ptop {
+  border-top: 1px solid #14263e;
+}
+.margin-top-60px {
+  margin-top: -90px !important;
+}
+.custom-quill-editor .ql-editor {
+  min-height: 200px;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  /*background-color: #f1f6fa;*/
+}
+.custom-quill-editor .ql-toolbar {
+  background-color: white; /* Set toolbar background to white */
+  color: black; /* Optional: Set text color */
+}
 
-  h1 {
-    font-size: 2.4rem;
-  }
+.border-left-primary {
+  border-left: 5px solid #14263e;
+}
 
-  h2 {
-    font-size: 2.0rem;
-  }
+.dotted-line {
+  border-top: 1px dashed black;
+  margin: 8px 0;
+}
 
-  h3 {
-    font-size: 1.6rem;
-  }
-
-  h4 {
-    font-size: 1.4rem;
-  }
-
-  p {
-    margin: 0 0 20px 0;
-  }
-
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(0, 0, 0, 0.3);
-  }
-
-  ::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-  }
-
-  .TablePagination {
-    display: flex;
-    justify-content: end;
-    align-items: center;
-    height: 3rem;
-    text-align: center;
-    overflow: hidden; 
-
-    &::-webkit-scrollbar: {
-        display: none;
-    };
-
-    & .MuiTablePagination-toolbar: {
-        justify-content: center;
-    };
-    & .MuiTablePagination-actions: {
-        margin-left: auto; 
-    };
-    & .MuiTablePagination-spacer: {
-        flex: none;
-    };
-    & .MuiTablePagination-selectLabel; & .MuiTablePagination-displayedRows: {
-        margin-bottom:-0rem;
-    };
-  }
 `

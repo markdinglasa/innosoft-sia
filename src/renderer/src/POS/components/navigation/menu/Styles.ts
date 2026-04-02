@@ -1,6 +1,6 @@
-import styled from 'styled-components';
 import UIcon from '@mdi/react';
 import { colors } from '@shared/styles/colors';
+import styled from 'styled-components';
 
 export const Icon = styled(UIcon)`
   color: ${colors.white};
@@ -50,35 +50,31 @@ export const Label = styled.label`
 `;
 export const ChildContent = styled.div<{
   $isDisplay: boolean;
-  $isActive: boolean;
 }>`
   overflow: hidden;
   transition: 0.3s ease-in-out;
   width: 100%;
 
-  ${({ $isActive }) =>
-    $isActive
-      ? `
-      border-radius: 0.375rem;
-      background: rgb(51, 65, 85);
-    `
-      : `
-      background:none
-    `};
+  background: none;
+
   ${({ $isDisplay }) =>
     $isDisplay
       ? `
-      heigth:fit;
+      height: fit-content;
     `
       : `
-      max-height:0px;
+      max-height: 0px;
     `};
 `;
+
 export const ChildMenu = styled.div<{ $isActive: boolean }>`
   display: flex;
   align-items: center;
   padding: 8px;
-
+  border-radius: 0.5rem;
+  &:hover {
+    background: rgb(51, 65, 85);
+  };
   ${({ $isActive }) =>
     $isActive
       ? `
@@ -89,8 +85,9 @@ export const ChildMenu = styled.div<{ $isActive: boolean }>`
       background:none
     `};
 `;
+
 export const ChildLabel = styled.label`
-  margin-left: 8px;
+  margin-left: 2rem;
   font-weight: semibold;
   font-size: 16px;
   color: ${colors.white};

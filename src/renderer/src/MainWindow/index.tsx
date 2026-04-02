@@ -1,4 +1,4 @@
-import { Splash } from '@shared/components'
+import { Loader } from '@shared/components'
 import { Error } from '@shared/messages'
 import { getActiveLicense } from '@shared/selectors'
 import { setSnackbar } from '@shared/store/manager'
@@ -55,7 +55,7 @@ export const MainWindow: SFC = ({ className }) => {
 
   const Content = () => {
     if (showSplash || isLicenseValid === null) {
-      return <Splash message="Please wait..." />
+      return <Loader/>
     }
     return isLicenseValid ? <AppMain /> : <License />
   }

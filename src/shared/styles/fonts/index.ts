@@ -2,7 +2,7 @@
 
 const fonts = {
   family: {
-    default: 'Inter, sans-serif'
+    default: 'montserrat, sans-serif'
   },
   lineHeight: {
     default: '1.25'

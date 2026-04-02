@@ -2,6 +2,7 @@ import SyncIcon from '@mui/icons-material/Sync'
 import WifiIcon from '@mui/icons-material/Wifi'
 import { Box, Stack, Typography, styled } from '@mui/material'
 import { APP_VERSION } from "@shared/constants"
+import { colors } from "@shared/styles"
 import { FC } from 'react'
 
 const FooterWrapper = styled(Box)(() => ({
@@ -29,12 +30,12 @@ export const Footer: FC = () => {
       </Stack>
 
       <Stack direction="row" spacing={2} alignItems="center">
-        <Typography variant="caption" sx={{ color: '#28a745', fontWeight: 'bold' }}>
-          <SyncIcon sx={{ fontSize: 14, verticalAlign: 'middle', mr: 0.5 }} />
-          All Transactions Synced
+        <Typography variant="caption" sx={{ color: colors.secondary, fontWeight: 'bold' }}>
+          <SyncIcon sx={{ fontSize: 20, verticalAlign: 'middle', mr: 0.5 }} />
+          Synced
         </Typography>
-        <Typography variant="caption" sx={{ color: '#28a745', fontWeight: 'bold' }}>
-          <WifiIcon sx={{ fontSize: 14, verticalAlign: 'middle', mr: 0.5 }} />
+        <Typography variant="caption" sx={{ color: colors.secondary, fontWeight: 'bold' }}>
+          <WifiIcon sx={{ fontSize: 20, verticalAlign: 'middle', mr: 0.5 }} />
           Online
         </Typography>
       </Stack>

@@ -22,53 +22,36 @@ function ProtectedPage() {
   const { activeUser, activePage } = useSelector((state: any) => state.POS.manager)
   const type = useMemo(() => activeUser?.type, [activeUser?.type])
     
-  const Content = () => {
-    // Step 1: Explicit routing based on activePage
+  // Step 1: Mapping activePage to corresponding modules and permissions
+  const { content, permissions } = useMemo(() => {
     switch (activePage) {
       case POSPages.ADMIN_DASHBOARD:
-        return (
-          <ProtectedRoute permissions={SystemPermissions.USER_VIEW}>
-            <POSLayout>
-              <AdminDashboard />
-            </POSLayout>
-          </ProtectedRoute>
-        )
+        return {
+          content: <AdminDashboard />,
+          permissions: SystemPermissions.USER_VIEW
+        };
       case POSPages.POS_CATALOG:
-        return (
-          <ProtectedRoute permissions={SystemPermissions.POS_RETAIL_VIEW}>
-            <POSLayout>
-              <POSCatalog />
-            </POSLayout>
-          </ProtectedRoute>
-        )
-      
-      // Step 2: Fallback to user-type routing for the default dashboard/authenticated state
+        return {
+          content: <POSCatalog />,
+          permissions: SystemPermissions.POS_RETAIL_VIEW
+        };
       case POSPages.DASHBOARD:
       case POSPages.AUTHENTICATED:
       default:
         switch (type) {
           case UserType.ADMINISTRATOR:
-            return (
-              <ProtectedRoute permissions={SystemPermissions.USER_VIEW}>
-                 <POSLayout>
-                  <AdminDashboard />
-                 </POSLayout>
-              </ProtectedRoute>
-            )
-          case UserType.CASHIER:
-          case UserType.TELLER:
+            return {
+              content: <AdminDashboard />,
+              permissions: SystemPermissions.USER_VIEW
+            };
           default:
-            return (
-              <ProtectedRoute permissions={SystemPermissions.POS_RETAIL_VIEW}>
-                <POSLayout>
-                  <POSCatalog />
-                </POSLayout>
-              </ProtectedRoute>
-            )
+            return {
+              content: <POSCatalog />,
+              permissions: SystemPermissions.POS_RETAIL_VIEW
+            };
         }
     }
-  }
-
+  }, [activePage, type]);
 
   return (
     <Box sx={{ position: 'relative', width: '100vw', height: '100vh' }}>
@@ -77,9 +60,13 @@ function ProtectedPage() {
           <Typography>Loading module...</Typography>
         </Box>
       }>
-        <Content />
+        <ProtectedRoute permissions={permissions}>
+          <POSLayout>
+            {content}
+          </POSLayout>
+        </ProtectedRoute>
       </Suspense>
     </Box>
-  )
+  );
 }
 export default memo(ProtectedPage)
