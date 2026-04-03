@@ -22,6 +22,11 @@ const theme = createTheme({
       paper: colors.white
     }
   },
+  // MuiIcons:{
+  //   defaultProps: {
+  //     fontSize: 'small'
+  //   }
+  // },
   typography: {
     fontSize: 24,
     fontFamily: fonts.family.default,
@@ -56,21 +61,21 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          padding: '8px 24px',
-          fontSize: '1.5rem',
+          //padding: '8px 12px',
+          fontSize: '0.9rem',
           width:'fit-content',
-          height:'5rem'
+          height:'2.5rem'
         }
       }
     },
     MuiTextField: {
       defaultProps: {
         variant: 'outlined',
-        size: 'medium'
+        size: 'small'
       },
       styleOverrides: {
         root: {
-          //fontSize: '1.25rem'
+          fontSize: '0.9rem'
         }
       }
     },
@@ -95,28 +100,29 @@ const theme = createTheme({
     MuiInputLabel: {
       styleOverrides: {
         root: {
-          //fontSize: '1.3rem',
+          height: '3rem',
+          fontSize: '0.9rem',
         }
       }
     },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          //fontSize: '1.25rem'
+          fontSize: '0.9rem'
         }
       }
     },
     MuiFormHelperText: {
       styleOverrides: {
         root: {
-          //fontSize: '1.25rem'
+          fontSize: '0.9rem'
         }
       }
     },
     MuiAlert: {
       styleOverrides: {
         message: {
-          fontSize: '1.5rem'
+          fontSize: '0.9rem'
         },
       }
     },

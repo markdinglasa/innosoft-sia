@@ -10,7 +10,7 @@ function DatabaseLink() {
     <Container
       sx={{
         width: '100%',
-        height: '100%',
+        height: 'fit',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -19,7 +19,7 @@ function DatabaseLink() {
         gap: '2rem'
       }}
     >
-      <Box sx={{ width: '100%', maxWidth: 'md' }}>
+      <Box sx={{ width: '100%', height:'fit', maxWidth: 'md' }}>
         <ConnectionList connections={connections} onRefresh={refetch} loading={loading} />
       </Box>
     </Container>

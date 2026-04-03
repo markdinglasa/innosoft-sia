@@ -35,7 +35,7 @@ export const Title = styled.h1`
   justify-content: end;
   width: 100%;
   text-transform: uppercase;
-  font-weight: 550;
+  font-weight: bold;
 
   @media (max-width: 1050px) {
     justify-content: center;

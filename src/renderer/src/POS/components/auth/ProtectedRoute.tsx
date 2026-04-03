@@ -11,13 +11,15 @@ interface ProtectedRouteProps {
     requireAll?: boolean
     children: ReactNode
     redirectTo?: POSPages
+    fallback?: ReactNode
 }
 
 export const ProtectedRoute: FC<ProtectedRouteProps> = ({ 
     permissions, 
     requireAll = false, 
     children, 
-    redirectTo
+    redirectTo,
+    fallback
 }) => {
     const dispatch = useDispatch()
     const hasPermission = useHasPermission(permissions, requireAll)
@@ -31,10 +33,12 @@ export const ProtectedRoute: FC<ProtectedRouteProps> = ({
     // If there's a redirect, we shouldn't render anything while redirecting
     if (!hasPermission && redirectTo) return null
 
-    // If no redirect provided, show fallback "Forbidden" UI
+    // If no redirect provided, show fallback if exists, else show Forbidden UI
     if (!hasPermission) {
+        if (fallback) return <>{fallback}</>
+
         return (
-            <Box className="flex h-full w-full flex-col items-center justify-center p-8 text-center bg-gray-100">
+            <Box className="flex h-screen w-full flex-col items-center justify-center p-8 text-center bg-gray-100">
                 <LockIcon sx={{ fontSize: 64, color: 'error.main', mb: 2 }} />
                 <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 1, }}>
                     Access Restricted

@@ -41,13 +41,21 @@ const manager = createSlice({
           state: current(state)
         })
       },
+      setActiveUser: (state: POSManagerState, { payload: user }: PayloadAction<MstUserEntity | null>) => {
+        state.activeUser = user
+        window.electron.ipc.send(IpcChannel.setStoreValue, {
+          key: POS_MANAGER,
+          state: current(state)
+        })
+      }
         },
 })
 
 export const {
   setInitialize,
   setManager,
-  setActivePage
+  setActivePage,
+  setActiveUser
 } = manager.actions
 
 export default manager.reducer

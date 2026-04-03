@@ -1,9 +1,11 @@
 "use client"
 
-import { memo, ReactNode } from "react"
-import { Provider as ReduxProvider } from "react-redux"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import store from "@shared/store" // Assuming this is the main store
+import store from "@shared/store"; // Assuming this is the main store
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { memo, ReactNode } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { Provider as ReduxProvider } from "react-redux";
+import ErrorPage from "./error";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,12 +22,14 @@ interface ProvidersProps {
 
 function Providers({ children }: ProvidersProps) {
   return (
-    <ReduxProvider store={store}>
-      <QueryClientProvider client={queryClient}>
-        {/* Add authentication, theme, and other providers here */}
-        {children}
-      </QueryClientProvider>
-    </ReduxProvider>
+    <ErrorBoundary FallbackComponent={ErrorPage}>
+      <ReduxProvider store={store}>
+        <QueryClientProvider client={queryClient}>
+          {/* Add authentication, theme, and other providers here */}
+          {children}
+        </QueryClientProvider>
+      </ReduxProvider>
+    </ErrorBoundary>
   )
 }
 

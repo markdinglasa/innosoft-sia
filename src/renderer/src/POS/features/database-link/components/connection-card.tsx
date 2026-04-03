@@ -1,6 +1,6 @@
 import {
-    Delete as DeleteIcon,
-    PowerSettingsNew as PowerIcon
+  Delete as DeleteIcon,
+  PowerSettingsNew as PowerIcon
 } from '@mui/icons-material'
 import { Box, Button, Card, CardActions, CardContent, Chip, IconButton, Stack, Typography } from "@mui/material"
 import { colors } from "@shared/styles"
@@ -39,9 +39,9 @@ function ConnectionCard(props: ConnectionCardProps) {
                   </Box>
                   <Box>
                     {connection.isActive ? (
-                      <Chip label="ACTIVE" color="primary" variant="filled" />
+                      <Chip label="Active" color="success" variant="filled" />
                     ) : (
-                      <Chip label="INACTIVE" variant="outlined" />
+                      <Chip label="Inactive" variant="outlined" color="error" />
                     )}
                   </Box>
                 </Stack>
@@ -51,14 +51,12 @@ function ConnectionCard(props: ConnectionCardProps) {
                   color="error"
                   onClick={() => onDelete(connection.id)}
                   disabled={isLoading || connection.isActive}
-                  sx={{ height: '4rem', width: '4rem' }}
                 >
-                  <DeleteIcon sx={{ height: '2rem', width: '2rem' }} />
+                  <DeleteIcon sx={{ fontSize: 25 }} />
                 </IconButton>
                 {!connection.isActive && (
                   <Button
                     variant="outlined"
-                    sx={{ height: '4rem' }}
                     startIcon={<PowerIcon />}
                     onClick={() => onActivate(connection.id)}
                     disabled={isLoading}

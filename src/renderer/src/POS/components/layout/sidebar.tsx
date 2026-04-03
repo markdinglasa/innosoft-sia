@@ -1,5 +1,5 @@
 
-import { mdiAccountGroupOutline, mdiAccountSupervisorOutline, mdiApplicationCogOutline, mdiCartOutline, mdiCash, mdiCashRefund, mdiCreditCardEditOutline, mdiFileDocumentMultipleOutline, mdiGestureTap, mdiLiquor, mdiOfficeBuildingCogOutline, mdiOfficeBuildingOutline, mdiPercentCircleOutline, mdiTableChair, mdiTruckOutline, mdiViewDashboard, mdiViewList, mdiWalk } from "@mdi/js";
+import { mdiAccountGroupOutline, mdiAccountSupervisorOutline, mdiApplicationCogOutline, mdiCartOutline, mdiCash, mdiCashRefund, mdiCreditCardEditOutline, mdiFileDocumentMultipleOutline, mdiGestureTap, mdiLiquor, mdiOfficeBuildingOutline, mdiPercentCircleOutline, mdiStore, mdiTableChair, mdiTruckOutline, mdiViewDashboard, mdiViewList, mdiWalk } from "@mdi/js";
 import { Typography } from "@mui/material";
 import { SFC } from "@shared/types";
 import { memo } from "react";
@@ -17,7 +17,7 @@ const MENU_ITEMS : MenuProps[]= [
   },
   {
     label:"Branch", 
-    icon:mdiOfficeBuildingCogOutline, 
+    icon:mdiStore, 
     page: POSPages.BRANCH,
     isParent:false,
     category:"Masterfile"
@@ -87,7 +87,7 @@ const MENU_ITEMS : MenuProps[]= [
     category:"Masterfile"
   },
   {
-    label:"Configuration", 
+    label:"Configurations", 
     icon:mdiApplicationCogOutline, 
     isParent:true,
     category:"Masterfile",

@@ -6,7 +6,8 @@ export enum POSPages {
     
     AUTHENTICATED ='authenticated',
     ADMIN_DASHBOARD = 'admin-dashboard',
-
+    PROFILE = 'profile',
+    
     //masterfiles
     BRANCH = 'branch',
     CATALOG = 'catalog',
@@ -52,5 +53,12 @@ export enum POSPages {
     REPORT_POS = 'report-pos',
     REPORT_DISBURSEMENT = 'report-disbursement',
     REPORT_INVENTORY = 'report-inventory',
+
+    //utilities
+    NOTIFICATIONS = 'notifications',
+    PRINTER = 'printer',
+    SCANNER = 'scanner',
+    TERMS_AND_CONDITIONS = 'terms-and-conditions',
+    PRIVACY_POLICY = 'privacy-policy',
 
 }

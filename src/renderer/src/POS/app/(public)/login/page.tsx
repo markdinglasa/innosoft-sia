@@ -7,8 +7,8 @@ function LoginPage() {
     <S.Container>
       <S.Content>
           <S.Banner>
-           <S.Title>innosoft</S.Title>
-            <S.SubTitle>Grow your business with Innosoft</S.SubTitle>
+           <S.Title>NUTSHELL</S.Title>
+            <S.SubTitle>Grow your business with NUTSHELL</S.SubTitle>
           </S.Banner>
         <S.Right>
           <LoginForm />

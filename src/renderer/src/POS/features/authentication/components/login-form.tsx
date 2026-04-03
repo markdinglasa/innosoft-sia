@@ -75,7 +75,7 @@ function LoginForm() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Paper elevation={3} sx={{ p: 4, maxWidth: '45rem', width: '100%', mx: 'auto', mt: 8 }}>
+      <Paper elevation={3} sx={{ p: 4, maxWidth: '30rem', width: '100%', mx: 'auto', mt: 8 }}>
         <Typography variant="h4" align="center" gutterBottom color="primary" fontWeight="bold">
           Sign In
         </Typography>

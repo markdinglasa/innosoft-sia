@@ -1,6 +1,6 @@
-import { Box, Typography } from '@mui/material'
+import { Box } from '@mui/material'
 import { AppProps, SFC } from '@shared/types'
-import { lazy, Suspense } from 'react'
+import { lazy } from 'react'
 import { useSelector } from 'react-redux'
 import { SyncStatusBadge } from '../components/feedback/sync-status-badge'
 import { useSync } from '../hooks/useSync'
@@ -23,19 +23,12 @@ export const RootPage: SFC<AppProps> = ({ className }) => {
     return <ProtectedPage />
   }
 
-
   return (
     <Box className={className} sx={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 9999 }}>
         {!isAuthenticated && <SyncStatusBadge />}
       </div>
-      <Suspense fallback={
-        <Box className="flex h-screen w-full items-center justify-center">
-          <Typography>Loading module...</Typography>
-        </Box>
-      }>
        <Content />
-      </Suspense>
     </Box>
   )
 }

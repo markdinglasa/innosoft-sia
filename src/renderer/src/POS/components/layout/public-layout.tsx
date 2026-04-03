@@ -1,10 +1,15 @@
 import { Container } from "@mui/material";
 import { memo, ReactNode } from "react";
 
-function PublicLayout({ children }: { children: ReactNode }) {
+interface PublicLayoutProps {
+    children: ReactNode;
+    className?: string;
+}
+
+function PublicLayout({ children, className }: PublicLayoutProps) {
     return (
         <>
-            <Container sx={{ width: '100vw', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Container className={className} sx={{ width: '100vw', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {children}
             </Container>
         </>

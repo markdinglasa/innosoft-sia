@@ -4,14 +4,21 @@ import PolicyIcon from '@mui/icons-material/Policy';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Avatar, Tooltip } from '@mui/material';
 import { colors } from "@shared/styles";
+import { AppDispatch } from "@shared/types";
 import { memo, useEffect, useRef, useState } from 'react';
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { useRoute } from "../../../hooks/use-route";
+import { setActiveUser } from "../../../store/manager";
+import { POSPages } from "../../../types/pages";
 import * as S from './Styles';
 
 function ProfileOption() {
   const [activeDropdown, setActiveDropdown] = useState<null | string>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { activeUser } = useSelector((state: any) => state.POS.manager)
+  const {navigate} = useRoute()
+  const dispatch = useDispatch<AppDispatch>()
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -30,6 +37,18 @@ function ProfileOption() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [activeDropdown]);
+
+  const handleLogout = async () => {
+    try {
+      dispatch(setActiveUser(null))
+    } catch(error:unknown){
+      toast.error(
+       (error as Error).message || "Sorry, Something went wrong."
+      )
+    }  finally {
+      navigate(POSPages.LOGIN)
+    }
+  }
 
   return (
     <div className="relative inline-block" ref={dropdownRef}>
@@ -73,7 +92,7 @@ function ProfileOption() {
               className=" px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 items-center justify-start flex"
               onClick={() => {
                 setActiveDropdown(null);
-                //navigate(PAGE_SETTINGS);
+                navigate(POSPages.SETTINGS);
               }}
             >
               <SettingsIcon sx={{fontSize:25}} className="text-primary" />
@@ -84,7 +103,7 @@ function ProfileOption() {
             className=" px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 items-center justify-start flex"
             onClick={() => {
               setActiveDropdown(null);
-              //navigate(PAGE_PRIVACY_POLICY);
+              navigate(POSPages.PRIVACY_POLICY);
             }}
           >
             <PolicyIcon sx={{fontSize:25}} className="text-primary" />
@@ -94,7 +113,7 @@ function ProfileOption() {
             className=" px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 items-center justify-start flex"
             onClick={() => {
               setActiveDropdown(null);
-              //navigate(PAGE_TERMS_AND_CONDITIONS);
+              navigate(POSPages.TERMS_AND_CONDITIONS);
             }}
           >
             <GavelIcon sx={{fontSize:25}} className="text-primary" />
@@ -102,7 +121,7 @@ function ProfileOption() {
           </S.DropdownItem>
           <S.DropdownItem
             className=" px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 items-center justify-start flex"
-            //onClick={logout}
+            onClick={handleLogout}
           >
             <LogoutIcon sx={{fontSize:25}} className="text-primary" />
             <span className="ml-2">Sign Out</span>

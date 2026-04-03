@@ -22,10 +22,13 @@ export const Footer: FC = () => {
     <FooterWrapper>
       <Stack direction="row" spacing={2} alignItems="center">
         <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-          NUTSHELL Version: {APP_VERSION}
+          NUTSHELL {APP_VERSION}
         </Typography>
         <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-          Terminal ID: POS-101
+          Terminal: POS-101
+        </Typography>
+        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+          Branch: Main
         </Typography>
       </Stack>
 

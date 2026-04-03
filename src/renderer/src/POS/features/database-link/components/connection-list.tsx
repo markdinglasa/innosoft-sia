@@ -117,7 +117,7 @@ export default function ConnectionList({
     <Container
       sx={{
         width: '100%',
-        minHeight: '60rem',
+        minHeight: '50rem',
         maxHeight: 'calc(100vh - 40rem)',
         borderRadius: '2rem',
         position: 'relative',
@@ -141,11 +141,10 @@ export default function ConnectionList({
           <Button
             variant="outlined"
             onClick={() => setShowForm(true)}
-            size="large"
             disabled={loading}
-            sx={{ height: '4rem', gap: '1rem', borderRadius: '1rem', px: 4, bgcolor: 'white' }}
+            className="gap-2 flex flex-row"
           >
-            <Add sx={{ width: '2rem', height: '2rem' }} />
+            <Add sx={{ fontSize:25 }} />
             New Connection
           </Button>
 
@@ -153,9 +152,7 @@ export default function ConnectionList({
             <Button
               variant="contained"
               onClick={onSync}
-              size="large"
               disabled={loading}
-              sx={{ height: '4rem', borderRadius: '1rem', px: 6 }}
             >
               Next
             </Button>

@@ -52,8 +52,10 @@ function CircleButton(props: CircleButtonProps) {
         return { bg: '', hover: '' };
       case ButtonColor.white:
         return { bg: colors.white, hover: colors.palette.neutral['100'] };
+      case ButtonColor.dark:
+      return { bg: '', hover: colors.palette.black['100'], };
         case ButtonColor.blue:
-      return { bg: colors.primary, hover: colors.palette.neutral['300'] };
+      return { bg: colors.primary, hover: colors.palette.neutral['600'] };
       default:
         return {
           bg: colors.palette.neutral['200'],

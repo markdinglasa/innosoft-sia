@@ -195,7 +195,7 @@ function DatabaseLinkForm(props: DatabaseLinkFormProps) {
                 size="large"
                 disabled={loading || testing}
                 onClick={handleSubmit(onTest)}
-                sx={{ height: '4rem' }}
+               
               >
                 {testing ? <CircularProgress size={24} color="inherit" /> : 'Test Connection'}
               </Button>
@@ -207,7 +207,7 @@ function DatabaseLinkForm(props: DatabaseLinkFormProps) {
                   size="large"
                   disabled={loading || testing}
                   onClick={onCancel}
-                  sx={{ height: '4rem' }}
+                 
                 >
                   Cancel
                 </Button>
@@ -215,16 +215,16 @@ function DatabaseLinkForm(props: DatabaseLinkFormProps) {
                   fullWidth
                   variant="contained"
                   color="primary"
-                  size="large"
+                  className="flex flex-row gap-2"
                   disabled={loading || testing}
                   onClick={handleSubmit(onSubmit)}
-                  sx={{ height: '4rem', gap: '1rem', width: 'fit' }}
+                 
                 >
                   {loading ? (
-                    <CircularProgress size={24} color="inherit" />
+                    <CircularProgress sx={{fontSize:20}} color="inherit" />
                   ) : (
                     <>
-                      <Save sx={{ width: '2rem', height: '2rem' }} />
+                      <Save sx={{ fontSize:20 }} />
                       Save Connection
                     </>
                   )}
