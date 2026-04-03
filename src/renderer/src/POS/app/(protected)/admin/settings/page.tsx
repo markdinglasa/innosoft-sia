@@ -1,12 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../components/layout/page-layout";
+import Settings from "../../../../features/sys-settings/components/settings";
 
 function SettingsPage(){
-    return <PageLayout title="Settings">
-        <div>
-            Settings Content
-        </div>
-    </PageLayout>
+    return <Settings />
 }
 
 export default memo(SettingsPage)

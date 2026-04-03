@@ -7,7 +7,8 @@ import { BaseService } from '../../base.service'
 import { CreateTerminalDto, UpdateTerminalDto } from './dto'
 
 export interface ITerminalService {
-  // Add specific Terminal methods here later
+  activateTerminal(terminalId: number, fingerprint: string): Promise<void>
+  getByBranch(branchId: number): Promise<MstTerminalEntity[]>
 }
 
 export class TerminalService extends BaseService<MstTerminalEntity> implements ITerminalService {
@@ -61,5 +62,34 @@ export class TerminalService extends BaseService<MstTerminalEntity> implements I
     if (!currentEntity) {
       throw new BadRequestException('Terminal not found for deletion.')
     }
+  }
+
+  /**
+   * Fetches terminals for a specific branch.
+   */
+  async getByBranch(branchId: number): Promise<MstTerminalEntity[]> {
+    return await this.repository.find({
+      where: { branchId }
+    })
+  }
+
+  /**
+   * Binds a physical machine fingerprint to a terminal record.
+   */
+  async activateTerminal(terminalId: number, fingerprint: string): Promise<void> {
+    const terminal = await this.get(terminalId)
+    if (!terminal) {
+      throw new BadRequestException('Terminal record not found.')
+    }
+
+    // Check if terminal is already bound to another machine
+    if (terminal.physicalAddress && terminal.physicalAddress !== fingerprint) {
+      throw new BadRequestException(
+        `Unauthorized Move: Terminal '${terminal.name}' is already bound to another machine (${terminal.physicalAddress}).`
+      )
+    }
+
+    // Bind fingerprint to this terminal
+    await this.update(terminalId, { physicalAddress: fingerprint } as any)
   }
 }

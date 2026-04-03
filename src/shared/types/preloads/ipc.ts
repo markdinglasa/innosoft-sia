@@ -18,7 +18,12 @@ export enum IpcChannel {
   saveFile = 'save-file',
   login = 'login',
   logout = 'logout',
-  verifySession = 'verify-session'
+  verifySession = 'verify-session',
+  getSettings = 'get-settings',
+  updateSettings = 'update-settings',
+  activateTerminal = 'activate-terminal',
+  getAvailableTerminals = 'get-available-terminals',
+  getMachineFingerprint = 'get-machine-fingerprint'
 }
 
 export type SetStoreValuePayload<K extends keyof LocalElectronStore> = {

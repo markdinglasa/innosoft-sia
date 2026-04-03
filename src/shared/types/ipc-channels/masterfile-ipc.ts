@@ -145,6 +145,7 @@ export enum MasterfileIpcChannel {
   TERMINAL_CREATE = 'masterfiles:terminal:create',
   TERMINAL_UPDATE = 'masterfiles:terminal:update',
   TERMINAL_DELETE = 'masterfiles:terminal:delete',
+  TERMINAL_BY_BRANCH = 'masterfiles:terminal:by-branch',
 
   // Unit
   UNIT_LIST = 'masterfiles:unit:list',

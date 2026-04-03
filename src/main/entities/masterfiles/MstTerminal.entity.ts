@@ -10,8 +10,16 @@ export class MstTerminalEntity extends BaseEntity {
     super()
     this.branchId = 0
     this.name = ''
+    this.recNumber = ''
+    this.physicalAddress = ''
     this.isDefault = false
   }
+
+  @Column({ name: 'RecNumber', type: 'nvarchar', length: 50, nullable: false })
+  recNumber: string
+
+  @Column({ name: 'PhysicalAddress', type: 'nvarchar', length: 255, nullable: true })
+  physicalAddress: string
     @Column({ name: 'BranchId', type: 'int', nullable: false })
   branchId: number
 

@@ -16,7 +16,7 @@
 
 
 ```
-    {
+{
   "epics": [
     {
       "id": "EPIC-MST-001",
@@ -28,13 +28,19 @@
       "id": "EPIC-MST-002",
       "title": "Core Reference Entities",
       "description": "Implement specific masterfile modules for Items, Users, and Roles following the hub pattern.",
-      "features": ["FEAT-MST-003", "FEAT-MST-004"]
+      "features": ["FEAT-MST-003", "FEAT-MST-004", "FEAT-MST-006"]
     },
     {
       "id": "EPIC-MST-003",
       "title": "Masterfile Hub UI Framework",
       "description": "Create reusable UI components for data entry, listing, and state management in the renderer.",
       "features": ["FEAT-MST-005"]
+    },
+    {
+      "id": "EPIC-MST-004",
+      "title": "Business & Technical Metadata",
+      "description": "Comprehensive CRUD for operational entities like Branches, Customers, Suppliers, and System Configurations.",
+      "features": ["FEAT-MST-007", "FEAT-MST-008", "FEAT-MST-009", "FEAT-MST-010", "FEAT-MST-011", "FEAT-MST-012"]
     }
   ],
   "features": [
@@ -95,6 +101,17 @@
             "Given an item with no price defined, When saved, Then the system must reject the request."
           ],
           "priority": "Critical"
+        },
+        {
+          "title": "Multi-Packaging Units (UOM Packages)",
+          "story": "As a warehouse manager or cashier, I want to define multiple packaging units for an item so that I can buy and sell in different bulk quantities with unique barcodes.",
+          "acceptance_criteria": [
+            "Given a package definition, When added to an item, Then it must define a 'Relation Unit' and a 'Factor' based on the primary UOM.",
+            "Given a package, When saved, Then it must support its own SKU/Barcode and PackagePrice.",
+            "Given a transaction, When the package barcode is scanned, Then the system must correctly multiply the quantity by the 'Factor' for accurate stock tracking.",
+            "Given a package factor of 0 or less, When saving, Then the system MUST reject the entry."
+          ],
+          "priority": "High"
         }
       ],
       "assumptions": [],
@@ -157,7 +174,150 @@
           "priority": "High"
         }
       ]
+    },
+    {
+      "id": "FEAT-MST-007",
+      "epic_id": "EPIC-MST-004",
+      "title": "Organizational & Personnel Entities",
+      "description": "Core setup for branches and users.",
+      "user_stories": [
+        {
+          "title": "Multi-Branch CRUD",
+          "story": "As an admin, I want to manage different physical branches so that I can segregate inventory and financial reports.",
+          "acceptance_criteria": [
+            "Given a Branch creation, When saved, Then a unique BranchCode must be enforced.",
+            "Given an active Branch, When attempting to deactivate it, Then the system must verify if there are any active Cashiers currently logged in to that branch."
+          ],
+          "priority": "High"
+        },
+        {
+          "title": "Personnel/Employee Profile",
+          "story": "As an admin, I want to manage employee records so that I can assign them to roles and track their performance.",
+          "acceptance_criteria": [
+            "Given a new Personnel record, When saved, Then it must be linked to a valid User Account for system access.",
+            "Given an employee transfer, When updating the branch assignment, Then the user's BranchAccess table must be updated automatically."
+          ],
+          "priority": "High"
+        }
+      ]
+    },
+    {
+      "id": "FEAT-MST-008",
+      "epic_id": "EPIC-MST-004",
+      "title": "Item Group (Catalog) Management",
+      "description": "Hierarchical classification and structural organization for products.",
+      "user_stories": [
+        {
+          "title": "Hierarchical Item-Group Management",
+          "story": "As a user, I want to group items into categories and sub-groups so that I can organize the POS menu and generate grouped sales reports.",
+          "acceptance_criteria": [
+            "Given an Item Group creation, When assigned a parent, Then the system must avoid creating circular references.",
+            "Given an Item Group, When deactivating it, Then all child items must be optionally hidden from the quick-pick menu."
+          ],
+          "priority": "Medium"
+        },
+        {
+          "title": "Item Component (BOM) Management",
+          "story": "As a kitchen manager or production supervisor, I want to define a list of components/ingredients for an item so that the system can automatically track stock consumption of raw materials.",
+          "acceptance_criteria": [
+            "Given an item, When defined as a 'Composite' or 'Kit' item, Then it must allow adding one or more component items.",
+            "Given a component item, When added to a parent item, Then the user must specify the 'Quantity to Deduct' per unit of the parent item.",
+            "Given a list of components, When saved, Then the parent item's total cost must be optionally calculated based on the sum of its component costs.",
+            "Given a circular dependency (e.g., Item A is a component of Item B, and Item B is as a component of Item A), When saved, Then the system must block the update to prevent infinite recursion."
+          ],
+          "priority": "High"
+        }
+      ]
+    },
+    {
+      "id": "FEAT-MST-012",
+      "epic_id": "EPIC-MST-004",
+      "title": "Dining Space (Table) Management",
+      "description": "Functional setup for physical seating and restaurant layouts.",
+      "user_stories": [
+        {
+          "title": "Table Group Management",
+          "story": "As an F&B manager, I want to group dining tables into sections (e.g., Al Fresco, VIP) so that I can manage floor assignments.",
+          "acceptance_criteria": [
+            "Given a Table Group, When saved, Then it should allow assigning multiple Table IDs.",
+            "Given a Table Group, When viewed in POS, Then it must display the status of all assigned tables (Occupied/Vacant)."
+          ],
+          "priority": "Medium"
+        }
+      ]
+    },
+    {
+      "id": "FEAT-MST-009",
+      "epic_id": "EPIC-MST-004",
+      "title": "Entity Relationship (CRM/SRM)",
+      "description": "Management of Customers and Suppliers.",
+      "user_stories": [
+        {
+          "title": "Customer Loyalty Profile",
+          "story": "As a user, I want to maintain customer records so that I can apply loyalty discounts and track purchase history.",
+          "acceptance_criteria": [
+            "Given a Customer record, When saved, Then the system should allow defining a default Discount Type.",
+            "Given a Customer creation, When an Email/Phone already exists, Then the system must flag a potential duplicate."
+          ],
+          "priority": "High"
+        },
+        {
+          "title": "Supplier Masterfile",
+          "story": "As a purchasing officer, I want to manage supplier contacts and terms so that I can streamline procurement.",
+          "acceptance_criteria": [
+            "Given a Supplier record, When saved, Then it must include default Payment Terms (e.g., COD, Net30).",
+            "Given a Supplier, When viewed, Then the system should link to active Purchase Orders (Integration Check)."
+          ],
+          "priority": "Medium"
+        }
+      ]
+    },
+    {
+      "id": "FEAT-MST-010",
+      "epic_id": "EPIC-MST-004",
+      "title": "Commercial Rules (Discounts)",
+      "description": "Management of promotional and structural discounts.",
+      "user_stories": [
+        {
+          "title": "Complex Discount Rules",
+          "story": "As a manager, I want to define discounts (Percentage, Fixed, BOGO) so that I can implement marketing promotions.",
+          "acceptance_criteria": [
+            "Given a Discount creation, When type is 'Percentage', Then the value must be between 0 and 100.",
+            "Given a Discount, When saved, Then it must have a Start and End Date or be marked as 'Always Active'.",
+            "Given multiple discounts on one item, When calculating, Then the system must follow a 'Stackable' or 'Highest Only' rule defined in the master."
+          ],
+          "priority": "High"
+        }
+      ]
+    },
+    {
+      "id": "FEAT-MST-011",
+      "epic_id": "EPIC-MST-004",
+      "title": "System Meta-Data & Config Master",
+      "description": "Technical lookups for core logic (Tax, Terminals, Units).",
+      "user_stories": [
+        {
+          "title": "Financial Configurations (Tax & COA)",
+          "story": "As an accountant, I want to define Tax rates and Chart of Accounts so that financial transactions are posted correctly.",
+          "acceptance_criteria": [
+            "Given a Tax setup, When saved, Then it must include a specific Account Code from the COA master.",
+            "Given a Pay-Type (Cash, Card, GCash), When created, Then it must be mapped to a specific GL Account for reconciliation."
+          ],
+          "priority": "Critical"
+        },
+        {
+          "title": "Operational Configurations (Terminal, Unit, Term, Period)",
+          "story": "As a system admin, I want to manage technical masterfiles (Terminals, Units of Measure, Payment Terms, Accounting Periods) to support daily operations.",
+          "acceptance_criteria": [
+            "Given a Terminal record, When saved, Then it must be bound to a specific BranchID.",
+            "Given a Unit of Measure (UOM), When saved, Then it must allow defining a base-conversion factor (e.g., 1 Case = 24 Pcs).",
+            "Given an Accounting Period, When 'Closed', Then no new transactions can be saved for that date range."
+          ],
+          "priority": "Critical"
+        }
+      ]
     }
   ]
 }
+
 ```

@@ -7,7 +7,7 @@ import { BaseService } from '../../base.service'
 import { CreateSysSettingsDto, UpdateSysSettingsDto } from './dto'
 
 export interface ISysSettingsService {
-  // Add specific SysSettings methods here later
+  getMergedSettings(terminalId: number): Promise<SysSettingsEntity>
 }
 
 export class SysSettingsService extends BaseService<SysSettingsEntity> implements ISysSettingsService {
@@ -62,5 +62,51 @@ export class SysSettingsService extends BaseService<SysSettingsEntity> implement
     if (!currentEntity) {
       throw new BadRequestException('Settings not found for deletion.')
     }
+  }
+
+  /**
+   * Fetches and merges Global, Branch, and Terminal settings.
+   * Priority: Terminal > Branch > Global.
+   */
+  async getMergedSettings(terminalId: number): Promise<SysSettingsEntity> {
+    // 1. Fetch Terminal Level
+    const terminalSettings = await this.repository.findOneBy({ terminalId } as any)
+
+    // 2. Fetch Branch Level
+    const branchId = await this.getTerminalBranchId(terminalId)
+    let branchSettings: SysSettingsEntity | null = null
+    if (branchId) {
+      // Convention: Negative terminalId represents Branch-level settings
+      branchSettings = await this.repository.findOneBy({ terminalId: -branchId } as any)
+    }
+
+    // 3. Fetch Global Level
+    const globalSettings = await this.repository.findOneBy({ terminalId: 0 } as any)
+
+    // Merge logic: Terminal overrides Branch overrides Global
+    // We start with a new entity and spread the layers
+    const merged = new SysSettingsEntity()
+    
+    Object.assign(merged, globalSettings || {})
+    Object.assign(merged, branchSettings || {})
+    Object.assign(merged, terminalSettings || {})
+    
+    // Ensure final record has the correct terminalId
+    merged.terminalId = terminalId
+    
+    return merged
+  }
+
+  /**
+   * Helper to retrieve branchId for a given terminal.
+   */
+  private async getTerminalBranchId(terminalId: number): Promise<number | null> {
+    // We avoid circular dependency by using AppDataSource directly or a raw query if needed
+    // For now, assume we can import the repository
+    const { AppDataSource } = await import('../../../typeORM/configurations')
+    const { MstTerminalEntity } = await import('../../../entities/masterfiles/MstTerminal.entity')
+    
+    const terminal = await AppDataSource.getRepository(MstTerminalEntity).findOneBy({ id: terminalId })
+    return terminal ? terminal.branchId : null
   }
 }
