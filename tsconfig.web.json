@@ -15,9 +15,9 @@
     "noUnusedLocals": false,
     "baseUrl": ".",
     "paths": {
-      "@renderer/*": [
-        "src/renderer/src/*"
-      ],
+      // "@renderer/*": [
+      //   "src/renderer/src/*"
+      // ],
       "@windows/*": [
         "src/renderer/src/windows/*"
       ],

@@ -217,7 +217,11 @@ if (!gotTheLock) {
     })
 
     autoLaunch.isEnabled().then((isEnabled) => {
-      if (!isEnabled) autoLaunch.enable()
+      if (isDev && isEnabled) {
+        autoLaunch.disable()
+      } else if (!isDev && !isEnabled) {
+        autoLaunch.enable()
+      }
     })
   })
 

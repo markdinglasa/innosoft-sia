@@ -31,7 +31,7 @@ const theme = createTheme({
     h4: { fontSize: '1.5rem', fontWeight: fonts.weight.bold },
     h5: { fontSize: '1.25rem', fontWeight: fonts.weight.semiBold },
     h6: { 
-      fontSize: '1.75rem',
+      fontSize: '1rem',
       fontWeight: fonts.weight.semiBold 
     },
     body1: {
@@ -74,6 +74,24 @@ const theme = createTheme({
         }
       }
     },
+    MuiTab:{
+      styleOverrides: {
+        root: {
+          fontSize: '0.9rem'
+        }
+      }
+    },
+    MuiChip:{
+       defaultProps: {
+        variant: 'outlined',
+        size: 'small',
+      },
+      styleOverrides: {
+        root: {
+          fontSize: '0.9rem',
+        }
+      }
+    },
     MuiInputLabel: {
       styleOverrides: {
         root: {
@@ -102,14 +120,14 @@ const theme = createTheme({
         },
       }
     },
-    MuiChip: {
-      styleOverrides: {
-        root: {
-          //fontSize: '1.1rem',
-          height: '2.5rem'
-        }
-      }
-    },
+    // MuiChip: {
+    //   styleOverrides: {
+    //     root: {
+    //       //fontSize: '1.1rem',
+    //       height: '2.5rem'
+    //     }
+    //   }
+    // },
     MuiPaper: {
       styleOverrides: {
         root: {

@@ -26,7 +26,7 @@
   },
   "build": {
     "appId": "com.innosoft.pos",
-    "productName": "iPOS",
+    "productName": "NUTSHELL",
     "directories": {
       "output": "dist"
     },
@@ -60,8 +60,10 @@
     "better-sqlite3": "^12.8.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.4",
+    "clsx": "^2.1.1",
     "csv-writer": "^1.6.0",
     "date-fns": "^3.6.0",
+    "echarts": "^6.0.0",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.8",
     "electron-store": "^8.1.0",
@@ -91,6 +93,7 @@
     "rxjs": "^7.8.2",
     "socket.io-client": "^4.8.3",
     "styled-components": "^5.3.11",
+    "tailwind-merge": "^3.5.0",
     "tedious": "^18.2.1",
     "tweetnacl": "^1.0.3",
     "typeorm": "^0.3.20",
