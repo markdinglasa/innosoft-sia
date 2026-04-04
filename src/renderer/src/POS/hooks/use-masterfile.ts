@@ -20,13 +20,25 @@ export const useMasterfile = (serviceName: string) => {
   const useList = (options?: { 
     page?: number; 
     take?: number; 
+    limit?: number;
+    search?: string;
     searchKeyword?: string; 
     status?: string[];
+    filters?: any[];
   }) => {
     return useQuery({
       queryKey: [...baseKey, 'list', options],
       queryFn: async () => {
-        const response = await (window as any).electron.ipc.invoke(IpcChannel.mstList, { serviceName, options });
+        // Map frontend-specific naming conventions to the backend's expected PaginationOptionsDto
+        const mappedOptions = {
+          ...options,
+          limit: options?.limit ?? options?.take,
+          search: options?.search ?? options?.searchKeyword,
+        };
+        const response = await (window as any).electron.ipc.invoke(IpcChannel.mstList, { 
+          serviceName, 
+          options: mappedOptions 
+        });
         if (!response.success) throw new Error(response.message);
         return response.data;
       },

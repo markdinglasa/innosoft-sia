@@ -22,7 +22,7 @@ This roadmap is based on an audit of `/docs/specs` vs `/src/renderer/src/POS/fea
 - **Phase 1: Core Hubs** (Step 1 Personnel, Step 2 Bulk) - ✅ Step 1 COMPLETED
 - **Phase 2: Transaction Engines & Validations** (Step 3 Shift, Step 4 Calcs) - ✅ COMPLETED
 - **Phase 3: Integration & UI Wiring** (Step 5 Renderer Hooks, Step 6 Feature Modules) - ✅ COMPLETED
-- **Phase 4: Reporting & Notifications** (Step 8 Master Reporting, Step 9 Alerts) - 🚀 IN PROGRESS (25%)
+- **Phase 4: Reporting & Notifications** (Step 8 Master Reporting, Step 9 Alerts) - 🚀 IN PROGRESS (75%)
 
 ---
 
@@ -80,9 +80,11 @@ This roadmap is based on an audit of `/docs/specs` vs `/src/renderer/src/POS/fea
     - High-fidelity **ShiftReportView** for X-Reading. - ✅ COMPLETED
     - Tabbed layout for Audit History. - ✅ COMPLETED
 17. **Real-time Notifications**:
-    - Alert system for low stock and cash discrepancy. - ⏳ PENDING
+    - Alert system for low stock and cash discrepancy. - 🚀 IN PROGRESS
+    - Socket infrastructure & Local Main-to-Renderer broadcast. - ✅ COMPLETED
 18. **Audit Trail Hub**:
-    - Detailed record-level tracking for sensitive actions. - ⏳ PENDING
+    - Detailed record-level tracking for sensitive actions. - ✅ COMPLETED
+    - Historical diff viewing and user action inspection. - ✅ COMPLETED
 
 ## Phase 4: Reporting & Notifications - ⏳ PENDING
 **Focus:** Auditability, end-of-day processes, and real-time alerts.

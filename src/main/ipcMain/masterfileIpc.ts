@@ -1,24 +1,25 @@
-import { ipcMain } from 'electron'
 import { IpcChannel } from '@shared/types'
-import { 
-  AccountService, 
-  BranchService, 
-  CustomerService, 
-  DiscountService, 
-  ItemService, 
-  RoleService, 
-  SupplierService, 
-  TableService, 
-  UserService, 
-  TerminalService,
-  UnitService,
-  TaxService,
-  TermService,
-  PayTypeService,
-  ItemGroupService
-} from '../services/masterfile.services'
+import { ipcMain } from 'electron'
 import { BaseService } from '../services/base.service'
+import {
+  AccountService,
+  BranchService,
+  CustomerService,
+  DiscountService,
+  ItemGroupService,
+  ItemService,
+  PayTypeService,
+  RoleService,
+  SupplierService,
+  TableService,
+  TaxService,
+  TerminalService,
+  TermService,
+  UnitService,
+  UserService,
+} from '../services/masterfile.services'
 import { ParentChildService } from '../services/parent-child.service'
+import { SysAuditTrailService } from '../services/utility.services'
 
 /**
  * Registry of all available masterfile services to be wired to IPC.
@@ -38,7 +39,8 @@ const services: Record<string, any> = {
   table: new TableService(),
   term: new TermService(),
   payType: new PayTypeService(),
-  itemGroup: new ItemGroupService()
+  itemGroup: new ItemGroupService(),
+  auditTrail: new SysAuditTrailService()
 }
 
 

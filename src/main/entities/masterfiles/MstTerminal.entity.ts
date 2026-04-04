@@ -15,7 +15,7 @@ export class MstTerminalEntity extends BaseEntity {
     this.isDefault = false
   }
 
-  @Column({ name: 'RecNumber', type: 'nvarchar', length: 50, nullable: false })
+  @Column({ name: 'RecNumber', type: 'nvarchar', length: 50, nullable: true })
   recNumber: string
 
   @Column({ name: 'PhysicalAddress', type: 'nvarchar', length: 255, nullable: true })

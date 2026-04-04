@@ -1,9 +1,9 @@
+import { History as HistoryIcon, Home as HomeIcon, Assessment as ReadingIcon, Assessment as ReportIcon } from '@mui/icons-material'
+import { Alert, Box, Breadcrumbs, Button, Link, Paper, Tab, Tabs, Typography } from '@mui/material'
 import React, { useState } from 'react'
-import { Box, Paper, Tabs, Tab, Typography, Breadcrumbs, Link, Button, Alert } from '@mui/material'
-import { Assessment as ReportIcon, Home as HomeIcon, History as HistoryIcon, Assessment as ReadingIcon } from '@mui/icons-material'
 import PageLayout from '../../components/layout/page-layout'
-import { useReport } from './hooks/use-report'
 import { ShiftReportView } from './components/ShiftReportView'
+import { useReport } from './hooks/use-report'
 
 const ReportingHub: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0)
@@ -36,7 +36,7 @@ const ReportingHub: React.FC = () => {
           sx={{ borderBottom: 1, borderColor: 'divider', px: 2, pt: 1 }}
         >
           <Tab icon={<ReadingIcon />} iconPosition="start" label="X-Reading (Live)" />
-          <Tab icon={<HistoryIcon />} iconPosition="start" label="Audit Trail" disabled />
+          <Tab icon={<HistoryIcon />} iconPosition="start" label="Audit Trail" />
           <Tab icon={<ReportIcon />} iconPosition="start" label="Sales Reports" disabled />
         </Tabs>
 

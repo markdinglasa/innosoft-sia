@@ -67,6 +67,13 @@ class SocketService {
   }
 
   /**
+   * Public broadcast method for local Main process services.
+   */
+  public broadcastLocal(channel: string, data: any): void {
+    this.broadcast(channel, data)
+  }
+
+  /**
    * Sends a message back to the server.
    */
   emit(event: string, data: any): void {
