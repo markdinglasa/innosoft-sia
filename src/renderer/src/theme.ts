@@ -86,6 +86,20 @@ const theme = createTheme({
         }
       }
     },
+    MuiFormControlLabel: {
+      styleOverrides: {
+        label: {
+          fontSize: '0.9rem'
+        }
+      }
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          fontSize: '0.9rem'
+        }
+      }
+    },
     MuiChip:{
        defaultProps: {
         variant: 'outlined',

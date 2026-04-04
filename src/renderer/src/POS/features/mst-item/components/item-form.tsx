@@ -244,10 +244,10 @@ export const ItemForm: React.FC = () => {
         {activeTab === 1 && (
           <Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography variant="caption" color="text.secondary">
                 Special pricing tiers and branch-specific rates.
               </Typography>
-              <Button size="small" startIcon={<AddIcon />} onClick={() => appendPrice({ priceDescription: '', price: 0, triggerQuantity: 0 })}>
+              <Button variant="outlined" size="small" startIcon={<AddIcon />} onClick={() => appendPrice({ priceDescription: '', price: 0, triggerQuantity: 0 })}>
                 Add Price Tier
               </Button>
             </Box>

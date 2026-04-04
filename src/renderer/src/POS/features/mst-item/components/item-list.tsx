@@ -69,7 +69,7 @@ export const ItemList: React.FC = () => {
           <TableHead>
             <TableRow>
               <TableCell width={50}></TableCell>
-              <TableCell>Item Name</TableCell>
+              <TableCell>Item</TableCell>
               <TableCell>Code / Barcode</TableCell>
               <TableCell>Category</TableCell>
               <TableCell align="right">Cost</TableCell>
