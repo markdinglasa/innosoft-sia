@@ -3,6 +3,12 @@ import {
   Box,
   Chip,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
   IconButton,
   Paper,
   Table,
@@ -24,14 +30,21 @@ export const BranchList: React.FC = () => {
   const { data, isLoading, isError } = useList({ searchKeyword })
   const deleteMutation = useDeleteMutation()
 
+  const [deleteId, setDeleteId] = React.useState<number | null>(null)
+
   const handleEdit = (id: number) => {
     setSelectedBranchId(id)
     setIsFormOpen(true)
   }
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm('Are you sure you want to delete this branch?')) {
-      await deleteMutation.mutateAsync(id)
+  const handleDelete = (id: number) => {
+    setDeleteId(id)
+  }
+
+  const confirmDelete = async () => {
+    if (deleteId) {
+      await deleteMutation.mutateAsync(deleteId)
+      setDeleteId(null)
     }
   }
 
@@ -50,14 +63,15 @@ export const BranchList: React.FC = () => {
   const branches = (data as any)?.items || []
 
   return (
-    <TableContainer component={Paper} variant="outlined" sx={{ maxHeight: 'calc(100vh - 250px)' }}>
+    <>
+      <TableContainer component={Paper} variant="outlined" sx={{ maxHeight: 'calc(100vh - 250px)' }} className="bg-white">
       <Table stickyHeader size="small">
         <TableHead>
           <TableRow>
             <TableCell width={50}></TableCell>
-            <TableCell>Branch Name</TableCell>
+            <TableCell>Branch</TableCell>
             <TableCell>Address</TableCell>
-            <TableCell>Is Default</TableCell>
+            <TableCell>Default</TableCell>
             <TableCell align="right">Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -65,14 +79,11 @@ export const BranchList: React.FC = () => {
           {branches.map((branch: any) => (
             <TableRow key={branch.id} hover onClick={() => handleEdit(branch.id)} sx={{ cursor: 'pointer' }}>
               <TableCell>
-                <StoreIcon color="primary" fontSize="small" />
+                <StoreIcon color="primary" sx={{ fontSize: 25 }} />
               </TableCell>
               <TableCell>
                 <Typography variant="body2" fontWeight="medium">
                   {branch.name}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Code: {branch.id}
                 </Typography>
               </TableCell>
               <TableCell>{branch.address || 'N/A'}</TableCell>
@@ -83,10 +94,10 @@ export const BranchList: React.FC = () => {
               </TableCell>
               <TableCell align="right">
                 <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleEdit(branch.id); }}>
-                  <EditIcon fontSize="small" />
+                  <EditIcon sx={{ fontSize: 25 }} />
                 </IconButton>
                 <IconButton size="small" color="error" onClick={(e) => { e.stopPropagation(); handleDelete(branch.id); }}>
-                  <DeleteIcon fontSize="small" />
+                  <DeleteIcon sx={{ fontSize: 25 }}/>
                 </IconButton>
               </TableCell>
             </TableRow>
@@ -102,6 +113,22 @@ export const BranchList: React.FC = () => {
           )}
         </TableBody>
       </Table>
-    </TableContainer>
+      </TableContainer>
+
+      <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this branch? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteId(null)}>Cancel</Button>
+          <Button onClick={confirmDelete} color="error" variant="contained" disabled={deleteMutation.isPending}>
+            {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   )
 }

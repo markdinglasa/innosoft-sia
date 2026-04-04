@@ -54,6 +54,7 @@ export const BranchForm: React.FC = () => {
     try {
       await saveMutation.mutateAsync({
         ...data,
+        isDefault: Boolean(data.isDefault),
         id: selectedBranchId
       })
       handleClose()
@@ -80,7 +81,7 @@ export const BranchForm: React.FC = () => {
       <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', bgcolor: 'primary.main', color: 'white' }}>
         <Typography variant="h6">{selectedBranchId ? 'Edit Branch' : 'New Branch'}</Typography>
         <IconButton size="small" onClick={handleClose} sx={{ color: 'white' }}>
-          <CloseIcon />
+          <CloseIcon sx={{ fontSize: 25 }} />
         </IconButton>
       </Box>
 
@@ -125,7 +126,7 @@ export const BranchForm: React.FC = () => {
               control={control}
               render={({ field }) => (
                 <FormControlLabel 
-                  control={<Switch checked={field.value} onChange={field.onChange} />} 
+                  control={<Switch checked={!!field.value} onChange={(e) => field.onChange(e.target.checked)} />} 
                   label="Set as Default Branch" 
                 />
               )}
@@ -147,7 +148,7 @@ export const BranchForm: React.FC = () => {
           fullWidth 
           variant="contained" 
           type="submit" 
-          startIcon={<SaveIcon />}
+          startIcon={<SaveIcon sx={{ fontSize: 25 }} />}
           disabled={saveMutation.isPending}
         >
           {saveMutation.isPending ? 'Saving...' : 'Save Branch'}
