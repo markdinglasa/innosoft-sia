@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../../components/layout/page-layout";
-
+import TaxHub from "../../../../../features/mst-tax";
 
 function TaxPage(){
-    return <PageLayout title="Tax">
-        <div>
-            Tax Content
-        </div>
-    </PageLayout>
+    return <TaxHub />
 }
 
 export default memo(TaxPage)

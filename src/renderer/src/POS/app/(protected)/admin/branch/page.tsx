@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../components/layout/page-layout";
-
+import BranchHub from "../../../../features/mst-branch";
 
 function BranchPage(){
-    return <PageLayout title="Branch">
-        <div>
-            Branch Content
-        </div>
-    </PageLayout>
+    return <BranchHub />
 }
 
 export default memo(BranchPage)

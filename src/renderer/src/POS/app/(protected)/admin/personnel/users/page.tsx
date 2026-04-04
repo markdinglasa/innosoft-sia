@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../../components/layout/page-layout";
-
+import UserHub from "../../../../../features/mst-user";
 
 function UsersPage(){
-    return <PageLayout title="Users">
-        <div>
-            Users Content
-        </div>
-    </PageLayout>
+    return <UserHub />
 }
 
 export default memo(UsersPage)

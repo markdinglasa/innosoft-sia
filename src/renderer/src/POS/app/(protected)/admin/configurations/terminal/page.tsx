@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../../components/layout/page-layout";
-
+import TerminalHub from "../../../../../features/mst-terminal";
 
 function TerminalPage(){
-    return <PageLayout title="Terminal">
-        <div>
-            Terminal Content
-        </div>
-    </PageLayout>
+    return <TerminalHub />
 }
 
 export default memo(TerminalPage)

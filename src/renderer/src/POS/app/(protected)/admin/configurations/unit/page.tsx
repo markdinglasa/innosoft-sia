@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../../components/layout/page-layout";
-
+import UnitHub from "../../../../../features/mst-unit";
 
 function UnitPage(){
-    return <PageLayout title="Unit">
-        <div>
-            Unit Content
-        </div>
-    </PageLayout>
+    return <UnitHub />
 }
 
 export default memo(UnitPage)

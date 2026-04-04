@@ -2,8 +2,8 @@ import { Add as AddIcon, Search as SearchIcon } from '@mui/icons-material'
 import { Box, Button, Drawer, InputAdornment, Paper, TextField } from '@mui/material'
 import React from 'react'
 import PageLayout from '../../components/layout/page-layout'
-import { BranchForm } from './components/BranchForm'
-import { BranchList } from './components/BranchList'
+import { BranchForm } from './components/branch-form'
+import { BranchList } from './components/branch-list'
 import { useBranchHubStore } from './store/use-branch-hub-store'
 
 const BranchHub: React.FC = () => {

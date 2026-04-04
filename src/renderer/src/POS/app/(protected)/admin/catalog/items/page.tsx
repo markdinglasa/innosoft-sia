@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../../components/layout/page-layout";
-
+import ItemHub from "../../../../../features/mst-item";
 
 function ItemsPage(){
-    return <PageLayout title="Items">
-        <div>
-            Items Content
-        </div>
-    </PageLayout>
+    return <ItemHub />
 }
 
 export default memo(ItemsPage)

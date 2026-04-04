@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../../components/layout/page-layout";
-
+import PayTypeHub from "../../../../../features/mst-pay-type";
 
 function PayTypePage(){
-    return <PageLayout title="Pay Type">
-        <div>
-            Pay Type Content
-        </div>
-    </PageLayout>
+    return <PayTypeHub />
 }
 
 export default memo(PayTypePage)

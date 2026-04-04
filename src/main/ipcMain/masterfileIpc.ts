@@ -6,11 +6,14 @@ import {
   BranchService,
   CustomerService,
   DiscountService,
+  ItemComponentService,
   ItemGroupService,
   ItemService,
   PayTypeService,
+  PeriodService,
   RoleService,
   SupplierService,
+  TableGroupService,
   TableService,
   TaxService,
   TerminalService,
@@ -39,7 +42,10 @@ const services: Record<string, any> = {
   table: new TableService(),
   term: new TermService(),
   payType: new PayTypeService(),
+  period: new PeriodService(),
   itemGroup: new ItemGroupService(),
+  itemComponent: new ItemComponentService(),
+  tableGroup: new TableGroupService(),
   auditTrail: new SysAuditTrailService()
 }
 

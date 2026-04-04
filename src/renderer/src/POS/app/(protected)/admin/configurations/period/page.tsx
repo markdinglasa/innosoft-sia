@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../../components/layout/page-layout";
-
+import PeriodHub from "../../../../../features/mst-period";
 
 function PeriodPage(){
-    return <PageLayout title="Period">
-        <div>
-            Period Content
-        </div>
-    </PageLayout>
+    return <PeriodHub />
 }
 
 export default memo(PeriodPage)

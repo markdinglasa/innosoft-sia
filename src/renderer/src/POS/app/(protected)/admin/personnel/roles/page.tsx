@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../../components/layout/page-layout";
-
+import RoleHub from "../../../../../features/mst-role";
 
 function RolesPage(){
-    return <PageLayout title="Roles">
-        <div>
-            Role Content
-        </div>
-    </PageLayout>
+    return <RoleHub />
 }
 
 export default memo(RolesPage)

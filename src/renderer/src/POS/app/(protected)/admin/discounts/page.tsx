@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../components/layout/page-layout";
-
+import DiscountHub from "../../../../features/mst-discount";
 
 function DiscountsPage(){
-    return <PageLayout title="Discounts">
-        <div>
-            Discounts Content
-        </div>
-    </PageLayout>
+    return <DiscountHub />
 }
 
 export default memo(DiscountsPage)

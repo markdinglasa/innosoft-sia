@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../../components/layout/page-layout";
-
+import TermHub from "../../../../../features/mst-term";
 
 function TermPage(){
-    return <PageLayout title="Term">
-        <div>
-            Term Content
-        </div>
-    </PageLayout>
+    return <TermHub />
 }
 
 export default memo(TermPage)
