@@ -41,3 +41,42 @@ type ItemInventoryInit = {
   isActive: true;
 };
 ```
+
+## 8. Required Rules
+- only initialize if inventory record does not already exist
+- inventory creation must occur inside same Item save transaction
+- if initialization fails, Item save must rollback
+- branch context must be explicit and valid
+
+## 9. Open Design Rule
+
+If your system supports multi-branch initialization strategy, choose one and document it explicitly:
+
+### Option A
+
+- Initialize only for current branch
+
+### Option B
+
+- Initialize for all active branches
+
+Recommended default for now:
+
+- Initialize for current branch only
+- Extend later if needed
+
+## 10. Error Cases
+- invalid branch context
+- duplicate invent  ory record
+- failed inventory insert
+
+## 11. Acceptance Criteria
+- tracked Item creates inventory record if missing
+- non-tracked Item does not create inventory
+- enabling tracking later creates missing inventory
+- inventory init failure rolls back Item save
+
+## 12. Agent Restrictions
+- DO NOT initialize inventory in renderer
+- DO NOT create duplicate inventory rows
+- DO NOT assume “all branches” unless explicitly implemented

@@ -1,5 +1,4 @@
 
-
 # FEAT-MST-007 — Organizational & Personnel Entities
 
 ## 1. Feature ID

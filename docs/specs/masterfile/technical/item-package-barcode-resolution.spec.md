@@ -90,3 +90,4 @@ duplicate barcode is rejected
 ## 12. Agent Restrictions
 - DO NOT treat package barcode as separate unrelated item
 - DO NOT calculate package quantity in UI only
+
