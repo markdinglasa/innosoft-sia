@@ -6,6 +6,11 @@ import { TrnOrderEntity } from '../../../entities/transactions/TrnOrder.entity'
 import { BaseService } from '../../base.service'
 import { ShiftService } from '../shift.service'
 import { CreateOrderDto, UpdateOrderDto } from './dto'
+import socketService from '../../socket.service'
+import { SocketChannel } from '@shared/constants'
+import { getRepository } from 'typeorm'
+import { MstItemEntity } from '../../../entities/masterfiles/MstItem.entity'
+import { TrnOrderLineEntity } from '../../../entities/transactions/TrnOrderLine.entity'
 
 /**
  * Interface defining the specific operations for the Order service.
@@ -49,6 +54,35 @@ export class OrderService extends BaseService<TrnOrderEntity> implements IOrderS
 
     if (existing) {
       throw new BadRequestException(`Order Number '${orderDto.orderNumber}' already exists.`)
+    }
+
+    // Perform stock alerts check
+    if (data.orderLines && data.orderLines.length > 0) {
+      this.checkInventoryAlerts(data.orderLines)
+    }
+  }
+
+  /**
+   * Scans order lines for low stock items and broadcasts alerts.
+   */
+  private async checkInventoryAlerts(lines: DeepPartial<TrnOrderLineEntity>[]): Promise<void> {
+    const itemRepo = getRepository(MstItemEntity)
+    
+    for (const line of lines) {
+      if (!line.itemId) continue
+      
+      const item = await itemRepo.findOneBy({ id: line.itemId })
+      if (item && item.isInventory) {
+        const remaining = Number(item.onhandQuantity) - Number(line.quantity)
+        if (remaining <= Number(item.reorderQuantity)) {
+           socketService.broadcastLocal(SocketChannel.lowStock, {
+             itemId: item.id,
+             itemName: item.name,
+             remaining,
+             threshold: item.reorderQuantity
+           })
+        }
+      }
     }
   }
 

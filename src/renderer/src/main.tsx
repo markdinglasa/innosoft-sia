@@ -10,6 +10,7 @@ import { ScannerProvider } from './POS/providers/ScannerProvider'
 import './tailwind.css'
 import theme from './theme'
 import Wrapper from './Wrapper'
+import { NotificationProvider } from './POS/components/providers/notification-provider'
 
 const Root = () => {
   const queryClient = new QueryClient()
@@ -22,10 +23,10 @@ const Root = () => {
           <QueryClientProvider client={queryClient}>
             <GlobalStyle />
             <ToastifyStyle />
-            <Suspense fallback={
-              <Loader />
-            }>
-              <Wrapper />
+            <Suspense fallback={<Loader />}>
+              <NotificationProvider>
+                 <Wrapper />
+              </NotificationProvider>
             </Suspense>
           </QueryClientProvider>
         </ThemeProvider>

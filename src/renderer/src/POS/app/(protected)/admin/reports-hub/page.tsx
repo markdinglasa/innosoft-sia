@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../components/layout/page-layout";
-
+import ReportingHub from "../../../../features/rep-reporting";
 
 function ReportsHubPage(){
-    return <PageLayout title="Reports Hub">
-        <div>
-            Reports Hub Content
-        </div>
-    </PageLayout>
+    return <ReportingHub />
 }
 
-export default memo(ReportsHubPage)    
+export default memo(ReportsHubPage)

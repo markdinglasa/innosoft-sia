@@ -1,6 +1,6 @@
+import { Home as HomeIcon, ShoppingCart as OrderIcon } from '@mui/icons-material'
+import { Box, Breadcrumbs, Grid, Link, Paper, Typography } from '@mui/material'
 import React from 'react'
-import { Grid, Box, Paper, Divider, Typography, Breadcrumbs, Link } from '@mui/material'
-import { ShoppingCart as OrderIcon, Home as HomeIcon } from '@mui/icons-material'
 import PageLayout from '../../components/layout/page-layout'
 import { CartTable } from './components/cart-pane/cart-table'
 import { CatalogPane } from './components/catalog-pane/catalog-pane'

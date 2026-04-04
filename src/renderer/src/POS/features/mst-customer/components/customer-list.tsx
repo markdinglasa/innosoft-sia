@@ -1,19 +1,18 @@
-import React from 'react'
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TableRow, 
-  Paper, 
-  IconButton, 
-  Typography, 
-  Chip,
+import { PersonPin as CustomerIcon, Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material'
+import {
   Box,
-  CircularProgress
+  CircularProgress,
+  IconButton,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography
 } from '@mui/material'
-import { Edit as EditIcon, Delete as DeleteIcon, PersonPin as CustomerIcon } from '@mui/icons-material'
+import React from 'react'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useCustomerHubStore } from '../store/use-customer-hub-store'
 

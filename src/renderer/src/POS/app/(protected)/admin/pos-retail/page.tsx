@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../components/layout/page-layout";
-
+import OrderHub from "../../../../features/trn-order";
 
 function POSRetailPage(){
-    return <PageLayout title="POS Retail">
-        <div>
-            POS Retail Content
-        </div>
-    </PageLayout>
+    return <OrderHub />
 }
 
 export default memo(POSRetailPage)

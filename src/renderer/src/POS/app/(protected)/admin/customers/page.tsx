@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../components/layout/page-layout";
-
+import CustomerHub from "../../../../features/mst-customer";
 
 function CustomersPage(){
-    return <PageLayout title="Customers">
-        <div>
-            Customers Content
-        </div>
-    </PageLayout>
+    return <CustomerHub />
 }
 
 export default memo(CustomersPage)

@@ -1,0 +1,102 @@
+
+> innosoft-pos@2.0.0 build
+> npm run typecheck && electron-vite build
+
+
+> innosoft-pos@2.0.0 typecheck
+> npm run typecheck:node && npm run typecheck:web
+
+
+> innosoft-pos@2.0.0 typecheck:node
+> tsc --noEmit -p tsconfig.node.json --composite false
+
+
+> innosoft-pos@2.0.0 typecheck:web
+> tsc --noEmit -p tsconfig.web.json --composite false
+
+vite v7.3.1 building ssr environment for production...
+transforming...
+✓ 798 modules transformed.
+rendering chunks...
+out/main/index.js  1,160.57 kB
+✓ built in 888ms
+vite v7.3.1 building ssr environment for production...
+transforming...
+✓ 82 modules transformed.
+rendering chunks...
+out/preload/index.js  10.76 kB
+✓ built in 38ms
+vite v7.3.1 building client environment for production...
+transforming...
+✓ 13176 modules transformed.
+Initially, there are
+43 chunks, of which
+41 are below minChunkSize.
+After merging chunks, there are
+42 chunks, of which
+40 are below minChunkSize.
+Generated an empty chunk: "lodash".
+Generated an empty chunk: "websocket".
+Generated an empty chunk: "uuid".
+Generated an empty chunk: "htmlPdf".
+rendering chunks...
+../../out/renderer/index.html                                 1.61 kB
+../../out/renderer/assets/innosoftlogo-B0DjkV82.svg         561.52 kB
+../../out/renderer/assets/index-DVt0CyDC.css                 36.01 kB
+../../out/renderer/assets/lodash-l0sNRNKZ.js                  0.00 kB
+../../out/renderer/assets/websocket-l0sNRNKZ.js               0.00 kB
+../../out/renderer/assets/uuid-l0sNRNKZ.js                    0.00 kB
+../../out/renderer/assets/htmlPdf-l0sNRNKZ.js                 0.00 kB
+../../out/renderer/assets/react-DXZf_D5k.js                   0.03 kB
+../../out/renderer/assets/vendor-DgYk2OaC.js                  0.51 kB
+../../out/renderer/assets/page-B8S0XmjO.js                    0.64 kB
+../../out/renderer/assets/page-BkFLp_G5.js                    0.65 kB
+../../out/renderer/assets/page-BWr1Ivby.js                    0.65 kB
+../../out/renderer/assets/page-BFulE-1A.js                    0.65 kB
+../../out/renderer/assets/page-Cc24PXd4.js                    0.65 kB
+../../out/renderer/assets/page-BgMDV-cN.js                    0.65 kB
+../../out/renderer/assets/page-BLVSrZ00.js                    0.66 kB
+../../out/renderer/assets/page-DT46KwXd.js                    0.66 kB
+../../out/renderer/assets/page-CYQf4S_3.js                    0.66 kB
+../../out/renderer/assets/page-DCHM8VGd.js                    0.66 kB
+../../out/renderer/assets/page-Z5uy6kKx.js                    0.66 kB
+../../out/renderer/assets/page-C69Vw0Am.js                    0.66 kB
+../../out/renderer/assets/page-DiA3gloc.js                    0.66 kB
+../../out/renderer/assets/page-4EauJrVi.js                    0.67 kB
+../../out/renderer/assets/page-qZjjnvDV.js                    0.67 kB
+../../out/renderer/assets/page-Cqsedgnp.js                    0.67 kB
+../../out/renderer/assets/page-CCM43JAC.js                    0.67 kB
+../../out/renderer/assets/page-B3GnC6X5.js                    0.67 kB
+../../out/renderer/assets/page-DQ0sgKl0.js                    0.67 kB
+../../out/renderer/assets/page-mIigHPr-.js                    0.67 kB
+../../out/renderer/assets/page-Yo4kcxu2.js                    0.68 kB
+../../out/renderer/assets/page-k3FyJulo.js                    0.68 kB
+../../out/renderer/assets/page-fbiJ9e-m.js                    0.68 kB
+../../out/renderer/assets/page-XBxQEjq3.js                    0.69 kB
+../../out/renderer/assets/page-CnsJChX7.js                    0.69 kB
+../../out/renderer/assets/page-CE5Th3Wt.js                    0.71 kB
+../../out/renderer/assets/page-DW8kW9Rw.js                    1.56 kB
+../../out/renderer/assets/line-chart-C8WqXdzA.js              2.66 kB
+../../out/renderer/assets/trend-card-DwTprXkP.js              2.97 kB
+../../out/renderer/assets/connection-card-BF0rehTm.js         2.98 kB
+../../out/renderer/assets/database-link-form-CZO9aumn.js      8.58 kB
+../../out/renderer/assets/database-link-B_amSCx6.js          11.13 kB
+../../out/renderer/assets/page-BWtLO5qV.js                   11.43 kB
+../../out/renderer/assets/page-aGABjgMA.js                   11.69 kB
+../../out/renderer/assets/page-Cld6CVX0.js                   14.40 kB
+../../out/renderer/assets/page-Bi5qQr6y.js                   15.93 kB
+../../out/renderer/assets/page-B9hG1pn-.js                   17.80 kB
+../../out/renderer/assets/page-BEiSLSyW.js                   18.45 kB
+../../out/renderer/assets/mdi-C4l09Flc.js                    20.48 kB
+../../out/renderer/assets/reactLib-BpBf4SLI.js               20.76 kB
+../../out/renderer/assets/page-DBvtG_RK.js                   57.54 kB
+../../out/renderer/assets/index.esm-CepehHQP.js              70.04 kB
+../../out/renderer/assets/forms-M-sg1VHy.js                  70.25 kB
+../../out/renderer/assets/react-9HNS21Ui.js                  73.73 kB
+../../out/renderer/assets/reactQuery-DJUnc-TM.js             80.67 kB
+../../out/renderer/assets/styles-CsKQh5mC.js                137.37 kB
+../../out/renderer/assets/validator-BJj0ltnh.js             144.18 kB
+../../out/renderer/assets/index-D4vGA_ji.js                 163.62 kB
+../../out/renderer/assets/mui-B1o2J3-Y.js                   976.36 kB
+../../out/renderer/assets/echarts-CQw6-Qys.js             1,277.96 kB
+✓ built in 5.88s

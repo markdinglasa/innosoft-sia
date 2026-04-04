@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../components/layout/page-layout";
-
+import SupplierHub from "../../../../features/mst-supplier";
 
 function SuppliersPage(){
-    return <PageLayout title="Suppliers">
-        <div>
-            Suppliers Content
-        </div>
-    </PageLayout>
+    return <SupplierHub />
 }
 
 export default memo(SuppliersPage)

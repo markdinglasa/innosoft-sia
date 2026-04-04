@@ -9,7 +9,7 @@ const ReportingHub: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0)
   // Logic to get current shift ID from a global store or context would follow.
   // For now, we allow entering a Shift ID for testing manually.
-  const [testShiftId, setTestShiftId] = useState<number | null>(1) 
+  const [testShiftId] = useState<number | null>(1) 
   
   const { useXReading } = useReport()
   const { data, isLoading, error } = useXReading(activeTab === 0 ? testShiftId! : undefined)

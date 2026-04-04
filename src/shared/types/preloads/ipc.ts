@@ -1,4 +1,5 @@
-import { GenericFunction, LocalElectronStore } from '@shared/types'
+import { LocalElectronStore } from '../stores/localElectronStore'
+import { GenericFunction } from '../utility/generic'
 
 export interface IpcApi {
   on(channel: string, callback: GenericFunction): void

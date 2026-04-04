@@ -109,8 +109,59 @@ export class ReportService {
   /**
    * Generates a daily summary for a terminal (Z-Reading).
    */
-  async getZReading(_terminalId: number, _date: Date): Promise<any> {
-     // Implementation for daily terminal aggregation across shifts
-     return { message: 'Z-Reading logic to be finalized.' }
+  async getZReading(terminalId: number, date: Date): Promise<any> {
+     const shiftRepo = getRepository(TrnShiftEntity)
+     
+     // Find all shifts closed on this date for this terminal
+     const startOfDay = new Date(date)
+     startOfDay.setHours(0, 0, 0, 0)
+     
+     const endOfDay = new Date(date)
+     endOfDay.setHours(23, 59, 59, 999)
+
+     const shifts = await shiftRepo.find({
+       where: {
+         terminalId,
+         status: 'Closed'
+       },
+       order: { openDate: 'ASC' }
+     })
+
+     // Filter by close date manually for better compatibility with sqlite/mssql dates if needed,
+     // or use TypeORM Between.
+     const dailyShifts = shifts.filter(s => s.closeDate && s.closeDate >= startOfDay && s.closeDate <= endOfDay)
+
+     if (dailyShifts.length === 0) {
+       return {
+         terminalId,
+         date,
+         message: 'No closed shifts found for this date.',
+         shifts: []
+       }
+     }
+
+     const summaries = await Promise.all(dailyShifts.map(s => this.getXReading(s.id)))
+
+     const totals = summaries.reduce((acc, s) => ({
+       totalGrossSales: acc.totalGrossSales + s.totalGrossSales,
+       totalCollected: acc.totalCollected + s.totalCollected,
+       totalCashPayments: acc.totalCashPayments + s.totalCashPayments,
+       totalOtherPayments: acc.totalOtherPayments + s.totalOtherPayments,
+       transactionCount: acc.transactionCount + s.transactionCount
+     }), {
+       totalGrossSales: 0,
+       totalCollected: 0,
+       totalCashPayments: 0,
+       totalOtherPayments: 0,
+       transactionCount: 0
+     })
+
+     return {
+       terminalId,
+       date,
+       shiftCount: dailyShifts.length,
+       ...totals,
+       shifts: summaries
+     }
   }
 }

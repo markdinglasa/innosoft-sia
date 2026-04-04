@@ -1,4 +1,4 @@
-import { VerifySignatureParams } from '@shared/types'
+import { VerifySignatureParams } from '../utility/signing'
 import { SignKeyPair } from 'tweetnacl'
 
 export interface KeyPairDetails {

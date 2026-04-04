@@ -55,10 +55,8 @@ export default defineConfig({
             mui: [
               '@mui/material',
               '@mui/icons-material',
-              '@emotion/react',
-              '@emotion/styled',
-              '@emotion/is-prop-valid'
             ],
+            emotion: ['@emotion/react', '@emotion/styled', '@emotion/is-prop-valid'],
             uuid: ['uuid'],
             //cache: ['localforage'],
             validator: ['zod', 'yup'],
@@ -66,16 +64,11 @@ export default defineConfig({
             mdi: ['@mdi/js', '@mdi/react'],
             echarts: ['echarts'],
             htmlPdf: ['html2canvas', 'html2pdf.js'],
-            //pdf: ['@react-pdf/renderer', 'jspdf', 'react-to-pdf', 'react-pdf'],
             forms: ['formik'],
-            styles: ['postcss', 'tailwind-merge', 'styled-components'],
+            styles: ['tailwind-merge', 'styled-components'],
             vendor: [
-              //'aws-sdk',
-              //'mock-aws-s3',
               'js-cookie',
-              'clsx',
-              //'jwt-decode',
-              'ts-node'
+              'clsx'
             ]
           }
         }
