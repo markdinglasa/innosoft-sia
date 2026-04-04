@@ -11,11 +11,11 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import { AppDispatch } from '@shared/types'
+import { AppDispatch, ToastType } from '@shared/types'
+import { displayToast } from "@shared/utils"
 import { format } from 'date-fns'
 import { memo, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { toast } from 'react-toastify'
 import { setActivePage } from '../../../store/manager'
 import { POSPages } from '../../../types/pages'
 import { useAuth } from '../hooks/use-auth'
@@ -44,7 +44,7 @@ function LoginForm() {
         loginDate,
         override
       })
-      toast.success('Welcome back!')
+      displayToast('Welcome back!', ToastType.success)
       setShowOverride(false)
     } catch (err: any) {
       const errMessage = authError?.message || err?.message || err?.error?.message || err?.toString() || 'Sorry, Something went wrong.'
@@ -69,7 +69,7 @@ function LoginForm() {
     try {
       dispatch(setActivePage(POSPages.DATABASE_LINK))
     } catch (error: unknown) {
-      toast.error((error as Error).message || 'Sorry, Something went wrong.')
+     displayToast((error as Error).message || 'Sorry, Something went wrong.', ToastType.error)
     }
   }
 

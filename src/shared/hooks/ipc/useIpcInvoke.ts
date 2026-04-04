@@ -1,6 +1,6 @@
+import { IpcResponseItem, ToastType } from '@shared/types'
+import { displayToast } from "@shared/utils"
 import { useCallback, useState } from 'react'
-import { toast } from 'react-toastify'
-import { IpcResponseItem } from '@shared/types'
 type UseIpcInvokeReturn<T, Args extends any[]> = {
   data: T | null
   error: IpcResponseItem['error'] | null
@@ -37,7 +37,7 @@ export function useIpcInvoke<T = any, Args extends any[] = any[]>(
         } else {
           setError(response.error)
           if (showToastOnError && response.error) {
-            toast.error(response.error.message || 'An error occurred')
+            displayToast(response.error.message || 'An error occurred', ToastType.error)
           }
           return null
         }
@@ -50,7 +50,7 @@ export function useIpcInvoke<T = any, Args extends any[] = any[]>(
         }
         setError(fallbackError)
         if (showToastOnError) {
-          toast.error(fallbackError.message)
+          displayToast(fallbackError.message, ToastType.error)
         }
         return null
       } finally {

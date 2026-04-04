@@ -4,10 +4,10 @@ import PolicyIcon from '@mui/icons-material/Policy';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Avatar, Tooltip } from '@mui/material';
 import { colors } from "@shared/styles";
-import { AppDispatch } from "@shared/types";
+import { AppDispatch, ToastType } from "@shared/types";
+import { displayToast } from "@shared/utils";
 import { memo, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
 import { useRoute } from "../../../hooks/use-route";
 import { setActiveUser } from "../../../store/manager";
 import { POSPages } from "../../../types/pages";
@@ -42,9 +42,9 @@ function ProfileOption() {
     try {
       dispatch(setActiveUser(null))
     } catch(error:unknown){
-      toast.error(
-       (error as Error).message || "Sorry, Something went wrong."
-      )
+     displayToast(
+       (error as Error).message || "Sorry, Something went wrong.",
+      ToastType.error)
     }  finally {
       navigate(POSPages.LOGIN)
     }
