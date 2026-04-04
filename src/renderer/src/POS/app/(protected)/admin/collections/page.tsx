@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../components/layout/page-layout";
-
+import CollectionHub from "../../../../features/trn-collection";
 
 function CollectionsPage(){
-    return <PageLayout title="Collections">
-        <div>
-            Collections Content
-        </div>
-    </PageLayout>
+    return <CollectionHub />
 }
 
 export default memo(CollectionsPage)

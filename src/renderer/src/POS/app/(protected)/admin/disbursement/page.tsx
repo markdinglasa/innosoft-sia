@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../components/layout/page-layout";
-
+import DisbursementHub from "../../../../features/trn-disbursement";
 
 function DisbursementPage(){
-    return <PageLayout title="Disbursement">
-        <div>
-            Disbursement Content
-        </div>
-    </PageLayout>
+    return <DisbursementHub />
 }
 
 export default memo(DisbursementPage)

@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../../components/layout/page-layout";
-
+import StockCountHub from "../../../../../features/trn-stock-count";
 
 function StockCountPage(){
-    return <PageLayout title="Stock-Count">
-        <div>
-            Stock-Count Content
-        </div>
-    </PageLayout>
+    return <StockCountHub />
 }
 
-export default memo(StockCountPage)    
+export default memo(StockCountPage)

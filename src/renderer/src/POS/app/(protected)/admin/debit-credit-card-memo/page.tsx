@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../components/layout/page-layout";
+import DebitCreditMemoHub from "../../../../features/trn-debit-credit-memo";
 
-
-function DebitCreditCardMemoPage(){
-    return <PageLayout title="Debit/Credit Card Memo">
-        <div>
-            Debit/Credit Card Memo Content
-        </div>
-    </PageLayout>
+function DebitCreditMemoPage(){
+    return <DebitCreditMemoHub />
 }
 
-export default memo(DebitCreditCardMemoPage)
+export default memo(DebitCreditMemoPage)

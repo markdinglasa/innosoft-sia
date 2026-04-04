@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../components/layout/page-layout";
-
+import PurchaseOrderHub from "../../../../features/trn-purchase-order";
 
 function PurchaseOrderPage(){
-    return <PageLayout title="Purchase Order">
-        <div>
-            Purchase Order Content
-        </div>
-    </PageLayout>
+    return <PurchaseOrderHub />
 }
 
 export default memo(PurchaseOrderPage)

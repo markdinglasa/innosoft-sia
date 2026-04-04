@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../../components/layout/page-layout";
-
+import StockInHub from "../../../../../features/trn-stock-in";
 
 function StockInPage(){
-    return <PageLayout title="Stock-In">
-        <div>
-            Stock-In Content
-        </div>
-    </PageLayout>
+    return <StockInHub />
 }
 
-export default memo(StockInPage)    
+export default memo(StockInPage)

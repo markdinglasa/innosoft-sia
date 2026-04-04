@@ -21,6 +21,15 @@ import {
   UnitService,
   UserService,
 } from '../services/masterfile.services'
+import {
+  CollectionService,
+  DebitCreditMemoService,
+  DisbursementService,
+  PurchaseOrderService,
+  StockCountService,
+  StockInService,
+  StockOutService,
+} from '../services/transaction.services'
 import { ParentChildService } from '../services/parent-child.service'
 import { SysAuditTrailService } from '../services/utility.services'
 
@@ -46,7 +55,16 @@ const services: Record<string, any> = {
   itemGroup: new ItemGroupService(),
   itemComponent: new ItemComponentService(),
   tableGroup: new TableGroupService(),
-  auditTrail: new SysAuditTrailService()
+  auditTrail: new SysAuditTrailService(),
+
+  // Transaction Services
+  collection: new CollectionService(),
+  disbursement: new DisbursementService(),
+  purchaseOrder: new PurchaseOrderService(),
+  stockIn: new StockInService(),
+  stockOut: new StockOutService(),
+  stockCount: new StockCountService(),
+  debitCreditMemo: new DebitCreditMemoService(),
 }
 
 

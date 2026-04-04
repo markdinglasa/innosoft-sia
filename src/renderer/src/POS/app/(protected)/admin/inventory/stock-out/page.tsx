@@ -1,13 +1,8 @@
 import { memo } from "react";
-import PageLayout from "../../../../../components/layout/page-layout";
-
+import StockOutHub from "../../../../../features/trn-stock-out";
 
 function StockOutPage(){
-    return <PageLayout title="Stock-Out">
-        <div>
-            Stock-Out Content
-        </div>
-    </PageLayout>
+    return <StockOutHub />
 }
 
-export default memo(StockOutPage)    
+export default memo(StockOutPage)
