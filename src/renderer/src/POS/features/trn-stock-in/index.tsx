@@ -11,8 +11,8 @@ const StockInHub: React.FC = () => {
   return (
     <PageLayout title="Stock In">
       <Box sx={{ mb: 3 }}><Paper variant="outlined" sx={{ p: 2, display: 'flex', gap: 2, alignItems: 'center', bgcolor: 'background.paper' }}>
-        <TextField fullWidth size="small" placeholder="Search stock-in..." value={searchKeyword} onChange={(e) => setSearchKeyword(e.target.value)} InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> }} />
-        <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreate} sx={{ px: 3, whiteSpace: 'nowrap' }}>New Stock In</Button>
+        <TextField fullWidth size="small" placeholder="Search stock-in..." value={searchKeyword} onChange={(e) => setSearchKeyword(e.target.value)} InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ fontSize: 25 }} /></InputAdornment> }} />
+        <Button variant="contained" startIcon={<AddIcon sx={{ fontSize: 25 }} />} onClick={handleCreate} sx={{ px: 3, whiteSpace: 'nowrap' }}>New Stock In</Button>
       </Paper></Box>
       <Box sx={{ flexGrow: 1 }}><StockInList /></Box>
       <Drawer anchor="right" open={isFormOpen} onClose={() => setIsFormOpen(false)} PaperProps={{ sx: { width: { xs: '100%', sm: 500, md: 600 }, borderRadius: '12px 0 0 12px' } }}>

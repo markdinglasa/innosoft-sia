@@ -1,22 +1,18 @@
-import React from 'react'
+import { Add as AddIcon, Delete as DeleteIcon, Remove as RemoveIcon } from '@mui/icons-material'
 import {
+  Box,
+  IconButton,
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  IconButton,
-  Typography,
   TextField,
-  Box
+  Typography
 } from '@mui/material'
-import {
-  Delete as DeleteIcon,
-  Add as AddIcon,
-  Remove as RemoveIcon
-} from '@mui/icons-material'
+import React from 'react'
 import { useOrderHubStore } from '../../store/use-order-hub-store'
 
 export const CartTable: React.FC = () => {
@@ -33,7 +29,9 @@ export const CartTable: React.FC = () => {
         <TableHead>
           <TableRow>
             <TableCell>Item Description</TableCell>
-            <TableCell align="center" width={140}>Quantity</TableCell>
+            <TableCell align="center" width={140}>
+              Quantity
+            </TableCell>
             <TableCell align="right">Price</TableCell>
             <TableCell align="right">Total</TableCell>
             <TableCell width={40}></TableCell>
@@ -51,9 +49,11 @@ export const CartTable: React.FC = () => {
                 </Typography>
               </TableCell>
               <TableCell align="center">
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
-                  <IconButton 
-                    size="small" 
+                <Box
+                  sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}
+                >
+                  <IconButton
+                    size="small"
                     onClick={() => handleUpdateQty(item.itemId, item.quantity, -1)}
                     disabled={item.quantity <= 1}
                   >
@@ -63,14 +63,14 @@ export const CartTable: React.FC = () => {
                     size="small"
                     value={item.quantity}
                     onChange={(e) => updateQuantity(item.itemId, parseInt(e.target.value) || 1)}
-                    inputProps={{ 
+                    inputProps={{
                       style: { textAlign: 'center', padding: '4px 8px' },
                       type: 'number'
                     }}
                     sx={{ width: 50 }}
                   />
-                  <IconButton 
-                    size="small" 
+                  <IconButton
+                    size="small"
                     onClick={() => handleUpdateQty(item.itemId, item.quantity, 1)}
                   >
                     <AddIcon fontSize="inherit" />
@@ -104,3 +104,4 @@ export const CartTable: React.FC = () => {
     </TableContainer>
   )
 }
+

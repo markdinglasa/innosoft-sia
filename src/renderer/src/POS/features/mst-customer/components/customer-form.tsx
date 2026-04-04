@@ -25,14 +25,20 @@ import { useCustomerHubStore } from '../store/use-customer-hub-store'
 export const CustomerForm: React.FC = () => {
   const { selectedCustomerId, setSelectedCustomerId, setIsFormOpen } = useCustomerHubStore()
   const { useGet, useSaveMutation, useLookup } = useMasterfile('customer')
-  
+
   const { data: terms = [] } = useLookup('term')
   const { data: accounts = [] } = useLookup('account')
-  
+
   const { data: customer, isLoading } = useGet(selectedCustomerId)
   const saveMutation = useSaveMutation()
 
-  const { control, register, handleSubmit, reset, formState: { errors } } = useForm({
+  const {
+    control,
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors }
+  } = useForm({
     defaultValues: {
       name: '',
       customerCode: '',
@@ -96,14 +102,29 @@ export const CustomerForm: React.FC = () => {
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', bgcolor: 'primary.dark', color: 'white' }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+      sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+    >
+      <Box
+        sx={{
+          p: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          bgcolor: 'primary.dark',
+          color: 'white'
+        }}
+      >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <CustomerIcon />
-          <Typography variant="h6">{selectedCustomerId ? 'Edit Customer' : 'New Customer'}</Typography>
+          <CustomerIcon sx={{ fontSize: 25 }} />
+          <Typography variant="h6">
+            {selectedCustomerId ? 'Edit Customer' : 'New Customer'}
+          </Typography>
         </Box>
         <IconButton size="small" onClick={handleClose} sx={{ color: 'white' }}>
-          <CloseIcon />
+          <CloseIcon sx={{ fontSize: 25 }} />
         </IconButton>
       </Box>
 
@@ -134,12 +155,7 @@ export const CustomerForm: React.FC = () => {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
-              {...register('tin')}
-              label="TIN"
-              fullWidth
-              size="small"
-            />
+            <TextField {...register('tin')} label="TIN" fullWidth size="small" />
           </Grid>
           <Grid item xs={12}>
             <TextField
@@ -184,7 +200,9 @@ export const CustomerForm: React.FC = () => {
               render={({ field }) => (
                 <TextField {...field} select label="Payment Term" fullWidth size="small">
                   {terms.map((t: any) => (
-                    <MenuItem key={t.id} value={t.id}>{t.name}</MenuItem>
+                    <MenuItem key={t.id} value={t.id}>
+                      {t.name}
+                    </MenuItem>
                   ))}
                 </TextField>
               )}
@@ -195,9 +213,17 @@ export const CustomerForm: React.FC = () => {
               name="accountId"
               control={control}
               render={({ field }) => (
-                <TextField {...field} select label="AR Account (Chart of Accounts)" fullWidth size="small">
+                <TextField
+                  {...field}
+                  select
+                  label="AR Account (Chart of Accounts)"
+                  fullWidth
+                  size="small"
+                >
                   {accounts.map((a: any) => (
-                    <MenuItem key={a.id} value={a.id}>[{a.code}] {a.name}</MenuItem>
+                    <MenuItem key={a.id} value={a.id}>
+                      [{a.code}] {a.name}
+                    </MenuItem>
                   ))}
                 </TextField>
               )}
@@ -208,9 +234,9 @@ export const CustomerForm: React.FC = () => {
               name="withReward"
               control={control}
               render={({ field }) => (
-                <FormControlLabel 
-                  control={<Switch checked={field.value} onChange={field.onChange} />} 
-                  label="Join Rewards Program" 
+                <FormControlLabel
+                  control={<Switch checked={field.value} onChange={field.onChange} />}
+                  label="Join Rewards Program"
                 />
               )}
             />
@@ -219,19 +245,19 @@ export const CustomerForm: React.FC = () => {
       </Box>
 
       <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider', display: 'flex', gap: 2 }}>
-        <Button 
-          fullWidth 
-          variant="outlined" 
+        <Button
+          fullWidth
+          variant="outlined"
           onClick={handleClose}
           disabled={saveMutation.isPending}
         >
           Cancel
         </Button>
-        <Button 
-          fullWidth 
-          variant="contained" 
-          type="submit" 
-          startIcon={<SaveIcon />}
+        <Button
+          fullWidth
+          variant="contained"
+          type="submit"
+          startIcon={<SaveIcon sx={{ fontSize: 25 }} />}
           disabled={saveMutation.isPending}
         >
           {saveMutation.isPending ? 'Saving...' : 'Save Customer'}
@@ -240,3 +266,4 @@ export const CustomerForm: React.FC = () => {
     </Box>
   )
 }
+

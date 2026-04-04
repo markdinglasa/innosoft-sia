@@ -17,8 +17,8 @@ const UnitHub: React.FC = () => {
         <Paper variant="outlined" sx={{ p: 2, display: 'flex', gap: 2, alignItems: 'center', bgcolor: 'background.paper' }}>
           <TextField fullWidth size="small" placeholder="Search units..."
             value={searchKeyword} onChange={(e) => setSearchKeyword(e.target.value)}
-            InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> }} />
-          <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreate} sx={{ px: 3, whiteSpace: 'nowrap' }}>New Unit</Button>
+            InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ fontSize: 25 }} /></InputAdornment> }} />
+          <Button variant="contained" startIcon={<AddIcon sx={{ fontSize: 25 }} />} onClick={handleCreate} sx={{ px: 3, whiteSpace: 'nowrap' }}>New Unit</Button>
         </Paper>
       </Box>
       <Box sx={{ flexGrow: 1 }}><UnitList /></Box>

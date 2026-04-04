@@ -1,6 +1,6 @@
+import { ShoppingCart as OrderIcon, Payments as PayIcon } from '@mui/icons-material'
 import { Box, Button, Divider, Paper, Typography } from '@mui/material'
 import React from 'react'
-import { Payments as PayIcon, ShoppingCart as OrderIcon } from '@mui/icons-material'
 import { useOrderHubStore } from '../../store/use-order-hub-store'
 
 export const SummaryPane: React.FC = () => {
@@ -14,11 +14,11 @@ export const SummaryPane: React.FC = () => {
   }
 
   return (
-    <Paper 
-      variant="outlined" 
-      sx={{ 
-        p: 2.5, 
-        bgcolor: 'primary.main', 
+    <Paper
+      variant="outlined"
+      sx={{
+        p: 2.5,
+        bgcolor: 'primary.main',
         color: 'white',
         borderRadius: 2,
         height: '100%',
@@ -28,7 +28,9 @@ export const SummaryPane: React.FC = () => {
     >
       <Box sx={{ mb: 2.5, display: 'flex', alignItems: 'center', gap: 1 }}>
         <OrderIcon fontSize="small" />
-        <Typography variant="h6" fontWeight="bold">Summary</Typography>
+        <Typography variant="h6" fontWeight="bold">
+          Summary
+        </Typography>
       </Box>
 
       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
@@ -44,20 +46,24 @@ export const SummaryPane: React.FC = () => {
           <Typography variant="body2">Taxes (VAT)</Typography>
           <Typography variant="body2">{formatCurrency(summary.totalTax)}</Typography>
         </Box>
-        
+
         <Divider sx={{ my: 1, bgcolor: 'rgba(255, 255, 255, 0.2)' }} />
-        
+
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h5" fontWeight="bold">Total Due</Typography>
-          <Typography variant="h4" fontWeight="bold">{formatCurrency(summary.totalAmount)}</Typography>
+          <Typography variant="h5" fontWeight="bold">
+            Total Due
+          </Typography>
+          <Typography variant="h4" fontWeight="bold">
+            {formatCurrency(summary.totalAmount)}
+          </Typography>
         </Box>
       </Box>
 
       <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-        <Button 
-          fullWidth 
-          variant="contained" 
-          color="success" 
+        <Button
+          fullWidth
+          variant="contained"
+          color="success"
           size="large"
           startIcon={<PayIcon />}
           disabled={cart.length === 0}
@@ -65,9 +71,9 @@ export const SummaryPane: React.FC = () => {
         >
           Pay Now (F12)
         </Button>
-        <Button 
-          fullWidth 
-          variant="outlined" 
+        <Button
+          fullWidth
+          variant="outlined"
           size="small"
           onClick={clearCart}
           sx={{ color: 'rgba(255, 255, 255, 0.7)', borderColor: 'rgba(255, 255, 255, 0.2)' }}
@@ -78,3 +84,4 @@ export const SummaryPane: React.FC = () => {
     </Paper>
   )
 }
+

@@ -7,13 +7,8 @@ import { SupplierList } from './components/supplier-list'
 import { useSupplierHubStore } from './store/use-supplier-hub-store'
 
 const SupplierHub: React.FC = () => {
-  const { 
-    searchKeyword, 
-    setSearchKeyword, 
-    isFormOpen, 
-    setIsFormOpen, 
-    setSelectedSupplierId 
-  } = useSupplierHubStore()
+  const { searchKeyword, setSearchKeyword, isFormOpen, setIsFormOpen, setSelectedSupplierId } =
+    useSupplierHubStore()
 
   const handleCreate = () => {
     setSelectedSupplierId(null)
@@ -23,12 +18,12 @@ const SupplierHub: React.FC = () => {
   return (
     <PageLayout title="Supplier Registry">
       <Box sx={{ mb: 3 }}>
-        <Paper 
-          variant="outlined" 
-          sx={{ 
-            p: 2, 
-            display: 'flex', 
-            gap: 2, 
+        <Paper
+          variant="outlined"
+          sx={{
+            p: 2,
+            display: 'flex',
+            gap: 2,
             alignItems: 'center',
             bgcolor: 'background.paper'
           }}
@@ -42,14 +37,14 @@ const SupplierHub: React.FC = () => {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon />
+                  <SearchIcon sx={{ fontSize: 25 }} />
                 </InputAdornment>
-              ),
+              )
             }}
           />
           <Button
             variant="contained"
-            startIcon={<AddIcon />}
+            startIcon={<AddIcon sx={{ fontSize: 25 }} />}
             onClick={handleCreate}
             sx={{ px: 3, whiteSpace: 'nowrap' }}
           >
@@ -77,3 +72,4 @@ const SupplierHub: React.FC = () => {
 }
 
 export default SupplierHub
+

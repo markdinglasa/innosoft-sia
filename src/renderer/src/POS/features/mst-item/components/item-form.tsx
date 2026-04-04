@@ -116,11 +116,11 @@ export const ItemForm: React.FC = () => {
     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', bgcolor: 'primary.dark', color: 'white' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <ItemIcon />
+          <ItemIcon sx={{ fontSize: 25 }} />
           <Typography variant="h6">{selectedItemId ? 'Edit Item' : 'New Item'}</Typography>
         </Box>
         <IconButton size="small" onClick={handleClose} sx={{ color: 'white' }}>
-          <CloseIcon />
+          <CloseIcon sx={{ fontSize: 25 }} />
         </IconButton>
       </Box>
 
@@ -324,7 +324,7 @@ export const ItemForm: React.FC = () => {
           fullWidth 
           variant="contained" 
           type="submit" 
-          startIcon={<SaveIcon />}
+          startIcon={<SaveIcon sx={{ fontSize: 25 }} />}
           disabled={saveMutation.isPending}
         >
           {saveMutation.isPending ? 'Saving...' : 'Save Item'}

@@ -9,7 +9,12 @@ import {
   CircularProgress,
   Container,
   Stack,
-  Typography
+  Typography,
+  Dialog, 
+  DialogActions, 
+  DialogContent, 
+  DialogContentText, 
+  DialogTitle
 } from '@mui/material'
 import { colors } from '@shared/styles'
 import { Fragment, lazy, Suspense, useState } from 'react'
@@ -55,10 +60,19 @@ export default function ConnectionList({
     })
   }
 
+  const [deleteId, setDeleteId] = useState<string | null>(null)
+
   const onDelete = (id: string) => {
-    if (!confirm('Are you sure you want to delete this connection?')) return
-    deleteMutation.mutate(id, {
-      onSuccess: () => onRefresh()
+    setDeleteId(id)
+  }
+
+  const confirmDelete = () => {
+    if (!deleteId) return
+    deleteMutation.mutate(deleteId, {
+      onSuccess: () => {
+        setDeleteId(null)
+        onRefresh()
+      }
     })
   }
 
@@ -199,6 +213,21 @@ export default function ConnectionList({
           ))}
         </Stack>
       </Box>
+
+      <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this connection? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteId(null)}>Cancel</Button>
+          <Button onClick={confirmDelete} color="error" variant="contained" disabled={deleteMutation.isPending}>
+            {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   )
 }

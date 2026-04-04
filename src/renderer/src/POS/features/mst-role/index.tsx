@@ -42,7 +42,7 @@ const RoleHub: React.FC = () => {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon />
+                  <SearchIcon sx={{ fontSize: 25 }} />
                 </InputAdornment>
               ),
             }}
@@ -50,7 +50,7 @@ const RoleHub: React.FC = () => {
           <Button
             variant="contained"
             color="secondary"
-            startIcon={<AddIcon />}
+            startIcon={<AddIcon sx={{ fontSize: 25 }} />}
             onClick={handleCreate}
             sx={{ px: 3, whiteSpace: 'nowrap' }}
           >

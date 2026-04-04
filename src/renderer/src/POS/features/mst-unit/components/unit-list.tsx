@@ -1,6 +1,10 @@
 import { Delete as DeleteIcon, Edit as EditIcon, Straighten as UnitIcon } from '@mui/icons-material'
 import {
-  Box, CircularProgress, IconButton, Paper, Table, TableBody, TableCell,
+  Box,
+  Button,
+  CircularProgress,
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
+  IconButton, Paper, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Typography
 } from '@mui/material'
 import React from 'react'
@@ -14,9 +18,9 @@ export const UnitList: React.FC = () => {
   const deleteMutation = useDeleteMutation()
 
   const handleEdit = (id: number) => { setSelectedId(id); setIsFormOpen(true) }
-  const handleDelete = async (id: number) => {
-    if (window.confirm('Are you sure you want to delete this unit?')) await deleteMutation.mutateAsync(id)
-  }
+  const [deleteId, setDeleteId] = React.useState<number | null>(null)
+  const handleDelete = (id: number) => setDeleteId(id)
+  const confirmDelete = async () => { if(deleteId) { await deleteMutation.mutateAsync(deleteId); setDeleteId(null); } }
 
   if (isLoading) return <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}><CircularProgress size={32} /></Box>
   if (isError) return <Typography color="error">Failed to load units.</Typography>
@@ -24,7 +28,8 @@ export const UnitList: React.FC = () => {
   const items = (data as any)?.items || []
 
   return (
-    <TableContainer component={Paper} variant="outlined" sx={{ maxHeight: 'calc(100vh - 250px)' }}>
+    <>
+      <TableContainer component={Paper} variant="outlined" sx={{ maxHeight: 'calc(100vh - 250px)' }}>
       <Table stickyHeader size="small">
         <TableHead>
           <TableRow>
@@ -37,12 +42,12 @@ export const UnitList: React.FC = () => {
         <TableBody>
           {items.map((item: any) => (
             <TableRow key={item.id} hover onClick={() => handleEdit(item.id)} sx={{ cursor: 'pointer' }}>
-              <TableCell><UnitIcon color="action" fontSize="small" /></TableCell>
+              <TableCell><UnitIcon color="action" sx={{ fontSize: 25 }} /></TableCell>
               <TableCell><Typography variant="body2" fontWeight="medium">{item.name}</Typography></TableCell>
               <TableCell><Typography variant="caption" color="text.secondary">{item.description || '—'}</Typography></TableCell>
               <TableCell align="right">
-                <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleEdit(item.id) }}><EditIcon fontSize="small" /></IconButton>
-                <IconButton size="small" color="error" onClick={(e) => { e.stopPropagation(); handleDelete(item.id) }}><DeleteIcon fontSize="small" /></IconButton>
+                <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleEdit(item.id) }}><EditIcon sx={{ fontSize: 25 }} /></IconButton>
+                <IconButton size="small" color="error" onClick={(e) => { e.stopPropagation(); handleDelete(item.id) }}><DeleteIcon sx={{ fontSize: 25 }} /></IconButton>
               </TableCell>
             </TableRow>
           ))}
@@ -52,5 +57,8 @@ export const UnitList: React.FC = () => {
         </TableBody>
       </Table>
     </TableContainer>
+  
+      <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}><DialogTitle>Confirm Delete</DialogTitle><DialogContent><DialogContentText>Delete this unit? This cannot be undone.</DialogContentText></DialogContent><DialogActions><Button onClick={() => setDeleteId(null)}>Cancel</Button><Button onClick={confirmDelete} color="error" variant="contained" disabled={deleteMutation.isPending}>{deleteMutation.isPending ? 'Deleting...' : 'Delete'}</Button></DialogActions></Dialog>
+    </>
   )
 }

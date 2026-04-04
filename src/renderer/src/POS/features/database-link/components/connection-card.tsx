@@ -57,7 +57,7 @@ function ConnectionCard(props: ConnectionCardProps) {
                 {!connection.isActive && (
                   <Button
                     variant="outlined"
-                    startIcon={<PowerIcon />}
+                    startIcon={<PowerIcon sx={{ fontSize: 25 }} />}
                     onClick={() => onActivate(connection.id)}
                     disabled={isLoading}
                   >

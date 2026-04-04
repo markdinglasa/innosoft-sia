@@ -26,12 +26,18 @@ import { useRoleHubStore } from '../store/use-role-hub-store'
 export const RoleForm: React.FC = () => {
   const { selectedRoleId, setSelectedRoleId, setIsFormOpen } = useRoleHubStore()
   const { useGet, useSaveMutation, useLookup } = useMasterfile('role')
-  const { data: accessRights = [] } = useLookup('accessRight') 
-  
+  const { data: accessRights = [] } = useLookup('accessRight')
+
   const { data: role, isLoading } = useGet(selectedRoleId)
   const saveMutation = useSaveMutation()
 
-  const { control, register, handleSubmit, reset, formState: { errors } } = useForm({
+  const {
+    control,
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors }
+  } = useForm({
     defaultValues: {
       code: '',
       name: '',
@@ -89,11 +95,24 @@ export const RoleForm: React.FC = () => {
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', bgcolor: 'secondary.main', color: 'white' }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+      sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+    >
+      <Box
+        sx={{
+          p: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          bgcolor: 'secondary.main',
+          color: 'white'
+        }}
+      >
         <Typography variant="h6">{selectedRoleId ? 'Edit Role' : 'New Role'}</Typography>
         <IconButton size="small" onClick={handleClose} sx={{ color: 'white' }}>
-          <CloseIcon />
+          <CloseIcon sx={{ fontSize: 25 }} />
         </IconButton>
       </Box>
 
@@ -111,7 +130,7 @@ export const RoleForm: React.FC = () => {
               label="Role Code"
               fullWidth
               error={!!errors.code}
-              helperText={(errors.code?.message as string)}
+              helperText={errors.code?.message as string}
             />
           </Grid>
           <Grid item xs={6}>
@@ -120,7 +139,7 @@ export const RoleForm: React.FC = () => {
               label="Role Name"
               fullWidth
               error={!!errors.name}
-              helperText={(errors.name?.message as string)}
+              helperText={errors.name?.message as string}
             />
           </Grid>
           <Grid item xs={12}>
@@ -135,23 +154,39 @@ export const RoleForm: React.FC = () => {
         </Grid>
 
         <Box sx={{ mt: 4, mb: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-            <Typography variant="subtitle2" fontWeight="bold" display="flex" alignItems="center" gap={1}>
+          <Box
+            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}
+          >
+            <Typography
+              variant="subtitle2"
+              fontWeight="bold"
+              display="flex"
+              alignItems="center"
+              gap={1}
+            >
               <SecurityIcon fontSize="small" />
               Permissions Matrix
             </Typography>
-            <Button size="small" startIcon={<AddIcon />} onClick={() => append({ accessRightId: '' })}>
+            <Button
+              size="small"
+              startIcon={<AddIcon />}
+              onClick={() => append({ accessRightId: '' })}
+            >
               Add Access Right
             </Button>
           </Box>
           <Divider sx={{ mb: 2 }} />
-          
+
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {fields.map((field, index) => (
-              <Paper key={field.id} variant="outlined" sx={{ p: 2, position: 'relative', bgcolor: 'grey.50' }}>
-                <IconButton 
-                  size="small" 
-                  color="error" 
+              <Paper
+                key={field.id}
+                variant="outlined"
+                sx={{ p: 2, position: 'relative', bgcolor: 'grey.50' }}
+              >
+                <IconButton
+                  size="small"
+                  color="error"
                   sx={{ position: 'absolute', top: 4, right: 4 }}
                   onClick={() => remove(index)}
                 >
@@ -163,11 +198,11 @@ export const RoleForm: React.FC = () => {
                       name={`permissions.${index}.accessRightId`}
                       control={control}
                       render={({ field }) => (
-                        <TextField 
-                          {...field} 
-                          select 
-                          label="Access Right / Action" 
-                          fullWidth 
+                        <TextField
+                          {...field}
+                          select
+                          label="Access Right / Action"
+                          fullWidth
                           size="small"
                         >
                           {accessRights.map((ar: any) => (
@@ -183,7 +218,12 @@ export const RoleForm: React.FC = () => {
               </Paper>
             ))}
             {fields.length === 0 && (
-              <Typography variant="caption" color="text.secondary" textAlign="center" sx={{ display: 'block', py: 2 }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                textAlign="center"
+                sx={{ display: 'block', py: 2 }}
+              >
                 This role currently has no permissions assigned.
               </Typography>
             )}
@@ -192,20 +232,20 @@ export const RoleForm: React.FC = () => {
       </Box>
 
       <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider', display: 'flex', gap: 2 }}>
-        <Button 
-          fullWidth 
-          variant="outlined" 
+        <Button
+          fullWidth
+          variant="outlined"
           onClick={handleClose}
           disabled={saveMutation.isPending}
         >
           Cancel
         </Button>
-        <Button 
-          fullWidth 
-          variant="contained" 
+        <Button
+          fullWidth
+          variant="contained"
           color="secondary"
-          type="submit" 
-          startIcon={<SaveIcon />}
+          type="submit"
+          startIcon={<SaveIcon sx={{ fontSize: 25 }} />}
           disabled={saveMutation.isPending}
         >
           {saveMutation.isPending ? 'Saving...' : 'Save Role'}
@@ -214,3 +254,4 @@ export const RoleForm: React.FC = () => {
     </Box>
   )
 }
+

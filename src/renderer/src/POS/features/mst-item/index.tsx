@@ -7,13 +7,8 @@ import { ItemList } from './components/item-list'
 import { useItemHubStore } from './store/use-item-hub-store'
 
 const ItemHub: React.FC = () => {
-  const { 
-    searchKeyword, 
-    setSearchKeyword, 
-    isFormOpen, 
-    setIsFormOpen, 
-    setSelectedItemId 
-  } = useItemHubStore()
+  const { searchKeyword, setSearchKeyword, isFormOpen, setIsFormOpen, setSelectedItemId } =
+    useItemHubStore()
 
   const handleCreate = () => {
     setSelectedItemId(null)
@@ -23,12 +18,12 @@ const ItemHub: React.FC = () => {
   return (
     <PageLayout title="Catalog (Item & Inventory)">
       <Box sx={{ mb: 3 }}>
-        <Paper 
-          variant="outlined" 
-          sx={{ 
-            p: 2, 
-            display: 'flex', 
-            gap: 2, 
+        <Paper
+          variant="outlined"
+          sx={{
+            p: 2,
+            display: 'flex',
+            gap: 2,
             alignItems: 'center',
             bgcolor: 'background.paper'
           }}
@@ -42,14 +37,14 @@ const ItemHub: React.FC = () => {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon />
+                  <SearchIcon sx={{ fontSize: 25 }} />
                 </InputAdornment>
-              ),
+              )
             }}
           />
           <Button
             variant="contained"
-            startIcon={<AddIcon />}
+            startIcon={<AddIcon sx={{ fontSize: 25 }} />}
             onClick={handleCreate}
             sx={{ px: 3, whiteSpace: 'nowrap' }}
           >
@@ -77,3 +72,4 @@ const ItemHub: React.FC = () => {
 }
 
 export default ItemHub
+

@@ -15,5 +15,6 @@ export const useItemHubStore = create<ItemHubState>((set) => ({
   isFormOpen: false,
   setIsFormOpen: (isOpen) => set({ isFormOpen: isOpen }),
   searchKeyword: '',
-  setSearchKeyword: (keyword) => set({ searchKeyword: keyword }),
+  setSearchKeyword: (keyword) => set({ searchKeyword: keyword })
 }))
+

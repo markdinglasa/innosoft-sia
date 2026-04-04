@@ -20,7 +20,7 @@ export const CatalogPane: React.FC = () => {
   const { addItem } = useOrderHubStore()
   const { useList } = useMasterfile('item')
 
-  const { data, isLoading } = useList({ 
+  const { data, isLoading } = useList({
     searchKeyword: search,
     take: 24 // Show a manageable grid by default
   })
@@ -53,10 +53,10 @@ export const CatalogPane: React.FC = () => {
           <Grid container spacing={1.5}>
             {items.map((item: any) => (
               <Grid item xs={6} sm={4} md={3} key={item.id}>
-                <Card 
-                  variant="outlined" 
-                  sx={{ 
-                    height: '100%', 
+                <Card
+                  variant="outlined"
+                  sx={{
+                    height: '100%',
                     borderRadius: 1.5,
                     transition: 'transform 0.1s',
                     '&:active': { transform: 'scale(0.95)' }
@@ -70,11 +70,22 @@ export const CatalogPane: React.FC = () => {
                       <Typography variant="caption" color="text.secondary" display="block" noWrap>
                         {item.itemCode}
                       </Typography>
-                      <Box sx={{ mt: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                         <Chip label={item.category || 'General'} size="small" sx={{ height: 20, fontSize: 10 }} />
-                         <Typography variant="subtitle2" color="primary" fontWeight="bold">
+                      <Box
+                        sx={{
+                          mt: 1.5,
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}
+                      >
+                        <Chip
+                          label={item.category || 'General'}
+                          size="small"
+                          sx={{ height: 20, fontSize: 10 }}
+                        />
+                        <Typography variant="subtitle2" color="primary" fontWeight="bold">
                           {Number(item.price).toFixed(2)}
-                         </Typography>
+                        </Typography>
                       </Box>
                     </CardContent>
                   </CardActionArea>
@@ -84,7 +95,7 @@ export const CatalogPane: React.FC = () => {
             {items.length === 0 && (
               <Box sx={{ p: 4, width: '100%', textAlign: 'center' }}>
                 <Typography variant="body2" color="text.secondary">
-                   No items match your search.
+                  No items match your search.
                 </Typography>
               </Box>
             )}
@@ -94,3 +105,4 @@ export const CatalogPane: React.FC = () => {
     </Box>
   )
 }
+

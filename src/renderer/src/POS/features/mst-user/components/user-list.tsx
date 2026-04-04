@@ -1,5 +1,5 @@
 import { Delete as DeleteIcon, Edit as EditIcon, Person as PersonIcon } from '@mui/icons-material'
-import {
+import { Button, 
   Box,
   Chip,
   CircularProgress,
@@ -12,7 +12,7 @@ import {
   TableHead,
   TableRow,
   Typography
-} from '@mui/material'
+, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
 import React from 'react'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useUserHubStore } from '../store/use-user-hub-store'
@@ -29,11 +29,9 @@ export const UserList: React.FC = () => {
     setIsFormOpen(true)
   }
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      await deleteMutation.mutateAsync(id)
-    }
-  }
+  const [deleteId, setDeleteId] = React.useState<number | null>(null)
+  const handleDelete = (id: number) => setDeleteId(id)
+  const confirmDelete = async () => { if(deleteId) { await deleteMutation.mutateAsync(deleteId); setDeleteId(null); } }
 
   if (isLoading) {
     return (
@@ -50,6 +48,7 @@ export const UserList: React.FC = () => {
   const users = (data as any)?.items || []
 
   return (
+    <>
     <TableContainer component={Paper} variant="outlined" sx={{ maxHeight: 'calc(100vh - 250px)' }}>
       <Table stickyHeader size="small">
         <TableHead>
@@ -66,7 +65,7 @@ export const UserList: React.FC = () => {
           {users.map((user: any) => (
             <TableRow key={user.id} hover onClick={() => handleEdit(user.id)} sx={{ cursor: 'pointer' }}>
               <TableCell>
-                <PersonIcon color="action" fontSize="small" />
+                <PersonIcon color="action" sx={{ fontSize: 25 }} />
               </TableCell>
               <TableCell>
                 <Typography variant="body2" fontWeight="medium">
@@ -89,10 +88,10 @@ export const UserList: React.FC = () => {
               </TableCell>
               <TableCell align="right">
                 <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleEdit(user.id); }}>
-                  <EditIcon fontSize="small" />
+                  <EditIcon sx={{ fontSize: 25 }} />
                 </IconButton>
                 <IconButton size="small" color="error" onClick={(e) => { e.stopPropagation(); handleDelete(user.id); }}>
-                  <DeleteIcon fontSize="small" />
+                  <DeleteIcon sx={{ fontSize: 25 }} />
                 </IconButton>
               </TableCell>
             </TableRow>
@@ -109,5 +108,8 @@ export const UserList: React.FC = () => {
         </TableBody>
       </Table>
     </TableContainer>
+
+      <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}><DialogTitle>Confirm Delete</DialogTitle><DialogContent><DialogContentText>Delete this user? This cannot be undone.</DialogContentText></DialogContent><DialogActions><Button onClick={() => setDeleteId(null)}>Cancel</Button><Button onClick={confirmDelete} color="error" variant="contained" disabled={deleteMutation.isPending}>{deleteMutation.isPending ? 'Deleting...' : 'Delete'}</Button></DialogActions></Dialog>
+    </>
   )
 }

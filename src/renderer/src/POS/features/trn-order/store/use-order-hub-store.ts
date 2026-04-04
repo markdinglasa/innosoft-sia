@@ -41,36 +41,39 @@ export const useOrderHubStore = create<OrderHubState>((set) => ({
   cart: [],
   selectedCustomerId: null,
   setSelectedCustomerId: (id) => set({ selectedCustomerId: id }),
-  
-  addItem: (item) => set((state) => {
-    const existingIndex = state.cart.findIndex(i => i.itemId === item.id)
-    if (existingIndex > -1) {
-      const newCart = [...state.cart]
-      newCart[existingIndex].quantity += 1
-      return { cart: newCart }
-    }
-    const newItem: CartItem = {
-      itemId: item.id,
-      itemCode: item.itemCode,
-      name: item.name,
-      quantity: 1,
-      price: Number(item.price),
-      cost: Number(item.cost),
-      taxId: item.outTaxId,
-      amount: 0,
-      taxAmount: 0,
-      netAmount: 0
-    }
-    return { cart: [...state.cart, newItem] }
-  }),
 
-  removeItem: (itemId) => set((state) => ({
-    cart: state.cart.filter(i => i.itemId !== itemId)
-  })),
+  addItem: (item) =>
+    set((state) => {
+      const existingIndex = state.cart.findIndex((i) => i.itemId === item.id)
+      if (existingIndex > -1) {
+        const newCart = [...state.cart]
+        newCart[existingIndex].quantity += 1
+        return { cart: newCart }
+      }
+      const newItem: CartItem = {
+        itemId: item.id,
+        itemCode: item.itemCode,
+        name: item.name,
+        quantity: 1,
+        price: Number(item.price),
+        cost: Number(item.cost),
+        taxId: item.outTaxId,
+        amount: 0,
+        taxAmount: 0,
+        netAmount: 0
+      }
+      return { cart: [...state.cart, newItem] }
+    }),
 
-  updateQuantity: (itemId, quantity) => set((state) => ({
-    cart: state.cart.map(i => i.itemId === itemId ? { ...i, quantity } : i)
-  })),
+  removeItem: (itemId) =>
+    set((state) => ({
+      cart: state.cart.filter((i) => i.itemId !== itemId)
+    })),
+
+  updateQuantity: (itemId, quantity) =>
+    set((state) => ({
+      cart: state.cart.map((i) => (i.itemId === itemId ? { ...i, quantity } : i))
+    })),
 
   clearCart: () => set({ cart: [], selectedCustomerId: null }),
 
@@ -82,3 +85,4 @@ export const useOrderHubStore = create<OrderHubState>((set) => ({
   },
   setSummary: (summary) => set({ summary })
 }))
+

@@ -23,14 +23,20 @@ import { useSupplierHubStore } from '../store/use-supplier-hub-store'
 export const SupplierForm: React.FC = () => {
   const { selectedSupplierId, setSelectedSupplierId, setIsFormOpen } = useSupplierHubStore()
   const { useGet, useSaveMutation, useLookup } = useMasterfile('supplier')
-  
+
   const { data: terms = [] } = useLookup('term')
   const { data: accounts = [] } = useLookup('account')
-  
+
   const { data: supplier, isLoading } = useGet(selectedSupplierId)
   const saveMutation = useSaveMutation()
 
-  const { control, register, handleSubmit, reset, formState: { errors } } = useForm({
+  const {
+    control,
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors }
+  } = useForm({
     defaultValues: {
       name: '',
       address: '',
@@ -90,14 +96,29 @@ export const SupplierForm: React.FC = () => {
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', bgcolor: 'primary.dark', color: 'white' }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+      sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+    >
+      <Box
+        sx={{
+          p: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          bgcolor: 'primary.dark',
+          color: 'white'
+        }}
+      >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <SupplierIcon />
-          <Typography variant="h6">{selectedSupplierId ? 'Edit Supplier' : 'New Supplier'}</Typography>
+          <SupplierIcon sx={{ fontSize: 25 }} />
+          <Typography variant="h6">
+            {selectedSupplierId ? 'Edit Supplier' : 'New Supplier'}
+          </Typography>
         </Box>
         <IconButton size="small" onClick={handleClose} sx={{ color: 'white' }}>
-          <CloseIcon />
+          <CloseIcon sx={{ fontSize: 25 }} />
         </IconButton>
       </Box>
 
@@ -145,20 +166,10 @@ export const SupplierForm: React.FC = () => {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
-              {...register('faxNumber')}
-              label="Fax Number"
-              fullWidth
-              size="small"
-            />
+            <TextField {...register('faxNumber')} label="Fax Number" fullWidth size="small" />
           </Grid>
           <Grid item xs={6}>
-            <TextField
-              {...register('tin')}
-              label="TIN"
-              fullWidth
-              size="small"
-            />
+            <TextField {...register('tin')} label="TIN" fullWidth size="small" />
           </Grid>
           <Divider sx={{ width: '100%', my: 2 }} />
           <Grid item xs={12}>
@@ -168,7 +179,9 @@ export const SupplierForm: React.FC = () => {
               render={({ field }) => (
                 <TextField {...field} select label="Payment Term" fullWidth size="small">
                   {terms.map((t: any) => (
-                    <MenuItem key={t.id} value={t.id}>{t.name}</MenuItem>
+                    <MenuItem key={t.id} value={t.id}>
+                      {t.name}
+                    </MenuItem>
                   ))}
                 </TextField>
               )}
@@ -179,9 +192,17 @@ export const SupplierForm: React.FC = () => {
               name="accountId"
               control={control}
               render={({ field }) => (
-                <TextField {...field} select label="AP Account (Chart of Accounts)" fullWidth size="small">
+                <TextField
+                  {...field}
+                  select
+                  label="AP Account (Chart of Accounts)"
+                  fullWidth
+                  size="small"
+                >
                   {accounts.map((a: any) => (
-                    <MenuItem key={a.id} value={a.id}>[{a.code}] {a.name}</MenuItem>
+                    <MenuItem key={a.id} value={a.id}>
+                      [{a.code}] {a.name}
+                    </MenuItem>
                   ))}
                 </TextField>
               )}
@@ -191,19 +212,19 @@ export const SupplierForm: React.FC = () => {
       </Box>
 
       <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider', display: 'flex', gap: 2 }}>
-        <Button 
-          fullWidth 
-          variant="outlined" 
+        <Button
+          fullWidth
+          variant="outlined"
           onClick={handleClose}
           disabled={saveMutation.isPending}
         >
           Cancel
         </Button>
-        <Button 
-          fullWidth 
-          variant="contained" 
-          type="submit" 
-          startIcon={<SaveIcon />}
+        <Button
+          fullWidth
+          variant="contained"
+          type="submit"
+          startIcon={<SaveIcon sx={{ fontSize: 25 }} />}
           disabled={saveMutation.isPending}
         >
           {saveMutation.isPending ? 'Saving...' : 'Save Supplier'}
@@ -212,3 +233,4 @@ export const SupplierForm: React.FC = () => {
     </Box>
   )
 }
+

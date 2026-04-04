@@ -1,8 +1,10 @@
 import { Delete as DeleteIcon, Edit as EditIcon, Security as SecurityIcon } from '@mui/icons-material'
 import {
   Box,
+  Button,
   Chip,
   CircularProgress,
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
   IconButton,
   Paper,
   Table,
@@ -29,11 +31,9 @@ export const RoleList: React.FC = () => {
     setIsFormOpen(true)
   }
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm('Are you sure you want to delete this role?')) {
-      await deleteMutation.mutateAsync(id)
-    }
-  }
+  const [deleteId, setDeleteId] = React.useState<number | null>(null)
+  const handleDelete = (id: number) => setDeleteId(id)
+  const confirmDelete = async () => { if(deleteId) { await deleteMutation.mutateAsync(deleteId); setDeleteId(null); } }
 
   if (isLoading) {
     return (
@@ -50,6 +50,7 @@ export const RoleList: React.FC = () => {
   const roles = (data as any)?.items || []
 
   return (
+    <>
     <TableContainer component={Paper} variant="outlined" sx={{ maxHeight: 'calc(100vh - 250px)' }}>
       <Table stickyHeader size="small">
         <TableHead>
@@ -65,7 +66,7 @@ export const RoleList: React.FC = () => {
           {roles.map((role: any) => (
             <TableRow key={role.id} hover onClick={() => handleEdit(role.id)} sx={{ cursor: 'pointer' }}>
               <TableCell>
-                <SecurityIcon color="secondary" fontSize="small" />
+                <SecurityIcon color="secondary" sx={{ fontSize: 25 }} />
               </TableCell>
               <TableCell>
                 <Typography variant="body2" fontWeight="medium">
@@ -85,10 +86,10 @@ export const RoleList: React.FC = () => {
               </TableCell>
               <TableCell align="right">
                 <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleEdit(role.id); }}>
-                  <EditIcon fontSize="small" />
+                  <EditIcon sx={{ fontSize: 25 }} />
                 </IconButton>
                 <IconButton size="small" color="error" onClick={(e) => { e.stopPropagation(); handleDelete(role.id); }}>
-                  <DeleteIcon fontSize="small" />
+                  <DeleteIcon sx={{ fontSize: 25 }} />
                 </IconButton>
               </TableCell>
             </TableRow>
@@ -105,5 +106,8 @@ export const RoleList: React.FC = () => {
         </TableBody>
       </Table>
     </TableContainer>
+
+      <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}><DialogTitle>Confirm Delete</DialogTitle><DialogContent><DialogContentText>Delete this role? This cannot be undone.</DialogContentText></DialogContent><DialogActions><Button onClick={() => setDeleteId(null)}>Cancel</Button><Button onClick={confirmDelete} color="error" variant="contained" disabled={deleteMutation.isPending}>{deleteMutation.isPending ? 'Deleting...' : 'Delete'}</Button></DialogActions></Dialog>
+    </>
   )
 }

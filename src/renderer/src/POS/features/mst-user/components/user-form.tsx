@@ -104,7 +104,7 @@ export const UserForm: React.FC = () => {
       <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', bgcolor: 'primary.main', color: 'white' }}>
         <Typography variant="h6">{selectedUserId ? 'Edit User' : 'New User'}</Typography>
         <IconButton size="small" onClick={handleClose} sx={{ color: 'white' }}>
-          <CloseIcon />
+          <CloseIcon sx={{ fontSize: 25 }} />
         </IconButton>
       </Box>
 
@@ -244,7 +244,7 @@ export const UserForm: React.FC = () => {
           fullWidth 
           variant="contained" 
           type="submit" 
-          startIcon={<SaveIcon />}
+          startIcon={<SaveIcon sx={{ fontSize: 25 }} />}
           disabled={saveMutation.isPending}
         >
           {saveMutation.isPending ? 'Saving...' : 'Save User'}
