@@ -37,7 +37,17 @@ export enum IpcChannel {
   // Shift Management
   shiftOpen = 'shift-open',
   shiftClose = 'shift-close',
-  shiftStatus = 'shift-status'
+  shiftStatus = 'shift-status',
+
+  // Order Management
+  orderList = 'order-list',
+  orderGet = 'order-get',
+  orderSave = 'order-save',
+  orderDelete = 'order-delete',
+
+  // Reporting
+  reportXReading = 'report-x-reading',
+  reportZReading = 'report-z-reading'
 }
 
 
