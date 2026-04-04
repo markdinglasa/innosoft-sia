@@ -4,8 +4,9 @@ import { DeepPartial } from 'typeorm'
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity'
 import { BadRequestException } from '../../../common/exceptions'
 import { transformAndValidate } from '../../../common/utils/validator'
+import { MstBranchAccessEntity } from '../../../entities/masterfiles/MstBranchAccess.entity'
 import { MstUserEntity } from '../../../entities/masterfiles/MstUser.entity'
-import { BaseService } from '../../base.service'
+import { ParentChildService } from '../../parent-child.service'
 import { CreateUserDto, UpdateUserDto } from './dto'
 
 export interface IUserService {
@@ -13,10 +14,14 @@ export interface IUserService {
   registerUser(data: CreateUserDto): Promise<MutationResponse<MstUserEntity>>
 }
 
-export class UserService extends BaseService<MstUserEntity> implements IUserService {
+export class UserService extends ParentChildService<MstUserEntity> implements IUserService {
   constructor() {
-    super(MstUserEntity)
+    super(MstUserEntity, [
+      { entity: MstBranchAccessEntity, foreignKey: 'userId', payloadKey: 'branchAccesses' }
+    ])
   }
+
+
 
    async registerUser(data: CreateUserDto): Promise<MutationResponse<MstUserEntity>> {
     // encrypt password

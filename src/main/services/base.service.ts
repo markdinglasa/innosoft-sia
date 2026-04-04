@@ -55,10 +55,11 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
   }
 
   /**
-   * Private helper to log audit trail.
+   * Helper to log audit trail.
    * Directly uses AppDataSource to avoid circular dependency with SysAuditTrailService.
    */
-  private async audit(payload: {
+  protected async audit(payload: {
+
     userId?: number
     action: string
     recordId?: string

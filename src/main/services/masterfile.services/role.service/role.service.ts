@@ -2,18 +2,23 @@ import { DeepPartial } from 'typeorm'
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity'
 import { BadRequestException } from '../../../common/exceptions'
 import { transformAndValidate } from '../../../common/utils/validator'
+import { MstPermissionsEntity } from '../../../entities/masterfiles/MstPermissions.entity'
 import { MstRoleEntity } from '../../../entities/masterfiles/MstRole.entity'
-import { BaseService } from '../../base.service'
+import { ParentChildService } from '../../parent-child.service'
 import { CreateRoleDto, UpdateRoleDto } from './dto'
 
 export interface IRoleService {
   // Add specific Role methods here later
 }
 
-export class RoleService extends BaseService<MstRoleEntity> implements IRoleService {
+export class RoleService extends ParentChildService<MstRoleEntity> implements IRoleService {
   constructor() {
-    super(MstRoleEntity)
+    super(MstRoleEntity, [
+      { entity: MstPermissionsEntity, foreignKey: 'roleId', payloadKey: 'permissions' }
+    ])
   }
+
+
 
   /**
    * Search fields for Role keyword search.

@@ -3,7 +3,9 @@ import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity
 import { BadRequestException } from '../../../common/exceptions'
 import { transformAndValidate } from '../../../common/utils/validator'
 import { MstItemEntity } from '../../../entities/masterfiles/MstItem.entity'
-import { BaseService } from '../../base.service'
+import { MstItemPackageEntity } from '../../../entities/masterfiles/MstItemPackage.entity'
+import { MstItemPriceEntity } from '../../../entities/masterfiles/MstItemPrice.entity'
+import { ParentChildService } from '../../parent-child.service'
 import { CreateItemDto, UpdateItemDto } from './dto'
 
 /**
@@ -16,10 +18,14 @@ export interface IItemService {
 /**
  * Service handling MstItemEntity CRUD and validations.
  */
-export class ItemService extends BaseService<MstItemEntity> implements IItemService {
+export class ItemService extends ParentChildService<MstItemEntity> implements IItemService {
   constructor() {
-    super(MstItemEntity)
+    super(MstItemEntity, [
+      { entity: MstItemPriceEntity, foreignKey: 'itemId', payloadKey: 'itemPrices' },
+      { entity: MstItemPackageEntity, foreignKey: 'itemId', payloadKey: 'itemPackages' }
+    ])
   }
+
 
   /**
    * Search fields for Item keyword search.

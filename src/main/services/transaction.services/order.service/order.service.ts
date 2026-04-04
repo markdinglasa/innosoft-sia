@@ -4,6 +4,7 @@ import { BadRequestException } from '../../../common/exceptions'
 import { transformAndValidate } from '../../../common/utils/validator'
 import { TrnOrderEntity } from '../../../entities/transactions/TrnOrder.entity'
 import { BaseService } from '../../base.service'
+import { ShiftService } from '../shift.service'
 import { CreateOrderDto, UpdateOrderDto } from './dto'
 
 /**
@@ -12,6 +13,8 @@ import { CreateOrderDto, UpdateOrderDto } from './dto'
 export interface IOrderService {
   // Add any Order-specific methods here if needed
 }
+
+const shiftService = new ShiftService()
 
 /**
  * Service handling TrnOrderEntity CRUD and validations.
@@ -34,7 +37,16 @@ export class OrderService extends BaseService<TrnOrderEntity> implements IOrderS
   protected async validateCreate(data: DeepPartial<TrnOrderEntity>): Promise<void> {
     const orderDto = await transformAndValidate(CreateOrderDto, data)
     
+    // Check if user is provided for shift verification
+    const userId = (data as any).userId || (data as any).preparedById
+    const terminalId = (data as any).terminalId
+
+    if (userId && terminalId) {
+      await shiftService.verifyActiveShift(userId, terminalId)
+    }
+
     const existing = await this.repository.findOneBy({ orderNumber: orderDto.orderNumber })
+
     if (existing) {
       throw new BadRequestException(`Order Number '${orderDto.orderNumber}' already exists.`)
     }

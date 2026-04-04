@@ -26,8 +26,21 @@ export enum IpcChannel {
   getMachineFingerprint = 'get-machine-fingerprint',
   lockSession = 'lock-session',
   unlockSession = 'unlock-session',
-  approveManagerAction = 'approve-manager-action'
+  approveManagerAction = 'approve-manager-action',
+
+  // Masterfile Operations
+  mstList = 'mst-list',
+  mstGet = 'mst-get',
+  mstSave = 'mst-save',
+  mstDelete = 'mst-delete',
+  
+  // Shift Management
+  shiftOpen = 'shift-open',
+  shiftClose = 'shift-close',
+  shiftStatus = 'shift-status'
 }
+
+
 
 
 

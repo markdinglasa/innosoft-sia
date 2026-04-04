@@ -10,4 +10,4 @@ export * from './stores'
 export * from './table'
 export * from './tables'
 export * from './utility'
-
+export * from './masterfile.types'
