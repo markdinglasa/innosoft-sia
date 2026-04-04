@@ -1,7 +1,47 @@
 import { colors } from "@shared/styles";
-import * as echarts from 'echarts';
+import { LineChart as EchartsLineChart } from 'echarts/charts';
+import {
+  DatasetComponent,
+  GridComponent,
+  TitleComponent,
+  TooltipComponent,
+  TransformComponent
+} from 'echarts/components';
+import * as echarts from 'echarts/core';
+import { LabelLayout, UniversalTransition } from 'echarts/features';
+import { CanvasRenderer } from 'echarts/renderers';
 import { memo, useEffect } from 'react';
 import { Container, Content, Title } from './styles';
+
+// Register the required components
+echarts.use([
+  TitleComponent,
+  TooltipComponent,
+  GridComponent,
+  DatasetComponent,
+  TransformComponent,
+  EchartsLineChart,
+  LabelLayout,
+  UniversalTransition,
+  CanvasRenderer
+]);
+
+export type EChartsOption = echarts.ComposeOption<
+  | TitleComponentOption
+  | TooltipComponentOption
+  | GridComponentOption
+  | DatasetComponentOption
+  | LineSeriesOption
+>;
+
+// Import types separately for better safety if needed (but ComposeOption handles it)
+import { LineSeriesOption } from 'echarts/charts';
+import {
+  DatasetComponentOption,
+  GridComponentOption,
+  TitleComponentOption,
+  TooltipComponentOption
+} from 'echarts/components';
 
 interface Data {
   month: string;
@@ -15,8 +55,6 @@ export interface ChartProps {
   category?: string;
   isProgressReport?: boolean;
 }
-
-export type EChartsOption = echarts.EChartsOption;
 
 function LineChart(props: ChartProps) {
   const { className, title, data = [], category = 'NA' } = props;

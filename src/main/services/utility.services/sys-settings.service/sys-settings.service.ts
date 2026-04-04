@@ -5,6 +5,8 @@ import { transformAndValidate } from '../../../common/utils/validator'
 import { SysSettingsEntity } from '../../../entities/utilities/SysSettings.entity'
 import { BaseService } from '../../base.service'
 import { CreateSysSettingsDto, UpdateSysSettingsDto } from './dto'
+import { AppDataSource } from '../../../typeORM/configurations'
+import { MstTerminalEntity } from '../../../entities/masterfiles/MstTerminal.entity'
 
 export interface ISysSettingsService {
   getMergedSettings(terminalId: number): Promise<SysSettingsEntity>
@@ -101,11 +103,6 @@ export class SysSettingsService extends BaseService<SysSettingsEntity> implement
    * Helper to retrieve branchId for a given terminal.
    */
   private async getTerminalBranchId(terminalId: number): Promise<number | null> {
-    // We avoid circular dependency by using AppDataSource directly or a raw query if needed
-    // For now, assume we can import the repository
-    const { AppDataSource } = await import('../../../typeORM/configurations')
-    const { MstTerminalEntity } = await import('../../../entities/masterfiles/MstTerminal.entity')
-    
     const terminal = await AppDataSource.getRepository(MstTerminalEntity).findOneBy({ id: terminalId })
     return terminal ? terminal.branchId : null
   }

@@ -1,8 +1,8 @@
+import { ToastType, UtilityIpcChannel } from '@shared/types'
+import { displayToast } from "@shared/utils"
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { UtilityIpcChannel } from '@shared/types'
-import { sysSettingsKeys } from './sys-settings.queries'
-import { toast } from 'react-toastify'
 import { SysSettings } from '../types'
+import { sysSettingsKeys } from './sys-settings.queries'
 
 export const useActivateTerminal = () => {
   const queryClient = useQueryClient()
@@ -16,14 +16,14 @@ export const useActivateTerminal = () => {
       return response
     },
     onSuccess: () => {
-      toast.success('Terminal activated successfully!')
+      displayToast('Terminal activated successfully!', ToastType.success)
       // Invalidate specific queries to refresh state
       queryClient.invalidateQueries({ queryKey: sysSettingsKeys.activeTerminalId() })
       // Since sysSettings depend on terminalId, which changed, we should invalidate all sys-settings query tree
       queryClient.invalidateQueries({ queryKey: sysSettingsKeys.all })
     },
     onError: (err: Error) => {
-      toast.error(`Activation failed: ${err.message}`)
+      displayToast(`Activation failed: ${err.message}`, ToastType.error)
     }
   })
 }
@@ -40,11 +40,11 @@ export const useUpdateSettings = () => {
       return response
     },
     onSuccess: () => {
-      toast.success('Settings updated successfully!')
+      displayToast('Settings updated successfully!', ToastType.success)
       queryClient.invalidateQueries({ queryKey: sysSettingsKeys.all })
     },
     onError: (err: Error) => {
-      toast.error(`Save failed: ${err.message}`)
+      displayToast(`Save failed: ${err.message}`, ToastType.error)
     }
   })
 }
