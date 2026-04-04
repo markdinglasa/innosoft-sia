@@ -15,5 +15,6 @@ export interface POSManager {
   activePage: string | null
   activeUser: MstUserEntity | null
   activePermissions: string[]
+  activeBranches: any[]
   loginDate: string | null
 }

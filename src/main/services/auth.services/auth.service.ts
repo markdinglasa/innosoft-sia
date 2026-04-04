@@ -1,15 +1,15 @@
-import { POS_MANAGER, SYSTEM_ACCESS_TOKEN, SYSTEM_LOGIN_DATE, SYSTEM_REFRESH_TOKEN, SYSTEM_SELF } from '@shared/constants'
+import { POS_MANAGER, SYSTEM_ACCESS_TOKEN, SYSTEM_IS_LOCKED, SYSTEM_LOGIN_DATE, SYSTEM_REFRESH_TOKEN, SYSTEM_SELF } from '@shared/constants'
 import { LoginResponse, TokenPayload } from '@shared/types/auth.types'
 import * as bcrypt from 'bcrypt'
 import { FindOneOptions } from 'typeorm'
 import { ClosedDateException, UnauthorizedException } from '../../common/exceptions'
 import { generateAccessToken, generateRefreshToken, verifyToken } from '../../common/utils/jwt.util'
-import { MstPermissionsEntity, MstUserEntity } from '../../entities/masterfiles'
+import { MstBranchAccessEntity, MstBranchEntity, MstPermissionsEntity, MstUserEntity } from '../../entities/masterfiles'
+import { TrnCollectionEntity } from '../../entities/transactions'
 import Store from '../../store/Store'
 import { AppDataSource } from '../../typeORM/configurations'
 import { BaseService, IBaseService } from '../base.service'
 import { FingerprintService } from '../licensing/fingerprint.service'
-import { TrnCollectionEntity } from '../../entities/transactions'
 import { SysAuditTrailService } from '../utility.services/sys-audit-trail.service/sys-audit-trail.service'
 
 /**
@@ -21,7 +21,13 @@ export interface IAuthService extends IBaseService<MstUserEntity> {
   refreshTokens(): Promise<LoginResponse>
   validateAccessToken(): Promise<TokenPayload>
   getPermissions(userId: number): Promise<string[]>
+  getAvailableBranches(userId: number): Promise<MstBranchEntity[]>
+  lockSession(): Promise<void>
+  unlockSession(password: string): Promise<boolean>
+  verifyManagerOverride(username: string, password: string): Promise<boolean>
   changePassword(userId: number, oldPassword: string, newPassword: string): Promise<boolean>
+
+
   currentUser(userId: number): Promise<MstUserEntity | null>
 }
 
@@ -138,13 +144,20 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
     Store.set(SYSTEM_LOGIN_DATE, loginDate)
 
     const permissions = await this.getPermissions(user.id)
+    const branches = await this.getAvailableBranches(user.id)
+
+    if (branches.length === 0) {
+       throw new UnauthorizedException('Access Denied: User has no assigned branches.')
+    }
 
     // Sync POS store for next boot
     Store.set(POS_MANAGER, {
+
       initialize: true,
       activeUser: user,
       activePage: 'dashboard',
       activePermissions: permissions,
+      activeBranches: branches,
       loginDate
     })
 
@@ -163,12 +176,63 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
       user: safeUser,
       tokens: { accessToken, refreshToken },
       permissions: permissions as any,
+      branches: branches as any,
       loginDate
     }
   }
 
   /**
+   * implementation of getAvailableBranches
+   */
+  async getAvailableBranches(userId: number): Promise<MstBranchEntity[]> {
+    const accessRecords = await AppDataSource.getRepository(MstBranchAccessEntity).find({
+      where: { userId },
+      relations: ['branch']
+    })
+    
+    return accessRecords.map(ar => ar.branch).filter(Boolean) as MstBranchEntity[]
+  }
+
+  /**
+   * Securely locks the current POS session.
+   */
+  async lockSession(): Promise<void> {
+    Store.set(SYSTEM_IS_LOCKED, true)
+    const user = Store.get(SYSTEM_SELF)
+    if (user?.id) {
+      await this.auditService.log({
+        userId: user.id,
+        tableInformation: 'MstUser',
+        recordInformation: 'Session locked',
+        actionInformation: 'SESSION_LOCK'
+      })
+    }
+  }
+
+  /**
+   * Unlocks the POS session by verifying the password of the current user.
+   */
+  async unlockSession(password: string): Promise<boolean> {
+    const user = Store.get(SYSTEM_SELF)
+    if (!user) return false
+
+    const isPasswordValid = await bcrypt.compare(password, user.password)
+    if (isPasswordValid) {
+      Store.set(SYSTEM_IS_LOCKED, false)
+      await this.auditService.log({
+        userId: user.id,
+        tableInformation: 'MstUser',
+        recordInformation: 'Session unlocked',
+        actionInformation: 'SESSION_UNLOCK'
+      })
+      return true
+    }
+    return false
+  }
+
+  /**
    * Checks if a date has any "Locked" collections.
+
    */
   private async checkIsDateClosed(dateStr: string): Promise<boolean> {
     const date = new Date(dateStr)
@@ -185,8 +249,10 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
 
   /**
    * Verifies if the provided user has manager permissions.
+   * Publicly accessible for generic sensitive action overrides.
    */
-  private async verifyManagerOverride(username: string, password: string): Promise<boolean> {
+  async verifyManagerOverride(username: string, password: string): Promise<boolean> {
+
     const user = await this.repository.findOne({
       where: { username },
       relations: ['userRoles', 'userRoles.role']
@@ -269,7 +335,11 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
     }
 
     // Re-fetch the user
-    const user = await this.repository.findOneBy({ id: decoded.userId } as any)
+    const options: FindOneOptions<MstUserEntity> = {
+      where: { id: decoded.userId }
+    }
+    const user = await this.repository.findOne(options)
+
     if (!user || user.status !== 'Active') {
       await this.logout()
       throw new UnauthorizedException('User account invalid or inactive.')
@@ -293,6 +363,7 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
     Store.set(SYSTEM_LOGIN_DATE, tokenPayload.loginDate)
 
     const permissions = await this.getPermissions(user.id)
+    const branches = await this.getAvailableBranches(user.id)
 
     // Sync POS store for next boot
     Store.set(POS_MANAGER, {
@@ -300,6 +371,7 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
       activeUser: user,
       activePage: 'dashboard',
       activePermissions: permissions,
+      activeBranches: branches,
       loginDate: tokenPayload.loginDate
     })
     const { password: _pwd, ...safeUser } = user
@@ -308,6 +380,7 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
       user: safeUser,
       tokens: { accessToken: newAccessToken, refreshToken: newRefreshToken },
       permissions: permissions as any,
+      branches: branches as any,
       loginDate: tokenPayload.loginDate
     }
   }
@@ -372,7 +445,7 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
     const user = await this.get(userId)
     if (!user) throw new Error('User not found')
 
-    user.permissions = await this.getPermissions(userId) || []
+    user.permissions = (await this.getPermissions(userId)) || []
 
     return user
   }

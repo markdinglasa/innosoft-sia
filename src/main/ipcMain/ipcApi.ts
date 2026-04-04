@@ -5,7 +5,9 @@ import fs from 'fs'
 import { isQuitting, mainWindow } from '../'
 import { databaseService } from '../services/database.service'
 import Store from '../store/Store'
+import { AuthService } from '../services/auth.services/auth.service'
 
+const authService = new AuthService()
 
 ipcMain.handle('sync-database-schema', async (): Promise<Response> => {
   try {
@@ -79,6 +81,7 @@ ipcMain.on(IpcChannel.importStore, async (event) => {
     event.reply(getFailChannel(IpcChannel.importStore), error.toString())
   }
 })
+
 ipcMain.on(IpcChannel.loadStore, (event) => {
   try {
     const state = Store.getStore()
@@ -88,6 +91,7 @@ ipcMain.on(IpcChannel.loadStore, (event) => {
     event.reply(getFailChannel(IpcChannel.loadStore), error.toString())
   }
 })
+
 ipcMain.on(
   IpcChannel.setStoreValue,
   (event, { key, state }: SetStoreValuePayload<keyof LocalElectronStore>) => {
@@ -100,6 +104,7 @@ ipcMain.on(
     }
   }
 )
+
 ipcMain.on(IpcChannel.closeApp, (event) => {
   try {
     if (!isQuitting) {
@@ -115,30 +120,57 @@ ipcMain.on(IpcChannel.closeApp, (event) => {
 })
 
 ipcMain.handle(IpcChannel.login, async (_event, credentials) => {
-  const { username, password } = credentials
-  // Mock authentication logic - replace with actual DB check if needed
-  if (username === 'admin' && password === 'admin') {
-    return {
-      success: true,
-      data: {
-        user: { id: 1, name: 'Admin User', username: 'admin', role: 'admin' },
-        token: 'mock-jwt-token'
-      }
-    }
+  const { username, password, loginDate } = credentials
+  try {
+    const result = await authService.login(username, password, loginDate)
+    return { success: true, data: result }
+  } catch (error: any) {
+    return { success: false, message: error.message || 'Login failed' }
   }
-  return { success: false, message: 'Invalid username or password' }
 })
 
 ipcMain.handle(IpcChannel.logout, async () => {
-  return { success: true }
+  try {
+    await authService.logout()
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, message: error.message || 'Logout failed' }
+  }
 })
 
 ipcMain.handle(IpcChannel.verifySession, async () => {
-  // Mock session verification
-  return { 
-    success: true, 
-    data: { 
-      user: { id: 1, name: 'Admin User', username: 'admin', role: 'admin' } 
-    } 
+  try {
+    const payload = await authService.validateAccessToken()
+    const user = await authService.currentUser(payload.userId)
+    return { success: true, data: { user } }
+  } catch (error: any) {
+    return { success: false, message: error.message || 'Session verification failed' }
+  }
+})
+
+ipcMain.handle(IpcChannel.lockSession, async () => {
+  try {
+    await authService.lockSession()
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, message: error.message || 'Lock failed' }
+  }
+})
+
+ipcMain.handle(IpcChannel.unlockSession, async (_event, { password }) => {
+  try {
+    const success = await authService.unlockSession(password)
+    return { success }
+  } catch (error: any) {
+    return { success: false, message: error.message || 'Unlock failed' }
+  }
+})
+
+ipcMain.handle(IpcChannel.approveManagerAction, async (_event, { username, password }) => {
+  try {
+    const success = await authService.verifyManagerOverride(username, password)
+    return { success }
+  } catch (error: any) {
+    return { success: false, message: error.message || 'Approval failed' }
   }
 })

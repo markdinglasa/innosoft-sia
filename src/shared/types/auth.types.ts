@@ -7,6 +7,7 @@ export interface TokenPayload {
   userId: number
   username: string
   fingerprint?: string
+  loginDate: string
 }
 
 export interface LoginProps {
@@ -19,16 +20,10 @@ export interface LoginProps {
   }
 }
 
-export interface TokenPayload {
-  userId: number
-  username: string
-  fingerprint?: string
-  loginDate: string
-}
-
 export interface LoginResponse {
   user: any
   tokens: AuthTokens
   permissions: any[]
+  branches: any[]
   loginDate: string
 }
