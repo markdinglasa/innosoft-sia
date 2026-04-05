@@ -1,8 +1,4 @@
-import {
-  PersonPin as CustomerIcon,
-  Delete as DeleteIcon,
-  Edit as EditIcon
-} from '@mui/icons-material'
+import { PersonPin as CustomerIcon, Delete as DeleteIcon } from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -12,7 +8,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  IconButton,
   Paper,
   Table,
   TableBody,
@@ -23,7 +18,9 @@ import {
   TableRow,
   Typography
 } from '@mui/material'
+import { ButtonType } from '@shared/types'
 import React from 'react'
+import CircleButton from '../../../components/inputs/circle-button'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useCustomerHubStore } from '../store/use-customer-hub-store'
 
@@ -35,10 +32,13 @@ export const CustomerList: React.FC = () => {
   const { data, isLoading, isError } = useList({ searchKeyword, page: page + 1, take: 30 })
 
   // Reset page when search changes
-  React.useEffect(function resetPageOnSearch() {
-    setPage(0)
-  }, [searchKeyword])
-  
+  React.useEffect(
+    function resetPageOnSearch() {
+      setPage(0)
+    },
+    [searchKeyword]
+  )
+
   const deleteMutation = useDeleteMutation()
 
   const handleEdit = (id: number) => {
@@ -71,16 +71,12 @@ export const CustomerList: React.FC = () => {
 
   return (
     <>
-      <TableContainer
-        component={Paper}
-        variant="outlined"
-        sx={{ maxHeight: 'calc(100vh - 250px)' }}
-      >
+      <TableContainer component={Paper} variant="outlined">
         <Table stickyHeader size="small">
           <TableHead>
             <TableRow>
               <TableCell width={50}></TableCell>
-              <TableCell>Customer Name</TableCell>
+              <TableCell>Customer</TableCell>
               <TableCell>Contact Details</TableCell>
               <TableCell>TIN</TableCell>
               <TableCell align="right">Credit Limit</TableCell>
@@ -121,25 +117,11 @@ export const CustomerList: React.FC = () => {
                   })}
                 </TableCell>
                 <TableCell align="right">
-                  <IconButton
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleEdit(customer.id)
-                    }}
-                  >
-                    <EditIcon sx={{ fontSize: 25 }} />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    color="error"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleDelete(customer.id)
-                    }}
-                  >
-                    <DeleteIcon sx={{ fontSize: 25 }} />
-                  </IconButton>
+                  <CircleButton
+                    icon={<DeleteIcon sx={{ fontSize: 25 }} />}
+                    onClick={() => handleDelete(customer.id)}
+                    type={ButtonType.button}
+                  />
                 </TableCell>
               </TableRow>
             ))}
@@ -154,17 +136,15 @@ export const CustomerList: React.FC = () => {
             )}
           </TableBody>
         </Table>
+        <TablePagination
+          rowsPerPageOptions={[30]}
+          component="div"
+          count={(data as any)?.meta?.totalItems || 0}
+          rowsPerPage={30}
+          page={page}
+          onPageChange={(_, newPage) => setPage(newPage)}
+        />
       </TableContainer>
-      
-      <TablePagination
-        rowsPerPageOptions={[30]}
-        component="div"
-        count={(data as any)?.meta?.totalItems || 0}
-        rowsPerPage={30}
-        page={page}
-        onPageChange={(_, newPage) => setPage(newPage)}
-      />
-
 
       <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}>
         <DialogTitle>Confirm Delete</DialogTitle>

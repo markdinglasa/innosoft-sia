@@ -7,13 +7,8 @@ import { BranchList } from './components/branch-list'
 import { useBranchHubStore } from './store/use-branch-hub-store'
 
 const BranchHub: React.FC = () => {
-  const { 
-    searchKeyword, 
-    setSearchKeyword, 
-    isFormOpen, 
-    setIsFormOpen, 
-    setSelectedBranchId 
-  } = useBranchHubStore()
+  const { searchKeyword, setSearchKeyword, isFormOpen, setIsFormOpen, setSelectedBranchId } =
+    useBranchHubStore()
 
   const handleCreate = () => {
     setSelectedBranchId(null)
@@ -23,12 +18,12 @@ const BranchHub: React.FC = () => {
   return (
     <PageLayout title="Branch Management">
       <Box sx={{ mb: 3 }}>
-        <Paper 
-          variant="outlined" 
-          sx={{ 
-            p: 2, 
-            display: 'flex', 
-            gap: 2, 
+        <Paper
+          variant="outlined"
+          sx={{
+            p: 2,
+            display: 'flex',
+            gap: 2,
             alignItems: 'center',
             bgcolor: 'background.paper'
           }}
@@ -42,14 +37,14 @@ const BranchHub: React.FC = () => {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon sx={{fontSize: 25}}/>
+                  <SearchIcon sx={{ fontSize: 25 }} />
                 </InputAdornment>
-              ),
+              )
             }}
           />
           <Button
             variant="contained"
-            startIcon={<AddIcon sx={{fontSize: 25}}/>}
+            startIcon={<AddIcon sx={{ fontSize: 25 }} />}
             onClick={handleCreate}
             sx={{ px: 3, whiteSpace: 'nowrap' }}
           >
@@ -58,7 +53,7 @@ const BranchHub: React.FC = () => {
         </Paper>
       </Box>
 
-      <Box sx={{ flexGrow: 1 }}>
+      <Box sx={{ flexGrow: 1, mb: 8 }}>
         <BranchList />
       </Box>
 
@@ -77,3 +72,4 @@ const BranchHub: React.FC = () => {
 }
 
 export default BranchHub
+

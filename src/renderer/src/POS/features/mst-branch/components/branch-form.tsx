@@ -1,7 +1,4 @@
-import {
-  Close as CloseIcon,
-  Save as SaveIcon
-} from '@mui/icons-material'
+import { Close as CloseIcon, Save as SaveIcon } from '@mui/icons-material'
 import {
   Alert,
   Box,
@@ -14,6 +11,8 @@ import {
   TextField,
   Typography
 } from '@mui/material'
+import { ToastType } from '@shared/types'
+import { displayToast } from '@shared/utils'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useMasterfile } from '../../../hooks/use-masterfile'
@@ -22,11 +21,17 @@ import { useBranchHubStore } from '../store/use-branch-hub-store'
 export const BranchForm: React.FC = () => {
   const { selectedBranchId, setSelectedBranchId, setIsFormOpen } = useBranchHubStore()
   const { useGet, useSaveMutation } = useMasterfile('branch')
-  
+
   const { data: branch, isLoading } = useGet(selectedBranchId)
   const saveMutation = useSaveMutation()
 
-  const { control, register, handleSubmit, reset, formState: { errors } } = useForm({
+  const {
+    control,
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors }
+  } = useForm({
     defaultValues: {
       name: '',
       address: '',
@@ -58,8 +63,8 @@ export const BranchForm: React.FC = () => {
         id: selectedBranchId
       })
       handleClose()
-    } catch (err) {
-      console.error('Save failed:', err)
+    } catch (error: unknown) {
+      displayToast((error as Error)?.message || 'Sorry, Something went wrong.', ToastType.error)
     }
   }
 
@@ -77,8 +82,21 @@ export const BranchForm: React.FC = () => {
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', bgcolor: 'primary.main', color: 'white' }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+      sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+    >
+      <Box
+        sx={{
+          p: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          bgcolor: 'primary.main',
+          color: 'white'
+        }}
+      >
         <Typography variant="h6">{selectedBranchId ? 'Edit Branch' : 'New Branch'}</Typography>
         <IconButton size="small" onClick={handleClose} sx={{ color: 'white' }}>
           <CloseIcon sx={{ fontSize: 25 }} />
@@ -99,7 +117,7 @@ export const BranchForm: React.FC = () => {
               label="Branch Name"
               fullWidth
               error={!!errors.name}
-              helperText={(errors.name?.message as string)}
+              helperText={errors.name?.message as string}
             />
           </Grid>
           <Grid item xs={12}>
@@ -110,24 +128,25 @@ export const BranchForm: React.FC = () => {
               rows={3}
               fullWidth
               error={!!errors.address}
-              helperText={(errors.address?.message as string)}
+              helperText={errors.address?.message as string}
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
-              {...register('description')}
-              label="Description"
-              fullWidth
-            />
+            <TextField {...register('description')} label="Description" fullWidth />
           </Grid>
           <Grid item xs={12}>
             <Controller
               name="isDefault"
               control={control}
               render={({ field }) => (
-                <FormControlLabel 
-                  control={<Switch checked={!!field.value} onChange={(e) => field.onChange(e.target.checked)} />} 
-                  label="Set as Default Branch" 
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={!!field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                    />
+                  }
+                  label="Set as Default Branch"
                 />
               )}
             />
@@ -136,18 +155,18 @@ export const BranchForm: React.FC = () => {
       </Box>
 
       <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider', display: 'flex', gap: 2 }}>
-        <Button 
-          fullWidth 
-          variant="outlined" 
+        <Button
+          fullWidth
+          variant="outlined"
           onClick={handleClose}
           disabled={saveMutation.isPending}
         >
           Cancel
         </Button>
-        <Button 
-          fullWidth 
-          variant="contained" 
-          type="submit" 
+        <Button
+          fullWidth
+          variant="contained"
+          type="submit"
           startIcon={<SaveIcon sx={{ fontSize: 25 }} />}
           disabled={saveMutation.isPending}
         >
@@ -157,3 +176,4 @@ export const BranchForm: React.FC = () => {
     </Box>
   )
 }
+

@@ -35,9 +35,9 @@ const theme = createTheme({
     h3: { fontSize: '1.75rem', fontWeight: fonts.weight.bold },
     h4: { fontSize: '1.5rem', fontWeight: fonts.weight.bold },
     h5: { fontSize: '1.25rem', fontWeight: fonts.weight.semiBold },
-    h6: { 
+    h6: {
       fontSize: '1rem',
-      fontWeight: fonts.weight.semiBold 
+      fontWeight: fonts.weight.semiBold
     },
     body1: {
       fontSize: '1.25rem'
@@ -51,7 +51,7 @@ const theme = createTheme({
     button: {
       textTransform: 'none',
       fontWeight: fonts.weight.semiBold,
-      width:'fit-content'
+      width: 'fit-content'
     }
   },
   shape: {
@@ -63,8 +63,8 @@ const theme = createTheme({
         root: {
           //padding: '8px 12px',
           fontSize: '0.9rem',
-          width:'fit-content',
-          height:'2.5rem'
+          width: 'fit-content',
+          height: '2.5rem'
         }
       }
     },
@@ -79,7 +79,7 @@ const theme = createTheme({
         }
       }
     },
-    MuiTab:{
+    MuiTab: {
       styleOverrides: {
         root: {
           fontSize: '0.9rem'
@@ -100,14 +100,14 @@ const theme = createTheme({
         }
       }
     },
-    MuiChip:{
-       defaultProps: {
+    MuiChip: {
+      defaultProps: {
         variant: 'outlined',
-        size: 'small',
+        size: 'small'
       },
       styleOverrides: {
         root: {
-          fontSize: '0.9rem',
+          fontSize: '0.9rem'
         }
       }
     },
@@ -115,7 +115,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           height: '3rem',
-          fontSize: '0.9rem',
+          fontSize: '0.9rem'
         }
       }
     },
@@ -137,7 +137,36 @@ const theme = createTheme({
       styleOverrides: {
         message: {
           fontSize: '0.9rem'
+        }
+      }
+    },
+    MuiPagination: {
+      styleOverrides: {
+        root: {
+          fontSize: '0.9rem'
         },
+        ul: {
+          fontSize: '0.9rem'
+        }
+      }
+    },
+    MuiTablePagination: {
+      styleOverrides: {
+        root: {
+          fontSize: '0.9rem'
+        },
+        selectLabel: {
+          fontSize: '0.9rem'
+        },
+        displayedRows: {
+          fontSize: '0.9rem'
+        },
+
+        actions: {
+          '& .MuiSvgIcon-root': {
+            fontSize: 30
+          }
+        }
       }
     },
     // MuiChip: {
@@ -159,3 +188,4 @@ const theme = createTheme({
 })
 
 export default theme
+
