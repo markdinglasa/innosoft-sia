@@ -114,7 +114,7 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
    * This handles pagination, limiting, and keyword search.
    */
   async list(options?: PaginationOptionsDto): Promise<T[] | PaginatedResponse<T>> {
-    const { page = 1, limit = 10, search = '', orderBy = 'id', order = 'DESC' } = options || {}
+    const { page = 1, limit = 30, search = '', orderBy = 'id', order = 'DESC' } = options || {}
     
     // If no pagination is requested (limit is explicitly null/0 or page is not provided), 
     // we could return everything, but for this app let's enforce pagination.

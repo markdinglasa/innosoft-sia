@@ -16,6 +16,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   Typography
 } from '@mui/material'
@@ -28,7 +29,14 @@ export const BranchList: React.FC = () => {
   const { searchKeyword, setSelectedBranchId, setIsFormOpen } = useBranchHubStore()
   const { useList, useDeleteMutation } = useMasterfile('branch')
   
-  const { data, isLoading, isError } = useList({ searchKeyword })
+  const [page, setPage] = React.useState(0)
+  const { data, isLoading, isError } = useList({ searchKeyword, page: page + 1, take: 30 })
+  
+  // Reset to first page on search
+  React.useEffect(function resetPageOnSearch() {
+    setPage(0)
+  }, [searchKeyword])
+  
   const deleteMutation = useDeleteMutation()
 
   const [deleteId, setDeleteId] = React.useState<number | null>(null)
@@ -115,6 +123,16 @@ export const BranchList: React.FC = () => {
         </TableBody>
       </Table>
       </TableContainer>
+      
+      <TablePagination
+        rowsPerPageOptions={[30]}
+        component="div"
+        count={(data as any)?.meta?.totalItems || 0}
+        rowsPerPage={30}
+        page={page}
+        onPageChange={(_, newPage) => setPage(newPage)}
+      />
+
 
       <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}>
         <DialogTitle>Confirm Delete</DialogTitle>

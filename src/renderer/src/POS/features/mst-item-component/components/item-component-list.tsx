@@ -19,6 +19,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   Typography
 } from '@mui/material'
@@ -29,7 +30,14 @@ import { useItemComponentHubStore } from '../store/use-item-component-hub-store'
 export const ItemComponentList: React.FC = () => {
   const { searchKeyword, setSelectedId, setIsFormOpen } = useItemComponentHubStore()
   const { useList, useDeleteMutation } = useMasterfile('itemComponent')
-  const { data, isLoading, isError } = useList({ searchKeyword })
+  const [page, setPage] = React.useState(0)
+  const { data, isLoading, isError } = useList({ searchKeyword, page: page + 1, take: 30 })
+
+  // Reset page when search changes
+  React.useEffect(function resetPageOnSearch() {
+    setPage(0)
+  }, [searchKeyword])
+  
   const deleteMutation = useDeleteMutation()
   const handleEdit = (id: number) => {
     setSelectedId(id)
@@ -121,6 +129,16 @@ export const ItemComponentList: React.FC = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      
+      <TablePagination
+        rowsPerPageOptions={[30]}
+        component="div"
+        count={(data as any)?.meta?.totalItems || 0}
+        rowsPerPage={30}
+        page={page}
+        onPageChange={(_, newPage) => setPage(newPage)}
+      />
+
       <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>

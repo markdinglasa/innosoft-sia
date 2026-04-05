@@ -5,7 +5,10 @@ import {
   CircularProgress,
   Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
   IconButton, Paper, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, Typography
+  TableContainer, TableHead,
+  TablePagination,
+  TableRow,
+  Typography
 } from '@mui/material'
 import React from 'react'
 import { useMasterfile } from '../../../hooks/use-masterfile'
@@ -14,9 +17,15 @@ import { useUnitHubStore } from '../store/use-unit-hub-store'
 export const UnitList: React.FC = () => {
   const { searchKeyword, setSelectedId, setIsFormOpen } = useUnitHubStore()
   const { useList, useDeleteMutation } = useMasterfile('unit')
-  const { data, isLoading, isError } = useList({ searchKeyword })
-  const deleteMutation = useDeleteMutation()
+  const [page, setPage] = React.useState(0)
+  const { data, isLoading, isError } = useList({ searchKeyword, page: page + 1, take: 30 })
 
+  // Reset page when search changes
+  React.useEffect(function resetPageOnSearch() {
+    setPage(0)
+  }, [searchKeyword])
+  
+  const deleteMutation = useDeleteMutation()
   const handleEdit = (id: number) => { setSelectedId(id); setIsFormOpen(true) }
   const [deleteId, setDeleteId] = React.useState<number | null>(null)
   const handleDelete = (id: number) => setDeleteId(id)
@@ -57,6 +66,15 @@ export const UnitList: React.FC = () => {
         </TableBody>
       </Table>
     </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[30]}
+        component="div"
+        count={(data as any)?.meta?.totalItems || 0}
+        rowsPerPage={30}
+        page={page}
+        onPageChange={(_, newPage) => setPage(newPage)}
+      />
+
   
       <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}><DialogTitle>Confirm Delete</DialogTitle><DialogContent><DialogContentText>Delete this unit? This cannot be undone.</DialogContentText></DialogContent><DialogActions><Button onClick={() => setDeleteId(null)}>Cancel</Button><Button onClick={confirmDelete} color="error" variant="contained" disabled={deleteMutation.isPending}>{deleteMutation.isPending ? 'Deleting...' : 'Delete'}</Button></DialogActions></Dialog>
     </>
