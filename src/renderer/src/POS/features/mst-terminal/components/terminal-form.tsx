@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Close as CloseIcon,
   Save as SaveIcon,
@@ -15,32 +16,45 @@ import {
 } from '@mui/material'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useTerminalHubStore } from '../store/use-terminal-hub-store'
 
-interface FormData {
-  name: string
-}
+const terminalSchema = z.object({
+  name: z.string().min(1, 'Terminal Name is required')
+})
+
+type FormData = z.infer<typeof terminalSchema>
 
 export const TerminalForm: React.FC = () => {
   const { selectedId, setIsFormOpen } = useTerminalHubStore()
   const { useGet, useSaveMutation } = useMasterfile('terminal')
   const { data: existing, isLoading } = useGet(selectedId)
   const saveMutation = useSaveMutation()
+
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors }
-  } = useForm<FormData>({ defaultValues: { name: '' } })
-  useEffect(() => {
-    if (existing) reset({ name: existing.name || existing.terminalName || '' })
-    else reset({ name: '' })
-  }, [existing, reset])
+  } = useForm<FormData>({
+    resolver: zodResolver(terminalSchema),
+    defaultValues: { name: '' }
+  })
+
+  useEffect(
+    function formResetter() {
+      if (existing) reset({ name: existing.name || existing.terminalName || '' })
+      else reset({ name: '' })
+    },
+    [existing, reset]
+  )
+
   const onSubmit = async (formData: FormData) => {
     await saveMutation.mutateAsync({ ...formData, id: selectedId || undefined })
     setIsFormOpen(false)
   }
+
   return (
     <Box sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -63,12 +77,12 @@ export const TerminalForm: React.FC = () => {
           <Controller
             name="name"
             control={control}
-            rules={{ required: 'Name is required' }}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Terminal Name"
+                label="Terminal"
                 fullWidth
+                required
                 margin="normal"
                 error={!!errors.name}
                 helperText={errors.name?.message}

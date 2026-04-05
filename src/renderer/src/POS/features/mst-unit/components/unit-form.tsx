@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Close as CloseIcon, Save as SaveIcon, Straighten as UnitIcon } from '@mui/icons-material'
 import {
   Alert,
@@ -11,30 +12,40 @@ import {
 } from '@mui/material'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useUnitHubStore } from '../store/use-unit-hub-store'
 
-interface UnitFormData {
-  name: string
-  description: string
-}
+const unitSchema = z.object({
+  name: z.string().min(1, 'Unit Name is required'),
+  description: z.string().optional().nullable()
+})
+
+type UnitFormData = z.infer<typeof unitSchema>
 
 export const UnitForm: React.FC = () => {
   const { selectedId, setIsFormOpen } = useUnitHubStore()
   const { useGet, useSaveMutation } = useMasterfile('unit')
   const { data: existing, isLoading } = useGet(selectedId)
   const saveMutation = useSaveMutation()
+
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors }
-  } = useForm<UnitFormData>({ defaultValues: { name: '', description: '' } })
+  } = useForm({
+    resolver: zodResolver(unitSchema),
+    defaultValues: { name: '', description: '' }
+  })
 
-  useEffect(() => {
-    if (existing) reset({ name: existing.name || '', description: existing.description || '' })
-    else reset({ name: '', description: '' })
-  }, [existing, reset])
+  useEffect(
+    function formResetter() {
+      if (existing) reset({ name: existing.name || '', description: existing.description || '' })
+      else reset({ name: '', description: '' })
+    },
+    [existing, reset]
+  )
 
   const onSubmit = async (formData: UnitFormData) => {
     await saveMutation.mutateAsync({ ...formData, id: selectedId || undefined })
@@ -63,12 +74,12 @@ export const UnitForm: React.FC = () => {
           <Controller
             name="name"
             control={control}
-            rules={{ required: 'Name is required' }}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Unit Name"
+                label="Unit"
                 fullWidth
+                required
                 margin="normal"
                 error={!!errors.name}
                 helperText={errors.name?.message}

@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Close as CloseIcon, Save as SaveIcon, EventNote as TermIcon } from '@mui/icons-material'
 import {
   Alert,
@@ -11,33 +12,46 @@ import {
 } from '@mui/material'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useTermHubStore } from '../store/use-term-hub-store'
 
-interface FormData {
-  name: string
-  numberOfDays: number
-}
+const termSchema = z.object({
+  name: z.string().min(1, 'Term is required'),
+  numberOfDays: z.coerce.number().min(0, 'Days must be at least 0')
+})
+
+type FormData = z.infer<typeof termSchema>
 
 export const TermForm: React.FC = () => {
   const { selectedId, setIsFormOpen } = useTermHubStore()
   const { useGet, useSaveMutation } = useMasterfile('term')
   const { data: existing, isLoading } = useGet(selectedId)
   const saveMutation = useSaveMutation()
+
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors }
-  } = useForm<FormData>({ defaultValues: { name: '', numberOfDays: 0 } })
-  useEffect(() => {
-    if (existing) reset({ name: existing.name || '', numberOfDays: existing.numberOfDays || 0 })
-    else reset({ name: '', numberOfDays: 0 })
-  }, [existing, reset])
+  } = useForm({
+    resolver: zodResolver(termSchema),
+    defaultValues: { name: '', numberOfDays: 0 }
+  })
+
+  useEffect(
+    function formResetter() {
+      if (existing) reset({ name: existing.name || '', numberOfDays: existing.numberOfDays || 0 })
+      else reset({ name: '', numberOfDays: 0 })
+    },
+    [existing, reset]
+  )
+
   const onSubmit = async (formData: FormData) => {
     await saveMutation.mutateAsync({ ...formData, id: selectedId || undefined })
     setIsFormOpen(false)
   }
+
   return (
     <Box sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -60,12 +74,12 @@ export const TermForm: React.FC = () => {
           <Controller
             name="name"
             control={control}
-            rules={{ required: 'Name is required' }}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Term Name"
+                label="Term"
                 fullWidth
+                required
                 margin="normal"
                 error={!!errors.name}
                 helperText={errors.name?.message}
@@ -75,13 +89,13 @@ export const TermForm: React.FC = () => {
           <Controller
             name="numberOfDays"
             control={control}
-            rules={{ required: 'Days is required' }}
             render={({ field }) => (
               <TextField
                 {...field}
                 label="Number of Days"
                 type="number"
                 fullWidth
+                required
                 margin="normal"
                 error={!!errors.numberOfDays}
                 helperText={errors.numberOfDays?.message}

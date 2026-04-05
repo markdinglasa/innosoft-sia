@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Close as CloseIcon,
   Extension as ComponentIcon,
@@ -15,39 +16,52 @@ import {
 } from '@mui/material'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useItemComponentHubStore } from '../store/use-item-component-hub-store'
 
-interface FormData {
-  itemId: number
-  componentItemId: number
-  quantity: number
-}
+const itemComponentSchema = z.object({
+  itemId: z.coerce.number().min(1, 'Item ID required'),
+  componentItemId: z.coerce.number().min(1, 'Component Item ID required'),
+  quantity: z.coerce.number().min(1, 'Quantity must be at least 1')
+})
+
+type FormData = z.infer<typeof itemComponentSchema>
 
 export const ItemComponentForm: React.FC = () => {
   const { selectedId, setIsFormOpen } = useItemComponentHubStore()
   const { useGet, useSaveMutation } = useMasterfile('itemComponent')
   const { data: existing, isLoading } = useGet(selectedId)
   const saveMutation = useSaveMutation()
+
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors }
-  } = useForm<FormData>({ defaultValues: { itemId: 0, componentItemId: 0, quantity: 1 } })
-  useEffect(() => {
-    if (existing)
-      reset({
-        itemId: existing.itemId || 0,
-        componentItemId: existing.componentItemId || 0,
-        quantity: existing.quantity || 1
-      })
-    else reset({ itemId: 0, componentItemId: 0, quantity: 1 })
-  }, [existing, reset])
+  } = useForm({
+    resolver: zodResolver(itemComponentSchema),
+    defaultValues: { itemId: 0, componentItemId: 0, quantity: 1 }
+  })
+
+  useEffect(
+    function formResetter() {
+      if (existing)
+        reset({
+          itemId: existing.itemId || 0,
+          componentItemId: existing.componentItemId || 0,
+          quantity: existing.quantity || 1
+        })
+      else reset({ itemId: 0, componentItemId: 0, quantity: 1 })
+    },
+    [existing, reset]
+  )
+
   const onSubmit = async (formData: FormData) => {
     await saveMutation.mutateAsync({ ...formData, id: selectedId || undefined })
     setIsFormOpen(false)
   }
+
   return (
     <Box sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -70,13 +84,13 @@ export const ItemComponentForm: React.FC = () => {
           <Controller
             name="itemId"
             control={control}
-            rules={{ required: 'Item ID required' }}
             render={({ field }) => (
               <TextField
                 {...field}
                 label="Item ID"
                 type="number"
                 fullWidth
+                required
                 margin="normal"
                 error={!!errors.itemId}
                 helperText={errors.itemId?.message}
@@ -86,13 +100,13 @@ export const ItemComponentForm: React.FC = () => {
           <Controller
             name="componentItemId"
             control={control}
-            rules={{ required: 'Component Item ID required' }}
             render={({ field }) => (
               <TextField
                 {...field}
                 label="Component Item ID"
                 type="number"
                 fullWidth
+                required
                 margin="normal"
                 error={!!errors.componentItemId}
                 helperText={errors.componentItemId?.message}
@@ -102,13 +116,13 @@ export const ItemComponentForm: React.FC = () => {
           <Controller
             name="quantity"
             control={control}
-            rules={{ required: 'Quantity required' }}
             render={({ field }) => (
               <TextField
                 {...field}
                 label="Quantity"
                 type="number"
                 fullWidth
+                required
                 margin="normal"
                 error={!!errors.quantity}
                 helperText={errors.quantity?.message}

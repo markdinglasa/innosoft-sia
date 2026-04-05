@@ -11,13 +11,17 @@ import {
 } from '@mui/material'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { usePayTypeHubStore } from '../store/use-pay-type-hub-store'
 
-interface FormData {
-  name: string
-  sortNumber: number | null
-}
+const payTypeSchema = z.object({
+  name: z.string().min(1, 'Payment Type Name is required'),
+  sortNumber: z.coerce.number().optional().nullable()
+})
+
+type FormData = z.infer<typeof payTypeSchema>
 
 export const PayTypeForm: React.FC = () => {
   const { selectedId, setIsFormOpen } = usePayTypeHubStore()
@@ -29,7 +33,10 @@ export const PayTypeForm: React.FC = () => {
     handleSubmit,
     reset,
     formState: { errors }
-  } = useForm<FormData>({ defaultValues: { name: '', sortNumber: null } })
+  } = useForm({
+    resolver: zodResolver(payTypeSchema),
+    defaultValues: { name: '', sortNumber: null }
+  })
   useEffect(() => {
     if (existing) reset({ name: existing.name || '', sortNumber: existing.sortNumber })
     else reset({ name: '', sortNumber: null })
@@ -62,12 +69,12 @@ export const PayTypeForm: React.FC = () => {
           <Controller
             name="name"
             control={control}
-            rules={{ required: 'Name is required' }}
             render={({ field }) => (
               <TextField
                 {...field}
                 label="Payment Type Name"
                 fullWidth
+                required
                 margin="normal"
                 error={!!errors.name}
                 helperText={errors.name?.message}
@@ -78,7 +85,14 @@ export const PayTypeForm: React.FC = () => {
             name="sortNumber"
             control={control}
             render={({ field }) => (
-              <TextField {...field} label="Sort Number" type="number" fullWidth margin="normal" />
+              <TextField
+                {...field}
+                value={field.value ?? ''}
+                label="Sort Number"
+                type="number"
+                fullWidth
+                margin="normal"
+              />
             )}
           />
           {saveMutation.isError && (

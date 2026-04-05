@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Close as CloseIcon,
   Save as SaveIcon,
@@ -17,8 +18,23 @@ import {
 } from '@mui/material'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useSupplierHubStore } from '../store/use-supplier-hub-store'
+
+const supplierSchema = z.object({
+  name: z.string().min(1, 'Supplier Name is required'),
+  address: z.string().min(1, 'Address is required'),
+  telephoneNumber: z.string().optional(),
+  cellphoneNumber: z.string().optional(),
+  faxNumber: z.string().optional(),
+  tin: z.string().optional(),
+  termId: z.string().optional(),
+  accountId: z.string().optional(),
+  isDefault: z.boolean().default(false)
+})
+
+type FormData = z.infer<typeof supplierSchema>
 
 export const SupplierForm: React.FC = () => {
   const { selectedSupplierId, setSelectedSupplierId, setIsFormOpen } = useSupplierHubStore()
@@ -37,6 +53,7 @@ export const SupplierForm: React.FC = () => {
     reset,
     formState: { errors }
   } = useForm({
+    resolver: zodResolver(supplierSchema),
     defaultValues: {
       name: '',
       address: '',
@@ -50,27 +67,30 @@ export const SupplierForm: React.FC = () => {
     }
   })
 
-  useEffect(() => {
-    if (supplier) {
-      reset({
-        ...supplier
-      })
-    } else {
-      reset({
-        name: '',
-        address: '',
-        telephoneNumber: '',
-        cellphoneNumber: '',
-        faxNumber: '',
-        tin: '',
-        termId: '',
-        accountId: '',
-        isDefault: false
-      })
-    }
-  }, [supplier, reset])
+  useEffect(
+    function formResetter() {
+      if (supplier) {
+        reset({
+          ...supplier
+        })
+      } else {
+        reset({
+          name: '',
+          address: '',
+          telephoneNumber: '',
+          cellphoneNumber: '',
+          faxNumber: '',
+          tin: '',
+          termId: '',
+          accountId: '',
+          isDefault: false
+        })
+      }
+    },
+    [supplier, reset]
+  )
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: FormData) => {
     try {
       await saveMutation.mutateAsync({
         ...data,
@@ -132,21 +152,26 @@ export const SupplierForm: React.FC = () => {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
-              {...register('name', { required: 'Name is required' })}
+              {...register('name')}
               label="Supplier Name"
               fullWidth
+              required
               size="small"
               error={!!errors.name}
+              helperText={errors.name?.message}
             />
           </Grid>
           <Grid item xs={12}>
             <TextField
-              {...register('address', { required: 'Address is required' })}
+              {...register('address')}
               label="Address"
               multiline
               rows={2}
               fullWidth
+              required
               size="small"
+              error={!!errors.address}
+              helperText={errors.address?.message}
             />
           </Grid>
           <Grid item xs={6}>

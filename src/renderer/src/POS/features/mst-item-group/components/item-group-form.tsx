@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Close as CloseIcon, Category as GroupIcon, Save as SaveIcon } from '@mui/icons-material'
 import {
   Alert,
@@ -11,12 +12,15 @@ import {
 } from '@mui/material'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useItemGroupHubStore } from '../store/use-item-group-hub-store'
 
-interface FormData {
-  name: string
-}
+const itemGroupSchema = z.object({
+  name: z.string().min(1, 'Item Group Name is required')
+})
+
+type FormData = z.infer<typeof itemGroupSchema>
 
 export const ItemGroupForm: React.FC = () => {
   const { selectedId, setIsFormOpen } = useItemGroupHubStore()
@@ -28,7 +32,10 @@ export const ItemGroupForm: React.FC = () => {
     handleSubmit,
     reset,
     formState: { errors }
-  } = useForm<FormData>({ defaultValues: { name: '' } })
+  } = useForm<FormData>({
+    resolver: zodResolver(itemGroupSchema),
+    defaultValues: { name: '' }
+  })
   useEffect(() => {
     if (existing) reset({ name: existing.name || '' })
     else reset({ name: '' })
@@ -59,12 +66,12 @@ export const ItemGroupForm: React.FC = () => {
           <Controller
             name="name"
             control={control}
-            rules={{ required: 'Name is required' }}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Item Group Name"
+                label="Item Group"
                 fullWidth
+                required
                 margin="normal"
                 error={!!errors.name}
                 helperText={errors.name?.message}

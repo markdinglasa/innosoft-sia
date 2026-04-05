@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Close as CloseIcon, TableChart as GroupIcon, Save as SaveIcon } from '@mui/icons-material'
 import {
   Alert,
@@ -11,32 +12,45 @@ import {
 } from '@mui/material'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useTableGroupHubStore } from '../store/use-table-group-hub-store'
 
-interface FormData {
-  name: string
-}
+const tableGroupSchema = z.object({
+  name: z.string().min(1, 'Table Group Name is required')
+})
+
+type FormData = z.infer<typeof tableGroupSchema>
 
 export const TableGroupForm: React.FC = () => {
   const { selectedId, setIsFormOpen } = useTableGroupHubStore()
   const { useGet, useSaveMutation } = useMasterfile('tableGroup')
   const { data: existing, isLoading } = useGet(selectedId)
   const saveMutation = useSaveMutation()
+
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors }
-  } = useForm<FormData>({ defaultValues: { name: '' } })
-  useEffect(() => {
-    if (existing) reset({ name: existing.name || '' })
-    else reset({ name: '' })
-  }, [existing, reset])
+  } = useForm({
+    resolver: zodResolver(tableGroupSchema),
+    defaultValues: { name: '' }
+  })
+
+  useEffect(
+    function formResetter() {
+      if (existing) reset({ name: existing.name || '' })
+      else reset({ name: '' })
+    },
+    [existing, reset]
+  )
+
   const onSubmit = async (formData: FormData) => {
     await saveMutation.mutateAsync({ ...formData, id: selectedId || undefined })
     setIsFormOpen(false)
   }
+
   return (
     <Box sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -61,12 +75,12 @@ export const TableGroupForm: React.FC = () => {
           <Controller
             name="name"
             control={control}
-            rules={{ required: 'Name is required' }}
             render={({ field }) => (
               <TextField
                 {...field}
                 label="Table Group Name"
                 fullWidth
+                required
                 margin="normal"
                 error={!!errors.name}
                 helperText={errors.name?.message}

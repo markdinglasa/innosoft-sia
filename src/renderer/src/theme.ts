@@ -140,6 +140,16 @@ const theme = createTheme({
         }
       }
     },
+    MuiFormLabel: {
+      styleOverrides: {
+        asterisk: {
+          color: colors.red,
+          '&.Mui-error': {
+            color: colors.red
+          }
+        }
+      }
+    },
     MuiPagination: {
       styleOverrides: {
         root: {

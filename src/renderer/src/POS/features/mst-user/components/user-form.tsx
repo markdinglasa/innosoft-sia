@@ -17,30 +17,53 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import { ToastType } from "@shared/types"
-import { displayToast } from "@shared/utils"
+import { ToastType } from '@shared/types'
+import { displayToast } from '@shared/utils'
 import React, { useEffect } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useUserHubStore } from '../store/use-user-hub-store'
+
+const userSchema = z.object({
+  username: z.string().min(1, 'Username is required'),
+  fullName: z.string().min(1, 'Full name is required'),
+  email: z.string().email('Invalid email').optional().nullable().or(z.literal('')),
+  password: z.string().optional().nullable(),
+  type: z.enum(['Teller', 'Cashier', 'Admin']),
+  status: z.enum(['Active', 'Inactive', 'Locked']),
+  branchAccesses: z.array(z.object({
+    branchId: z.string().min(1, 'Branch is required')
+  })).default([])
+})
+
+type FormData = z.infer<typeof userSchema>
 
 export const UserForm: React.FC = () => {
   const { selectedUserId, setSelectedUserId, setIsFormOpen } = useUserHubStore()
   const { useGet, useSaveMutation, useLookup } = useMasterfile('user')
-  const { data: branches = [] } = useLookup('branch') 
+  const { data: branches = [] } = useLookup('branch')
 
   const { data: user, isLoading } = useGet(selectedUserId)
   const saveMutation = useSaveMutation()
 
-  const { control, register, handleSubmit, reset, formState: { errors } } = useForm({
+  const {
+    control,
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors }
+  } = useForm({
+    resolver: zodResolver(userSchema),
     defaultValues: {
       username: '',
       fullName: '',
       email: '',
       password: '',
-      type: 'Teller',
-      status: 'Active',
-      branchAccesses: [] as any[]
+      type: 'Teller' as const,
+      status: 'Active' as const,
+      branchAccesses: []
     }
   })
 
@@ -49,43 +72,49 @@ export const UserForm: React.FC = () => {
     name: 'branchAccesses'
   })
 
-  useEffect(() => {
-    if (user) {
-      reset({
-        ...user,
-        password: '', // Don't show password for editing
-        branchAccesses: user.branchAccesses || []
-      })
-    } else {
-      reset({
-        username: '',
-        fullName: '',
-        email: '',
-        password: '',
-        type: 'Teller',
-        status: 'Active',
-        branchAccesses: []
-      })
-    }
-  }, [user, reset])
+  useEffect(
+    function formResetter() {
+      if (user) {
+        reset({
+          ...user,
+          password: '', // Don't show password for editing
+          branchAccesses: user.branchAccesses || []
+        })
+      } else {
+        reset({
+          username: '',
+          fullName: '',
+          email: '',
+          password: '',
+          type: 'Teller',
+          status: 'Active',
+          branchAccesses: []
+        })
+      }
+    },
+    [user, reset]
+  )
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: FormData) => {
     try {
-      const payload = {
+      const payload: any = {
         ...data,
         id: selectedUserId // TypeORM handles save/update based on ID
       }
-      
+
       console.log('pay-load:', payload)
       // If editing and password is empty, don't update it
       if (selectedUserId && !data.password) {
+        delete payload.password
+      } else if (!selectedUserId && !data.password) {
+        // Handle new user password if needed, but UI says system generated
         delete payload.password
       }
 
       await saveMutation.mutateAsync(payload)
       handleClose()
-    } catch (error:unknown) {
-      displayToast((error as Error)?.message||'Sorry, Something went wrong.', ToastType.error)
+    } catch (error: unknown) {
+      displayToast((error as Error)?.message || 'Sorry, Something went wrong.', ToastType.error)
     }
   }
 
@@ -103,8 +132,21 @@ export const UserForm: React.FC = () => {
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', bgcolor: 'primary.main', color: 'white' }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+      sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+    >
+      <Box
+        sx={{
+          p: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          bgcolor: 'primary.main',
+          color: 'white'
+        }}
+      >
         <Typography variant="h6">{selectedUserId ? 'Edit User' : 'New User'}</Typography>
         <IconButton size="small" onClick={handleClose} sx={{ color: 'white' }}>
           <CloseIcon sx={{ fontSize: 25 }} />
@@ -121,41 +163,31 @@ export const UserForm: React.FC = () => {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
-              {...register('fullName', { required: 'Full name is required' })}
+              {...register('fullName')}
               label="Full Name"
               fullWidth
+              required
               error={!!errors.fullName}
               helperText={errors.fullName?.message}
             />
           </Grid>
           <Grid item xs={6}>
             <TextField
-              {...register('username', { required: 'Username is required' })}
+              {...register('username')}
               label="Username"
               fullWidth
+              required
               error={!!errors.username}
               helperText={errors.username?.message}
             />
           </Grid>
-          {/* 
-          user cannot input password, it should be generated by the system.
-          on creating new sub-users, the system should generate a password and send it to the user's email.
-          on editing users, the user should not be able to change the password.
-          <Grid item xs={6}>
-            <TextField
-              {...register('password', { required: !selectedUserId ? 'Password is required' : false })}
-              label={selectedUserId ? 'Password (Optional)' : 'Password'}
-              type="password"
-              fullWidth
-              error={!!errors.password}
-              helperText={errors.password?.message}
-            /> 
-          </Grid>*/}
           <Grid item xs={12}>
             <TextField
               {...register('email')}
               label="Email"
               fullWidth
+              error={!!errors.email}
+              helperText={errors.email?.message}
             />
           </Grid>
           <Grid item xs={6}>
@@ -163,7 +195,7 @@ export const UserForm: React.FC = () => {
               name="type"
               control={control}
               render={({ field }) => (
-                <TextField {...field} select label="User Type" fullWidth>
+                <TextField {...field} select label="User Type" fullWidth required>
                   <MenuItem value="Teller">Teller</MenuItem>
                   <MenuItem value="Cashier">Cashier</MenuItem>
                   <MenuItem value="Admin">Admin</MenuItem>
@@ -176,7 +208,7 @@ export const UserForm: React.FC = () => {
               name="status"
               control={control}
               render={({ field }) => (
-                <TextField {...field} select label="Status" fullWidth>
+                <TextField {...field} select label="Status" fullWidth required>
                   <MenuItem value="Active">Active</MenuItem>
                   <MenuItem value="Inactive">Inactive</MenuItem>
                   <MenuItem value="Locked">Locked</MenuItem>
@@ -186,21 +218,29 @@ export const UserForm: React.FC = () => {
           </Grid>
         </Grid>
 
-        <Box sx={{ mt: 4, mb: 2}}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-            <Typography variant="subtitle2" fontWeight="bold">Branch Access</Typography>
-            <Button variant="outlined" startIcon={<AddIcon />} onClick={() => append({ branchId: '', canOpenShift: true })}>
+        <Box sx={{ mt: 4, mb: 2 }}>
+          <Box
+            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}
+          >
+            <Typography variant="subtitle2" fontWeight="bold">
+              Branch Access
+            </Typography>
+            <Button
+              variant="outlined"
+              startIcon={<AddIcon />}
+              onClick={() => append({ branchId: '' })}
+            >
               Branch
             </Button>
           </Box>
           <Divider sx={{ mb: 2 }} />
-          
+
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {fields.map((field, index) => (
               <Paper key={field.id} variant="outlined" className="flex flex-row gap-2 p-2">
-                <IconButton 
-                  size="small" 
-                  color="error" 
+                <IconButton
+                  size="small"
+                  color="error"
                   sx={{ fontSize: 25 }}
                   onClick={() => remove(index)}
                 >
@@ -212,15 +252,19 @@ export const UserForm: React.FC = () => {
                       name={`branchAccesses.${index}.branchId`}
                       control={control}
                       render={({ field }) => (
-                        <TextField 
-                          {...field} 
-                          select 
-                          label="Branch" 
-                          fullWidth 
+                        <TextField
+                          {...field}
+                          select
+                          label="Branch"
+                          fullWidth
                           size="small"
+                          required
+                          error={!!errors.branchAccesses?.[index]?.branchId}
                         >
                           {branches.map((b: any) => (
-                            <MenuItem key={b.id} value={b.id}>{b.name}</MenuItem>
+                            <MenuItem key={b.id} value={b.id}>
+                              {b.name}
+                            </MenuItem>
                           ))}
                         </TextField>
                       )}
@@ -239,18 +283,18 @@ export const UserForm: React.FC = () => {
       </Box>
 
       <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider', display: 'flex', gap: 2 }}>
-        <Button 
-          fullWidth 
-          variant="outlined" 
+        <Button
+          fullWidth
+          variant="outlined"
           onClick={handleClose}
           disabled={saveMutation.isPending}
         >
           Cancel
         </Button>
-        <Button 
-          fullWidth 
-          variant="contained" 
-          type="submit" 
+        <Button
+          fullWidth
+          variant="contained"
+          type="submit"
           startIcon={<SaveIcon sx={{ fontSize: 25 }} />}
           disabled={saveMutation.isPending}
         >
@@ -260,3 +304,4 @@ export const UserForm: React.FC = () => {
     </Box>
   )
 }
+

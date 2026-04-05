@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Close as CloseIcon,
   PersonPin as CustomerIcon,
@@ -19,8 +20,23 @@ import {
 } from '@mui/material'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useCustomerHubStore } from '../store/use-customer-hub-store'
+
+const customerSchema = z.object({
+  name: z.string().min(2, 'Customer Name must be at least 2 characters'),
+  customerCode: z.string().optional(),
+  address: z.string().min(5, 'Address must be at least 5 characters'),
+  contactPerson: z.string().optional(),
+  contactNumber: z.string().optional(),
+  tin: z.string().optional(),
+  creditLimit: z.coerce.number().min(0, 'Credit Limit must be at least 0'),
+  termId: z.string().optional(),
+  accountId: z.string().optional(),
+  withReward: z.boolean().default(false),
+  isDefault: z.boolean().default(false)
+})
 
 export const CustomerForm: React.FC = () => {
   const { selectedCustomerId, setSelectedCustomerId, setIsFormOpen } = useCustomerHubStore()
@@ -39,6 +55,7 @@ export const CustomerForm: React.FC = () => {
     reset,
     formState: { errors }
   } = useForm({
+    resolver: zodResolver(customerSchema),
     defaultValues: {
       name: '',
       customerCode: '',
@@ -54,36 +71,39 @@ export const CustomerForm: React.FC = () => {
     }
   })
 
-  useEffect(() => {
-    if (customer) {
-      reset({
-        ...customer
-      })
-    } else {
-      reset({
-        name: '',
-        customerCode: '',
-        address: '',
-        contactPerson: '',
-        contactNumber: '',
-        tin: '',
-        creditLimit: 0,
-        termId: '',
-        accountId: '',
-        withReward: false,
-        isDefault: false
-      })
-    }
-  }, [customer, reset])
+  useEffect(
+    function formResetter() {
+      if (customer) {
+        reset({
+          ...customer
+        })
+      } else {
+        reset({
+          name: '',
+          customerCode: '',
+          address: '',
+          contactPerson: '',
+          contactNumber: '',
+          tin: '',
+          creditLimit: 0,
+          termId: '',
+          accountId: '',
+          withReward: false,
+          isDefault: false
+        })
+      }
+    },
+    [customer, reset]
+  )
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: z.infer<typeof customerSchema>) => {
     try {
       await saveMutation.mutateAsync({
         ...data,
         id: selectedCustomerId
       })
       handleClose()
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Save failed:', err)
     }
   }
@@ -138,11 +158,13 @@ export const CustomerForm: React.FC = () => {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
-              {...register('name', { required: 'Name is required' })}
+              {...register('name')}
               label="Customer Name"
               fullWidth
+              required
               size="small"
               error={!!errors.name}
+              helperText={errors.name?.message}
             />
           </Grid>
           <Grid item xs={6}>
@@ -159,12 +181,15 @@ export const CustomerForm: React.FC = () => {
           </Grid>
           <Grid item xs={12}>
             <TextField
-              {...register('address', { required: 'Address is required' })}
+              {...register('address')}
               label="Address"
               multiline
               rows={2}
               fullWidth
+              required
               size="small"
+              error={!!errors.address}
+              helperText={errors.address?.message}
             />
           </Grid>
           <Grid item xs={6}>
@@ -190,7 +215,10 @@ export const CustomerForm: React.FC = () => {
               label="Credit Limit"
               type="number"
               fullWidth
+              required
               size="small"
+              error={!!errors.creditLimit}
+              helperText={errors.creditLimit?.message}
             />
           </Grid>
           <Grid item xs={6}>

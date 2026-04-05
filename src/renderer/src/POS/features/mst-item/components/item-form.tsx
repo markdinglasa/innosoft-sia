@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Add as AddIcon,
   Close as CloseIcon,
@@ -29,21 +30,53 @@ import {
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
+import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useItemHubStore } from '../store/use-item-hub-store'
+
+const itemSchema = z.object({
+  itemCode: z.string().min(1, 'Item Code is required'),
+  barCode: z.string().optional(),
+  name: z.string().min(1, 'Item Name is required'),
+  description: z.string().optional(),
+  category: z.string().optional(),
+  unitId: z.string().min(1, 'Base Unit is required'),
+  price: z.coerce.number().min(0, 'Default Price must be at least 0'),
+  cost: z.coerce.number().min(0, 'Standard Cost must be at least 0'),
+  isInventory: z.boolean().default(true),
+  isPackage: z.boolean().default(false),
+  itemPrices: z
+    .array(
+      z.object({
+        priceDescription: z.string().min(1, 'Description is required'),
+        price: z.coerce.number().min(0, 'Price must be at least 0'),
+        triggerQuantity: z.coerce.number().min(0, 'Min Qty must be at least 0')
+      })
+    )
+    .default([])
+})
+
+type FormData = z.infer<typeof itemSchema>
 
 export const ItemForm: React.FC = () => {
   const { selectedItemId, setSelectedItemId, setIsFormOpen } = useItemHubStore()
   const [activeTab, setActiveTab] = useState(0)
-  
+
   const { useGet, useSaveMutation, useLookup } = useMasterfile('item')
   const { data: units = [] } = useLookup('unit')
   const { data: categories = [] } = useLookup('itemGroup')
-  
+
   const { data: item, isLoading } = useGet(selectedItemId)
   const saveMutation = useSaveMutation()
 
-  const { control, register, handleSubmit, reset, formState: { errors } } = useForm({
+  const {
+    control,
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors }
+  } = useForm({
+    resolver: zodResolver(itemSchema),
     defaultValues: {
       itemCode: '',
       barCode: '',
@@ -55,39 +88,46 @@ export const ItemForm: React.FC = () => {
       cost: 0,
       isInventory: true,
       isPackage: false,
-      itemPrices: [] as any[]
+      itemPrices: []
     }
   })
 
-  const { fields: priceFields, append: appendPrice, remove: removePrice } = useFieldArray({
+  const {
+    fields: priceFields,
+    append: appendPrice,
+    remove: removePrice
+  } = useFieldArray({
     control,
     name: 'itemPrices'
   })
 
-  useEffect(() => {
-    if (item) {
-      reset({
-        ...item,
-        itemPrices: item.itemPrices || []
-      })
-    } else {
-      reset({
-        itemCode: '',
-        barCode: '',
-        name: '',
-        description: '',
-        category: '',
-        unitId: '',
-        price: 0,
-        cost: 0,
-        isInventory: true,
-        isPackage: false,
-        itemPrices: []
-      })
-    }
-  }, [item, reset])
+  useEffect(
+    function formResetter() {
+      if (item) {
+        reset({
+          ...item,
+          itemPrices: item.itemPrices || []
+        })
+      } else {
+        reset({
+          itemCode: '',
+          barCode: '',
+          name: '',
+          description: '',
+          category: '',
+          unitId: '',
+          price: 0,
+          cost: 0,
+          isInventory: true,
+          isPackage: false,
+          itemPrices: []
+        })
+      }
+    },
+    [item, reset]
+  )
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: FormData) => {
     try {
       await saveMutation.mutateAsync({
         ...data,
@@ -113,8 +153,21 @@ export const ItemForm: React.FC = () => {
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', bgcolor: 'primary.dark', color: 'white' }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+      sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+    >
+      <Box
+        sx={{
+          p: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          bgcolor: 'primary.dark',
+          color: 'white'
+        }}
+      >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <ItemIcon sx={{ fontSize: 25 }} />
           <Typography variant="h6">{selectedItemId ? 'Edit Item' : 'New Item'}</Typography>
@@ -124,10 +177,10 @@ export const ItemForm: React.FC = () => {
         </IconButton>
       </Box>
 
-      <Tabs 
-        value={activeTab} 
-        onChange={(_, v) => setActiveTab(v)} 
-        variant="fullWidth" 
+      <Tabs
+        value={activeTab}
+        onChange={(_, v) => setActiveTab(v)}
+        variant="fullWidth"
         sx={{ borderBottom: 1, borderColor: 'divider' }}
       >
         <Tab label="General" />
@@ -146,28 +199,27 @@ export const ItemForm: React.FC = () => {
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <TextField
-                {...register('itemCode', { required: 'Code is required' })}
+                {...register('itemCode')}
                 label="Item Code"
                 fullWidth
+                required
                 size="small"
                 error={!!errors.itemCode}
+                helperText={errors.itemCode?.message}
               />
             </Grid>
             <Grid item xs={6}>
-              <TextField
-                {...register('barCode')}
-                label="Barcode"
-                fullWidth
-                size="small"
-              />
+              <TextField {...register('barCode')} label="Barcode" fullWidth size="small" />
             </Grid>
             <Grid item xs={12}>
               <TextField
-                {...register('name', { required: 'Name is required' })}
+                {...register('name')}
                 label="Item Name"
                 fullWidth
+                required
                 size="small"
                 error={!!errors.name}
+                helperText={errors.name?.message}
               />
             </Grid>
             <Grid item xs={12}>
@@ -187,7 +239,9 @@ export const ItemForm: React.FC = () => {
                 render={({ field }) => (
                   <TextField {...field} select label="Category" fullWidth size="small">
                     {categories.map((c: any) => (
-                      <MenuItem key={c.id} value={c.name}>{c.name}</MenuItem>
+                      <MenuItem key={c.id} value={c.name}>
+                        {c.name}
+                      </MenuItem>
                     ))}
                     <MenuItem value="">Uncategorized</MenuItem>
                   </TextField>
@@ -195,13 +249,24 @@ export const ItemForm: React.FC = () => {
               />
             </Grid>
             <Grid item xs={6}>
-               <Controller
+              <Controller
                 name="unitId"
                 control={control}
                 render={({ field }) => (
-                  <TextField {...field} select label="Base Unit" fullWidth size="small">
+                  <TextField
+                    {...field}
+                    select
+                    label="Base Unit"
+                    fullWidth
+                    required
+                    size="small"
+                    error={!!errors.unitId}
+                    helperText={errors.unitId?.message}
+                  >
                     {units.map((u: any) => (
-                      <MenuItem key={u.id} value={u.id}>{u.name}</MenuItem>
+                      <MenuItem key={u.id} value={u.id}>
+                        {u.name}
+                      </MenuItem>
                     ))}
                   </TextField>
                 )}
@@ -213,7 +278,10 @@ export const ItemForm: React.FC = () => {
                 label="Standard Cost"
                 type="number"
                 fullWidth
+                required
                 size="small"
+                error={!!errors.cost}
+                helperText={errors.cost?.message}
               />
             </Grid>
             <Grid item xs={6}>
@@ -222,7 +290,10 @@ export const ItemForm: React.FC = () => {
                 label="Default Price"
                 type="number"
                 fullWidth
+                required
                 size="small"
+                error={!!errors.price}
+                helperText={errors.price?.message}
                 InputProps={{ sx: { fontWeight: 'bold', color: 'primary.main' } }}
               />
             </Grid>
@@ -231,9 +302,14 @@ export const ItemForm: React.FC = () => {
                 name="isInventory"
                 control={control}
                 render={({ field }) => (
-                  <FormControlLabel 
-                    control={<Switch checked={field.value} onChange={field.onChange} />} 
-                    label="Inventory Item" 
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={!!field.value}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                      />
+                    }
+                    label="Inventory Item"
                   />
                 )}
               />
@@ -243,15 +319,22 @@ export const ItemForm: React.FC = () => {
 
         {activeTab === 1 && (
           <Box>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box
+              sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
+            >
               <Typography variant="caption" color="text.secondary">
                 Special pricing tiers and branch-specific rates.
               </Typography>
-              <Button variant="outlined" size="small" startIcon={<AddIcon />} onClick={() => appendPrice({ priceDescription: '', price: 0, triggerQuantity: 0 })}>
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<AddIcon />}
+                onClick={() => appendPrice({ priceDescription: '', price: 0, triggerQuantity: 0 })}
+              >
                 Add Price Tier
               </Button>
             </Box>
-            
+
             <TableContainer component={Paper} variant="outlined">
               <Table size="small">
                 <TableHead sx={{ bgcolor: 'grey.50' }}>
@@ -266,28 +349,34 @@ export const ItemForm: React.FC = () => {
                   {priceFields.map((field, index) => (
                     <TableRow key={field.id}>
                       <TableCell>
-                        <TextField 
-                          {...register(`itemPrices.${index}.priceDescription`)} 
-                          fullWidth 
-                          variant="standard" 
-                          placeholder="e.g. Wholesale" 
+                        <TextField
+                          {...register(`itemPrices.${index}.priceDescription`)}
+                          fullWidth
+                          required
+                          variant="standard"
+                          placeholder="e.g. Wholesale"
+                          error={!!errors.itemPrices?.[index]?.priceDescription}
                         />
                       </TableCell>
                       <TableCell>
-                        <TextField 
-                          {...register(`itemPrices.${index}.price`)} 
-                          type="number" 
-                          fullWidth 
-                          variant="standard" 
-                          sx={{ textAlign: 'right' }} 
+                        <TextField
+                          {...register(`itemPrices.${index}.price`)}
+                          type="number"
+                          fullWidth
+                          required
+                          variant="standard"
+                          sx={{ textAlign: 'right' }}
+                          error={!!errors.itemPrices?.[index]?.price}
                         />
                       </TableCell>
                       <TableCell>
-                        <TextField 
-                          {...register(`itemPrices.${index}.triggerQuantity`)} 
-                          type="number" 
-                          fullWidth 
-                          variant="standard" 
+                        <TextField
+                          {...register(`itemPrices.${index}.triggerQuantity`)}
+                          type="number"
+                          fullWidth
+                          required
+                          variant="standard"
+                          error={!!errors.itemPrices?.[index]?.triggerQuantity}
                         />
                       </TableCell>
                       <TableCell>
@@ -312,18 +401,18 @@ export const ItemForm: React.FC = () => {
       </Box>
 
       <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider', display: 'flex', gap: 2 }}>
-        <Button 
-          fullWidth 
-          variant="outlined" 
+        <Button
+          fullWidth
+          variant="outlined"
           onClick={handleClose}
           disabled={saveMutation.isPending}
         >
           Cancel
         </Button>
-        <Button 
-          fullWidth 
-          variant="contained" 
-          type="submit" 
+        <Button
+          fullWidth
+          variant="contained"
+          type="submit"
           startIcon={<SaveIcon sx={{ fontSize: 25 }} />}
           disabled={saveMutation.isPending}
         >
@@ -333,3 +422,4 @@ export const ItemForm: React.FC = () => {
     </Box>
   )
 }
+

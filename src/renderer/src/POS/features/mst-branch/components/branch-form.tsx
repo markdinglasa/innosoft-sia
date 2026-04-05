@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Close as CloseIcon, Save as SaveIcon } from '@mui/icons-material'
 import {
   Alert,
@@ -15,8 +16,16 @@ import { ToastType } from '@shared/types'
 import { displayToast } from '@shared/utils'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useBranchHubStore } from '../store/use-branch-hub-store'
+
+const branchSchema = z.object({
+  name: z.string().min(2, 'Branch Name must be at least 2 characters'),
+  address: z.string().min(5, 'Address must be at least 5 characters'),
+  description: z.string().optional(),
+  isDefault: z.boolean().default(false)
+})
 
 export const BranchForm: React.FC = () => {
   const { selectedBranchId, setSelectedBranchId, setIsFormOpen } = useBranchHubStore()
@@ -32,6 +41,7 @@ export const BranchForm: React.FC = () => {
     reset,
     formState: { errors }
   } = useForm({
+    resolver: zodResolver(branchSchema),
     defaultValues: {
       name: '',
       address: '',
@@ -40,26 +50,28 @@ export const BranchForm: React.FC = () => {
     }
   })
 
-  useEffect(() => {
-    if (branch) {
-      reset({
-        ...branch
-      })
-    } else {
-      reset({
-        name: '',
-        address: '',
-        description: '',
-        isDefault: false
-      })
-    }
-  }, [branch, reset])
+  useEffect(
+    function formResetter() {
+      if (branch) {
+        reset({
+          ...branch
+        })
+      } else {
+        reset({
+          name: '',
+          address: '',
+          description: '',
+          isDefault: false
+        })
+      }
+    },
+    [branch, reset]
+  )
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: z.infer<typeof branchSchema>) => {
     try {
       await saveMutation.mutateAsync({
         ...data,
-        isDefault: Boolean(data.isDefault),
         id: selectedBranchId
       })
       handleClose()
@@ -113,22 +125,24 @@ export const BranchForm: React.FC = () => {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
-              {...register('name', { required: 'Name is required' })}
+              {...register('name')}
               label="Branch Name"
               fullWidth
+              required
               error={!!errors.name}
-              helperText={errors.name?.message as string}
+              helperText={errors.name?.message}
             />
           </Grid>
           <Grid item xs={12}>
             <TextField
-              {...register('address', { required: 'Address is required' })}
+              {...register('address')}
               label="Address"
               multiline
               rows={3}
               fullWidth
+              required
               error={!!errors.address}
-              helperText={errors.address?.message as string}
+              helperText={errors.address?.message}
             />
           </Grid>
           <Grid item xs={12}>
