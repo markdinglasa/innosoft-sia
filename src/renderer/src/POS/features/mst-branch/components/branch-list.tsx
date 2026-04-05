@@ -1,7 +1,7 @@
 import { Delete as DeleteIcon, Store as StoreIcon } from '@mui/icons-material'
 import {
   Button,
-  Chip,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
@@ -78,7 +78,7 @@ export const BranchList: React.FC = () => {
               <TableCell width={50}></TableCell>
               <TableCell>Branch</TableCell>
               <TableCell>Address</TableCell>
-              <TableCell>Default</TableCell>
+              <TableCell align="right">Default</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -109,10 +109,8 @@ export const BranchList: React.FC = () => {
                     </Typography>
                   </TableCell>
                   <TableCell>{branch.address || 'N/A'}</TableCell>
-                  <TableCell>
-                    {branch.isDefault ? (
-                      <Chip label="Default" size="small" color="primary" />
-                    ) : null}
+                  <TableCell align="right">
+                    <Checkbox checked={!!branch.isDefault} readOnly size="small" color="primary" />
                   </TableCell>
                   <TableCell align="right">
                     <CircleButton

@@ -16,7 +16,7 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import React, { useEffect } from 'react'
+import { memo, useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
@@ -36,7 +36,7 @@ const supplierSchema = z.object({
 
 type FormData = z.infer<typeof supplierSchema>
 
-export const SupplierForm: React.FC = () => {
+function SupplierForm() {
   const { selectedSupplierId, setSelectedSupplierId, setIsFormOpen } = useSupplierHubStore()
   const { useGet, useSaveMutation, useLookup } = useMasterfile('supplier')
 
@@ -263,3 +263,4 @@ export const SupplierForm: React.FC = () => {
   )
 }
 
+export default memo(SupplierForm)

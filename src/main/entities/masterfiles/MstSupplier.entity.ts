@@ -59,7 +59,7 @@ export class MstSupplierEntity extends BaseEntity {
   @Column({ name: 'AccountId', type: 'int', nullable: false })
   accountId: number
 
-    @Column({ name: 'IsDefault', type: 'bit', nullable: false })
+  @Column({ name: 'IsDefault', type: 'bit', nullable: false })
   isDefault: boolean
 
   // FK Relationships
@@ -70,6 +70,5 @@ export class MstSupplierEntity extends BaseEntity {
   @ManyToOne(() => MstAccountEntity)
   @JoinColumn({ name: 'AccountId' })
   account?: MstAccountEntity
-
-
 }
+

@@ -1,12 +1,16 @@
 import { Add as AddIcon, Search as SearchIcon } from '@mui/icons-material'
 import { Box, Button, Drawer, InputAdornment, Paper, TextField } from '@mui/material'
-import React from 'react'
+import { SystemPermissions } from '@shared/constants/permissions'
+import { lazy, Suspense } from 'react'
 import PageLayout from '../../components/layout/page-layout'
-import { SupplierForm } from './components/supplier-form'
+import { useAccessControl } from '../../hooks'
+import { SupplierFormSkeleton } from './components/supplier-form-skeleton'
 import { SupplierList } from './components/supplier-list'
 import { useSupplierHubStore } from './store/use-supplier-hub-store'
 
-const SupplierHub: React.FC = () => {
+const SupplierForm = lazy(() => import('./components/supplier-form'))
+
+function SupplierHub() {
   const { searchKeyword, setSearchKeyword, isFormOpen, setIsFormOpen, setSelectedSupplierId } =
     useSupplierHubStore()
 
@@ -15,8 +19,12 @@ const SupplierHub: React.FC = () => {
     setIsFormOpen(true)
   }
 
+  // permissions
+  const { hasPermission } = useAccessControl()
+  const canAdd = hasPermission(SystemPermissions.SUPPLIER_ADD)
+
   return (
-    <PageLayout title="Supplier Registry">
+    <PageLayout title="Suppliers">
       <Box sx={{ mb: 3 }}>
         <Paper
           variant="outlined"
@@ -43,6 +51,7 @@ const SupplierHub: React.FC = () => {
             }}
           />
           <Button
+            disabled={!canAdd}
             variant="contained"
             startIcon={<AddIcon sx={{ fontSize: 25 }} />}
             onClick={handleCreate}
@@ -65,7 +74,9 @@ const SupplierHub: React.FC = () => {
           sx: { width: { xs: '100%', sm: 450, md: 550 }, borderRadius: '12px 0 0 12px' }
         }}
       >
-        <SupplierForm />
+        <Suspense fallback={<SupplierFormSkeleton />}>
+          <SupplierForm />
+        </Suspense>
       </Drawer>
     </PageLayout>
   )

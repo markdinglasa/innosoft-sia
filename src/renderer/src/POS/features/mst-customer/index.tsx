@@ -1,15 +1,16 @@
 import { Add as AddIcon, Search as SearchIcon } from '@mui/icons-material'
 import { Box, Button, Drawer, InputAdornment, Paper, TextField } from '@mui/material'
 import { SystemPermissions } from '@shared/constants/permissions'
-import React, { lazy, Suspense } from 'react'
+import { lazy, memo, Suspense } from 'react'
 import PageLayout from '../../components/layout/page-layout'
 import { useAccessControl } from '../../hooks'
 import { CustomerFormSkeleton } from './components/customer-form-skeleton'
 import { CustomerList } from './components/customer-list'
 import { useCustomerHubStore } from './store/use-customer-hub-store'
+
 const CustomerForm = lazy(() => import('./components/customer-form'))
 
-const CustomerHub: React.FC = () => {
+function CustomerHub() {
   const { searchKeyword, setSearchKeyword, isFormOpen, setIsFormOpen, setSelectedCustomerId } =
     useCustomerHubStore()
 
@@ -81,5 +82,5 @@ const CustomerHub: React.FC = () => {
   )
 }
 
-export default CustomerHub
+export default memo(CustomerHub)
 

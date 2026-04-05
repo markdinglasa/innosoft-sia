@@ -5,15 +5,13 @@ import {
   Box,
   Button,
   CircularProgress,
-  FormControlLabel,
   Grid,
   IconButton,
-  Switch,
   TextField,
   Typography
 } from '@mui/material'
 import { memo, useEffect } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useBranchHubStore } from '../store/use-branch-hub-store'
@@ -144,7 +142,7 @@ function BranchForm() {
           <Grid item xs={12}>
             <TextField {...register('description')} label="Description" fullWidth />
           </Grid>
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <Controller
               name="isDefault"
               control={control}
@@ -160,7 +158,7 @@ function BranchForm() {
                 />
               )}
             />
-          </Grid>
+          </Grid> */}
         </Grid>
       </Box>
 
@@ -188,3 +186,4 @@ function BranchForm() {
 }
 
 export default memo(BranchForm)
+

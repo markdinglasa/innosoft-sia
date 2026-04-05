@@ -1,7 +1,7 @@
 import { Delete as DeleteIcon, Percent as DiscountIcon } from '@mui/icons-material'
 import {
   Button,
-  Chip,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
@@ -72,6 +72,7 @@ export const DiscountList: React.FC = () => {
               <TableCell>Alias</TableCell>
               <TableCell align="right">Rate (%)</TableCell>
               <TableCell align="right">VAT Exempt</TableCell>
+              <TableCell align="right">Default</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -104,11 +105,10 @@ export const DiscountList: React.FC = () => {
                   <TableCell>{item.discountAlias || '—'}</TableCell>
                   <TableCell align="right">{Number(item.discountRate).toFixed(2)}</TableCell>
                   <TableCell align="right">
-                    <Chip
-                      label={item.isVATExempt ? 'Yes' : 'No'}
-                      size="small"
-                      color={item.isVATExempt ? 'warning' : 'default'}
-                    />
+                    <Checkbox checked={!!item.isVATExempt} readOnly size="small" />
+                  </TableCell>
+                  <TableCell align="right">
+                    <Checkbox checked={!!item.isDefault} readOnly size="small" color="primary" />
                   </TableCell>
                   <TableCell align="right">
                     <CircleButton

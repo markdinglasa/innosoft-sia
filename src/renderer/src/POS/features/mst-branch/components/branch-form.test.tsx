@@ -1,9 +1,9 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { BranchForm } from './branch-form'
-import { useBranchHubStore } from '../store/use-branch-hub-store'
-import { useMasterfile } from '../../../hooks/use-masterfile'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { useMasterfile } from '../../../hooks/use-masterfile'
+import { useBranchHubStore } from '../store/use-branch-hub-store'
+import BranchForm from './branch-form'
 
 // Mock dependencies
 vi.mock('../store/use-branch-hub-store', () => ({
@@ -16,7 +16,7 @@ vi.mock('../../../hooks/use-masterfile', () => ({
 
 // Fix the mock to use @shared paths as in the component
 vi.mock('@shared/utils', () => ({
-  displayToast: vi.fn(),
+  displayToast: vi.fn()
 }))
 
 vi.mock('@shared/types', () => ({
@@ -26,9 +26,9 @@ vi.mock('@shared/types', () => ({
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: false,
-    },
-  },
+      retry: false
+    }
+  }
 })
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -45,7 +45,6 @@ describe('BranchForm Update Investigation', () => {
       selectedBranchId: 1,
       setIsFormOpen: mockSetIsFormOpen
     })
-
     ;(useMasterfile as any).mockReturnValue({
       useGet: vi.fn().mockReturnValue({
         data: {
@@ -69,7 +68,7 @@ describe('BranchForm Update Investigation', () => {
 
     // Wait for form to populate
     await waitFor(() => {
-        expect(screen.getByDisplayValue('Main Branch')).toBeInTheDocument()
+      expect(screen.getByDisplayValue('Main Branch')).toBeInTheDocument()
     })
 
     const saveButton = screen.getByText('Save Branch')
@@ -82,6 +81,7 @@ describe('BranchForm Update Investigation', () => {
   })
 
   it('verifies that zod schema handles null correctly', async () => {
-      // Logic inside onSubmit will either call mutateAsync or displayToast on error
+    // Logic inside onSubmit will either call mutateAsync or displayToast on error
   })
 })
+

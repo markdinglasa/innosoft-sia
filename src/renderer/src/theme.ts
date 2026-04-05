@@ -58,6 +58,22 @@ const theme = createTheme({
     borderRadius: 8
   },
   components: {
+    MuiCheckbox: {
+      defaultProps: {
+        size: 'small'
+      },
+      styleOverrides: {
+        root: {
+          width: 30,
+          height: 30,
+          padding: 4,
+          '& .MuiSvgIcon-root': {
+            fontSize: 25
+          }
+        }
+      }
+    },
+
     MuiButton: {
       styleOverrides: {
         root: {

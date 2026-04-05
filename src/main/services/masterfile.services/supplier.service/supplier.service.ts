@@ -19,7 +19,7 @@ export class SupplierService extends BaseService<MstSupplierEntity> implements I
    * Search fields for Supplier keyword search.
    */
   protected get searchFields(): string[] {
-    return ['supplier', 'address', 'telephoneNumber', 'cellphoneNumber', 'faxNumber', 'tin']
+    return ['name', 'address', 'telephoneNumber', 'cellphoneNumber', 'faxNumber', 'tin']
   }
 
   /**
@@ -39,7 +39,10 @@ export class SupplierService extends BaseService<MstSupplierEntity> implements I
    * Validates before updating an existing Supplier.
    * Ensures modified Supplier Name does not conflict.
    */
-  protected async validateUpdate(id: any, data: QueryDeepPartialEntity<MstSupplierEntity>): Promise<void> {
+  protected async validateUpdate(
+    id: number,
+    data: QueryDeepPartialEntity<MstSupplierEntity>
+  ): Promise<void> {
     const currentEntity = await this.get(id)
     if (!currentEntity) {
       throw new BadRequestException('Supplier not found for update.')
@@ -58,13 +61,27 @@ export class SupplierService extends BaseService<MstSupplierEntity> implements I
    * Validates before deleting a Supplier.
    * Ensures they are not in-use.
    */
-  protected async validateDelete(id: any): Promise<void> {
-    const currentEntity = await this.get(id)
+  protected async validateDelete(id: number): Promise<void> {
+    const currentEntity = await this.repository.findOne({
+      where: { id },
+      withDeleted: true,
+      relations: ['term', 'account']
+    })
     if (!currentEntity) {
       throw new BadRequestException('Supplier not found for deletion.')
     }
 
-    // TODO: Implement relational in-use check
-    // e.g. "Cannot delete Supplier because they have existing Purchase Transactions"
+    if (currentEntity.isDefault) {
+      throw new BadRequestException('Cannot delete default supplier.')
+    }
+
+    if (currentEntity.term) {
+      throw new BadRequestException('Cannot delete supplier because they have existing terms.')
+    }
+
+    if (currentEntity.account) {
+      throw new BadRequestException('Cannot delete supplier because they have existing accounts.')
+    }
   }
 }
+
