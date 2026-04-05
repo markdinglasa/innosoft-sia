@@ -18,15 +18,15 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import React, { useEffect } from 'react'
+import { memo, useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
+import AccessControl from '../../../components/utils/access-control'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useCustomerHubStore } from '../store/use-customer-hub-store'
 
 const customerSchema = z.object({
   name: z.string().min(2, 'Customer Name must be at least 2 characters'),
-  customerCode: z.string().nullable().optional(),
   address: z.string().min(5, 'Address must be at least 5 characters'),
   contactPerson: z.string().nullable().optional(),
   contactNumber: z.string().nullable().optional(),
@@ -35,10 +35,13 @@ const customerSchema = z.object({
   termId: z.any().nullable().optional(),
   accountId: z.any().nullable().optional(),
   withReward: z.boolean().default(false),
-  isDefault: z.boolean().default(false)
+  isDefault: z.boolean().default(false),
+  rewardConversion: z.coerce.number().min(0, 'Reward Conversion must be at least 0')
 })
 
-export const CustomerForm: React.FC = () => {
+type CustomerFormData = z.infer<typeof customerSchema>
+
+function CustomerForm() {
   const { selectedCustomerId, setSelectedCustomerId, setIsFormOpen } = useCustomerHubStore()
   const { useGet, useSaveMutation, useLookup } = useMasterfile('customer')
 
@@ -53,12 +56,12 @@ export const CustomerForm: React.FC = () => {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors }
-  } = useForm({
-    resolver: zodResolver(customerSchema),
+  } = useForm<CustomerFormData>({
+    resolver: zodResolver(customerSchema) as any,
     defaultValues: {
       name: '',
-      customerCode: '',
       address: '',
       contactPerson: '',
       contactNumber: '',
@@ -67,7 +70,8 @@ export const CustomerForm: React.FC = () => {
       termId: '',
       accountId: '',
       withReward: false,
-      isDefault: false
+      isDefault: false,
+      rewardConversion: 0
     }
   })
 
@@ -76,7 +80,6 @@ export const CustomerForm: React.FC = () => {
       if (customer) {
         reset({
           name: customer.name || '',
-          customerCode: customer.customerCode || '',
           address: customer.address || '',
           contactPerson: customer.contactPerson || '',
           contactNumber: customer.contactNumber || '',
@@ -85,12 +88,12 @@ export const CustomerForm: React.FC = () => {
           termId: customer.termId || '',
           accountId: customer.accountId || '',
           withReward: !!customer.withReward,
-          isDefault: !!customer.isDefault
+          isDefault: !!customer.isDefault,
+          rewardConversion: customer.rewardConversion || 0
         })
       } else {
         reset({
           name: '',
-          customerCode: '',
           address: '',
           contactPerson: '',
           contactNumber: '',
@@ -99,16 +102,19 @@ export const CustomerForm: React.FC = () => {
           termId: '',
           accountId: '',
           withReward: false,
-          isDefault: false
+          isDefault: false,
+          rewardConversion: 0
         })
       }
     },
     [customer, reset]
   )
 
-  const onSubmit = async (data: z.infer<typeof customerSchema>) => {
+  const onSubmit = async (data: CustomerFormData) => {
+    const customerCode = data.name.toUpperCase().replace(/\s/g, '_')
     await saveMutation.mutateAsync({
       ...data,
+      customerCode,
       id: selectedCustomerId
     })
     handleClose()
@@ -165,7 +171,7 @@ export const CustomerForm: React.FC = () => {
           <Grid item xs={12}>
             <TextField
               {...register('name')}
-              label="Customer Name"
+              label="Customer"
               fullWidth
               required
               size="small"
@@ -173,15 +179,7 @@ export const CustomerForm: React.FC = () => {
               helperText={errors.name?.message}
             />
           </Grid>
-          <Grid item xs={6}>
-            <TextField
-              {...register('customerCode')}
-              label="Customer Code"
-              fullWidth
-              size="small"
-              placeholder="AUTO"
-            />
-          </Grid>
+
           <Grid item xs={6}>
             <TextField {...register('tin')} label="TIN" fullWidth size="small" />
           </Grid>
@@ -275,6 +273,20 @@ export const CustomerForm: React.FC = () => {
               )}
             />
           </Grid>
+          <AccessControl condition={watch('withReward')}>
+            <Grid item xs={6}>
+              <TextField
+                {...register('rewardConversion')}
+                label="Reward Conversion"
+                type="number"
+                fullWidth
+                required
+                size="small"
+                error={!!errors.rewardConversion}
+                helperText={errors.rewardConversion?.message}
+              />
+            </Grid>
+          </AccessControl>
         </Grid>
       </Box>
 
@@ -300,4 +312,6 @@ export const CustomerForm: React.FC = () => {
     </Box>
   )
 }
+
+export default memo(CustomerForm)
 

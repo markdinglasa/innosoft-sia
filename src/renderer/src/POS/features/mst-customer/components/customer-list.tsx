@@ -1,8 +1,6 @@
 import { PersonPin as CustomerIcon, Delete as DeleteIcon } from '@mui/icons-material'
 import {
-  Box,
   Button,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -18,9 +16,13 @@ import {
   TableRow,
   Typography
 } from '@mui/material'
-import { ButtonType } from '@shared/types'
+import { SystemPermissions } from '@shared/constants/permissions'
+import { ButtonType, ToastType } from '@shared/types'
+import { displayToast } from '@shared/utils'
 import React from 'react'
+import TableSkeleton from '../../../components/data-display/table-skeleton'
 import CircleButton from '../../../components/inputs/circle-button'
+import { useAccessControl } from '../../../hooks'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useCustomerHubStore } from '../store/use-customer-hub-store'
 
@@ -30,6 +32,11 @@ export const CustomerList: React.FC = () => {
 
   const [page, setPage] = React.useState(0)
   const { data, isLoading, isError } = useList({ searchKeyword, page: page + 1, take: 30 })
+
+  // permissions
+  const { hasPermission } = useAccessControl()
+  const canDelete = hasPermission(SystemPermissions.CUSTOMER_REMOVE)
+  const canEdit = hasPermission(SystemPermissions.CUSTOMER_EDIT)
 
   // Reset page when search changes
   React.useEffect(
@@ -58,18 +65,6 @@ export const CustomerList: React.FC = () => {
     }
   }
 
-  if (isLoading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <CircularProgress size={32} />
-      </Box>
-    )
-  }
-
-  if (isError) {
-    return <Typography color="error">Failed to load customers.</Typography>
-  }
-
   const customers = (data as any)?.items || []
 
   return (
@@ -87,56 +82,72 @@ export const CustomerList: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {customers.map((customer: any) => (
-              <TableRow
-                key={customer.id}
-                hover
-                onClick={() => handleEdit(customer.id)}
-                sx={{ cursor: 'pointer' }}
-              >
-                <TableCell>
-                  <CustomerIcon color="primary" sx={{ fontSize: 25 }} />
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2" fontWeight="medium">
-                    {customer.name}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {customer.customerCode || 'No Code'}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="caption" display="block">
-                    {customer.contactPerson}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {customer.contactNumber}
-                  </Typography>
-                </TableCell>
-                <TableCell>{customer.tin || 'N/A'}</TableCell>
-                <TableCell align="right">
-                  {Number(customer.creditLimit).toLocaleString(undefined, {
-                    minimumFractionDigits: 2
-                  })}
-                </TableCell>
-                <TableCell align="right">
-                  <CircleButton
-                    icon={<DeleteIcon sx={{ fontSize: 25 }} />}
-                    onClick={(e) => handleDelete(e, customer.id)}
-                    type={ButtonType.button}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-            {customers.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    No customers found.
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )}
+            <TableSkeleton isLoading={isLoading} columns={6} rows={15}>
+              {customers.map((customer: any) => (
+                <TableRow
+                  key={customer.id}
+                  hover
+                  onClick={() => {
+                    if (!canEdit) {
+                      displayToast(
+                        'You do not have permission to edit this customer.',
+                        ToastType.info
+                      )
+                      return
+                    }
+                    handleEdit(customer.id)
+                  }}
+                  sx={{ cursor: 'pointer' }}
+                >
+                  <TableCell>
+                    <CustomerIcon color="primary" sx={{ fontSize: 25 }} />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" fontWeight="medium">
+                      {customer.name}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="caption" display="block">
+                      {customer.contactPerson}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {customer.contactNumber}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>{customer.tin || 'N/A'}</TableCell>
+                  <TableCell align="right">
+                    {Number(customer.creditLimit).toLocaleString(undefined, {
+                      minimumFractionDigits: 2
+                    })}
+                  </TableCell>
+                  <TableCell align="right">
+                    <CircleButton
+                      disabled={!canDelete}
+                      icon={<DeleteIcon sx={{ fontSize: 25 }} />}
+                      onClick={(e) => handleDelete(e, customer.id)}
+                      type={ButtonType.button}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+              {isError && (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                    <Typography color="error">Failed to load customers.</Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+              {customers.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      No customers found.
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableSkeleton>
           </TableBody>
         </Table>
         <TablePagination
@@ -158,8 +169,9 @@ export const CustomerList: React.FC = () => {
           <Button onClick={() => setDeleteId(null)}>Cancel</Button>
           <Button
             onClick={confirmDelete}
-            color="error"
+            color="primary"
             variant="contained"
+            startIcon={<DeleteIcon sx={{ fontSize: 25 }} />}
             disabled={deleteMutation.isPending}
           >
             {deleteMutation.isPending ? 'Deleting...' : 'Delete'}

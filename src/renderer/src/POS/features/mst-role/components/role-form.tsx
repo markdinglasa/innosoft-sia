@@ -18,25 +18,22 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import { ButtonType, ToastType } from "@shared/types"
-import { displayToast } from "@shared/utils"
-import { truncate } from "lodash"
+import { ButtonType, ToastType } from '@shared/types'
+import { displayToast } from '@shared/utils'
+import { truncate } from 'lodash'
 import React, { useEffect } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
-import { MstAccessRightEntity } from "src/main/entities"
-import CircleButton from "../../../components/inputs/circle-button"
-import AccessControl from "../../../components/utils/access-control"
+import { MstAccessRightEntity } from 'src/main/entities'
+import CircleButton from '../../../components/inputs/circle-button'
+import AccessControl from '../../../components/utils/access-control'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useRoleHubStore } from '../store/use-role-hub-store'
 
 export const RoleForm: React.FC = () => {
   const { selectedRoleId, setSelectedRoleId, setIsFormOpen } = useRoleHubStore()
   const { useGet, useSaveMutation, useLookup } = useMasterfile('role')
-  
-  const { 
-    data: accessRights, 
-    isLoading: isAccessRightsLoading 
-  } = useLookup('accessRight')
+
+  const { data: accessRights, isLoading: isAccessRightsLoading } = useLookup('accessRight')
   const { data: role, isLoading } = useGet(selectedRoleId)
 
   const saveMutation = useSaveMutation()
@@ -88,7 +85,7 @@ export const RoleForm: React.FC = () => {
         id: selectedRoleId
       })
       handleClose()
-    } catch (error:unknown) {
+    } catch (error: unknown) {
       displayToast((error as Error)?.message || 'Sorry, Something went wrong.', ToastType.error)
     }
   }
@@ -126,39 +123,38 @@ export const RoleForm: React.FC = () => {
             {saveMutation.error?.message || 'Failed to save role.'}
           </Alert>
         )}
-      <AccessControl condition={!!selectedRoleId && isLoading}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 1 }} />
+        <AccessControl condition={!!selectedRoleId && isLoading}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 1 }} />
+            </Grid>
+            <Grid item xs={12}>
+              <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 1 }} />
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <Skeleton variant="rectangular"  height={40} width="100%" sx={{ borderRadius: 1 }} />
+        </AccessControl>
+        <AccessControl condition={!isLoading}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                {...register('name', { required: 'Name is required' })}
+                label="Role Name"
+                fullWidth
+                error={!!errors.name}
+                helperText={errors.name?.message as string}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                {...register('description')}
+                label="Description"
+                fullWidth
+                multiline
+                rows={2}
+              />
+            </Grid>
           </Grid>
-        </Grid>
-        
-      </AccessControl>
-       <AccessControl condition={!isLoading}>
-         <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <TextField
-              {...register('name', { required: 'Name is required' })}
-              label="Role Name"
-              fullWidth
-              error={!!errors.name}
-              helperText={errors.name?.message as string}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              {...register('description')}
-              label="Description"
-              fullWidth
-              multiline
-              rows={2}
-            />
-          </Grid>
-        </Grid>
-       </AccessControl>
+        </AccessControl>
 
         <Box sx={{ mt: 4, mb: 2 }}>
           <Box
@@ -171,12 +167,12 @@ export const RoleForm: React.FC = () => {
               alignItems="center"
               gap={1}
             >
-              <SecurityIcon sx={{fontSize:25}}/>
+              <SecurityIcon sx={{ fontSize: 25 }} />
               Permissions
             </Typography>
             <Button
               variant="outlined"
-              startIcon={<AddIcon sx={{fontSize:25}}/>}
+              startIcon={<AddIcon sx={{ fontSize: 25 }} />}
               disabled={isAccessRightsLoading}
               onClick={() => {
                 if (fields.length > 0 && accessRights.length > 0) {
@@ -193,13 +189,9 @@ export const RoleForm: React.FC = () => {
 
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {fields.map((field, index) => (
-              <Paper
-                key={field.id}
-                variant="outlined"
-                className="flex flex-row gap-2 p-2"
-              >
+              <Paper key={field.id} variant="outlined" className="flex flex-row gap-2 p-2">
                 <CircleButton
-                  icon={<DeleteIcon sx={{fontSize:25}} className="text-red-800"/>}
+                  icon={<DeleteIcon sx={{ fontSize: 25 }} className="text-red-800" />}
                   type={ButtonType.button}
                   onClick={() => remove(index)}
                 />
@@ -208,35 +200,39 @@ export const RoleForm: React.FC = () => {
                     <Controller
                       name={`permissions.${index}.accessRightId`}
                       control={control}
-                      
-                      render={({ field }) => 
-                        isAccessRightsLoading||isLoading ? (
-                          <Skeleton variant="rectangular" className="border-red" height={40} width="100%" sx={{ borderRadius: 1 }} />
+                      render={({ field }) =>
+                        isAccessRightsLoading || isLoading ? (
+                          <Skeleton
+                            variant="rectangular"
+                            className="border-red"
+                            height={40}
+                            width="100%"
+                            sx={{ borderRadius: 1 }}
+                          />
                         ) : (
-                        <TextField
-                          {...field}
-                          select
-                          label="Access Right / Action"
-                          fullWidth
-                          size="small"
-                          SelectProps={{
-                             MenuProps: {
-                               PaperProps: {
+                          <TextField
+                            {...field}
+                            select
+                            label="Access Right / Action"
+                            fullWidth
+                            size="small"
+                            SelectProps={{
+                              MenuProps: {
+                                PaperProps: {
                                   sx: {
-                                     maxHeight: 400
+                                    maxHeight: 400
                                   }
-                               }
-                             }
-                          }}
-                        >
-                           {accessRights.map((ar: MstAccessRightEntity) => (
-                             <MenuItem key={ar.id} value={ar.id} >
-                               [{ar.category}] {truncate(ar.action, {length: 40, omission: '...'})}
-                             </MenuItem>
-                           ))}
-                           
-                    
-                        </TextField>
+                                }
+                              }
+                            }}
+                          >
+                            {accessRights.map((ar: MstAccessRightEntity) => (
+                              <MenuItem key={ar.id} value={ar.id}>
+                                [{ar.category}]{' '}
+                                {truncate(ar.action, { length: 40, omission: '...' })}
+                              </MenuItem>
+                            ))}
+                          </TextField>
                         )
                       }
                     />
