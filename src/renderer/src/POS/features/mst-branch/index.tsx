@@ -1,14 +1,16 @@
 import { Add as AddIcon, Search as SearchIcon } from '@mui/icons-material'
 import { Box, Button, Drawer, InputAdornment, Paper, TextField } from '@mui/material'
 import { SystemPermissions } from '@shared/constants/permissions'
-import React from 'react'
+import { lazy, memo, Suspense } from 'react'
 import PageLayout from '../../components/layout/page-layout'
 import { useAccessControl } from '../../hooks'
-import { BranchForm } from './components/branch-form'
+import { BranchFormSkeleton } from './components/branch-form-skeleton'
 import { BranchList } from './components/branch-list'
 import { useBranchHubStore } from './store/use-branch-hub-store'
 
-const BranchHub: React.FC = () => {
+const BranchForm = lazy(() => import('./components/branch-form'))
+
+function BranchHub() {
   const { searchKeyword, setSearchKeyword, isFormOpen, setIsFormOpen, setSelectedBranchId } =
     useBranchHubStore()
 
@@ -75,11 +77,13 @@ const BranchHub: React.FC = () => {
           sx: { width: { xs: '100%', sm: 400, md: 500 }, borderRadius: '12px 0 0 12px' }
         }}
       >
-        <BranchForm />
+        <Suspense fallback={<BranchFormSkeleton />}>
+          <BranchForm />
+        </Suspense>
       </Drawer>
     </PageLayout>
   )
 }
 
-export default BranchHub
+export default memo(BranchHub)
 

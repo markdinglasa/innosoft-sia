@@ -138,7 +138,7 @@ export const CustomerList: React.FC = () => {
                   </TableCell>
                 </TableRow>
               )}
-              {customers.length === 0 && (
+              {!isError && customers.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
                     <Typography variant="body2" color="text.secondary">

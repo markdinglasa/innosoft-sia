@@ -12,7 +12,7 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import React, { useEffect } from 'react'
+import { memo, useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
@@ -25,7 +25,7 @@ const branchSchema = z.object({
   isDefault: z.boolean().default(false)
 })
 
-export const BranchForm: React.FC = () => {
+function BranchForm() {
   const { selectedBranchId, setIsFormOpen } = useBranchHubStore()
   const { useGet, useSaveMutation } = useMasterfile('branch')
 
@@ -187,3 +187,4 @@ export const BranchForm: React.FC = () => {
   )
 }
 
+export default memo(BranchForm)

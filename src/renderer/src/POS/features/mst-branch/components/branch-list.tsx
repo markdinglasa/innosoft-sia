@@ -1,9 +1,7 @@
 import { Delete as DeleteIcon, Store as StoreIcon } from '@mui/icons-material'
 import {
-  Box,
   Button,
   Chip,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -24,6 +22,7 @@ import { ButtonType, ToastType } from '@shared/types'
 import { displayToast } from '@shared/utils'
 import React from 'react'
 import { MstBranchEntity } from 'src/main/entities'
+import TableSkeleton from '../../../components/data-display/table-skeleton'
 import CircleButton from '../../../components/inputs/circle-button'
 import { useAccessControl, useMasterfile } from '../../../hooks'
 import { useBranchHubStore } from '../store/use-branch-hub-store'
@@ -49,7 +48,6 @@ export const BranchList: React.FC = () => {
   )
 
   const deleteMutation = useDeleteMutation()
-
   const [deleteId, setDeleteId] = React.useState<number | null>(null)
 
   const handleEdit = (id: number) => {
@@ -69,18 +67,6 @@ export const BranchList: React.FC = () => {
     }
   }
 
-  if (isLoading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <CircularProgress size={32} />
-      </Box>
-    )
-  }
-
-  if (isError) {
-    return <Typography color="error">Failed to load branches.</Typography>
-  }
-
   const branches = data?.items || []
 
   return (
@@ -97,53 +83,64 @@ export const BranchList: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {branches.map((branch: MstBranchEntity) => (
-              <TableRow
-                key={branch.id}
-                hover
-                onClick={() => handleEdit(branch.id)}
-                sx={{ cursor: 'pointer' }}
-              >
-                <TableCell>
-                  <StoreIcon color="primary" sx={{ fontSize: 25 }} />
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2" fontWeight="medium">
-                    {branch.name}
-                  </Typography>
-                </TableCell>
-                <TableCell>{branch.address || 'N/A'}</TableCell>
-                <TableCell>
-                  {branch.isDefault ? <Chip label="Default" size="small" color="primary" /> : null}
-                </TableCell>
-                <TableCell align="right">
-                  <CircleButton
-                    disabled={!canDelete}
-                    icon={<DeleteIcon sx={{ fontSize: 25 }} />}
-                    onClick={(e) => {
-                      if (!canEdit) {
-                        displayToast(
-                          'You do not have permission to delete this branch.',
-                          ToastType.info
-                        )
-                        return
-                      }
-                      handleDelete(e, branch.id)
-                    }}
-                    type={ButtonType.button}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-            {branches.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    No branches found.
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )}
+            <TableSkeleton isLoading={isLoading} columns={5} rows={15}>
+              {branches.map((branch: MstBranchEntity) => (
+                <TableRow
+                  key={branch.id}
+                  hover
+                  onClick={() => {
+                    if (!canEdit) {
+                      displayToast(
+                        'You do not have permission to delete this branch.',
+                        ToastType.info
+                      )
+                      return
+                    }
+                    handleEdit(branch.id)
+                  }}
+                  sx={{ cursor: 'pointer' }}
+                >
+                  <TableCell>
+                    <StoreIcon color="primary" sx={{ fontSize: 25 }} />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" fontWeight="medium">
+                      {branch.name}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>{branch.address || 'N/A'}</TableCell>
+                  <TableCell>
+                    {branch.isDefault ? (
+                      <Chip label="Default" size="small" color="primary" />
+                    ) : null}
+                  </TableCell>
+                  <TableCell align="right">
+                    <CircleButton
+                      disabled={!canDelete}
+                      icon={<DeleteIcon sx={{ fontSize: 25 }} />}
+                      onClick={(e) => handleDelete(e, branch.id)}
+                      type={ButtonType.button}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+              {isError && (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                    <Typography color="error">Failed to load branches.</Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+              {!isError && branches.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      No branches found.
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableSkeleton>
           </TableBody>
         </Table>
         <TablePagination
