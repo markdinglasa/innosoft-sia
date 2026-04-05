@@ -59,11 +59,10 @@ export const SummaryPane: React.FC = () => {
         </Box>
       </Box>
 
-      <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+      <Box sx={{ mt: 3, display: 'flex', flexDirection: 'row', gap: 1.5 }}>
         <Button
           fullWidth
-          variant="contained"
-          color="success"
+          variant="outlined"
           size="large"
           startIcon={<PayIcon />}
           disabled={cart.length === 0}

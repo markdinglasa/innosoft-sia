@@ -1,4 +1,5 @@
 export * from './account.service'
+export * from './access-right.service'
 export * from './branch-access.service'
 export * from './branch.service'
 export * from './customer.service'

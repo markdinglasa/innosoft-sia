@@ -1,11 +1,14 @@
-import { Delete as DeleteIcon, Edit as EditIcon, Security as SecurityIcon } from '@mui/icons-material'
+import { Delete as DeleteIcon, Security as SecurityIcon } from '@mui/icons-material'
 import {
   Box,
   Button,
   Chip,
   CircularProgress,
-  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
-  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Paper,
   Table,
   TableBody,
@@ -15,14 +18,16 @@ import {
   TableRow,
   Typography
 } from '@mui/material'
+import { ButtonType } from '@shared/types'
 import React from 'react'
+import CircleButton from '../../../components/inputs/circle-button'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useRoleHubStore } from '../store/use-role-hub-store'
 
 export const RoleList: React.FC = () => {
   const { searchKeyword, setSelectedRoleId, setIsFormOpen } = useRoleHubStore()
   const { useList, useDeleteMutation } = useMasterfile('role')
-  
+
   const { data, isLoading, isError } = useList({ searchKeyword })
   const deleteMutation = useDeleteMutation()
 
@@ -33,7 +38,12 @@ export const RoleList: React.FC = () => {
 
   const [deleteId, setDeleteId] = React.useState<number | null>(null)
   const handleDelete = (id: number) => setDeleteId(id)
-  const confirmDelete = async () => { if(deleteId) { await deleteMutation.mutateAsync(deleteId); setDeleteId(null); } }
+  const confirmDelete = async () => {
+    if (deleteId) {
+      await deleteMutation.mutateAsync(deleteId)
+      setDeleteId(null)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -51,63 +61,86 @@ export const RoleList: React.FC = () => {
 
   return (
     <>
-    <TableContainer component={Paper} variant="outlined" sx={{ maxHeight: 'calc(100vh - 250px)' }}>
-      <Table stickyHeader size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell width={50}></TableCell>
-            <TableCell>Role Name</TableCell>
-            <TableCell>Code</TableCell>
-            <TableCell>Permissions</TableCell>
-            <TableCell align="right">Actions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {roles.map((role: any) => (
-            <TableRow key={role.id} hover onClick={() => handleEdit(role.id)} sx={{ cursor: 'pointer' }}>
-              <TableCell>
-                <SecurityIcon color="secondary" sx={{ fontSize: 25 }} />
-              </TableCell>
-              <TableCell>
-                <Typography variant="body2" fontWeight="medium">
-                  {role.name}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {role.description || 'No description'}
-                </Typography>
-              </TableCell>
-              <TableCell>{role.code}</TableCell>
-              <TableCell>
-                <Chip 
-                  label={`${role.permissions?.length || 0} Rights`} 
-                  size="small" 
-                  variant="outlined" 
-                />
-              </TableCell>
-              <TableCell align="right">
-                <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleEdit(role.id); }}>
-                  <EditIcon sx={{ fontSize: 25 }} />
-                </IconButton>
-                <IconButton size="small" color="error" onClick={(e) => { e.stopPropagation(); handleDelete(role.id); }}>
-                  <DeleteIcon sx={{ fontSize: 25 }} />
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          ))}
-          {roles.length === 0 && (
+      <TableContainer
+        component={Paper}
+        variant="outlined"
+        sx={{ maxHeight: 'calc(100vh - 250px)' }}
+      >
+        <Table stickyHeader size="small">
+          <TableHead>
             <TableRow>
-              <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
-                <Typography variant="body2" color="text.secondary">
-                  No roles found.
-                </Typography>
-              </TableCell>
+              <TableCell width={50}></TableCell>
+              <TableCell>Role Name</TableCell>
+              <TableCell>Permissions</TableCell>
+              <TableCell align="right">Actions</TableCell>
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {roles.map((role: any) => (
+              <TableRow
+                key={role.id}
+                hover
+                onClick={() => handleEdit(role.id)}
+                sx={{ cursor: 'pointer' }}
+              >
+                <TableCell>
+                  <SecurityIcon color="primary" sx={{ fontSize: 25 }} />
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body2" fontWeight="medium">
+                    {role.name}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {role.description || 'No description'}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Chip
+                    label={`${role.permissions?.length || 0} Rights`}
+                    size="small"
+                    variant="outlined"
+                  />
+                </TableCell>
+                <TableCell align="right">
+                  <CircleButton
+                    onClick={() => handleDelete(role.id)}
+                    icon={<DeleteIcon sx={{ fontSize: 25 }} />}
+                    type={ButtonType.button}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+            {roles.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    No roles found.
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-      <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}><DialogTitle>Confirm Delete</DialogTitle><DialogContent><DialogContentText>Delete this role? This cannot be undone.</DialogContentText></DialogContent><DialogActions><Button onClick={() => setDeleteId(null)}>Cancel</Button><Button onClick={confirmDelete} color="error" variant="contained" disabled={deleteMutation.isPending}>{deleteMutation.isPending ? 'Deleting...' : 'Delete'}</Button></DialogActions></Dialog>
+      <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <DialogContentText>Delete this role? This cannot be undone.</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteId(null)}>Cancel</Button>
+          <Button
+            onClick={confirmDelete}
+            color="error"
+            variant="contained"
+            disabled={deleteMutation.isPending}
+          >
+            {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }
+

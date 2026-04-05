@@ -28,7 +28,7 @@ export class UserService extends ParentChildService<MstUserEntity> implements IU
     const hashedPassword = await bcrypt.hash(data.password, 10)
     const user = await this.create({...data, password: hashedPassword})
 
-  return user  
+    return user  
   }
 
   /**
@@ -36,6 +36,13 @@ export class UserService extends ParentChildService<MstUserEntity> implements IU
    */
   protected get searchFields(): string[] {
     return ['userName', 'fullName', 'email', 'userCardNumber']
+  }
+
+  /**
+   * Relations to include in list results.
+   */
+  protected get listRelations(): string[] {
+    return ['branchAccesses', 'userRoles']
   }
 
   /**

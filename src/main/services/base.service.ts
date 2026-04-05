@@ -102,6 +102,14 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
   }
 
   /**
+   * Optional relations to include in list results.
+   * Child classes should override this to enable eager loading of related entities in listings.
+   */
+  protected get listRelations(): string[] {
+    return []
+  }
+
+  /**
    * Retrieves a list of entities based on the provided options.
    * This handles pagination, limiting, and keyword search.
    */
@@ -115,6 +123,7 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
     const findOptions: FindManyOptions<T> = {
       take: limit,
       skip: skip,
+      relations: this.listRelations,
       order: { [orderBy]: order } as any
     }
 
@@ -210,7 +219,10 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
       return await this.repository.findOne(options)
     }
 
-    const result = await this.repository.findOneBy({ id } as any)
+    const result = await this.repository.findOne({
+      where: { id } as any,
+      relations: this.listRelations
+    })
 
     // audit trail
     await this.audit({

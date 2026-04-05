@@ -49,7 +49,7 @@ const RoleHub: React.FC = () => {
           />
           <Button
             variant="contained"
-            color="secondary"
+            color="primary"
             startIcon={<AddIcon sx={{ fontSize: 25 }} />}
             onClick={handleCreate}
             sx={{ px: 3, whiteSpace: 'nowrap' }}

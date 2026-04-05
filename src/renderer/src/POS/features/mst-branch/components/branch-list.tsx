@@ -1,6 +1,7 @@
 import { Delete as DeleteIcon, Edit as EditIcon, Store as StoreIcon } from '@mui/icons-material'
 import {
   Box,
+  Button,
   Chip,
   CircularProgress,
   Dialog,
@@ -8,7 +9,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Button,
   IconButton,
   Paper,
   Table,
@@ -20,6 +20,7 @@ import {
   Typography
 } from '@mui/material'
 import React from 'react'
+import { MstBranchEntity } from "src/main/entities"
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useBranchHubStore } from '../store/use-branch-hub-store'
 
@@ -60,7 +61,7 @@ export const BranchList: React.FC = () => {
     return <Typography color="error">Failed to load branches.</Typography>
   }
 
-  const branches = (data as any)?.items || []
+  const branches = data?.items || []
 
   return (
     <>
@@ -76,7 +77,7 @@ export const BranchList: React.FC = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {branches.map((branch: any) => (
+          {branches.map((branch: MstBranchEntity) => (
             <TableRow key={branch.id} hover onClick={() => handleEdit(branch.id)} sx={{ cursor: 'pointer' }}>
               <TableCell>
                 <StoreIcon color="primary" sx={{ fontSize: 25 }} />

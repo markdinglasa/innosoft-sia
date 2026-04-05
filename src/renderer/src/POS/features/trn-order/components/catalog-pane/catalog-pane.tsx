@@ -38,7 +38,7 @@ export const CatalogPane: React.FC = () => {
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <SearchIcon fontSize="small" />
+              <SearchIcon sx={{fontSize:25}} />
             </InputAdornment>
           )
         }}

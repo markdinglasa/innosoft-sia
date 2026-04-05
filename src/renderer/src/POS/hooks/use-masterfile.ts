@@ -1,5 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { IpcChannel } from "@shared/types";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 /**
  * Generic hook for interacting with Masterfile Hub services.
@@ -95,15 +95,22 @@ export const useMasterfile = (serviceName: string) => {
 
   /**
    * Fetch a minimal list of entities for lookups/dropdowns.
-   * Uses more aggressive caching for static data.
+   * Can be used for the current service or another service by passing the service name as the first argument.
    */
-  const useLookup = (options?: any) => {
+  const useLookup = (serviceOrOptions?: string | any, options?: any) => {
+    const isOverride = typeof serviceOrOptions === 'string';
+    const lookupServiceName = isOverride ? serviceOrOptions : serviceName;
+    const lookupOptions = isOverride ? options : serviceOrOptions;
+    const lookupKey = isOverride 
+      ? ['masterfile', lookupServiceName, 'lookup', lookupOptions]
+      : [...baseKey, 'lookup', lookupOptions];
+
     return useQuery({
-      queryKey: [...baseKey, 'lookup', options],
+      queryKey: lookupKey,
       queryFn: async () => {
         const response = await (window as any).electron.ipc.invoke(IpcChannel.mstList, { 
-          serviceName, 
-          options: { ...options, limit: 1000 } // Larger limit for lookups
+          serviceName: lookupServiceName, 
+          options: { ...lookupOptions, limit: 1000 } // Larger limit for lookups
         });
         if (!response.success) throw new Error(response.message);
         return response.data.items || [];
@@ -112,10 +119,43 @@ export const useMasterfile = (serviceName: string) => {
     });
   };
 
+  /**
+   * Fetch lookups using an infinite scroll logic (page-by-page fetching).
+   * Useful for very large Masterfiles where a single 1000-limit fetch is too slow.
+   */
+  const useInfiniteLookup = (serviceOrOptions?: string | any, options?: any) => {
+    const isOverride = typeof serviceOrOptions === 'string';
+    const lookupServiceName = isOverride ? serviceOrOptions : serviceName;
+    const lookupOptions = isOverride ? options : serviceOrOptions;
+    
+    const lookupKey = isOverride 
+      ? ['masterfile', lookupServiceName, 'lookup', 'infinite', lookupOptions]
+      : [...baseKey, 'lookup', 'infinite', lookupOptions];
+
+    return useInfiniteQuery({
+      queryKey: lookupKey,
+      initialPageParam: 1,
+      queryFn: async ({ pageParam = 1 }) => {
+        const response = await (window as any).electron.ipc.invoke(IpcChannel.mstList, { 
+          serviceName: lookupServiceName, 
+          options: { ...lookupOptions, page: pageParam, limit: 30 } 
+        });
+        if (!response.success) throw new Error(response.message);
+        return response.data; // Returns { items: [], meta: { totalPages, currentPage, ... } }
+      },
+      getNextPageParam: (lastPage:any) => {
+        const { currentPage, totalPages } = lastPage.meta;
+        return currentPage < totalPages ? currentPage + 1 : undefined;
+      },
+      staleTime: 1000 * 60 * 10,
+    });
+  };
+
   return {
     useList,
     useGet,
     useLookup,
+    useInfiniteLookup,
     useSaveMutation,
     useDeleteMutation
   };

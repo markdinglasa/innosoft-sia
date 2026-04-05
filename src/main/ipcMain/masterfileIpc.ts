@@ -20,6 +20,7 @@ import {
   TermService,
   UnitService,
   UserService,
+  AccessRightService,
 } from '../services/masterfile.services'
 import {
   CollectionService,
@@ -55,6 +56,7 @@ const services: Record<string, any> = {
   itemGroup: new ItemGroupService(),
   itemComponent: new ItemComponentService(),
   tableGroup: new TableGroupService(),
+  accessRight: new AccessRightService(),
   auditTrail: new SysAuditTrailService(),
 
   // Transaction Services

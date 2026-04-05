@@ -28,6 +28,13 @@ export class RoleService extends ParentChildService<MstRoleEntity> implements IR
   }
 
   /**
+   * Relations to include in list results.
+   */
+  protected get listRelations(): string[] {
+    return ['permissions', 'permissions.accessRight']
+  }
+
+  /**
    * Validates before creating a new Role.
    * Ensures Role Code and Name are unique.
    */

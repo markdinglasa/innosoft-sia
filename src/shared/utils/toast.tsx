@@ -30,7 +30,7 @@ export const displayToast = (message: ReactNode, type: ToastType, className?: st
       {message}
     </Toast>,
     {
-      position: 'top-center'
+      position: 'bottom-left'
     }
   )
 }
