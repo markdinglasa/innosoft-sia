@@ -24,7 +24,7 @@ function DiscountHub() {
   const canAdd = hasPermission(SystemPermissions.DISCOUNT_ADD)
 
   return (
-    <PageLayout title="Discount Management">
+    <PageLayout title="Discounts">
       <Box sx={{ mb: 3 }}>
         <Paper
           variant="outlined"

@@ -1,19 +1,12 @@
+import { Delete as DeleteIcon, Percent as DiscountIcon } from '@mui/icons-material'
 import {
-  Delete as DeleteIcon,
-  Percent as DiscountIcon,
-  Edit as EditIcon
-} from '@mui/icons-material'
-import {
-  Box,
   Button,
   Chip,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  IconButton,
   Paper,
   Table,
   TableBody,
@@ -24,7 +17,13 @@ import {
   TableRow,
   Typography
 } from '@mui/material'
+import { SystemPermissions } from '@shared/constants/permissions'
+import { ButtonType, ToastType } from '@shared/types'
+import { displayToast } from '@shared/utils'
 import React from 'react'
+import TableSkeleton from '../../../components/data-display/table-skeleton'
+import CircleButton from '../../../components/inputs/circle-button'
+import { useAccessControl } from '../../../hooks'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useDiscountHubStore } from '../store/use-discount-hub-store'
 
@@ -34,11 +33,19 @@ export const DiscountList: React.FC = () => {
   const [page, setPage] = React.useState(0)
   const { data, isLoading, isError } = useList({ searchKeyword, page: page + 1, take: 30 })
 
+  // permissions
+  const { hasPermission } = useAccessControl()
+  const canEdit = hasPermission(SystemPermissions.DISCOUNT_EDIT)
+  const canDelete = hasPermission(SystemPermissions.DISCOUNT_REMOVE)
+
   // Reset page when search changes
-  React.useEffect(function resetPageOnSearch() {
-    setPage(0)
-  }, [searchKeyword])
-  
+  React.useEffect(
+    function resetPageOnSearch() {
+      setPage(0)
+    },
+    [searchKeyword]
+  )
+
   const deleteMutation = useDeleteMutation()
   const handleEdit = (id: number) => {
     setSelectedId(id)
@@ -52,21 +59,11 @@ export const DiscountList: React.FC = () => {
       setDeleteId(null)
     }
   }
-  if (isLoading)
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <CircularProgress size={32} />
-      </Box>
-    )
-  if (isError) return <Typography color="error">Failed to load discounts.</Typography>
+
   const items = (data as any)?.items || []
   return (
     <>
-      <TableContainer
-        component={Paper}
-        variant="outlined"
-        sx={{ maxHeight: 'calc(100vh - 250px)' }}
-      >
+      <TableContainer component={Paper} variant="outlined">
         <Table stickyHeader size="small">
           <TableHead>
             <TableRow>
@@ -74,79 +71,83 @@ export const DiscountList: React.FC = () => {
               <TableCell>Name</TableCell>
               <TableCell>Alias</TableCell>
               <TableCell align="right">Rate (%)</TableCell>
-              <TableCell>VAT Exempt</TableCell>
+              <TableCell align="right">VAT Exempt</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {items.map((item: any) => (
-              <TableRow
-                key={item.id}
-                hover
-                onClick={() => handleEdit(item.id)}
-                sx={{ cursor: 'pointer' }}
-              >
-                <TableCell>
-                  <DiscountIcon color="action" sx={{ fontSize: 25 }} />
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2" fontWeight="medium">
-                    {item.name}
-                  </Typography>
-                </TableCell>
-                <TableCell>{item.discountAlias || '—'}</TableCell>
-                <TableCell align="right">{Number(item.discountRate).toFixed(2)}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={item.isVATExempt ? 'Yes' : 'No'}
-                    size="small"
-                    color={item.isVATExempt ? 'warning' : 'default'}
-                  />
-                </TableCell>
-                <TableCell align="right">
-                  <IconButton
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleEdit(item.id)
-                    }}
-                  >
-                    <EditIcon sx={{ fontSize: 25 }} />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    color="error"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleDelete(item.id)
-                    }}
-                  >
-                    <DeleteIcon sx={{ fontSize: 25 }} />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-            {items.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    No discounts found.
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )}
+            <TableSkeleton isLoading={isLoading} columns={6} rows={15}>
+              {items.map((item: any) => (
+                <TableRow
+                  key={item.id}
+                  hover
+                  onClick={() => {
+                    if (!canEdit) {
+                      displayToast(
+                        'You do not have permission to edit this discount.',
+                        ToastType.info
+                      )
+                      return
+                    }
+                    handleEdit(item.id)
+                  }}
+                  sx={{ cursor: 'pointer' }}
+                >
+                  <TableCell>
+                    <DiscountIcon color="action" sx={{ fontSize: 25 }} />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" fontWeight="medium">
+                      {item.name}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>{item.discountAlias || '—'}</TableCell>
+                  <TableCell align="right">{Number(item.discountRate).toFixed(2)}</TableCell>
+                  <TableCell align="right">
+                    <Chip
+                      label={item.isVATExempt ? 'Yes' : 'No'}
+                      size="small"
+                      color={item.isVATExempt ? 'warning' : 'default'}
+                    />
+                  </TableCell>
+                  <TableCell align="right">
+                    <CircleButton
+                      disabled={!canDelete}
+                      icon={<DeleteIcon sx={{ fontSize: 25 }} />}
+                      onClick={() => handleDelete(item?.id)}
+                      type={ButtonType.button}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+              {isError && (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                    <Typography color="error">Failed to load discounts.</Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+              {!isError && items.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      No discounts found.
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableSkeleton>
           </TableBody>
         </Table>
+        <TablePagination
+          rowsPerPageOptions={[30]}
+          component="div"
+          count={(data as any)?.meta?.totalItems || 0}
+          rowsPerPage={30}
+          page={page}
+          onPageChange={(_, newPage) => setPage(newPage)}
+        />
       </TableContainer>
-      
-      <TablePagination
-        rowsPerPageOptions={[30]}
-        component="div"
-        count={(data as any)?.meta?.totalItems || 0}
-        rowsPerPage={30}
-        page={page}
-        onPageChange={(_, newPage) => setPage(newPage)}
-      />
 
       <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}>
         <DialogTitle>Confirm Delete</DialogTitle>
