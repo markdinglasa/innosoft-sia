@@ -150,12 +150,12 @@ export class MirrorBranchEntity extends MirrorBaseEntity {
 export class MirrorTerminalEntity extends MirrorBaseEntity {
   constructor() {
     super()
-    this.terminal = ''
+    this.name = ''
     this.isDefault = false
   }
 
-  @Column({ name: 'Terminal', type: 'nvarchar', length: 50 })
-  terminal: string
+  @Column({ name: 'Name', type: 'nvarchar', length: 50 })
+  name: string
 
   @Column({ name: 'IsDefault', type: 'boolean', default: false })
   isDefault: boolean

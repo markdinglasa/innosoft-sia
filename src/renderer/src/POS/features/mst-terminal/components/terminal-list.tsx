@@ -88,7 +88,7 @@ export const TerminalList: React.FC = () => {
                 </TableCell>
                 <TableCell>
                   <Typography variant="body2" fontWeight="medium">
-                    {item.name || item.terminalName || `Terminal #${item.id}`}
+                    {item.name || `Terminal #${item.id}`}
                   </Typography>
                 </TableCell>
                 <TableCell>{item.branch?.name || '—'}</TableCell>

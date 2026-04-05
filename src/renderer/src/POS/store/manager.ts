@@ -1,7 +1,11 @@
 import { createSlice, current, PayloadAction } from '@reduxjs/toolkit'
 import { IpcChannel } from '@shared/types'
 import { setLocalAndStateReducer } from '@shared/utils'
-import { MstUserEntity } from "src/main/entities"
+import {
+  MstBranchEntity,
+  MstTerminalEntity,
+  MstUserEntity
+} from '../../../../main/entities/masterfiles'
 import { POS_MANAGER } from '../constants'
 
 // Define the shape of the POS Manager state
@@ -10,7 +14,9 @@ export interface POSManagerState {
   activePage: string | null
   activeUser: MstUserEntity | null
   activePermissions: string[]
+  activeBranches: MstBranchEntity[] | null
   loginDate: string | null
+  activeTerminal: MstTerminalEntity | null
 }
 
 export const initialState: POSManagerState = {
@@ -18,6 +24,8 @@ export const initialState: POSManagerState = {
   activePage: null,
   activeUser: null,
   activePermissions: [],
+  activeBranches: [],
+  activeTerminal: null,
   loginDate: null
 }
 
@@ -34,28 +42,54 @@ const manager = createSlice({
     },
     setManager: setLocalAndStateReducer<POSManagerState>(POS_MANAGER),
 
-      setActivePage: (state: POSManagerState, { payload: page }: PayloadAction<string>) => {
-        state.activePage = page === state.activePage ? null : page
-        window.electron.ipc.send(IpcChannel.setStoreValue, {
-          key: POS_MANAGER,
-          state: current(state)
-        })
-      },
-      setActiveUser: (state: POSManagerState, { payload: user }: PayloadAction<MstUserEntity | null>) => {
-        state.activeUser = user
-        window.electron.ipc.send(IpcChannel.setStoreValue, {
-          key: POS_MANAGER,
-          state: current(state)
-        })
-      }
-        },
+    setActivePage: (state: POSManagerState, { payload: page }: PayloadAction<string>) => {
+      state.activePage = page === state.activePage ? null : page
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: POS_MANAGER,
+        state: current(state)
+      })
+    },
+    setActiveUser: (
+      state: POSManagerState,
+      { payload: user }: PayloadAction<MstUserEntity | null>
+    ) => {
+      state.activeUser = user
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: POS_MANAGER,
+        state: current(state)
+      })
+    },
+    setActiveBranches: (
+      state: POSManagerState,
+      { payload: branches }: PayloadAction<MstBranchEntity[] | null>
+    ) => {
+      state.activeBranches = branches
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: POS_MANAGER,
+        state: current(state)
+      })
+    },
+    setActiveTerminal: (
+      state: POSManagerState,
+      { payload: terminal }: PayloadAction<MstTerminalEntity | null>
+    ) => {
+      state.activeTerminal = terminal
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: POS_MANAGER,
+        state: current(state)
+      })
+    }
+  }
 })
 
 export const {
   setInitialize,
   setManager,
   setActivePage,
-  setActiveUser
+  setActiveUser,
+  setActiveBranches,
+  setActiveTerminal
 } = manager.actions
 
 export default manager.reducer
+

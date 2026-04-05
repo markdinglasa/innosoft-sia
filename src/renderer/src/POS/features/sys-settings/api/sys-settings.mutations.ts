@@ -1,5 +1,5 @@
 import { ToastType, UtilityIpcChannel } from '@shared/types'
-import { displayToast } from "@shared/utils"
+import { displayToast } from '@shared/utils'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { SysSettings } from '../types'
 import { sysSettingsKeys } from './sys-settings.queries'
@@ -8,8 +8,11 @@ export const useActivateTerminal = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (vars: { terminalId: number, fingerprint: string }) => {
-      const response = await window.electron.ipc.invoke(UtilityIpcChannel.USER_TERMINAL_ACTIVATE, vars)
+    mutationFn: async (vars: { terminalId: number }) => {
+      const response = await window.electron.ipc.invoke(
+        UtilityIpcChannel.USER_TERMINAL_ACTIVATE,
+        vars
+      )
       if (!response || !response.success) {
         throw new Error(response?.message || 'Failed to activate terminal')
       }
@@ -48,3 +51,4 @@ export const useUpdateSettings = () => {
     }
   })
 }
+

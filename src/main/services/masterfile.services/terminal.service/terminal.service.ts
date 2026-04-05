@@ -7,7 +7,7 @@ import { BaseService } from '../../base.service'
 import { CreateTerminalDto, UpdateTerminalDto } from './dto'
 
 export interface ITerminalService {
-  activateTerminal(terminalId: number, fingerprint: string): Promise<void>
+  activateTerminal(terminalId: number): Promise<void>
   getByBranch(branchId: number): Promise<MstTerminalEntity[]>
 }
 
@@ -20,7 +20,14 @@ export class TerminalService extends BaseService<MstTerminalEntity> implements I
    * Search fields for Terminal keyword search.
    */
   protected get searchFields(): string[] {
-    return ['terminal']
+    return ['name']
+  }
+
+  /**
+   * Optional relations to include in list results.
+   */
+  protected get listRelations(): string[] {
+    return ['branch']
   }
 
   /**
@@ -39,7 +46,10 @@ export class TerminalService extends BaseService<MstTerminalEntity> implements I
   /**
    * Validates before updating an existing Terminal.
    */
-  protected async validateUpdate(id: any, data: QueryDeepPartialEntity<MstTerminalEntity>): Promise<void> {
+  protected async validateUpdate(
+    id: any,
+    data: QueryDeepPartialEntity<MstTerminalEntity>
+  ): Promise<void> {
     const currentEntity = await this.get(id)
     if (!currentEntity) {
       throw new BadRequestException('Terminal not found for update.')
@@ -58,9 +68,18 @@ export class TerminalService extends BaseService<MstTerminalEntity> implements I
    * Validates before deleting a Terminal.
    */
   protected async validateDelete(id: any): Promise<void> {
-    const currentEntity = await this.get(id)
+    const currentEntity = await this.repository.findOne({
+      where: { id },
+      relations: ['userTerminals']
+    })
     if (!currentEntity) {
       throw new BadRequestException('Terminal not found for deletion.')
+    }
+    if (currentEntity.isDefault) {
+      throw new BadRequestException('Cannot delete a default terminal')
+    }
+    if (currentEntity.userTerminals && currentEntity.userTerminals.length > 0) {
+      throw new BadRequestException('Cannot delete a terminal that is already in use')
     }
   }
 
@@ -74,22 +93,14 @@ export class TerminalService extends BaseService<MstTerminalEntity> implements I
   }
 
   /**
-   * Binds a physical machine fingerprint to a terminal record.
+   * Sets a terminal as the active terminal for this device.
+   * License handles device identity — no fingerprint binding needed.
    */
-  async activateTerminal(terminalId: number, fingerprint: string): Promise<void> {
+  async activateTerminal(terminalId: number): Promise<void> {
     const terminal = await this.get(terminalId)
     if (!terminal) {
       throw new BadRequestException('Terminal record not found.')
     }
-
-    // Check if terminal is already bound to another machine
-    if (terminal.physicalAddress && terminal.physicalAddress !== fingerprint) {
-      throw new BadRequestException(
-        `Unauthorized Move: Terminal '${terminal.name}' is already bound to another machine (${terminal.physicalAddress}).`
-      )
-    }
-
-    // Bind fingerprint to this terminal
-    await this.update(terminalId, { physicalAddress: fingerprint } as any)
   }
 }
+

@@ -1,5 +1,6 @@
-import { Box, Container } from '@mui/material'
+import { Box } from '@mui/material'
 import { memo } from 'react'
+import PublicLayout from '../../../components/layout/public-layout'
 import { useGetConnections } from '../api/react-queries/connection.queries'
 import ConnectionList from './connection-list'
 
@@ -7,23 +8,13 @@ function DatabaseLink() {
   const { data: connections = [], refetch, isLoading: loading } = useGetConnections()
 
   return (
-    <Container
-      sx={{
-        width: '100%',
-        height: 'fit',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        py: 2,
-        gap: '2rem'
-      }}
-    >
-      <Box sx={{ width: '100%', height:'fit', maxWidth: 'md' }}>
+    <PublicLayout>
+      <Box sx={{ width: '100%', height: 'fit', maxWidth: 'md', py: 6 }}>
         <ConnectionList connections={connections} onRefresh={refetch} loading={loading} />
       </Box>
-    </Container>
+    </PublicLayout>
   )
 }
 
 export default memo(DatabaseLink)
+

@@ -114,7 +114,10 @@ export const DiscountList: React.FC = () => {
                     <CircleButton
                       disabled={!canDelete}
                       icon={<DeleteIcon sx={{ fontSize: 25 }} />}
-                      onClick={() => handleDelete(item?.id)}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDelete(item?.id)
+                      }}
                       type={ButtonType.button}
                     />
                   </TableCell>
@@ -158,7 +161,8 @@ export const DiscountList: React.FC = () => {
           <Button onClick={() => setDeleteId(null)}>Cancel</Button>
           <Button
             onClick={confirmDelete}
-            color="error"
+            color="primary"
+            startIcon={<DeleteIcon sx={{ fontSize: 25 }} />}
             variant="contained"
             disabled={deleteMutation.isPending}
           >

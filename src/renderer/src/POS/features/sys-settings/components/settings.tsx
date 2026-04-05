@@ -1,8 +1,10 @@
-import { Box, Tab, Tabs } from '@mui/material'
+import { Box, Button, Tab, Tabs } from '@mui/material'
+import { useToggle } from '@shared/hooks'
 import React, { memo, useState } from 'react'
-import PageLayout from "../../../components/layout/page-layout"
+import PageLayout from '../../../components/layout/page-layout'
 import { AccountTab } from './tabs/account-tab'
 import { TerminalTab } from './tabs/terminal-tab'
+import { TerminalActivationModal } from './terminal-activation'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -21,24 +23,27 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`settings-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ py: 3 }}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
     </div>
   )
 }
 
 function Settings() {
   const [value, setValue] = useState(0)
-
+  const [openSwitchTerminalDialog, toggleSwitchTerminalDialog] = useToggle(false)
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
 
   return (
-   <PageLayout title="Settings">
+    <PageLayout
+      title="Settings"
+      actions={
+        <Button variant="contained" onClick={toggleSwitchTerminalDialog}>
+          Switch Terminal
+        </Button>
+      }
+    >
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="settings tabs">
           <Tab label="Account Settings" id="settings-tab-0" aria-controls="settings-tabpanel-0" />
@@ -51,8 +56,10 @@ function Settings() {
       <TabPanel value={value} index={1}>
         <TerminalTab />
       </TabPanel>
-   </PageLayout>
+      <TerminalActivationModal open={openSwitchTerminalDialog} close={toggleSwitchTerminalDialog} />
+    </PageLayout>
   )
 }
 
 export default memo(Settings)
+

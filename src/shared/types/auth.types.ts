@@ -1,3 +1,5 @@
+import { MstBranchEntity, MstTerminalEntity, MstUserEntity } from '../../main/entities'
+
 export interface AuthTokens {
   accessToken: string
   refreshToken: string
@@ -21,9 +23,11 @@ export interface LoginProps {
 }
 
 export interface LoginResponse {
-  user: any
+  user: MstUserEntity
   tokens: AuthTokens
   permissions: any[]
-  branches: any[]
+  branches: MstBranchEntity[]
   loginDate: string
+  terminal?: MstTerminalEntity
 }
+

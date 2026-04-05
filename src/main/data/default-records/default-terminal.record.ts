@@ -10,7 +10,7 @@ export const DEFAULT_TERMINAL = [
     },
     {
         branch:'Main', // branch.name
-        name: '03',
+        name: '02',
         isDefault: true,
         isLocked: true,
         entryUser: 'admin', // user.username

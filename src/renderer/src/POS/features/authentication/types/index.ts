@@ -1,4 +1,4 @@
-import { MstUserEntity } from "src/main/entities"
+import { MstBranchEntity, MstTerminalEntity, MstUserEntity } from 'src/main/entities'
 
 export interface AuthUser extends MstUserEntity {}
 
@@ -21,6 +21,8 @@ export interface LoginResponse {
   permissions: string[]
   loginDate: string
   error?: string
+  branches: MstBranchEntity[]
+  terminal?: MstTerminalEntity
 }
 
 export interface AuthState {
@@ -29,3 +31,4 @@ export interface AuthState {
   isLoading: boolean
   error: string | null
 }
+

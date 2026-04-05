@@ -31,7 +31,6 @@ function BranchForm() {
   const saveMutation = useSaveMutation()
 
   const {
-    control,
     register,
     handleSubmit,
     reset,

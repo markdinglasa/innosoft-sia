@@ -22,7 +22,7 @@ export const SettingsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <SettingsContext.Provider value={{}}>
       {children}
-      {!activeTerminalId && <TerminalActivationModal />}
+      {!activeTerminalId && <TerminalActivationModal isBlocking={true} />}
     </SettingsContext.Provider>
   )
 }

@@ -12,7 +12,7 @@ import {
   Typography
 } from '@mui/material'
 import { AppDispatch, ToastType } from '@shared/types'
-import { displayToast } from "@shared/utils"
+import { displayToast } from '@shared/utils'
 import { format } from 'date-fns'
 import { memo, useState } from 'react'
 import { useDispatch } from 'react-redux'
@@ -31,7 +31,7 @@ function LoginForm() {
   const [showOverride, setShowOverride] = useState(false)
   const [overrideUsername, setOverrideUsername] = useState('')
   const [overridePassword, setOverridePassword] = useState('')
-  const [error, setError]  = useState<string|null>(null)
+  const [error, setError] = useState<string | null>(null)
   // mutations
   const { login, isLoading, error: authError } = useAuth()
 
@@ -47,8 +47,13 @@ function LoginForm() {
       displayToast('Welcome back!', ToastType.success)
       setShowOverride(false)
     } catch (err: any) {
-      const errMessage = authError?.message || err?.message || err?.error?.message || err?.toString() || 'Sorry, Something went wrong.'
-      
+      const errMessage =
+        authError?.message ||
+        err?.message ||
+        err?.error?.message ||
+        err?.toString() ||
+        'Sorry, Something went wrong.'
+
       if (err?.statusCode === 403 && err?.metadata?.requireOverride) {
         setShowOverride(true)
       } else {
@@ -69,7 +74,7 @@ function LoginForm() {
     try {
       dispatch(setActivePage(POSPages.DATABASE_LINK))
     } catch (error: unknown) {
-     displayToast((error as Error).message || 'Sorry, Something went wrong.', ToastType.error)
+      displayToast((error as Error).message || 'Sorry, Something went wrong.', ToastType.error)
     }
   }
 
@@ -79,27 +84,32 @@ function LoginForm() {
         <Typography variant="h4" align="center" gutterBottom color="primary" fontWeight="bold">
           Sign In
         </Typography>
-        {error && <Alert severity="error" color="error" sx={{mb:'1rem'}}>{error}</Alert>}
+        {error && (
+          <Alert severity="error" color="error" sx={{ mb: '1rem' }}>
+            {error}
+          </Alert>
+        )}
         <form onSubmit={handleSubmit}>
-        <Stack direction={'row'} gap={'2rem'} alignItems={'center'}>
-          <TextField
-            fullWidth
-            label="Business Date"
-            type="date"
-            margin="normal"
-            value={loginDate}
-            onChange={(e) => setLoginDate(e.target.value)}
-            required
-          />
-          <Button
-            variant="contained"
-            type="submit"
-            sx={{mt:'7px'}}
-           onClick={() => setLoginDate(format(new Date(), 'yyyy-MM-dd'))}
-          >
-           Today
-          </Button>
-        </Stack>
+          <Stack direction={'row'} gap={'2rem'} alignItems={'center'}>
+            <TextField
+              fullWidth
+              label="Business Date"
+              type="date"
+              margin="normal"
+              value={loginDate}
+              onChange={(e) => setLoginDate(e.target.value)}
+              required
+            />
+            <Button
+              variant="contained"
+              type="submit"
+              size="small"
+              sx={{ mt: '7px' }}
+              onClick={() => setLoginDate(format(new Date(), 'yyyy-MM-dd'))}
+            >
+              Today
+            </Button>
+          </Stack>
           <TextField
             fullWidth
             label="Username"
@@ -123,13 +133,13 @@ function LoginForm() {
             variant="contained"
             type="submit"
             disabled={isLoading}
-            sx={{ mt: 2, py: 1.5,width:'100%' }}
+            sx={{ mt: 2, py: 1.5, width: '100%' }}
           >
             {isLoading ? 'Logging in...' : 'Login'}
           </Button>
         </form>
         <Box sx={{ mt: 2, textAlign: 'center' }}>
-          <Button onClick={handleDatabaseLink} color="inherit" size="medium" sx={{width:'100%'}}>
+          <Button onClick={handleDatabaseLink} color="inherit" size="medium" sx={{ width: '100%' }}>
             Connections
           </Button>
         </Box>
@@ -178,3 +188,4 @@ function LoginForm() {
 }
 
 export default memo(LoginForm)
+

@@ -5,5 +5,12 @@ import { initialState as managerInitialState, setManager } from './manager'
 export const loadPOSManagerStoreData = (dispatch: AppDispatch, store: LocalElectronStore): void => {
   const storeManager = store?.[POS_MANAGER] || managerInitialState
 
-  dispatch(setManager(storeManager))
+  dispatch(
+    setManager({
+      ...storeManager,
+      activeBranches: [],
+      activeTerminal: null
+    })
+  )
 }
+

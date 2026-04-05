@@ -1,14 +1,10 @@
-import { lazy, memo } from 'react'
-import PublicLayout from '../../../components/layout/public-layout'
+import { memo } from 'react'
 
-const DatabaseLink = lazy(() => import('../../../features/database-link/components/database-link'))
+import DatabaseLink from '../../../features/database-link/components/database-link'
 
 function DatabaseLinkPage() {
-  return (
-    <PublicLayout className="border-red">
-      <DatabaseLink />
-    </PublicLayout>
-  )
+  return <DatabaseLink />
 }
 
 export default memo(DatabaseLinkPage)
+

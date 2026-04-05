@@ -44,7 +44,10 @@ export const TerminalForm: React.FC = () => {
 
   useEffect(
     function formResetter() {
-      if (existing) reset({ name: existing.name || existing.terminalName || '' })
+      if (existing)
+        reset({
+          name: existing.name || ''
+        })
       else reset({ name: '' })
     },
     [existing, reset]
@@ -80,10 +83,11 @@ export const TerminalForm: React.FC = () => {
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Terminal"
+                label="Terminal Name"
                 fullWidth
                 required
                 margin="normal"
+                placeholder="e.g. 01"
                 error={!!errors.name}
                 helperText={errors.name?.message}
               />
@@ -110,4 +114,3 @@ export const TerminalForm: React.FC = () => {
     </Box>
   )
 }
-

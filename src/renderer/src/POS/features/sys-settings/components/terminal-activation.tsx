@@ -1,104 +1,129 @@
-import React, { useState } from 'react'
+import { Monitor as TerminalIcon } from '@mui/icons-material'
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Typography,
   Box,
+  Button,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
   List,
   ListItem,
   ListItemButton,
-  ListItemText,
   ListItemIcon,
+  ListItemText,
   Paper,
-  Divider,
+  Typography
 } from '@mui/material'
-import { Monitor as TerminalIcon, Fingerprint as FingerprintIcon } from '@mui/icons-material'
-import { useAvailableTerminals, useTerminalFingerprint } from '../api/sys-settings.queries'
+import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { MstTerminalEntity } from 'src/main/entities'
+import { setActiveTerminal } from '../../../store/manager'
 import { useActivateTerminal } from '../api/sys-settings.mutations'
+import { useAvailableTerminals } from '../api/sys-settings.queries'
 
-export const TerminalActivationModal: React.FC = () => {
-  const { data: fingerprint, isLoading: isFingerprintLoading } = useTerminalFingerprint()
-  const { data: terminals = [], isLoading: isTerminalsLoading, refetch: refetchTerminals } = useAvailableTerminals()
+interface TerminalActivationModalProps {
+  open?: boolean
+  close?: () => void
+  isBlocking?: boolean
+}
+export const TerminalActivationModal: React.FC<TerminalActivationModalProps> = ({
+  open = true,
+  close,
+  isBlocking = false
+}) => {
+  const {
+    data: terminals = [],
+    isLoading: isTerminalsLoading,
+    refetch: refetchTerminals
+  } = useAvailableTerminals()
   const activateTerminal = useActivateTerminal()
 
+  const items = (terminals as any)?.items || []
+  const options = Array.isArray(items) ? items : []
   const [selectedTerminalId, setSelectedTerminalId] = useState<number | null>(null)
 
-  const loading = isFingerprintLoading || isTerminalsLoading || activateTerminal.isPending
+  const loading = isTerminalsLoading || activateTerminal.isPending
 
+  const dispatch = useDispatch()
   const handleActivate = () => {
-    if (!selectedTerminalId || !fingerprint) return
-    activateTerminal.mutate({
-      terminalId: selectedTerminalId,
-      fingerprint
-    })
+    if (!selectedTerminalId) return
+    activateTerminal.mutate(
+      { terminalId: selectedTerminalId },
+      {
+        onSuccess: () => {
+          const activatedTerminal = options.find((t: any) => t.id === selectedTerminalId)
+          if (activatedTerminal) {
+            dispatch(setActiveTerminal(activatedTerminal))
+          }
+          if (close) {
+            close()
+          }
+        }
+      }
+    )
   }
 
   return (
-    <Dialog 
-        open={true} 
-        maxWidth="sm" 
-        fullWidth
-        PaperProps={{
-            sx: { borderRadius: 2 }
-        }}
+    <Dialog
+      open={open}
+      onClose={isBlocking ? undefined : close}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{
+        sx: { borderRadius: 2 }
+      }}
     >
-      <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white', display: 'flex', alignItems: 'center', gap: 1 }}>
+      <DialogTitle
+        sx={{
+          bgcolor: 'primary.main',
+          color: 'white',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1
+        }}
+      >
         <TerminalIcon />
-        <Typography variant="h6">Terminal Activation Required</Typography>
+        <Typography variant="h6" component="span">
+          {isBlocking ? 'Terminal Activation Required' : 'Switch Terminal'}
+        </Typography>
       </DialogTitle>
 
       <DialogContent sx={{ mt: 2 }}>
         <Typography variant="body2" color="text.secondary" gutterBottom>
-          This machine is not yet associated with any terminal. Please select a terminal record to bind this machine to.
+          {isBlocking
+            ? 'This machine is not yet associated with any terminal. Please select a terminal to activate.'
+            : 'Select a terminal to switch to.'}
         </Typography>
-
-        <Box sx={{ my: 2, display: 'flex', alignItems: 'center', gap: 1, p: 1, bgcolor: 'action.hover', borderRadius: 1 }}>
-          <FingerprintIcon fontSize="small" color="action" />
-          <Typography variant="caption" sx={{ fontWeight: 'bold' }}>
-            Fingerprint: {fingerprint || (isFingerprintLoading ? 'Resolving...' : 'Failed to get fingerprint')}
-          </Typography>
-        </Box>
 
         <Divider sx={{ my: 1 }} />
 
-        {isTerminalsLoading && terminals.length === 0 ? (
+        {isTerminalsLoading && options.length === 0 ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
             <CircularProgress size={32} />
           </Box>
         ) : (
           <Paper variant="outlined" sx={{ maxHeight: 300, overflow: 'auto', mt: 1 }}>
             <List dense>
-              {terminals.map((terminal: any) => (
-                <ListItemButton 
+              {options.map((terminal: MstTerminalEntity) => (
+                <ListItemButton
                   key={terminal.id}
                   selected={selectedTerminalId === terminal.id}
                   onClick={() => setSelectedTerminalId(terminal.id)}
-                  disabled={terminal.physicalAddress && terminal.physicalAddress !== fingerprint}
                 >
                   <ListItemIcon>
-                    <TerminalIcon color={selectedTerminalId === terminal.id ? "primary" : "inherit"} />
+                    <TerminalIcon
+                      color={selectedTerminalId === terminal.id ? 'primary' : 'inherit'}
+                    />
                   </ListItemIcon>
-                  <ListItemText 
-                    primary={terminal.name} 
-                    secondary={`${terminal.branch?.name || 'No Branch'} | ${terminal.terminal || 'No Code'}`}
+                  <ListItemText
+                    primary={terminal.name}
+                    secondary={terminal.branch?.name || 'No Branch'}
                   />
-                  {terminal.physicalAddress && terminal.physicalAddress !== fingerprint && (
-                      <Typography variant="caption" color="error" sx={{ fontWeight: 'bold' }}>
-                          BOUND TO OTHER
-                      </Typography>
-                  )}
-                  {terminal.physicalAddress === fingerprint && (
-                       <Typography variant="caption" color="success.main" sx={{ fontWeight: 'bold' }}>
-                          THIS MACHINE
-                      </Typography>
-                  )}
                 </ListItemButton>
               ))}
-              {terminals.length === 0 && !isTerminalsLoading && (
+              {options.length === 0 && !isTerminalsLoading && (
                 <ListItem>
                   <ListItemText primary="No terminals found in the database." />
                 </ListItem>
@@ -109,17 +134,22 @@ export const TerminalActivationModal: React.FC = () => {
       </DialogContent>
 
       <DialogActions sx={{ p: 2, bgcolor: 'grey.50' }}>
-        <Button 
-            disabled={loading} 
-            onClick={() => refetchTerminals()}
-            variant="outlined"
-            size="small"
+        {!isBlocking && (
+          <Button disabled={loading} onClick={() => close?.()} variant="text" color="inherit">
+            Cancel
+          </Button>
+        )}
+        <Button
+          disabled={loading}
+          onClick={() => refetchTerminals()}
+          variant="outlined"
+          size="small"
         >
           Refresh
         </Button>
         <Box sx={{ flexGrow: 1 }} />
-        <Button 
-          variant="contained" 
+        <Button
+          variant="contained"
           disabled={!selectedTerminalId || loading}
           onClick={handleActivate}
           sx={{ px: 4 }}
@@ -130,3 +160,4 @@ export const TerminalActivationModal: React.FC = () => {
     </Dialog>
   )
 }
+

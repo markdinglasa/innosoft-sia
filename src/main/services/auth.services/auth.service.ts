@@ -1,10 +1,22 @@
-import { POS_MANAGER, SYSTEM_ACCESS_TOKEN, SYSTEM_IS_LOCKED, SYSTEM_LOGIN_DATE, SYSTEM_REFRESH_TOKEN, SYSTEM_SELF } from '@shared/constants'
+import {
+  POS_MANAGER,
+  SYSTEM_ACCESS_TOKEN,
+  SYSTEM_IS_LOCKED,
+  SYSTEM_LOGIN_DATE,
+  SYSTEM_REFRESH_TOKEN,
+  SYSTEM_SELF
+} from '@shared/constants'
 import { LoginResponse, TokenPayload } from '@shared/types/auth.types'
 import * as bcrypt from 'bcrypt'
 import { FindOneOptions } from 'typeorm'
 import { ClosedDateException, UnauthorizedException } from '../../common/exceptions'
 import { generateAccessToken, generateRefreshToken, verifyToken } from '../../common/utils/jwt.util'
-import { MstBranchAccessEntity, MstBranchEntity, MstPermissionsEntity, MstUserEntity } from '../../entities/masterfiles'
+import {
+  MstBranchAccessEntity,
+  MstBranchEntity,
+  MstPermissionsEntity,
+  MstUserEntity
+} from '../../entities/masterfiles'
 import { TrnCollectionEntity } from '../../entities/transactions'
 import Store from '../../store/Store'
 import { AppDataSource } from '../../typeORM/configurations'
@@ -16,7 +28,12 @@ import { SysAuditTrailService } from '../utility.services/sys-audit-trail.servic
  * Interface defining the Authentication and Authorization service.
  */
 export interface IAuthService extends IBaseService<MstUserEntity> {
-  login(username: string, password: string, loginDate?: string, override?: any): Promise<LoginResponse>
+  login(
+    username: string,
+    password: string,
+    loginDate?: string,
+    override?: any
+  ): Promise<LoginResponse>
   logout(): Promise<void>
   refreshTokens(): Promise<LoginResponse>
   validateAccessToken(): Promise<TokenPayload>
@@ -26,7 +43,6 @@ export interface IAuthService extends IBaseService<MstUserEntity> {
   unlockSession(password: string): Promise<boolean>
   verifyManagerOverride(username: string, password: string): Promise<boolean>
   changePassword(userId: number, oldPassword: string, newPassword: string): Promise<boolean>
-
 
   currentUser(userId: number): Promise<MstUserEntity | null>
 }
@@ -69,7 +85,8 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
     const options: FindOneOptions<MstUserEntity> = {
       where: {
         username
-      }
+      },
+      relations: ['userTerminals', 'userTerminals.terminal']
     }
     const user = await this.repository.findOne(options)
 
@@ -147,12 +164,11 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
     const branches = await this.getAvailableBranches(user.id)
 
     if (branches.length === 0) {
-       throw new UnauthorizedException('Access Denied: User has no assigned branches.')
+      throw new UnauthorizedException('Access Denied: User has no assigned branches.')
     }
 
     // Sync POS store for next boot
     Store.set(POS_MANAGER, {
-
       initialize: true,
       activeUser: user,
       activePage: 'dashboard',
@@ -173,11 +189,12 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
     const { password: _pwd, ...safeUser } = user
 
     return {
-      user: safeUser,
+      user: safeUser as any,
       tokens: { accessToken, refreshToken },
       permissions: permissions as any,
       branches: branches as any,
-      loginDate
+      loginDate,
+      terminal: user.userTerminals?.find((ut) => ut.isActive)?.terminal
     }
   }
 
@@ -189,8 +206,8 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
       where: { userId },
       relations: ['branch']
     })
-    
-    return accessRecords.map(ar => ar.branch).filter(Boolean) as MstBranchEntity[]
+
+    return accessRecords.map((ar) => ar.branch).filter(Boolean) as MstBranchEntity[]
   }
 
   /**
@@ -252,7 +269,6 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
    * Publicly accessible for generic sensitive action overrides.
    */
   async verifyManagerOverride(username: string, password: string): Promise<boolean> {
-
     const user = await this.repository.findOne({
       where: { username },
       relations: ['userRoles', 'userRoles.role']
@@ -274,10 +290,10 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
   private async handleFailedAttempt(username: string) {
     const failedKey = `auth_failed_${username}` as any
     const lockoutKey = `auth_lockout_${username}` as any
-    
-    const currentFailures = (Store.get(failedKey) as number || 0) + 1
+
+    const currentFailures = ((Store.get(failedKey) as number) || 0) + 1
     Store.set(failedKey, currentFailures)
-    
+
     if (currentFailures >= 5) {
       const lockDuration = 15 * 60 * 1000 // 15 mins
       Store.set(lockoutKey, Date.now() + lockDuration)
@@ -377,7 +393,7 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
     const { password: _pwd, ...safeUser } = user
 
     return {
-      user: safeUser,
+      user: safeUser as any,
       tokens: { accessToken: newAccessToken, refreshToken: newRefreshToken },
       permissions: permissions as any,
       branches: branches as any,
@@ -414,7 +430,7 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
       withDeleted: false,
       relations: ['accessRight']
     })
-    
+
     const flatActions = permissions?.map((p) => p.action).filter(Boolean) || []
     return Array.from(new Set(flatActions)) as string[]
   }
@@ -450,3 +466,4 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
     return user
   }
 }
+

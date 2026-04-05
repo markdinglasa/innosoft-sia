@@ -20,6 +20,7 @@ import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useDiscountHubStore } from '../store/use-discount-hub-store'
 
 const discountSchema = z.object({
+  branchId: z.number().min(1, 'Branch is required'),
   name: z.string().min(1, 'Discount name is required'),
   discountAlias: z.string().nullable().optional(),
   discountRate: z.coerce.number().min(0, 'Discount Rate must be at least 0'),
@@ -57,6 +58,7 @@ function DiscountForm() {
   } = useForm<FormData>({
     resolver: zodResolver(discountSchema) as any,
     defaultValues: {
+      branchId: 1,
       name: '',
       discountAlias: '',
       discountRate: 0,
