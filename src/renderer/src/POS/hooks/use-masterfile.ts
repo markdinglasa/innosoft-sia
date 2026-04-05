@@ -1,5 +1,6 @@
-import { IpcChannel } from "@shared/types";
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { IpcChannel, ToastType } from '@shared/types'
+import { displayToast } from '@shared/utils'
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 /**
  * Generic hook for interacting with Masterfile Hub services.
@@ -7,24 +8,24 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tansta
  * - Centralized Query Key management
  * - Automatic cache invalidation on mutations
  * - Dynamic service routing via IPC
- * 
+ *
  * @param serviceName The unique name of the masterfile service (e.g., 'item', 'user', 'branch')
  */
 export const useMasterfile = (serviceName: string) => {
-  const queryClient = useQueryClient();
-  const baseKey = ['masterfile', serviceName];
+  const queryClient = useQueryClient()
+  const baseKey = ['masterfile', serviceName]
 
   /**
    * Fetch a list of entities with optional search and pagination.
    */
-  const useList = (options?: { 
-    page?: number; 
-    take?: number; 
-    limit?: number;
-    search?: string;
-    searchKeyword?: string; 
-    status?: string[];
-    filters?: any[];
+  const useList = (options?: {
+    page?: number
+    take?: number
+    limit?: number
+    search?: string
+    searchKeyword?: string
+    status?: string[]
+    filters?: any[]
   }) => {
     return useQuery({
       queryKey: [...baseKey, 'list', options],
@@ -33,18 +34,18 @@ export const useMasterfile = (serviceName: string) => {
         const mappedOptions = {
           ...options,
           limit: options?.limit ?? options?.take,
-          search: options?.search ?? options?.searchKeyword,
-        };
-        const response = await (window as any).electron.ipc.invoke(IpcChannel.mstList, { 
-          serviceName, 
-          options: mappedOptions 
-        });
-        if (!response.success) throw new Error(response.message);
-        return response.data;
+          search: options?.search ?? options?.searchKeyword
+        }
+        const response = await (window as any).electron.ipc.invoke(IpcChannel.mstList, {
+          serviceName,
+          options: mappedOptions
+        })
+        if (!response.success) throw new Error(response.message)
+        return response.data
       },
-      staleTime: 1000 * 60 * 5, // 5 minutes
-    });
-  };
+      staleTime: 1000 * 60 * 5 // 5 minutes
+    })
+  }
 
   /**
    * Fetch a single entity by ID.
@@ -53,13 +54,17 @@ export const useMasterfile = (serviceName: string) => {
     return useQuery({
       queryKey: [...baseKey, 'get', id, options],
       queryFn: async () => {
-        const response = await (window as any).electron.ipc.invoke(IpcChannel.mstGet, { serviceName, id, options });
-        if (!response.success) throw new Error(response.message);
-        return response.data;
+        const response = await (window as any).electron.ipc.invoke(IpcChannel.mstGet, {
+          serviceName,
+          id,
+          options
+        })
+        if (!response.success) throw new Error(response.message)
+        return response.data
       },
-      enabled: !!id,
-    });
-  };
+      enabled: !!id
+    })
+  }
 
   /**
    * Save or Update an entity (supports Parent-Child sync).
@@ -67,15 +72,23 @@ export const useMasterfile = (serviceName: string) => {
   const useSaveMutation = () => {
     return useMutation({
       mutationFn: async (payload: any) => {
-        const response = await (window as any).electron.ipc.invoke(IpcChannel.mstSave, { serviceName, payload });
-        if (!response.success) throw new Error(response.message);
-        return response;
+        const response = await (window as any).electron.ipc.invoke(IpcChannel.mstSave, {
+          serviceName,
+          payload
+        })
+        if (!response.success) throw new Error(response.message)
+        return response
       },
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: baseKey });
+        queryClient.invalidateQueries({ queryKey: baseKey })
+        const capitalizedService = serviceName.charAt(0).toUpperCase() + serviceName.slice(1)
+        displayToast(`${capitalizedService} saved.`, ToastType.success)
       },
-    });
-  };
+      onError: (error: Error) => {
+        displayToast(error.message || 'Sorry, Something went wrong.', ToastType.error)
+      }
+    })
+  }
 
   /**
    * Delete an entity by ID.
@@ -83,73 +96,81 @@ export const useMasterfile = (serviceName: string) => {
   const useDeleteMutation = () => {
     return useMutation({
       mutationFn: async (id: any) => {
-        const response = await (window as any).electron.ipc.invoke(IpcChannel.mstDelete, { serviceName, id });
-        if (!response.success) throw new Error(response.message);
-        return response;
+        const response = await (window as any).electron.ipc.invoke(IpcChannel.mstDelete, {
+          serviceName,
+          id
+        })
+        if (!response.success) throw new Error(response.message)
+        return response
       },
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: baseKey });
+        queryClient.invalidateQueries({ queryKey: baseKey })
+        const capitalizedService = serviceName.charAt(0).toUpperCase() + serviceName.slice(1)
+        displayToast(`${capitalizedService} deleted.`, ToastType.success)
       },
-    });
-  };
+      onError: (error: Error) => {
+        displayToast(error.message || 'Sorry, Something went wrong.', ToastType.error)
+      }
+    })
+  }
 
   /**
    * Fetch a minimal list of entities for lookups/dropdowns.
    * Can be used for the current service or another service by passing the service name as the first argument.
    */
   const useLookup = (serviceOrOptions?: string | any, options?: any) => {
-    const isOverride = typeof serviceOrOptions === 'string';
-    const lookupServiceName = isOverride ? serviceOrOptions : serviceName;
-    const lookupOptions = isOverride ? options : serviceOrOptions;
-    const lookupKey = isOverride 
+    const isOverride = typeof serviceOrOptions === 'string'
+    const lookupServiceName = isOverride ? serviceOrOptions : serviceName
+    const lookupOptions = isOverride ? options : serviceOrOptions
+    const lookupKey = isOverride
       ? ['masterfile', lookupServiceName, 'lookup', lookupOptions]
-      : [...baseKey, 'lookup', lookupOptions];
+      : [...baseKey, 'lookup', lookupOptions]
 
     return useQuery({
       queryKey: lookupKey,
       queryFn: async () => {
-        const response = await (window as any).electron.ipc.invoke(IpcChannel.mstList, { 
-          serviceName: lookupServiceName, 
+        const response = await (window as any).electron.ipc.invoke(IpcChannel.mstList, {
+          serviceName: lookupServiceName,
           options: { ...lookupOptions, limit: 1000 } // Larger limit for lookups
-        });
-        if (!response.success) throw new Error(response.message);
-        return response.data.items || [];
+        })
+        if (!response.success) throw new Error(response.message)
+        return response.data.items || []
       },
-      staleTime: 1000 * 60 * 10, // 10 minutes (Lookups are relatively static)
-    });
-  };
+      staleTime: 1000 * 60 * 10 // 10 minutes (Lookups are relatively static)
+    })
+  }
 
   /**
    * Fetch lookups using an infinite scroll logic (page-by-page fetching).
    * Useful for very large Masterfiles where a single 1000-limit fetch is too slow.
    */
   const useInfiniteLookup = (serviceOrOptions?: string | any, options?: any) => {
-    const isOverride = typeof serviceOrOptions === 'string';
-    const lookupServiceName = isOverride ? serviceOrOptions : serviceName;
-    const lookupOptions = isOverride ? options : serviceOrOptions;
-    
-    const lookupKey = isOverride 
+    const isOverride = typeof serviceOrOptions === 'string'
+    const lookupServiceName = isOverride ? serviceOrOptions : serviceName
+    const lookupOptions = isOverride ? options : serviceOrOptions
+
+    const lookupKey = isOverride
       ? ['masterfile', lookupServiceName, 'lookup', 'infinite', lookupOptions]
-      : [...baseKey, 'lookup', 'infinite', lookupOptions];
+      : [...baseKey, 'lookup', 'infinite', lookupOptions]
 
     return useInfiniteQuery({
       queryKey: lookupKey,
       initialPageParam: 1,
       queryFn: async ({ pageParam = 1 }) => {
-        const response = await (window as any).electron.ipc.invoke(IpcChannel.mstList, { 
-          serviceName: lookupServiceName, 
-          options: { ...lookupOptions, page: pageParam, limit: 30 } 
-        });
-        if (!response.success) throw new Error(response.message);
-        return response.data; // Returns { items: [], meta: { totalPages, currentPage, ... } }
+        const response = await (window as any).electron.ipc.invoke(IpcChannel.mstList, {
+          serviceName: lookupServiceName,
+          options: { ...lookupOptions, page: pageParam, limit: 30 }
+        })
+        if (!response.success) throw new Error(response.message)
+        return response.data // Returns { items: [], meta: { totalPages, currentPage, ... } }
       },
-      getNextPageParam: (lastPage:any) => {
-        const { currentPage, totalPages } = lastPage.meta;
-        return currentPage < totalPages ? currentPage + 1 : undefined;
+      getNextPageParam: (lastPage: any) => {
+        const { currentPage, totalPages } = lastPage.meta
+        return currentPage < totalPages ? currentPage + 1 : undefined
       },
-      staleTime: 1000 * 60 * 10,
-    });
-  };
+      staleTime: 1000 * 60 * 10
+    })
+  }
 
   return {
     useList,
@@ -158,6 +179,6 @@ export const useMasterfile = (serviceName: string) => {
     useInfiniteLookup,
     useSaveMutation,
     useDeleteMutation
-  };
-};
+  }
+}
 

@@ -45,7 +45,10 @@ export const RoleList: React.FC = () => {
   }
 
   const [deleteId, setDeleteId] = React.useState<number | null>(null)
-  const handleDelete = (id: number) => setDeleteId(id)
+  const handleDelete = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation()
+    setDeleteId(id)
+  }
   const confirmDelete = async () => {
     if (deleteId) {
       await deleteMutation.mutateAsync(deleteId)
@@ -111,7 +114,7 @@ export const RoleList: React.FC = () => {
                 </TableCell>
                 <TableCell align="right">
                   <CircleButton
-                    onClick={() => handleDelete(role.id)}
+                    onClick={(e) => handleDelete(e, role.id)}
                     icon={<DeleteIcon sx={{ fontSize: 25 }} />}
                     type={ButtonType.button}
                   />

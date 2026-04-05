@@ -38,7 +38,10 @@ export class BranchService extends BaseService<MstBranchEntity> implements IBran
   /**
    * Validates before updating an existing Branch.
    */
-  protected async validateUpdate(id: any, data: QueryDeepPartialEntity<MstBranchEntity>): Promise<void> {
+  protected async validateUpdate(
+    id: number,
+    data: QueryDeepPartialEntity<MstBranchEntity>
+  ): Promise<void> {
     const currentEntity = await this.get(id)
     if (!currentEntity) {
       throw new BadRequestException('Branch not found for update.')
@@ -56,10 +59,28 @@ export class BranchService extends BaseService<MstBranchEntity> implements IBran
   /**
    * Validates before deleting a Branch.
    */
-  protected async validateDelete(id: any): Promise<void> {
+  protected async validateDelete(id: number): Promise<void> {
     const currentEntity = await this.get(id)
     if (!currentEntity) {
       throw new BadRequestException('Branch not found for deletion.')
     }
+
+    if (currentEntity.isDefault) {
+      throw new BadRequestException('Cannot delete default branch.')
+    }
+
+    // valudate if currently in-used
+    const branch = await this.repository.findOne({
+      where: {
+        id: id
+      },
+      withDeleted: false,
+      relations: ['branchAccesses']
+    })
+
+    if (branch?.branchAccesses && branch?.branchAccesses?.length > 0) {
+      throw new BadRequestException('Cannot delete branch that is currently in-use.')
+    }
   }
 }
+

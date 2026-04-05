@@ -12,8 +12,6 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import { ToastType } from '@shared/types'
-import { displayToast } from '@shared/utils'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -21,14 +19,14 @@ import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useBranchHubStore } from '../store/use-branch-hub-store'
 
 const branchSchema = z.object({
-  name: z.string().min(2, 'Branch Name must be at least 2 characters'),
+  name: z.string().min(2, 'Branch must be at least 2 characters'),
   address: z.string().min(5, 'Address must be at least 5 characters'),
-  description: z.string().optional(),
+  description: z.string().nullable().optional(),
   isDefault: z.boolean().default(false)
 })
 
 export const BranchForm: React.FC = () => {
-  const { selectedBranchId, setSelectedBranchId, setIsFormOpen } = useBranchHubStore()
+  const { selectedBranchId, setIsFormOpen } = useBranchHubStore()
   const { useGet, useSaveMutation } = useMasterfile('branch')
 
   const { data: branch, isLoading } = useGet(selectedBranchId)
@@ -54,7 +52,10 @@ export const BranchForm: React.FC = () => {
     function formResetter() {
       if (branch) {
         reset({
-          ...branch
+          name: branch.name || '',
+          address: branch.address || '',
+          description: branch.description || '',
+          isDefault: !!branch.isDefault
         })
       } else {
         reset({
@@ -69,19 +70,14 @@ export const BranchForm: React.FC = () => {
   )
 
   const onSubmit = async (data: z.infer<typeof branchSchema>) => {
-    try {
-      await saveMutation.mutateAsync({
-        ...data,
-        id: selectedBranchId
-      })
-      handleClose()
-    } catch (error: unknown) {
-      displayToast((error as Error)?.message || 'Sorry, Something went wrong.', ToastType.error)
-    }
+    await saveMutation.mutateAsync({
+      ...data,
+      id: selectedBranchId
+    })
+    handleClose()
   }
 
   const handleClose = () => {
-    setSelectedBranchId(null)
     setIsFormOpen(false)
   }
 
@@ -126,7 +122,7 @@ export const BranchForm: React.FC = () => {
           <Grid item xs={12}>
             <TextField
               {...register('name')}
-              label="Branch Name"
+              label="Branch"
               fullWidth
               required
               error={!!errors.name}

@@ -36,10 +36,10 @@ import { useItemHubStore } from '../store/use-item-hub-store'
 
 const itemSchema = z.object({
   itemCode: z.string().min(1, 'Item Code is required'),
-  barCode: z.string().optional(),
+  barCode: z.string().nullable().optional(),
   name: z.string().min(1, 'Item Name is required'),
-  description: z.string().optional(),
-  category: z.string().optional(),
+  description: z.string().nullable().optional(),
+  category: z.string().nullable().optional(),
   unitId: z.string().min(1, 'Base Unit is required'),
   price: z.coerce.number().min(0, 'Default Price must be at least 0'),
   cost: z.coerce.number().min(0, 'Standard Cost must be at least 0'),
@@ -105,7 +105,16 @@ export const ItemForm: React.FC = () => {
     function formResetter() {
       if (item) {
         reset({
-          ...item,
+          itemCode: item.itemCode || '',
+          barCode: item.barCode || '',
+          name: item.name || '',
+          description: item.description || '',
+          category: item.category || '',
+          unitId: item.unitId || '',
+          price: item.price || 0,
+          cost: item.cost || 0,
+          isInventory: !!item.isInventory,
+          isPackage: !!item.isPackage,
           itemPrices: item.itemPrices || []
         })
       } else {
@@ -128,15 +137,11 @@ export const ItemForm: React.FC = () => {
   )
 
   const onSubmit = async (data: FormData) => {
-    try {
-      await saveMutation.mutateAsync({
-        ...data,
-        id: selectedItemId
-      })
-      handleClose()
-    } catch (err) {
-      console.error('Save failed:', err)
-    }
+    await saveMutation.mutateAsync({
+      ...data,
+      id: selectedItemId
+    })
+    handleClose()
   }
 
   const handleClose = () => {

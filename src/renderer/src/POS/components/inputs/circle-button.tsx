@@ -18,7 +18,7 @@ export enum TooltipPlacement {
   bottomEnd = 'bottom-end'
 }
 export interface CircleButtonProps {
-  onClick: (e?: unknown) => void
+  onClick: (e: React.MouseEvent) => void
   isNotification?: boolean
   icon: ReactNode
   type: ButtonType

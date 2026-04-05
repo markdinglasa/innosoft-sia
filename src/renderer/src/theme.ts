@@ -68,6 +68,13 @@ const theme = createTheme({
         }
       }
     },
+    MuiDialogContentText: {
+      styleOverrides: {
+        root: {
+          fontSize: '0.9rem'
+        }
+      }
+    },
     MuiTextField: {
       defaultProps: {
         variant: 'outlined',

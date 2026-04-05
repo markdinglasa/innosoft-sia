@@ -25,12 +25,12 @@ import { useSupplierHubStore } from '../store/use-supplier-hub-store'
 const supplierSchema = z.object({
   name: z.string().min(1, 'Supplier Name is required'),
   address: z.string().min(1, 'Address is required'),
-  telephoneNumber: z.string().optional(),
-  cellphoneNumber: z.string().optional(),
-  faxNumber: z.string().optional(),
-  tin: z.string().optional(),
-  termId: z.string().optional(),
-  accountId: z.string().optional(),
+  telephoneNumber: z.string().nullable().optional(),
+  cellphoneNumber: z.string().nullable().optional(),
+  faxNumber: z.string().nullable().optional(),
+  tin: z.string().nullable().optional(),
+  termId: z.any().nullable().optional(),
+  accountId: z.any().nullable().optional(),
   isDefault: z.boolean().default(false)
 })
 
@@ -71,7 +71,15 @@ export const SupplierForm: React.FC = () => {
     function formResetter() {
       if (supplier) {
         reset({
-          ...supplier
+          name: supplier.name || '',
+          address: supplier.address || '',
+          telephoneNumber: supplier.telephoneNumber || '',
+          cellphoneNumber: supplier.cellphoneNumber || '',
+          faxNumber: supplier.faxNumber || '',
+          tin: supplier.tin || '',
+          termId: supplier.termId || '',
+          accountId: supplier.accountId || '',
+          isDefault: !!supplier.isDefault
         })
       } else {
         reset({
@@ -91,15 +99,11 @@ export const SupplierForm: React.FC = () => {
   )
 
   const onSubmit = async (data: FormData) => {
-    try {
-      await saveMutation.mutateAsync({
-        ...data,
-        id: selectedSupplierId
-      })
-      handleClose()
-    } catch (err) {
-      console.error('Save failed:', err)
-    }
+    await saveMutation.mutateAsync({
+      ...data,
+      id: selectedSupplierId
+    })
+    handleClose()
   }
 
   const handleClose = () => {

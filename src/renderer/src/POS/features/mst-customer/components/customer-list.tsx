@@ -47,7 +47,10 @@ export const CustomerList: React.FC = () => {
   }
 
   const [deleteId, setDeleteId] = React.useState<number | null>(null)
-  const handleDelete = (id: number) => setDeleteId(id)
+  const handleDelete = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation()
+    setDeleteId(id)
+  }
   const confirmDelete = async () => {
     if (deleteId) {
       await deleteMutation.mutateAsync(deleteId)
@@ -119,7 +122,7 @@ export const CustomerList: React.FC = () => {
                 <TableCell align="right">
                   <CircleButton
                     icon={<DeleteIcon sx={{ fontSize: 25 }} />}
-                    onClick={() => handleDelete(customer.id)}
+                    onClick={(e) => handleDelete(e, customer.id)}
                     type={ButtonType.button}
                   />
                 </TableCell>

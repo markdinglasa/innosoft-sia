@@ -61,6 +61,9 @@ const BranchHub: React.FC = () => {
         anchor="right"
         open={isFormOpen}
         onClose={() => setIsFormOpen(false)}
+        SlideProps={{
+          onExited: () => setSelectedBranchId(null)
+        }}
         PaperProps={{
           sx: { width: { xs: '100%', sm: 400, md: 500 }, borderRadius: '12px 0 0 12px' }
         }}

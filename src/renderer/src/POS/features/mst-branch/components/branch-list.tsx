@@ -50,7 +50,8 @@ export const BranchList: React.FC = () => {
     setIsFormOpen(true)
   }
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation()
     setDeleteId(id)
   }
 
@@ -111,7 +112,7 @@ export const BranchList: React.FC = () => {
                 <TableCell align="right">
                   <CircleButton
                     icon={<DeleteIcon sx={{ fontSize: 25 }} />}
-                    onClick={() => handleDelete(branch.id)}
+                    onClick={(e) => handleDelete(e, branch.id)}
                     type={ButtonType.button}
                   />
                 </TableCell>

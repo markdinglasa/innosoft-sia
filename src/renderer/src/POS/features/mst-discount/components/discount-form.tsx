@@ -20,7 +20,7 @@ import { useDiscountHubStore } from '../store/use-discount-hub-store'
 
 const discountSchema = z.object({
   name: z.string().min(1, 'Discount Name is required'),
-  discountAlias: z.string().optional(),
+  discountAlias: z.string().nullable().optional(),
   discountRate: z.coerce.number().min(0, 'Discount Rate must be at least 0'),
   isVATExempt: z.boolean().default(false)
 })

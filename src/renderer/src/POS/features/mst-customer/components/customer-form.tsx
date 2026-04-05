@@ -26,14 +26,14 @@ import { useCustomerHubStore } from '../store/use-customer-hub-store'
 
 const customerSchema = z.object({
   name: z.string().min(2, 'Customer Name must be at least 2 characters'),
-  customerCode: z.string().optional(),
+  customerCode: z.string().nullable().optional(),
   address: z.string().min(5, 'Address must be at least 5 characters'),
-  contactPerson: z.string().optional(),
-  contactNumber: z.string().optional(),
-  tin: z.string().optional(),
+  contactPerson: z.string().nullable().optional(),
+  contactNumber: z.string().nullable().optional(),
+  tin: z.string().nullable().optional(),
   creditLimit: z.coerce.number().min(0, 'Credit Limit must be at least 0'),
-  termId: z.string().optional(),
-  accountId: z.string().optional(),
+  termId: z.any().nullable().optional(),
+  accountId: z.any().nullable().optional(),
   withReward: z.boolean().default(false),
   isDefault: z.boolean().default(false)
 })
@@ -75,7 +75,17 @@ export const CustomerForm: React.FC = () => {
     function formResetter() {
       if (customer) {
         reset({
-          ...customer
+          name: customer.name || '',
+          customerCode: customer.customerCode || '',
+          address: customer.address || '',
+          contactPerson: customer.contactPerson || '',
+          contactNumber: customer.contactNumber || '',
+          tin: customer.tin || '',
+          creditLimit: customer.creditLimit || 0,
+          termId: customer.termId || '',
+          accountId: customer.accountId || '',
+          withReward: !!customer.withReward,
+          isDefault: !!customer.isDefault
         })
       } else {
         reset({
@@ -97,15 +107,11 @@ export const CustomerForm: React.FC = () => {
   )
 
   const onSubmit = async (data: z.infer<typeof customerSchema>) => {
-    try {
-      await saveMutation.mutateAsync({
-        ...data,
-        id: selectedCustomerId
-      })
-      handleClose()
-    } catch (err: unknown) {
-      console.error('Save failed:', err)
-    }
+    await saveMutation.mutateAsync({
+      ...data,
+      id: selectedCustomerId
+    })
+    handleClose()
   }
 
   const handleClose = () => {
