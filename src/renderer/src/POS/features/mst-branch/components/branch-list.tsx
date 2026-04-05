@@ -19,14 +19,21 @@ import {
   TableRow,
   Typography
 } from '@mui/material'
-import { ButtonType } from '@shared/types'
+import { SystemPermissions } from '@shared/constants/permissions'
+import { ButtonType, ToastType } from '@shared/types'
+import { displayToast } from '@shared/utils'
 import React from 'react'
 import { MstBranchEntity } from 'src/main/entities'
 import CircleButton from '../../../components/inputs/circle-button'
-import { useMasterfile } from '../../../hooks/use-masterfile'
+import { useAccessControl, useMasterfile } from '../../../hooks'
 import { useBranchHubStore } from '../store/use-branch-hub-store'
 
 export const BranchList: React.FC = () => {
+  // permissions
+  const { hasPermission } = useAccessControl()
+  const canDelete = hasPermission(SystemPermissions.BRANCH_REMOVE)
+  const canEdit = hasPermission(SystemPermissions.BRANCH_EDIT)
+  // hooks
   const { searchKeyword, setSelectedBranchId, setIsFormOpen } = useBranchHubStore()
   const { useList, useDeleteMutation } = useMasterfile('branch')
 
@@ -111,8 +118,18 @@ export const BranchList: React.FC = () => {
                 </TableCell>
                 <TableCell align="right">
                   <CircleButton
+                    disabled={!canDelete}
                     icon={<DeleteIcon sx={{ fontSize: 25 }} />}
-                    onClick={(e) => handleDelete(e, branch.id)}
+                    onClick={(e) => {
+                      if (!canEdit) {
+                        displayToast(
+                          'You do not have permission to delete this branch.',
+                          ToastType.info
+                        )
+                        return
+                      }
+                      handleDelete(e, branch.id)
+                    }}
                     type={ButtonType.button}
                   />
                 </TableCell>
@@ -150,9 +167,10 @@ export const BranchList: React.FC = () => {
           <Button onClick={() => setDeleteId(null)}>Cancel</Button>
           <Button
             onClick={confirmDelete}
-            color="error"
+            color="primary"
             variant="contained"
             disabled={deleteMutation.isPending}
+            startIcon={<DeleteIcon sx={{ fontSize: 25 }} />}
           >
             {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
           </Button>

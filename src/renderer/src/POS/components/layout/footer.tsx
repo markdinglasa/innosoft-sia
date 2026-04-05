@@ -1,9 +1,7 @@
-import SyncIcon from '@mui/icons-material/Sync'
-import WifiIcon from '@mui/icons-material/Wifi'
 import { Box, Stack, Typography, styled } from '@mui/material'
-import { APP_VERSION } from "@shared/constants"
-import { colors } from "@shared/styles"
+import { APP_VERSION } from '@shared/constants'
 import { FC } from 'react'
+import { SyncStatusBadge } from '../feedback'
 
 const FooterWrapper = styled(Box)(() => ({
   height: '3rem',
@@ -13,8 +11,7 @@ const FooterWrapper = styled(Box)(() => ({
   padding: '0 16px',
   backgroundColor: '#14263E', // theme.palette.primary.main
   color: 'white',
-  borderTop: '1px solid rgba(255,255,255,0.1)',
-
+  borderTop: '1px solid rgba(255,255,255,0.1)'
 }))
 
 export const Footer: FC = () => {
@@ -33,15 +30,13 @@ export const Footer: FC = () => {
       </Stack>
 
       <Stack direction="row" spacing={2} alignItems="center">
-        <Typography variant="caption" sx={{ color: colors.secondary, fontWeight: 'bold' }}>
+        {/* <Typography variant="caption" sx={{ color: colors.secondary, fontWeight: 'bold' }}>
           <SyncIcon sx={{ fontSize: 20, verticalAlign: 'middle', mr: 0.5 }} />
           Synced
-        </Typography>
-        <Typography variant="caption" sx={{ color: colors.secondary, fontWeight: 'bold' }}>
-          <WifiIcon sx={{ fontSize: 20, verticalAlign: 'middle', mr: 0.5 }} />
-          Online
-        </Typography>
+        </Typography> */}
+        <SyncStatusBadge />
       </Stack>
     </FooterWrapper>
   )
 }
+
