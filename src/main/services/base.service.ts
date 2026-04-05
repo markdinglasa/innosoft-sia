@@ -4,7 +4,7 @@ import {
   EntityTarget,
   FindManyOptions,
   FindOneOptions,
-  ILike,
+  Like,
   LessThanOrEqual,
   MoreThanOrEqual,
   ObjectLiteral,
@@ -130,31 +130,13 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
     // Apply keyword search if search string and fields are provided
     if (search && this.searchFields.length > 0) {
       findOptions.where = this.searchFields.map((field) => ({
-        [field]: ILike(`%${search}%`)
+        [field]: Like(`%${search}%`)
       })) as any
     }
 
-//     {
-//   "filters": [
-//     { "createdAt": { "$between": ["2023-01-01", "2023-12-31"] } }
-//   ]
-// }
-// {
-//   "filters": [
-//     { "price": { "$gte": 100 } }
-//   ]
-// }
-// {
-//   "filters": [
-//     { "expiryDate": { "$lte": "2024-12-31" } }
-//   ]
-// }
-
-
-    // filters
+    // Process and Merge Filters
     if (options?.filters && options.filters.length > 0) {
       const mergedFilters = options.filters.reduce((acc, curr) => {
-        // Process each filter to handle special operators (like date ranges)
         const processedFilter = Object.keys(curr).reduce((pAcc, key) => {
           const value = curr[key]
           if (value && typeof value === 'object' && !Array.isArray(value)) {
@@ -176,9 +158,17 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
         return { ...acc, ...processedFilter }
       }, {})
 
-      findOptions.where = {
-        ...(findOptions.where as any),
-        ...mergedFilters
+      // Robustly merge with existing search-based where (which might be an OR-array)
+      if (Array.isArray(findOptions.where)) {
+        findOptions.where = findOptions.where.map((orCond) => ({
+          ...orCond,
+          ...mergedFilters
+        }))
+      } else {
+        findOptions.where = {
+          ...(findOptions.where as any),
+          ...mergedFilters
+        }
       }
     }
 

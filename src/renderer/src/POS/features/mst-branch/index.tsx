@@ -16,7 +16,7 @@ const BranchHub: React.FC = () => {
   }
 
   return (
-    <PageLayout title="Branch Management">
+    <PageLayout title="Branch">
       <Box sx={{ mb: 3 }}>
         <Paper
           variant="outlined"
