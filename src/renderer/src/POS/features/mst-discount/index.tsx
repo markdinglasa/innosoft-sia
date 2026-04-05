@@ -1,18 +1,28 @@
 import { Add as AddIcon, Search as SearchIcon } from '@mui/icons-material'
 import { Box, Button, Drawer, InputAdornment, Paper, TextField } from '@mui/material'
-import React from 'react'
+import { SystemPermissions } from '@shared/constants/permissions'
+import { lazy, memo, Suspense } from 'react'
 import PageLayout from '../../components/layout/page-layout'
-import { DiscountForm } from './components/discount-form'
+import { useAccessControl } from '../../hooks'
+import { DiscountFormSkeleton } from './components/discount-form-skeleton'
 import { DiscountList } from './components/discount-list'
 import { useDiscountHubStore } from './store/use-discount-hub-store'
 
-const DiscountHub: React.FC = () => {
+const DiscountForm = lazy(() => import('./components/discount-form'))
+
+function DiscountHub() {
   const { searchKeyword, setSearchKeyword, isFormOpen, setIsFormOpen, setSelectedId } =
     useDiscountHubStore()
+
   const handleCreate = () => {
     setSelectedId(null)
     setIsFormOpen(true)
   }
+
+  // permissions
+  const { hasPermission } = useAccessControl()
+  const canAdd = hasPermission(SystemPermissions.DISCOUNT_ADD)
+
   return (
     <PageLayout title="Discount Management">
       <Box sx={{ mb: 3 }}>
@@ -36,6 +46,7 @@ const DiscountHub: React.FC = () => {
           />
           <Button
             variant="contained"
+            disabled={!canAdd}
             startIcon={<AddIcon sx={{ fontSize: 25 }} />}
             onClick={handleCreate}
             sx={{ px: 3, whiteSpace: 'nowrap' }}
@@ -55,10 +66,12 @@ const DiscountHub: React.FC = () => {
           sx: { width: { xs: '100%', sm: 450, md: 550 }, borderRadius: '12px 0 0 12px' }
         }}
       >
-        <DiscountForm />
+        <Suspense fallback={<DiscountFormSkeleton />}>
+          <DiscountForm />
+        </Suspense>
       </Drawer>
     </PageLayout>
   )
 }
-export default DiscountHub
+export default memo(DiscountHub)
 
