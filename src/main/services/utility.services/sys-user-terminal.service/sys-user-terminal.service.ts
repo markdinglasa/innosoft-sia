@@ -74,4 +74,27 @@ export class SysUserTerminalService extends BaseService<SysUserTerminalEntity> i
       throw new BadRequestException('User Terminal assignment not found for deletion.')
     }
   }
+
+  /**
+   * Activates a terminal for a specific user.
+   * This saves the preference so the user won't be prompted to assign a terminal again.
+   */
+  async activateForUser(userId: number, terminalId: number): Promise<void> {
+    // 1. Dectivate all existing terminal assignments for this user
+    await this.repository.update({ userId }, { isActive: false })
+
+    // 2. Check if an assignment already exists for this specific combination
+    const existingLink = await this.repository.findOneBy({ userId, terminalId })
+
+    if (existingLink) {
+      existingLink.isActive = true
+      await this.repository.save(existingLink)
+    } else {
+      const newAssignment = new SysUserTerminalEntity()
+      newAssignment.userId = userId
+      newAssignment.terminalId = terminalId
+      newAssignment.isActive = true
+      await this.repository.save(newAssignment)
+    }
+  }
 }

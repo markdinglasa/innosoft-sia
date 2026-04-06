@@ -22,7 +22,8 @@ export interface LoginResponse {
   loginDate: string
   error?: string
   branches: MstBranchEntity[]
-  terminal?: MstTerminalEntity
+  terminal?: MstTerminalEntity | null
+  activeBranch?: MstBranchEntity | null
 }
 
 export interface AuthState {

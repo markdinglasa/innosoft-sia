@@ -55,7 +55,8 @@ export const TerminalActivationModal: React.FC<TerminalActivationModalProps> = (
         onSuccess: () => {
           const activatedTerminal = options.find((t: any) => t.id === selectedTerminalId)
           if (activatedTerminal) {
-            dispatch(setActiveTerminal(activatedTerminal))
+            const serializedTerminal = JSON.parse(JSON.stringify(activatedTerminal))
+            dispatch(setActiveTerminal(serializedTerminal))
           }
           if (close) {
             close()

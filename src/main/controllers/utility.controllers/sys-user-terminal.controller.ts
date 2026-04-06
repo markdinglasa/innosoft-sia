@@ -4,6 +4,8 @@ import { SysUserTerminalService } from '../../services/utility.services'
 import { TerminalService } from '../../services/masterfile.services'
 import Store from '../../store/Store'
 import { ipcMain } from 'electron'
+import { verifyToken } from '../../common/utils/jwt.util'
+import { SYSTEM_ACCESS_TOKEN } from '@shared/constants'
 
 const sysUserTerminalService = new SysUserTerminalService()
 const terminalService = new TerminalService()
@@ -25,7 +27,15 @@ ipcMain.handle(UtilityIpcChannel.USER_TERMINAL_SET_ACTIVE, (_event, terminalId: 
 
 registerProtectedIpcHandler(UtilityIpcChannel.USER_TERMINAL_ACTIVATE, async (_event, { terminalId }) => {
     await terminalService.activateTerminal(terminalId)
-    Store.set('activeTerminalId' as any, terminalId)
+    
+    // Extract userId from current session token
+    const token = Store.get(SYSTEM_ACCESS_TOKEN as any)
+    if (!token) throw new Error('Unauthorized')
+    
+    const { userId } = verifyToken(token as string)
+    
+    // Save as user's preference
+    await sysUserTerminalService.activateForUser(userId, terminalId)
+    
     return { success: true }
 })
-

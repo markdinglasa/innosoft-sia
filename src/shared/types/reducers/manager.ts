@@ -16,5 +16,7 @@ export interface POSManager {
   activeUser: MstUserEntity | null
   activePermissions: string[]
   activeBranches: any[]
+  activeTerminal?: any | null
+  activeBranch?: any | null
   loginDate: string | null
 }

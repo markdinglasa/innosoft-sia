@@ -23,6 +23,7 @@ export const useAuth = () => {
         // which will throw warning/errors. We serialize them safely into plain strings safely.
         const serializedUser = JSON.parse(JSON.stringify(data.user))
         const serializedTerminal = data.terminal ? JSON.parse(JSON.stringify(data.terminal)) : null
+        const serializedActiveBranch = data.activeBranch ? JSON.parse(JSON.stringify(data.activeBranch)) : null
         const serializedBranches = data.branches ? JSON.parse(JSON.stringify(data.branches)) : []
 
         dispatch(
@@ -33,7 +34,8 @@ export const useAuth = () => {
             activePermissions: data.permissions || [],
             loginDate: data.loginDate,
             activeBranches: serializedBranches,
-            activeTerminal: serializedTerminal
+            activeTerminal: serializedTerminal,
+            activeBranch: serializedActiveBranch
           })
         )
         return data
@@ -55,7 +57,8 @@ export const useAuth = () => {
           activePermissions: [],
           loginDate: null,
           activeBranches: [],
-          activeTerminal: null
+          activeTerminal: null,
+          activeBranch: null
         })
       )
     } catch (error) {

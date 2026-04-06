@@ -1,6 +1,8 @@
 import { Box, Stack, Typography, styled } from '@mui/material'
 import { APP_VERSION } from '@shared/constants'
+import { RootState } from '@shared/types'
 import { FC } from 'react'
+import { useSelector } from 'react-redux'
 import { SyncStatusBadge } from '../feedback'
 
 const FooterWrapper = styled(Box)(() => ({
@@ -15,28 +17,28 @@ const FooterWrapper = styled(Box)(() => ({
 }))
 
 export const Footer: FC = () => {
+  const activeTerminal = useSelector((state: RootState) => state.POS.manager.activeTerminal)
+  const activeBranch = useSelector((state: RootState) => state.POS.manager.activeBranch)
   return (
-    <FooterWrapper>
-      <Stack direction="row" spacing={2} alignItems="center">
-        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-          NUTSHELL {APP_VERSION}
-        </Typography>
-        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-          Terminal: POS-101
-        </Typography>
-        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-          Branch: Main
-        </Typography>
-      </Stack>
+    <>
+      <FooterWrapper>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+            NUTSHELL {APP_VERSION}
+          </Typography>
+          <Typography sx={{ color: 'rgba(255,255,255,0.7)' }} variant="caption">
+            Terminal: {activeTerminal?.name || 'NA'}
+          </Typography>
+          <Typography sx={{ color: 'rgba(255,255,255,0.7)' }} variant="caption">
+            Branch: {activeBranch?.name || 'NA'}
+          </Typography>
+        </Stack>
 
-      <Stack direction="row" spacing={2} alignItems="center">
-        {/* <Typography variant="caption" sx={{ color: colors.secondary, fontWeight: 'bold' }}>
-          <SyncIcon sx={{ fontSize: 20, verticalAlign: 'middle', mr: 0.5 }} />
-          Synced
-        </Typography> */}
-        <SyncStatusBadge />
-      </Stack>
-    </FooterWrapper>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <SyncStatusBadge />
+        </Stack>
+      </FooterWrapper>
+    </>
   )
 }
 

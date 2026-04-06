@@ -28,6 +28,7 @@ export interface LoginResponse {
   permissions: any[]
   branches: MstBranchEntity[]
   loginDate: string
-  terminal?: MstTerminalEntity
+  terminal?: MstTerminalEntity | null
+  activeBranch?: MstBranchEntity | null
 }
 

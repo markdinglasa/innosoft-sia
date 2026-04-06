@@ -86,7 +86,7 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
       where: {
         username
       },
-      relations: ['userTerminals', 'userTerminals.terminal']
+      relations: ['userTerminals', 'userTerminals.terminal', 'userTerminals.terminal.branch']
     }
     const user = await this.repository.findOne(options)
 
@@ -167,6 +167,8 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
       throw new UnauthorizedException('Access Denied: User has no assigned branches.')
     }
 
+    const activeTerminal = user.userTerminals?.find((ut) => ut.isActive)?.terminal || null
+
     // Sync POS store for next boot
     Store.set(POS_MANAGER, {
       initialize: true,
@@ -174,6 +176,8 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
       activePage: 'dashboard',
       activePermissions: permissions,
       activeBranches: branches,
+      activeTerminal: activeTerminal,
+      activeBranch: activeTerminal?.branch || null,
       loginDate
     })
 
@@ -194,7 +198,8 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
       permissions: permissions as any,
       branches: branches as any,
       loginDate,
-      terminal: user.userTerminals?.find((ut) => ut.isActive)?.terminal
+      terminal: activeTerminal,
+      activeBranch: activeTerminal?.branch || null
     }
   }
 
@@ -458,7 +463,10 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
    * Fetches the current user and its permissions.
    */
   async currentUser(userId: number): Promise<MstUserEntity | null> {
-    const user = await this.get(userId)
+    const user = await this.repository.findOne({
+      where: { id: userId as any },
+      relations: ['userTerminals', 'userTerminals.terminal', 'userTerminals.terminal.branch']
+    })
     if (!user) throw new Error('User not found')
 
     user.permissions = (await this.getPermissions(userId)) || []

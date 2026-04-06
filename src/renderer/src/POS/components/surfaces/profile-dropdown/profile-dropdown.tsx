@@ -8,8 +8,8 @@ import { AppDispatch, ToastType } from '@shared/types'
 import { displayToast } from '@shared/utils'
 import { memo, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useAuth } from '../../../features/authentication/hooks/use-auth'
 import { useRoute } from '../../../hooks/use-route'
-import { setActiveUser } from '../../../store/manager'
 import { POSPages } from '../../../types/pages'
 import * as S from './Styles'
 
@@ -34,13 +34,14 @@ function ProfileOption() {
     }
   }, [activeDropdown])
 
+  const { logout } = useAuth()
+
   const handleLogout = async () => {
     try {
-      dispatch(setActiveUser(null))
+      await logout()
+      navigate(POSPages.LOGIN)
     } catch (error: unknown) {
       displayToast((error as Error).message || 'Sorry, Something went wrong.', ToastType.error)
-    } finally {
-      navigate(POSPages.LOGIN)
     }
   }
 

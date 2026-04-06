@@ -15,6 +15,7 @@ export interface POSManagerState {
   activeUser: MstUserEntity | null
   activePermissions: string[]
   activeBranches: MstBranchEntity[] | null
+  activeBranch: MstBranchEntity | null
   loginDate: string | null
   activeTerminal: MstTerminalEntity | null
 }
@@ -25,6 +26,7 @@ export const initialState: POSManagerState = {
   activeUser: null,
   activePermissions: [],
   activeBranches: [],
+  activeBranch: null,
   activeTerminal: null,
   loginDate: null
 }
@@ -74,6 +76,19 @@ const manager = createSlice({
       { payload: terminal }: PayloadAction<MstTerminalEntity | null>
     ) => {
       state.activeTerminal = terminal
+      if (terminal?.branch) {
+        state.activeBranch = terminal.branch
+      }
+      window.electron.ipc.send(IpcChannel.setStoreValue, {
+        key: POS_MANAGER,
+        state: current(state)
+      })
+    },
+    setActiveBranch: (
+      state: POSManagerState,
+      { payload: branch }: PayloadAction<MstBranchEntity | null>
+    ) => {
+      state.activeBranch = branch
       window.electron.ipc.send(IpcChannel.setStoreValue, {
         key: POS_MANAGER,
         state: current(state)
@@ -88,6 +103,7 @@ export const {
   setActivePage,
   setActiveUser,
   setActiveBranches,
+  setActiveBranch,
   setActiveTerminal
 } = manager.actions
 
