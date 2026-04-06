@@ -2,8 +2,8 @@ import { CssBaseline, ThemeProvider } from '@mui/material'
 import { Loader } from '@shared/components'
 import store from '@shared/store'
 import { GlobalStyle, ToastifyStyle } from '@shared/styles'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Suspense } from 'react'
+import { QueryClient, QueryClientProvider, QueryCache, MutationCache } from '@tanstack/react-query'
+import { Suspense, useMemo } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { NotificationProvider } from './POS/components/providers/notification-provider'
@@ -11,9 +11,53 @@ import { ScannerProvider } from './POS/providers/ScannerProvider'
 import './tailwind.css'
 import theme from './theme'
 import Wrapper from './Wrapper'
+import { setActiveUser } from './POS/store/manager'
+import { displayToast } from '@shared/utils'
+import { ToastType, IpcChannel } from '@shared/types'
 
 const Root = () => {
-  const queryClient = new QueryClient()
+  /**
+   * Centralized Authentication Error Handler.
+   * Forces logout and redirection to login when session expires.
+   */
+  const handleAuthError = (error: any) => {
+    const errorMsg = error.message || ''
+    const isUnauthorized = 
+      errorMsg.includes('expired') || 
+      errorMsg.toLowerCase().includes('unauthorized') || 
+      errorMsg.includes('token') ||
+      error.isUnauthorized === true // Custom flag from our auth-middleware
+
+    if (isUnauthorized) {
+      // 1. Force state reset to trigger redirection to login
+      store.dispatch(setActiveUser(null))
+
+      // 2. Proactively clear tokens and session data in the main process
+      window.electron.ipc.invoke(IpcChannel.logout)
+
+      // 3. Inform the user (avoiding multiple rapid toasts)
+      displayToast('Session expired. Please log in again.', ToastType.error)
+    }
+  }
+
+  const queryClient = useMemo(() => new QueryClient({
+    queryCache: new QueryCache({
+      onError: handleAuthError
+    }),
+    mutationCache: new MutationCache({
+      onError: handleAuthError
+    }),
+    defaultOptions: {
+      queries: {
+        retry: (failureCount, error: any) => {
+          // Do not retry on unauthorized errors
+          const errorMsg = error.message || ''
+          if (errorMsg.includes('expired') || errorMsg.toLowerCase().includes('unauthorized')) return false
+          return failureCount < 3
+        }
+      }
+    }
+  }), [])
 
   return (
     <Provider store={store}>

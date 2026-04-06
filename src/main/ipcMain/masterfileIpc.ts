@@ -33,6 +33,7 @@ import {
 } from '../services/transaction.services'
 import { ParentChildService } from '../services/parent-child.service'
 import { SysAuditTrailService } from '../services/utility.services'
+import { withAuth } from './auth-middleware'
 
 /**
  * Registry of all available masterfile services to be wired to IPC.
@@ -76,7 +77,7 @@ const services: Record<string, any> = {
  */
 export function registerMasterfileHandlers() {
   // 1. Generic List Handler
-  ipcMain.handle(IpcChannel.mstList, async (_event, { serviceName, options }) => {
+  ipcMain.handle(IpcChannel.mstList, withAuth(async (_event, { serviceName, options }) => {
     const service = services[serviceName]
     if (!service) return { success: false, message: `Service '${serviceName}' not found.` }
     
@@ -86,10 +87,10 @@ export function registerMasterfileHandlers() {
     } catch (error: any) {
       return { success: false, message: error.message }
     }
-  })
+  }))
 
   // 2. Generic Get Handler
-  ipcMain.handle(IpcChannel.mstGet, async (_event, { serviceName, id, options }) => {
+  ipcMain.handle(IpcChannel.mstGet, withAuth(async (_event, { serviceName, id, options }) => {
     const service = services[serviceName]
     if (!service) return { success: false, message: `Service '${serviceName}' not found.` }
     
@@ -99,10 +100,10 @@ export function registerMasterfileHandlers() {
     } catch (error: any) {
       return { success: false, message: error.message }
     }
-  })
+  }))
 
   // 3. Generic Save Handler (Supports standard CRUD + Parent-Child)
-  ipcMain.handle(IpcChannel.mstSave, async (_event, { serviceName, payload, userId }) => {
+  ipcMain.handle(IpcChannel.mstSave, withAuth(async (_event, { serviceName, payload, userId }) => {
     const service = services[serviceName] as BaseService<any>
     if (!service) return { success: false, message: `Service '${serviceName}' not found.` }
     
@@ -122,10 +123,10 @@ export function registerMasterfileHandlers() {
     } catch (error: any) {
       return { success: false, message: error.message || 'Save failed' }
     }
-  })
+  }))
 
   // 4. Generic Delete Handler
-  ipcMain.handle(IpcChannel.mstDelete, async (_event, { serviceName, id, userId }) => {
+  ipcMain.handle(IpcChannel.mstDelete, withAuth(async (_event, { serviceName, id, userId }) => {
     const service = services[serviceName]
     if (!service) return { success: false, message: `Service '${serviceName}' not found.` }
     
@@ -134,5 +135,5 @@ export function registerMasterfileHandlers() {
     } catch (error: any) {
       return { success: false, message: error.message }
     }
-  })
+  }))
 }
