@@ -103,7 +103,7 @@ export const DiscountList: React.FC = () => {
                     </Typography>
                   </TableCell>
                   <TableCell>{item.discountAlias || '—'}</TableCell>
-                  <TableCell align="right">{Number(item.discountRate).toFixed(2)}</TableCell>
+                  <TableCell align="right">{parseFloat(item.discountRate)}%</TableCell>
                   <TableCell align="right">
                     <Checkbox checked={!!item.isVATExempt} readOnly size="small" />
                   </TableCell>
