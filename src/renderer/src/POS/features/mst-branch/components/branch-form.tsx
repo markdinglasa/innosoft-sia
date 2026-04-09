@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Close as CloseIcon, Save as SaveIcon } from '@mui/icons-material'
+import { Close as CloseIcon, Save as SaveIcon, Store as StoreIcon } from '@mui/icons-material'
 import {
   Alert,
   Box,
@@ -102,7 +102,10 @@ function BranchForm() {
           color: 'white'
         }}
       >
-        <Typography variant="h6">{selectedBranchId ? 'Edit Branch' : 'New Branch'}</Typography>
+        <Typography variant="h6" className="flex flex-row gap-2">
+          <StoreIcon sx={{ fontSize: 25 }} />
+          {selectedBranchId ? 'Edit Branch' : 'New Branch'}
+        </Typography>
         <IconButton size="small" onClick={handleClose} sx={{ color: 'white' }}>
           <CloseIcon sx={{ fontSize: 25 }} />
         </IconButton>

@@ -1,15 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Close as CloseIcon, TableChart as GroupIcon, Save as SaveIcon } from '@mui/icons-material'
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Divider,
-  IconButton,
-  TextField,
-  Typography
-} from '@mui/material'
+import { Alert, Box, Button, Grid, IconButton, TextField, Typography } from '@mui/material'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -23,7 +14,7 @@ const tableGroupSchema = z.object({
 type FormData = z.infer<typeof tableGroupSchema>
 
 export const TableGroupForm: React.FC = () => {
-  const { selectedId, setIsFormOpen } = useTableGroupHubStore()
+  const { selectedId, setIsFormOpen, setSelectedId } = useTableGroupHubStore()
   const { useGet, useSaveMutation } = useMasterfile('tableGroup')
   const { data: existing, isLoading } = useGet(selectedId)
   const saveMutation = useSaveMutation()
@@ -51,60 +42,82 @@ export const TableGroupForm: React.FC = () => {
     setIsFormOpen(false)
   }
 
+  const handleClose = () => {
+    setSelectedId(null)
+    setIsFormOpen(false)
+  }
+
   return (
-    <Box sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+    <Box
+      component="form"
+      aria-label="discount-form"
+      onSubmit={handleSubmit(onSubmit)}
+      sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+    >
+      <Box
+        sx={{
+          p: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          bgcolor: 'primary.dark',
+          color: 'white'
+        }}
+      >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <GroupIcon color="primary" sx={{ fontSize: 25 }} />
-          <Typography variant="h6">
-            {selectedId ? 'Edit Table Group' : 'New Table Group'}
-          </Typography>
+          <GroupIcon sx={{ fontSize: 25 }} />
+          <Typography variant="h6">{selectedId ? 'Edit Discount' : 'New Discount'}</Typography>
         </Box>
-        <IconButton onClick={() => setIsFormOpen(false)}>
+        <IconButton size="small" onClick={handleClose} sx={{ color: 'white' }}>
           <CloseIcon sx={{ fontSize: 25 }} />
         </IconButton>
       </Box>
-      <Divider sx={{ mb: 3 }} />
-      {isLoading ? (
-        <CircularProgress />
-      ) : (
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
+      <Box sx={{ p: 3, flexGrow: 1, overflow: 'auto' }}>
+        {saveMutation.isError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {saveMutation.error?.message || 'Failed to save discount.'}
+          </Alert>
+        )}
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Table Group Name"
+                  fullWidth
+                  required
+                  margin="normal"
+                  error={!!errors.name}
+                  helperText={errors.name?.message}
+                />
+              )}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+
+      <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider', display: 'flex', gap: 2 }}>
+        <Button
+          fullWidth
+          variant="outlined"
+          onClick={handleClose}
+          disabled={saveMutation.isPending}
         >
-          <Controller
-            name="name"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Table Group Name"
-                fullWidth
-                required
-                margin="normal"
-                error={!!errors.name}
-                helperText={errors.name?.message}
-              />
-            )}
-          />
-          {saveMutation.isError && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              Failed to save.
-            </Alert>
-          )}
-          <Box sx={{ mt: 'auto', pt: 3 }}>
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              startIcon={<SaveIcon sx={{ fontSize: 25 }} />}
-              disabled={saveMutation.isPending}
-            >
-              {saveMutation.isPending ? 'Saving...' : 'Save Table Group'}
-            </Button>
-          </Box>
-        </form>
-      )}
+          Cancel
+        </Button>
+        <Button
+          fullWidth
+          variant="contained"
+          type="submit"
+          startIcon={<SaveIcon sx={{ fontSize: 25 }} />}
+          disabled={saveMutation.isPending}
+        >
+          {saveMutation.isPending ? 'Saving...' : 'Save Table Group'}
+        </Button>
+      </Box>
     </Box>
   )
 }
