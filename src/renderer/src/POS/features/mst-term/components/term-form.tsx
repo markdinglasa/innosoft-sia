@@ -1,20 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Close as CloseIcon, Save as SaveIcon, EventNote as TermIcon } from '@mui/icons-material'
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Divider,
-  IconButton,
-  TextField,
-  Typography
-} from '@mui/material'
-import React, { useEffect } from 'react'
+import { Alert, Box, Button, Grid, IconButton, TextField, Typography } from '@mui/material'
+import { memo, useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useTermHubStore } from '../store/use-term-hub-store'
+import { TermFormSkeleton } from './term-form-skeleton'
 
 const termSchema = z.object({
   name: z.string().min(1, 'Term is required'),
@@ -22,9 +14,8 @@ const termSchema = z.object({
 })
 
 type FormData = z.infer<typeof termSchema>
-
-export const TermForm: React.FC = () => {
-  const { selectedId, setIsFormOpen } = useTermHubStore()
+function TermForm() {
+  const { selectedId, setIsFormOpen, setSelectedId } = useTermHubStore()
   const { useGet, useSaveMutation } = useMasterfile('term')
   const { data: existing, isLoading } = useGet(selectedId)
   const saveMutation = useSaveMutation()
@@ -47,80 +38,116 @@ export const TermForm: React.FC = () => {
     [existing, reset]
   )
 
+  const handleClose = () => {
+    setSelectedId(null)
+    setIsFormOpen(false)
+  }
+
   const onSubmit = async (formData: FormData) => {
     await saveMutation.mutateAsync({ ...formData, id: selectedId || undefined })
     setIsFormOpen(false)
   }
 
+  if (selectedId && isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+        <TermFormSkeleton />
+      </Box>
+    )
+  }
+
   return (
-    <Box sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+      sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+    >
+      <Box
+        sx={{
+          p: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          bgcolor: 'primary.dark',
+          color: 'white'
+        }}
+      >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <TermIcon color="primary" sx={{ fontSize: 25 }} />
+          <TermIcon sx={{ fontSize: 25 }} />
           <Typography variant="h6">{selectedId ? 'Edit Term' : 'New Term'}</Typography>
         </Box>
-        <IconButton onClick={() => setIsFormOpen(false)}>
+        <IconButton size="small" onClick={handleClose} sx={{ color: 'white' }}>
           <CloseIcon sx={{ fontSize: 25 }} />
         </IconButton>
       </Box>
-      <Divider sx={{ mb: 3 }} />
-      {isLoading ? (
-        <CircularProgress />
-      ) : (
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
+
+      <Box sx={{ p: 3, flexGrow: 1, overflow: 'auto' }}>
+        {saveMutation.isError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {saveMutation.error?.message || 'Sorry, Something went wrong.'}
+          </Alert>
+        )}
+        <Grid container>
+          <Grid item xs={12}>
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Term"
+                  fullWidth
+                  required
+                  margin="normal"
+                  error={!!errors.name}
+                  helperText={errors.name?.message}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
+              name="numberOfDays"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Number of Days"
+                  type="number"
+                  fullWidth
+                  required
+                  margin="normal"
+                  error={!!errors.numberOfDays}
+                  helperText={errors.numberOfDays?.message}
+                />
+              )}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+
+      <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider', display: 'flex', gap: 2 }}>
+        <Button
+          fullWidth
+          variant="outlined"
+          onClick={handleClose}
+          disabled={saveMutation.isPending}
         >
-          <Controller
-            name="name"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Term"
-                fullWidth
-                required
-                margin="normal"
-                error={!!errors.name}
-                helperText={errors.name?.message}
-              />
-            )}
-          />
-          <Controller
-            name="numberOfDays"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Number of Days"
-                type="number"
-                fullWidth
-                required
-                margin="normal"
-                error={!!errors.numberOfDays}
-                helperText={errors.numberOfDays?.message}
-              />
-            )}
-          />
-          {saveMutation.isError && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              Failed to save.
-            </Alert>
-          )}
-          <Box sx={{ mt: 'auto', pt: 3 }}>
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              startIcon={<SaveIcon sx={{ fontSize: 25 }} />}
-              disabled={saveMutation.isPending}
-            >
-              {saveMutation.isPending ? 'Saving...' : 'Save Term'}
-            </Button>
-          </Box>
-        </form>
-      )}
+          Cancel
+        </Button>
+        <Button
+          fullWidth
+          variant="contained"
+          type="submit"
+          startIcon={<SaveIcon sx={{ fontSize: 25 }} />}
+          disabled={saveMutation.isPending}
+        >
+          {saveMutation.isPending ? 'Saving...' : 'Save Term'}
+        </Button>
+      </Box>
     </Box>
   )
 }
+
+export default memo(TermForm)
 

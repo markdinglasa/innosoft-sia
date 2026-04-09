@@ -10,7 +10,6 @@ import {
   Alert,
   Box,
   Button,
-  CircularProgress,
   FormControlLabel,
   Grid,
   IconButton,
@@ -28,11 +27,12 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useItemHubStore } from '../store/use-item-hub-store'
+import { ItemFormSkeleton } from './item-form-skeleton'
 
 const itemSchema = z.object({
   itemCode: z.string().min(1, 'Item Code is required'),
@@ -58,15 +58,15 @@ const itemSchema = z.object({
 
 type FormData = z.infer<typeof itemSchema>
 
-export const ItemForm: React.FC = () => {
-  const { selectedItemId, setSelectedItemId, setIsFormOpen } = useItemHubStore()
+function ItemForm() {
+  const { selectedId, setSelectedId, setIsFormOpen } = useItemHubStore()
   const [activeTab, setActiveTab] = useState(0)
 
   const { useGet, useSaveMutation, useLookup } = useMasterfile('item')
   const { data: units = [] } = useLookup('unit')
   const { data: categories = [] } = useLookup('itemGroup')
 
-  const { data: item, isLoading } = useGet(selectedItemId)
+  const { data: item, isLoading } = useGet(selectedId)
   const saveMutation = useSaveMutation()
 
   const {
@@ -139,20 +139,20 @@ export const ItemForm: React.FC = () => {
   const onSubmit = async (data: FormData) => {
     await saveMutation.mutateAsync({
       ...data,
-      id: selectedItemId
+      id: selectedId || undefined
     })
     handleClose()
   }
 
   const handleClose = () => {
-    setSelectedItemId(null)
+    setSelectedId(null)
     setIsFormOpen(false)
   }
 
-  if (selectedItemId && isLoading) {
+  if (selectedId && isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <CircularProgress size={32} />
+        <ItemFormSkeleton />
       </Box>
     )
   }
@@ -175,7 +175,7 @@ export const ItemForm: React.FC = () => {
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <ItemIcon sx={{ fontSize: 25 }} />
-          <Typography variant="h6">{selectedItemId ? 'Edit Item' : 'New Item'}</Typography>
+          <Typography variant="h6">{selectedId ? 'Edit Item' : 'New Item'}</Typography>
         </Box>
         <IconButton size="small" onClick={handleClose} sx={{ color: 'white' }}>
           <CloseIcon sx={{ fontSize: 25 }} />
@@ -190,7 +190,7 @@ export const ItemForm: React.FC = () => {
       >
         <Tab label="General" />
         <Tab label="Prices" />
-        <Tab label="Packages" disabled={!selectedItemId} />
+        <Tab label="Packages" disabled={!selectedId} />
       </Tabs>
 
       <Box sx={{ p: 3, flexGrow: 1, overflow: 'auto' }}>
@@ -384,7 +384,7 @@ export const ItemForm: React.FC = () => {
                           error={!!errors.itemPrices?.[index]?.triggerQuantity}
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell align="right">
                         <IconButton size="small" color="error" onClick={() => removePrice(index)}>
                           <DeleteIcon fontSize="inherit" />
                         </IconButton>
@@ -428,3 +428,4 @@ export const ItemForm: React.FC = () => {
   )
 }
 
+export default memo(ItemForm)

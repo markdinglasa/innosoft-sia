@@ -1,13 +1,14 @@
 import { Add as AddIcon, Close, Search as SearchIcon } from '@mui/icons-material'
 import { Box, Button, Drawer, IconButton, InputAdornment, Paper, TextField } from '@mui/material'
 import { SystemPermissions } from '@shared/constants/permissions'
-import React from 'react'
+import React, { lazy, Suspense } from 'react'
 import PageLayout from '../../components/layout/page-layout'
 import { useAccessControl } from '../../hooks'
-import { TermForm } from './components/term-form'
+import { TermFormSkeleton } from './components/term-form-skeleton'
 import { TermList } from './components/term-list'
 import { useTermHubStore } from './store/use-term-hub-store'
 
+const TermForm = lazy(() => import('./components/term-form'))
 const TermHub: React.FC = () => {
   const { searchKeyword, setSearchKeyword, isFormOpen, setIsFormOpen, setSelectedId } =
     useTermHubStore()
@@ -22,7 +23,7 @@ const TermHub: React.FC = () => {
   const canAdd = hasPermission(SystemPermissions.TERM_ADD)
 
   return (
-    <PageLayout title="Term Management">
+    <PageLayout title="Terms">
       <Box sx={{ mb: 3 }}>
         <Paper
           variant="outlined"
@@ -75,7 +76,9 @@ const TermHub: React.FC = () => {
           sx: { width: { xs: '100%', sm: 400, md: 500 }, borderRadius: '12px 0 0 12px' }
         }}
       >
-        <TermForm />
+        <Suspense fallback={<TermFormSkeleton />}>
+          <TermForm />
+        </Suspense>
       </Drawer>
     </PageLayout>
   )

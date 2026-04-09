@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-interface ItemHubState {
+interface GenericHubState {
   selectedId: number | null
   setSelectedId: (id: number | null) => void
   isFormOpen: boolean
@@ -9,7 +9,7 @@ interface ItemHubState {
   setSearchKeyword: (keyword: string) => void
 }
 
-export const useItemHubStore = create<ItemHubState>((set) => ({
+export const useItemPackageHubStore = create<GenericHubState>((set) => ({
   selectedId: null,
   setSelectedId: (id) => set({ selectedId: id }),
   isFormOpen: false,
@@ -17,4 +17,3 @@ export const useItemHubStore = create<ItemHubState>((set) => ({
   searchKeyword: '',
   setSearchKeyword: (keyword) => set({ searchKeyword: keyword })
 }))
-

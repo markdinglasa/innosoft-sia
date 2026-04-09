@@ -1,20 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Close as CloseIcon, Category as GroupIcon, Save as SaveIcon } from '@mui/icons-material'
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Divider,
-  IconButton,
-  TextField,
-  Typography
-} from '@mui/material'
+import { Category as GroupIcon, Close as CloseIcon, Save as SaveIcon } from '@mui/icons-material'
+import { Alert, Box, Button, Grid, IconButton, TextField, Typography } from '@mui/material'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useItemGroupHubStore } from '../store/use-item-group-hub-store'
+import { ItemGroupFormSkeleton } from './item-group-form-skeleton'
 
 const itemGroupSchema = z.object({
   name: z.string().min(1, 'Item Group Name is required')
@@ -23,79 +15,118 @@ const itemGroupSchema = z.object({
 type FormData = z.infer<typeof itemGroupSchema>
 
 export const ItemGroupForm: React.FC = () => {
-  const { selectedId, setIsFormOpen } = useItemGroupHubStore()
+  const { selectedId, setIsFormOpen, setSelectedId } = useItemGroupHubStore()
   const { useGet, useSaveMutation } = useMasterfile('itemGroup')
   const { data: existing, isLoading } = useGet(selectedId)
   const saveMutation = useSaveMutation()
+
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors }
-  } = useForm<FormData>({
+  } = useForm({
     resolver: zodResolver(itemGroupSchema),
     defaultValues: { name: '' }
   })
-  useEffect(() => {
-    if (existing) reset({ name: existing.name || '' })
-    else reset({ name: '' })
-  }, [existing, reset])
+
+  useEffect(
+    function formResetter() {
+      if (existing) reset({ name: existing.name || '' })
+      else reset({ name: '' })
+    },
+    [existing, reset]
+  )
+
+  const handleClose = () => {
+    setSelectedId(null)
+    setIsFormOpen(false)
+  }
+
   const onSubmit = async (formData: FormData) => {
     await saveMutation.mutateAsync({ ...formData, id: selectedId || undefined })
     setIsFormOpen(false)
   }
+
+  if (selectedId && isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+        <ItemGroupFormSkeleton />
+      </Box>
+    )
+  }
+
   return (
-    <Box sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+      sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+    >
+      <Box
+        sx={{
+          p: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          bgcolor: 'primary.dark',
+          color: 'white'
+        }}
+      >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <GroupIcon color="primary" sx={{ fontSize: 25 }} />
+          <GroupIcon sx={{ fontSize: 25 }} />
           <Typography variant="h6">{selectedId ? 'Edit Item Group' : 'New Item Group'}</Typography>
         </Box>
-        <IconButton onClick={() => setIsFormOpen(false)}>
+        <IconButton size="small" onClick={handleClose} sx={{ color: 'white' }}>
           <CloseIcon sx={{ fontSize: 25 }} />
         </IconButton>
       </Box>
-      <Divider sx={{ mb: 3 }} />
-      {isLoading ? (
-        <CircularProgress />
-      ) : (
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
+
+      <Box sx={{ p: 3, flexGrow: 1, overflow: 'auto' }}>
+        {saveMutation.isError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {saveMutation.error?.message || 'Sorry, Something went wrong.'}
+          </Alert>
+        )}
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Item Group"
+                  fullWidth
+                  required
+                  margin="normal"
+                  error={!!errors.name}
+                  helperText={errors.name?.message}
+                />
+              )}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+
+      <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider', display: 'flex', gap: 2 }}>
+        <Button
+          fullWidth
+          variant="outlined"
+          onClick={handleClose}
+          disabled={saveMutation.isPending}
         >
-          <Controller
-            name="name"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Item Group"
-                fullWidth
-                required
-                margin="normal"
-                error={!!errors.name}
-                helperText={errors.name?.message}
-              />
-            )}
-          />
-          {saveMutation.isError && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              Failed to save.
-            </Alert>
-          )}
-          <Box sx={{ mt: 'auto', pt: 3 }}>
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              startIcon={<SaveIcon sx={{ fontSize: 25 }} />}
-              disabled={saveMutation.isPending}
-            >
-              {saveMutation.isPending ? 'Saving...' : 'Save Item Group'}
-            </Button>
-          </Box>
-        </form>
-      )}
+          Cancel
+        </Button>
+        <Button
+          fullWidth
+          variant="contained"
+          type="submit"
+          startIcon={<SaveIcon sx={{ fontSize: 25 }} />}
+          disabled={saveMutation.isPending}
+        >
+          {saveMutation.isPending ? 'Saving...' : 'Save Item Group'}
+        </Button>
+      </Box>
     </Box>
   )
 }

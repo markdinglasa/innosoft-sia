@@ -1,28 +1,37 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Close as CloseIcon, Inventory as PackageIcon, Save as SaveIcon } from '@mui/icons-material'
 import {
-  Close as CloseIcon,
-  Extension as ComponentIcon,
-  Save as SaveIcon
-} from '@mui/icons-material'
-import { Alert, Box, Button, Grid, IconButton, TextField, Typography } from '@mui/material'
+  Alert,
+  Box,
+  Button,
+  FormControlLabel,
+  Grid,
+  IconButton,
+  Switch,
+  TextField,
+  Typography
+} from '@mui/material'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
-import { useItemComponentHubStore } from '../store/use-item-component-hub-store'
-import { ItemComponentFormSkeleton } from './item-component-form-skeleton'
+import { useItemPackageHubStore } from '../store/use-item-package-hub-store'
+import { ItemPackageFormSkeleton } from './item-package-form-skeleton'
 
-const itemComponentSchema = z.object({
-  itemId: z.coerce.number().min(1, 'Item ID required'),
-  componentItemId: z.coerce.number().min(1, 'Component Item ID required'),
-  quantity: z.coerce.number().min(1, 'Quantity must be at least 1')
+const itemPackageSchema = z.object({
+  branchId: z.coerce.number().default(0),
+  itemId: z.coerce.number().min(1, 'Parent Item ID required'),
+  packageItemId: z.coerce.number().min(1, 'Package Item ID required'),
+  unitId: z.coerce.number().min(1, 'Unit ID required'),
+  quantity: z.coerce.number().min(0, 'Quantity must be at least 0'),
+  isOptional: z.boolean().default(false)
 })
 
-type FormData = z.infer<typeof itemComponentSchema>
+type FormData = z.infer<typeof itemPackageSchema>
 
-export const ItemComponentForm: React.FC = () => {
-  const { selectedId, setIsFormOpen, setSelectedId } = useItemComponentHubStore()
-  const { useGet, useSaveMutation } = useMasterfile('itemComponent')
+export const ItemPackageForm: React.FC = () => {
+  const { selectedId, setIsFormOpen, setSelectedId } = useItemPackageHubStore()
+  const { useGet, useSaveMutation } = useMasterfile('itemPackage')
   const { data: existing, isLoading } = useGet(selectedId)
   const saveMutation = useSaveMutation()
 
@@ -32,19 +41,37 @@ export const ItemComponentForm: React.FC = () => {
     reset,
     formState: { errors }
   } = useForm({
-    resolver: zodResolver(itemComponentSchema),
-    defaultValues: { itemId: 0, componentItemId: 0, quantity: 1 }
+    resolver: zodResolver(itemPackageSchema),
+    defaultValues: {
+      branchId: 0,
+      itemId: 0,
+      packageItemId: 0,
+      unitId: 0,
+      quantity: 1,
+      isOptional: false
+    }
   })
 
   useEffect(
     function formResetter() {
       if (existing)
         reset({
+          branchId: existing.branchId || 0,
           itemId: existing.itemId || 0,
-          componentItemId: existing.componentItemId || 0,
-          quantity: existing.quantity || 1
+          packageItemId: existing.packageItemId || 0,
+          unitId: existing.unitId || 0,
+          quantity: existing.quantity || 1,
+          isOptional: !!existing.isOptional
         })
-      else reset({ itemId: 0, componentItemId: 0, quantity: 1 })
+      else
+        reset({
+          branchId: 0,
+          itemId: 0,
+          packageItemId: 0,
+          unitId: 0,
+          quantity: 1,
+          isOptional: false
+        })
     },
     [existing, reset]
   )
@@ -62,7 +89,7 @@ export const ItemComponentForm: React.FC = () => {
   if (selectedId && isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <ItemComponentFormSkeleton />
+        <ItemPackageFormSkeleton />
       </Box>
     )
   }
@@ -84,8 +111,8 @@ export const ItemComponentForm: React.FC = () => {
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <ComponentIcon sx={{ fontSize: 25 }} />
-          <Typography variant="h6">{selectedId ? 'Edit Component' : 'New Component'}</Typography>
+          <PackageIcon sx={{ fontSize: 25 }} />
+          <Typography variant="h6">{selectedId ? 'Edit Package' : 'New Package'}</Typography>
         </Box>
         <IconButton size="small" onClick={handleClose} sx={{ color: 'white' }}>
           <CloseIcon sx={{ fontSize: 25 }} />
@@ -106,7 +133,7 @@ export const ItemComponentForm: React.FC = () => {
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Item ID"
+                  label="Parent Item ID"
                   type="number"
                   fullWidth
                   required
@@ -119,18 +146,36 @@ export const ItemComponentForm: React.FC = () => {
           </Grid>
           <Grid item xs={12}>
             <Controller
-              name="componentItemId"
+              name="packageItemId"
               control={control}
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Component Item ID"
+                  label="Package Item ID"
                   type="number"
                   fullWidth
                   required
                   margin="normal"
-                  error={!!errors.componentItemId}
-                  helperText={errors.componentItemId?.message}
+                  error={!!errors.packageItemId}
+                  helperText={errors.packageItemId?.message}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
+              name="unitId"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Unit ID"
+                  type="number"
+                  fullWidth
+                  required
+                  margin="normal"
+                  error={!!errors.unitId}
+                  helperText={errors.unitId?.message}
                 />
               )}
             />
@@ -149,6 +194,23 @@ export const ItemComponentForm: React.FC = () => {
                   margin="normal"
                   error={!!errors.quantity}
                   helperText={errors.quantity?.message}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
+              name="isOptional"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={!!field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                    />
+                  }
+                  label="Optional Package"
                 />
               )}
             />
@@ -172,10 +234,9 @@ export const ItemComponentForm: React.FC = () => {
           startIcon={<SaveIcon sx={{ fontSize: 25 }} />}
           disabled={saveMutation.isPending}
         >
-          {saveMutation.isPending ? 'Saving...' : 'Save Component'}
+          {saveMutation.isPending ? 'Saving...' : 'Save Package'}
         </Button>
       </Box>
     </Box>
   )
 }
-

@@ -1,19 +1,26 @@
 import { Add as AddIcon, Close, Search as SearchIcon } from '@mui/icons-material'
 import { Box, Button, Drawer, IconButton, InputAdornment, Paper, TextField } from '@mui/material'
-import React from 'react'
+import { SystemPermissions } from '@shared/constants/permissions'
+import React, { lazy, Suspense } from 'react'
 import PageLayout from '../../components/layout/page-layout'
-import { ItemForm } from './components/item-form'
+import { useAccessControl } from '../../hooks'
+import { ItemFormSkeleton } from './components/item-form-skeleton'
 import { ItemList } from './components/item-list'
 import { useItemHubStore } from './store/use-item-hub-store'
 
+const ItemForm = lazy(() => import('./components/item-form'))
 const ItemHub: React.FC = () => {
-  const { searchKeyword, setSearchKeyword, isFormOpen, setIsFormOpen, setSelectedItemId } =
+  const { searchKeyword, setSearchKeyword, isFormOpen, setIsFormOpen, setSelectedId } =
     useItemHubStore()
 
   const handleCreate = () => {
-    setSelectedItemId(null)
+    setSelectedId(null)
     setIsFormOpen(true)
   }
+
+  // permissions
+  const { hasPermission } = useAccessControl()
+  const canAdd = hasPermission(SystemPermissions.ITEM_ADD)
 
   return (
     <PageLayout title="Catalog (Item & Inventory)">
@@ -54,6 +61,7 @@ const ItemHub: React.FC = () => {
             }}
           />
           <Button
+            disabled={!canAdd}
             variant="contained"
             startIcon={<AddIcon sx={{ fontSize: 25 }} />}
             onClick={handleCreate}
@@ -76,7 +84,9 @@ const ItemHub: React.FC = () => {
           sx: { width: { xs: '100%', sm: 500, md: 650 }, borderRadius: '12px 0 0 12px' }
         }}
       >
-        <ItemForm />
+        <Suspense fallback={<ItemFormSkeleton />}>
+          <ItemForm />
+        </Suspense>
       </Drawer>
     </PageLayout>
   )

@@ -1,15 +1,12 @@
-import { Delete as DeleteIcon, Edit as EditIcon, Inventory as ItemIcon } from '@mui/icons-material'
+import { Delete as DeleteIcon, Inventory as ItemIcon } from '@mui/icons-material'
 import {
-  Box,
   Button,
   Chip,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  IconButton,
   Paper,
   Table,
   TableBody,
@@ -20,48 +17,54 @@ import {
   TableRow,
   Typography
 } from '@mui/material'
+import { SystemPermissions } from '@shared/constants/permissions'
+import { ButtonType, ToastType } from '@shared/types'
+import { displayToast } from '@shared/utils'
 import React from 'react'
+import TableSkeleton from '../../../components/data-display/table-skeleton'
+import CircleButton from '../../../components/inputs/circle-button'
+import { useAccessControl } from '../../../hooks'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useItemHubStore } from '../store/use-item-hub-store'
 
 export const ItemList: React.FC = () => {
-  const { searchKeyword, setSelectedItemId, setIsFormOpen } = useItemHubStore()
+  const { searchKeyword, setSelectedId, setIsFormOpen } = useItemHubStore()
   const { useList, useDeleteMutation } = useMasterfile('item')
 
   const [page, setPage] = React.useState(0)
   const { data, isLoading, isError } = useList({ searchKeyword, page: page + 1, take: 30 })
 
+  // permissions
+  const { hasPermission } = useAccessControl()
+  const canEdit = hasPermission(SystemPermissions.ITEM_EDIT)
+  const canDelete = hasPermission(SystemPermissions.ITEM_REMOVE)
+
   // Reset page when search changes
-  React.useEffect(function resetPageOnSearch() {
-    setPage(0)
-  }, [searchKeyword])
+  React.useEffect(
+    function resetPageOnSearch() {
+      setPage(0)
+    },
+    [searchKeyword]
+  )
 
   const deleteMutation = useDeleteMutation()
 
   const handleEdit = (id: number) => {
-    setSelectedItemId(id)
+    setSelectedId(id)
     setIsFormOpen(true)
   }
 
   const [deleteId, setDeleteId] = React.useState<number | null>(null)
-  const handleDelete = (id: number) => setDeleteId(id)
+  const handleDelete = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation()
+    setDeleteId(id)
+  }
+
   const confirmDelete = async () => {
     if (deleteId) {
       await deleteMutation.mutateAsync(deleteId)
       setDeleteId(null)
     }
-  }
-
-  if (isLoading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <CircularProgress size={32} />
-      </Box>
-    )
-  }
-
-  if (isError) {
-    return <Typography color="error">Failed to load items.</Typography>
   }
 
   const items = (data as any)?.items || []
@@ -86,86 +89,86 @@ export const ItemList: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {items.map((item: any) => (
-              <TableRow
-                key={item.id}
-                hover
-                onClick={() => handleEdit(item.id)}
-                sx={{ cursor: 'pointer' }}
-              >
-                <TableCell>
-                  <ItemIcon color="action" sx={{ fontSize: 25 }} />
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2" fontWeight="medium">
-                    {item.name}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {item.description || 'No description'}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="caption" display="block">
-                    Code: {item.itemCode}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Bar: {item.barCode}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Chip label={item.category || 'General'} size="small" variant="outlined" />
-                </TableCell>
-                <TableCell align="right">{Number(item.cost).toFixed(2)}</TableCell>
-                <TableCell align="right">
-                  <Typography variant="body2" fontWeight="bold" color="primary">
-                    {Number(item.price).toFixed(2)}
-                  </Typography>
-                </TableCell>
-                <TableCell align="right">
-                  <IconButton
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleEdit(item.id)
-                    }}
-                  >
-                    <EditIcon sx={{ fontSize: 25 }} />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    color="error"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleDelete(item.id)
-                    }}
-                  >
-                    <DeleteIcon sx={{ fontSize: 25 }} />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-            {items.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    No items found.
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )}
+            <TableSkeleton isLoading={isLoading} columns={7} rows={15}>
+              {items.map((item: any) => (
+                <TableRow
+                  key={item.id}
+                  hover
+                  onClick={() => {
+                    if (!canEdit) {
+                      displayToast('You do not have permission to edit this item.', ToastType.info)
+                      return
+                    }
+                    handleEdit(item.id)
+                  }}
+                  sx={{ cursor: 'pointer' }}
+                >
+                  <TableCell>
+                    <ItemIcon color="primary" sx={{ fontSize: 25 }} />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" fontWeight="medium">
+                      {item.name}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {item.description || 'No description'}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="caption" display="block">
+                      Code: {item.itemCode || '—'}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Bar: {item.barCode || '—'}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Chip label={item.category || 'General'} size="small" variant="outlined" />
+                  </TableCell>
+                  <TableCell align="right">{Number(item.cost).toFixed(2)}</TableCell>
+                  <TableCell align="right">
+                    <Typography variant="body2" fontWeight="bold" color="primary">
+                      {Number(item.price).toFixed(2)}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <CircleButton
+                      disabled={!canDelete}
+                      icon={<DeleteIcon sx={{ fontSize: 25 }} />}
+                      onClick={(e) => handleDelete(e, item?.id)}
+                      type={ButtonType.button}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+              {isError && (
+                <TableRow>
+                  <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
+                    <Typography color="error">Failed to load items.</Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+              {!isError && items.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      No items found.
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableSkeleton>
           </TableBody>
         </Table>
+        <TablePagination
+          rowsPerPageOptions={[30]}
+          component="div"
+          count={(data as any)?.meta?.totalItems || 0}
+          rowsPerPage={30}
+          page={page}
+          onPageChange={(_, newPage) => setPage(newPage)}
+        />
       </TableContainer>
-      
-      <TablePagination
-        rowsPerPageOptions={[30]}
-        component="div"
-        count={(data as any)?.meta?.totalItems || 0}
-        rowsPerPage={30}
-        page={page}
-        onPageChange={(_, newPage) => setPage(newPage)}
-      />
-
 
       <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}>
         <DialogTitle>Confirm Delete</DialogTitle>
@@ -176,7 +179,8 @@ export const ItemList: React.FC = () => {
           <Button onClick={() => setDeleteId(null)}>Cancel</Button>
           <Button
             onClick={confirmDelete}
-            color="error"
+            color="primary"
+            startIcon={<DeleteIcon sx={{ fontSize: 25 }} />}
             variant="contained"
             disabled={deleteMutation.isPending}
           >

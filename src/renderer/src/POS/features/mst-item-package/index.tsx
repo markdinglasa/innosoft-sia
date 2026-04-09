@@ -1,23 +1,23 @@
-import { Add as AddIcon, Close as CloseIcon, Search as SearchIcon } from '@mui/icons-material'
+import { Add as AddIcon, Close as CloseIcon, Inventory as PackageIcon, Search as SearchIcon } from '@mui/icons-material'
 import { Box, Button, Drawer, IconButton, InputAdornment, Paper, TextField } from '@mui/material'
 import { SystemPermissions } from '@shared/constants/permissions'
 import React, { Suspense } from 'react'
 import PageLayout from '../../components/layout/page-layout'
 import { useAccessControl } from '../../hooks'
-import { AccountFormSkeleton } from './components/account-form-skeleton'
-import { AccountList } from './components/account-list'
-import { useAccountHubStore } from './store/use-account-hub-store'
+import { ItemPackageFormSkeleton } from './components/item-package-form-skeleton'
+import { ItemPackageList } from './components/item-package-list'
+import { useItemPackageHubStore } from './store/use-item-package-hub-store'
 
-const AccountForm = React.lazy(() =>
-  import('./components/account-form').then((m) => ({ default: m.AccountForm }))
+const ItemPackageForm = React.lazy(() =>
+  import('./components/item-package-form').then((m) => ({ default: m.ItemPackageForm }))
 )
 
-const ChartOfAccountHub: React.FC = () => {
+const ItemPackageHub: React.FC = () => {
   const { searchKeyword, setSearchKeyword, isFormOpen, setIsFormOpen, setSelectedId } =
-    useAccountHubStore()
+    useItemPackageHubStore()
 
   const { hasPermission } = useAccessControl()
-  const canAdd = hasPermission(SystemPermissions.CHART_OF_ACCOUNT_ADD)
+  const canAdd = hasPermission(SystemPermissions.ITEM_PACKAGE_ADD)
 
   const handleCreate = () => {
     setSelectedId(null)
@@ -25,7 +25,7 @@ const ChartOfAccountHub: React.FC = () => {
   }
 
   return (
-    <PageLayout title="Chart of Accounts">
+    <PageLayout title="Item Packages">
       <Box sx={{ mb: 3 }}>
         <Paper
           variant="outlined"
@@ -34,7 +34,7 @@ const ChartOfAccountHub: React.FC = () => {
           <TextField
             fullWidth
             size="small"
-            placeholder="Search accounts by name or code..."
+            placeholder="Search item packages..."
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
             InputProps={{
@@ -63,13 +63,13 @@ const ChartOfAccountHub: React.FC = () => {
             onClick={handleCreate}
             sx={{ px: 3, whiteSpace: 'nowrap' }}
           >
-            New Account
+            New Package
           </Button>
         </Paper>
       </Box>
 
       <Box sx={{ flexGrow: 1 }}>
-        <AccountList />
+        <ItemPackageList />
       </Box>
 
       <Drawer
@@ -80,13 +80,12 @@ const ChartOfAccountHub: React.FC = () => {
           sx: { width: { xs: '100%', sm: 400, md: 500 }, borderRadius: '12px 0 0 12px' }
         }}
       >
-        <Suspense fallback={<AccountFormSkeleton />}>
-          <AccountForm />
+        <Suspense fallback={<ItemPackageFormSkeleton />}>
+          <ItemPackageForm />
         </Suspense>
       </Drawer>
     </PageLayout>
   )
 }
 
-export default ChartOfAccountHub
-
+export default ItemPackageHub

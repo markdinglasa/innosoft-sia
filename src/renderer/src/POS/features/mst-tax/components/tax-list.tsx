@@ -1,14 +1,11 @@
-import { Delete as DeleteIcon, Edit as EditIcon, Receipt as TaxIcon } from '@mui/icons-material'
+import { Delete as DeleteIcon, Receipt as TaxIcon } from '@mui/icons-material'
 import {
-  Box,
   Button,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  IconButton,
   Paper,
   Table,
   TableBody,
@@ -19,7 +16,13 @@ import {
   TableRow,
   Typography
 } from '@mui/material'
+import { SystemPermissions } from '@shared/constants/permissions'
+import { ButtonType, ToastType } from '@shared/types'
+import { displayToast } from '@shared/utils'
 import React from 'react'
+import TableSkeleton from '../../../components/data-display/table-skeleton'
+import CircleButton from '../../../components/inputs/circle-button'
+import { useAccessControl } from '../../../hooks'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useTaxHubStore } from '../store/use-tax-hub-store'
 
@@ -29,18 +32,31 @@ export const TaxList: React.FC = () => {
   const [page, setPage] = React.useState(0)
   const { data, isLoading, isError } = useList({ searchKeyword, page: page + 1, take: 30 })
 
+  // permissions
+  const { hasPermission } = useAccessControl()
+  const canEdit = hasPermission(SystemPermissions.TAX_EDIT)
+  const canDelete = hasPermission(SystemPermissions.TAX_REMOVE)
+
   // Reset page when search changes
-  React.useEffect(function resetPageOnSearch() {
-    setPage(0)
-  }, [searchKeyword])
-    
+  React.useEffect(
+    function resetPageOnSearch() {
+      setPage(0)
+    },
+    [searchKeyword]
+  )
+
   const deleteMutation = useDeleteMutation()
   const handleEdit = (id: number) => {
     setSelectedId(id)
     setIsFormOpen(true)
   }
+
   const [deleteId, setDeleteId] = React.useState<number | null>(null)
-  const handleDelete = (id: number) => setDeleteId(id)
+  const handleDelete = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation()
+    setDeleteId(id)
+  }
+
   const confirmDelete = async () => {
     if (deleteId) {
       await deleteMutation.mutateAsync(deleteId)
@@ -48,15 +64,7 @@ export const TaxList: React.FC = () => {
     }
   }
 
-  if (isLoading)
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <CircularProgress size={32} />
-      </Box>
-    )
-  if (isError) return <Typography color="error">Failed to load taxes.</Typography>
   const items = (data as any)?.items || []
-
   return (
     <>
       <TableContainer
@@ -68,75 +76,76 @@ export const TaxList: React.FC = () => {
           <TableHead>
             <TableRow>
               <TableCell width={50}></TableCell>
+
+              <TableCell>Tax</TableCell>
               <TableCell>Code</TableCell>
-              <TableCell>Name</TableCell>
               <TableCell align="right">Rate (%)</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {items.map((item: any) => (
-              <TableRow
-                key={item.id}
-                hover
-                onClick={() => handleEdit(item.id)}
-                sx={{ cursor: 'pointer' }}
-              >
-                <TableCell>
-                  <TaxIcon color="action" sx={{ fontSize: 25 }} />
-                </TableCell>
-                <TableCell>{item.code}</TableCell>
-                <TableCell>
-                  <Typography variant="body2" fontWeight="medium">
-                    {item.name}
-                  </Typography>
-                </TableCell>
-                <TableCell align="right">{Number(item.rate).toFixed(2)}</TableCell>
-                <TableCell align="right">
-                  <IconButton
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleEdit(item.id)
-                    }}
-                  >
-                    <EditIcon sx={{ fontSize: 25 }} />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    color="error"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleDelete(item.id)
-                    }}
-                  >
-                    <DeleteIcon sx={{ fontSize: 25 }} />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-            {items.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    No taxes found.
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )}
+            <TableSkeleton isLoading={isLoading} columns={5} rows={15}>
+              {items.map((item: any) => (
+                <TableRow
+                  key={item.id}
+                  hover
+                  onClick={() => {
+                    if (!canEdit) {
+                      displayToast('You do not have permission to edit this tax.', ToastType.info)
+                      return
+                    }
+                    handleEdit(item.id)
+                  }}
+                  sx={{ cursor: 'pointer' }}
+                >
+                  <TableCell>
+                    <TaxIcon color="primary" sx={{ fontSize: 25 }} />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" fontWeight="medium">
+                      {item.name}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>{item.code}</TableCell>
+                  <TableCell align="right">{Number(item.rate).toFixed(2)}</TableCell>
+                  <TableCell align="right">
+                    <CircleButton
+                      disabled={!canDelete}
+                      icon={<DeleteIcon sx={{ fontSize: 25 }} />}
+                      onClick={(e) => handleDelete(e, item?.id)}
+                      type={ButtonType.button}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+              {isError && (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                    <Typography color="error">Failed to load taxes.</Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+              {!isError && items.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      No taxes found.
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableSkeleton>
           </TableBody>
         </Table>
+        <TablePagination
+          rowsPerPageOptions={[30]}
+          component="div"
+          count={(data as any)?.meta?.totalItems || 0}
+          rowsPerPage={30}
+          page={page}
+          onPageChange={(_, newPage) => setPage(newPage)}
+        />
       </TableContainer>
-      
-      <TablePagination
-        rowsPerPageOptions={[30]}
-        component="div"
-        count={(data as any)?.meta?.totalItems || 0}
-        rowsPerPage={30}
-        page={page}
-        onPageChange={(_, newPage) => setPage(newPage)}
-      />
-
 
       <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}>
         <DialogTitle>Confirm Delete</DialogTitle>
@@ -147,7 +156,8 @@ export const TaxList: React.FC = () => {
           <Button onClick={() => setDeleteId(null)}>Cancel</Button>
           <Button
             onClick={confirmDelete}
-            color="error"
+            color="primary"
+            startIcon={<DeleteIcon sx={{ fontSize: 25 }} />}
             variant="contained"
             disabled={deleteMutation.isPending}
           >

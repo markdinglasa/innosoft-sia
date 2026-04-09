@@ -1,6 +1,7 @@
-import { Delete as DeleteIcon, EventNote as TermIcon } from '@mui/icons-material'
+import { Inventory as PackageIcon, Delete as DeleteIcon } from '@mui/icons-material'
 import {
   Button,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -24,18 +25,19 @@ import TableSkeleton from '../../../components/data-display/table-skeleton'
 import CircleButton from '../../../components/inputs/circle-button'
 import { useAccessControl } from '../../../hooks'
 import { useMasterfile } from '../../../hooks/use-masterfile'
-import { useTermHubStore } from '../store/use-term-hub-store'
+import { useItemPackageHubStore } from '../store/use-item-package-hub-store'
 
-export const TermList: React.FC = () => {
-  const { searchKeyword, setSelectedId, setIsFormOpen } = useTermHubStore()
-  const { useList, useDeleteMutation } = useMasterfile('term')
+export const ItemPackageList: React.FC = () => {
+  const { searchKeyword, setSelectedId, setIsFormOpen } = useItemPackageHubStore()
+  const { useList, useDeleteMutation } = useMasterfile('itemPackage')
+
   const [page, setPage] = React.useState(0)
   const { data, isLoading, isError } = useList({ searchKeyword, page: page + 1, take: 30 })
 
   // permissions
   const { hasPermission } = useAccessControl()
-  const canEdit = hasPermission(SystemPermissions.TERM_EDIT)
-  const canDelete = hasPermission(SystemPermissions.TERM_REMOVE)
+  const canEdit = hasPermission(SystemPermissions.ITEM_PACKAGE_EDIT)
+  const canDelete = hasPermission(SystemPermissions.ITEM_PACKAGE_REMOVE)
 
   // Reset page when search changes
   React.useEffect(
@@ -46,6 +48,7 @@ export const TermList: React.FC = () => {
   )
 
   const deleteMutation = useDeleteMutation()
+
   const handleEdit = (id: number) => {
     setSelectedId(id)
     setIsFormOpen(true)
@@ -65,6 +68,7 @@ export const TermList: React.FC = () => {
   }
 
   const items = (data as any)?.items || []
+
   return (
     <>
       <TableContainer
@@ -76,20 +80,25 @@ export const TermList: React.FC = () => {
           <TableHead>
             <TableRow>
               <TableCell width={50}></TableCell>
-              <TableCell>Term</TableCell>
-              <TableCell align="right">Days</TableCell>
+              <TableCell>Package Name</TableCell>
+              <TableCell>Parent Item</TableCell>
+              <TableCell align="right">Quantity</TableCell>
+              <TableCell align="center">Optional</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableSkeleton isLoading={isLoading} columns={4} rows={15}>
+            <TableSkeleton isLoading={isLoading} columns={6} rows={15}>
               {items.map((item: any) => (
                 <TableRow
                   key={item.id}
                   hover
                   onClick={() => {
                     if (!canEdit) {
-                      displayToast('You do not have permission to edit this term.', ToastType.info)
+                      displayToast(
+                        'You do not have permission to edit this item package.',
+                        ToastType.info
+                      )
                       return
                     }
                     handleEdit(item.id)
@@ -97,14 +106,24 @@ export const TermList: React.FC = () => {
                   sx={{ cursor: 'pointer' }}
                 >
                   <TableCell>
-                    <TermIcon color="primary" sx={{ fontSize: 25 }} />
+                    <PackageIcon color="primary" sx={{ fontSize: 25 }} />
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" fontWeight="medium">
-                      {item.name}
+                      {item.packageItem?.name || `Package #${item.id}`}
                     </Typography>
                   </TableCell>
-                  <TableCell align="right">{item.numberOfDays}</TableCell>
+                  <TableCell>{item.item?.name || '—'}</TableCell>
+                  <TableCell align="right">
+                    {item.quantity} {item.unit?.name}
+                  </TableCell>
+                  <TableCell align="center">
+                    {item.isOptional ? (
+                      <Chip label="Yes" size="small" variant="outlined" />
+                    ) : (
+                      <Chip label="No" size="small" variant="outlined" color="primary" />
+                    )}
+                  </TableCell>
                   <TableCell align="right">
                     <CircleButton
                       disabled={!canDelete}
@@ -118,15 +137,15 @@ export const TermList: React.FC = () => {
               {isError && (
                 <TableRow>
                   <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
-                    <Typography color="error">Failed to load terms.</Typography>
+                    <Typography color="error">Failed to load item packages.</Typography>
                   </TableCell>
                 </TableRow>
               )}
               {!isError && items.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
                     <Typography variant="body2" color="text.secondary">
-                      No terms found.
+                      No item packages found.
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -147,7 +166,7 @@ export const TermList: React.FC = () => {
       <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
-          <DialogContentText>Delete this term? This cannot be undone.</DialogContentText>
+          <DialogContentText>Delete this item package? This cannot be undone.</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteId(null)}>Cancel</Button>
@@ -165,4 +184,3 @@ export const TermList: React.FC = () => {
     </>
   )
 }
-

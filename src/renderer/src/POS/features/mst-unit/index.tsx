@@ -1,14 +1,15 @@
 import { Add as AddIcon, Close, Search as SearchIcon } from '@mui/icons-material'
 import { Box, Button, Drawer, IconButton, InputAdornment, Paper, TextField } from '@mui/material'
 import { SystemPermissions } from '@shared/constants/permissions'
-import React from 'react'
+import { lazy, memo, Suspense } from 'react'
 import PageLayout from '../../components/layout/page-layout'
 import { useAccessControl } from '../../hooks'
-import { UnitForm } from './components/unit-form'
+import { UnitFormSkeleton } from './components/unit-form-skeleton'
 import { UnitList } from './components/unit-list'
 import { useUnitHubStore } from './store/use-unit-hub-store'
 
-const UnitHub: React.FC = () => {
+const UnitForm = lazy(() => import('./components/unit-form'))
+function UnitHub() {
   const { searchKeyword, setSearchKeyword, isFormOpen, setIsFormOpen, setSelectedId } =
     useUnitHubStore()
 
@@ -75,11 +76,13 @@ const UnitHub: React.FC = () => {
           sx: { width: { xs: '100%', sm: 400, md: 500 }, borderRadius: '12px 0 0 12px' }
         }}
       >
-        <UnitForm />
+        <Suspense fallback={<UnitFormSkeleton />}>
+          <UnitForm />
+        </Suspense>
       </Drawer>
     </PageLayout>
   )
 }
 
-export default UnitHub
+export default memo(UnitHub)
 

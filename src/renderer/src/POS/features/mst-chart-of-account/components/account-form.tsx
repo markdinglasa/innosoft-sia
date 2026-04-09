@@ -1,24 +1,52 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Close as CloseIcon, Receipt as TaxIcon, Save as SaveIcon } from '@mui/icons-material'
-import { Alert, Box, Button, Grid, IconButton, TextField, Typography } from '@mui/material'
+import {
+  AccountBalance as AccountIcon,
+  Close as CloseIcon,
+  Save as SaveIcon
+} from '@mui/icons-material'
+import {
+  Alert,
+  Box,
+  Button,
+  FormControlLabel,
+  Grid,
+  IconButton,
+  MenuItem,
+  Switch,
+  TextField,
+  Typography
+} from '@mui/material'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
-import { useTaxHubStore } from '../store/use-tax-hub-store'
-import { TaxFormSkeleton } from './tax-form-skeleton'
+import { useAccountHubStore } from '../store/use-account-hub-store'
+import { AccountFormSkeleton } from './account-form-skeleton'
 
-const taxSchema = z.object({
-  code: z.string().min(1, 'Tax Code is required'),
-  name: z.string().min(1, 'Tax Name is required'),
-  rate: z.coerce.number().min(0, 'Rate must be at least 0')
+const accountSchema = z.object({
+  code: z.string().min(1, 'Account Code is required'),
+  name: z.string().min(1, 'Account Name is required'),
+  type: z.string().min(1, 'Account Type is required'),
+  isDefault: z.boolean().default(false)
 })
 
-type FormData = z.infer<typeof taxSchema>
+type FormData = z.infer<typeof accountSchema>
 
-export const TaxForm: React.FC = () => {
-  const { selectedId, setIsFormOpen, setSelectedId } = useTaxHubStore()
-  const { useGet, useSaveMutation } = useMasterfile('tax')
+const accountTypes = [
+  'Asset',
+  'Liability',
+  'Equity',
+  'Revenue',
+  'Expense',
+  'Sales',
+  'Cost of Sales',
+  'Other Income',
+  'Other Expense'
+]
+
+export const AccountForm: React.FC = () => {
+  const { selectedId, setIsFormOpen, setSelectedId } = useAccountHubStore()
+  const { useGet, useSaveMutation } = useMasterfile('account')
   const { data: existing, isLoading } = useGet(selectedId)
   const saveMutation = useSaveMutation()
 
@@ -28,15 +56,20 @@ export const TaxForm: React.FC = () => {
     reset,
     formState: { errors }
   } = useForm({
-    resolver: zodResolver(taxSchema),
-    defaultValues: { code: '', name: '', rate: 0 }
+    resolver: zodResolver(accountSchema),
+    defaultValues: { code: '', name: '', type: '', isDefault: false }
   })
 
   useEffect(
     function formResetter() {
       if (existing)
-        reset({ code: existing.code || '', name: existing.name || '', rate: existing.rate || 0 })
-      else reset({ code: '', name: '', rate: 0 })
+        reset({
+          code: existing.code || '',
+          name: existing.name || '',
+          type: existing.type || '',
+          isDefault: !!existing.isDefault
+        })
+      else reset({ code: '', name: '', type: '', isDefault: false })
     },
     [existing, reset]
   )
@@ -54,7 +87,7 @@ export const TaxForm: React.FC = () => {
   if (selectedId && isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <TaxFormSkeleton />
+        <AccountFormSkeleton />
       </Box>
     )
   }
@@ -76,8 +109,8 @@ export const TaxForm: React.FC = () => {
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <TaxIcon sx={{ fontSize: 25 }} />
-          <Typography variant="h6">{selectedId ? 'Edit Tax' : 'New Tax'}</Typography>
+          <AccountIcon sx={{ fontSize: 25 }} />
+          <Typography variant="h6">{selectedId ? 'Edit Account' : 'New Account'}</Typography>
         </Box>
         <IconButton size="small" onClick={handleClose} sx={{ color: 'white' }}>
           <CloseIcon sx={{ fontSize: 25 }} />
@@ -98,7 +131,7 @@ export const TaxForm: React.FC = () => {
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Tax Code"
+                  label="Account Code"
                   fullWidth
                   required
                   margin="normal"
@@ -115,7 +148,7 @@ export const TaxForm: React.FC = () => {
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Tax Name"
+                  label="Account"
                   fullWidth
                   required
                   margin="normal"
@@ -127,18 +160,41 @@ export const TaxForm: React.FC = () => {
           </Grid>
           <Grid item xs={12}>
             <Controller
-              name="rate"
+              name="type"
               control={control}
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Rate (%)"
-                  type="number"
+                  select
+                  label="Account Type"
                   fullWidth
                   required
                   margin="normal"
-                  error={!!errors.rate}
-                  helperText={errors.rate?.message}
+                  error={!!errors.type}
+                  helperText={errors.type?.message}
+                >
+                  {accountTypes.map((type) => (
+                    <MenuItem key={type} value={type}>
+                      {type}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
+              name="isDefault"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={!!field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                    />
+                  }
+                  label="Default Account"
                 />
               )}
             />
@@ -162,7 +218,7 @@ export const TaxForm: React.FC = () => {
           startIcon={<SaveIcon sx={{ fontSize: 25 }} />}
           disabled={saveMutation.isPending}
         >
-          {saveMutation.isPending ? 'Saving...' : 'Save Tax'}
+          {saveMutation.isPending ? 'Saving...' : 'Save Account'}
         </Button>
       </Box>
     </Box>
