@@ -19,23 +19,11 @@ export class CreateSupplierDto {
   @MaxLength(255)
   address!: string
 
-  @ApiProperty({ description: 'Telephone number' })
+  @ApiProperty({ description: 'Contact number' })
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
-  telephoneNumber!: string
-
-  @ApiProperty({ description: 'Cellphone number' })
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(50)
-  cellphoneNumber!: string
-
-  @ApiProperty({ description: 'Fax number' })
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(50)
-  faxNumber!: string
+  contactNumber!: string
 
   @ApiProperty({ description: 'Term ID' })
   @IsNumber()

@@ -8,7 +8,6 @@ import {
   Alert,
   Box,
   Button,
-  CircularProgress,
   Divider,
   Grid,
   IconButton,
@@ -21,16 +20,19 @@ import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useSupplierHubStore } from '../store/use-supplier-hub-store'
+import { SupplierFormSkeleton } from './supplier-form-skeleton'
 
 const supplierSchema = z.object({
   name: z.string().min(1, 'Supplier Name is required'),
   address: z.string().min(1, 'Address is required'),
-  telephoneNumber: z.string().nullable().optional(),
-  cellphoneNumber: z.string().nullable().optional(),
-  faxNumber: z.string().nullable().optional(),
+  contactNumber: z
+    .string()
+    .min(7, 'Contact Number must be at least 7 characters')
+    .max(50, 'Contact Number too long')
+    .regex(/^[0-9+\-\s()]*$/, 'Invalid contact number format'),
   tin: z.string().nullable().optional(),
-  termId: z.any().nullable().optional(),
-  accountId: z.any().nullable().optional(),
+  termId: z.coerce.number().min(1, 'Payment Term is required'),
+  accountId: z.coerce.number().min(1, 'AP Account is required'),
   isDefault: z.boolean().default(false)
 })
 
@@ -57,9 +59,7 @@ function SupplierForm() {
     defaultValues: {
       name: '',
       address: '',
-      telephoneNumber: '',
-      cellphoneNumber: '',
-      faxNumber: '',
+      contactNumber: '',
       tin: '',
       termId: '',
       accountId: '',
@@ -73,9 +73,7 @@ function SupplierForm() {
         reset({
           name: supplier.name || '',
           address: supplier.address || '',
-          telephoneNumber: supplier.telephoneNumber || '',
-          cellphoneNumber: supplier.cellphoneNumber || '',
-          faxNumber: supplier.faxNumber || '',
+          contactNumber: supplier.contactNumber || '',
           tin: supplier.tin || '',
           termId: supplier.termId || '',
           accountId: supplier.accountId || '',
@@ -85,9 +83,7 @@ function SupplierForm() {
         reset({
           name: '',
           address: '',
-          telephoneNumber: '',
-          cellphoneNumber: '',
-          faxNumber: '',
+          contactNumber: '',
           tin: '',
           termId: '',
           accountId: '',
@@ -114,7 +110,7 @@ function SupplierForm() {
   if (selectedSupplierId && isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <CircularProgress size={32} />
+        <SupplierFormSkeleton />
       </Box>
     )
   }
@@ -178,26 +174,19 @@ function SupplierForm() {
               helperText={errors.address?.message}
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12}>
             <TextField
-              {...register('cellphoneNumber')}
-              label="Cellphone Number"
+              {...register('contactNumber')}
+              label="Contact Number"
               fullWidth
               size="small"
+              required
+              error={!!errors.contactNumber}
+              helperText={errors.contactNumber?.message}
+              placeholder="e.g. +63 912 345 6789 or (0912) 345-6789"
             />
           </Grid>
-          <Grid item xs={6}>
-            <TextField
-              {...register('telephoneNumber')}
-              label="Telephone Number"
-              fullWidth
-              size="small"
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField {...register('faxNumber')} label="Fax Number" fullWidth size="small" />
-          </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12}>
             <TextField {...register('tin')} label="TIN" fullWidth size="small" />
           </Grid>
           <Divider sx={{ width: '100%', my: 2 }} />
@@ -206,7 +195,16 @@ function SupplierForm() {
               name="termId"
               control={control}
               render={({ field }) => (
-                <TextField {...field} select label="Payment Term" fullWidth size="small">
+                <TextField
+                  {...field}
+                  select
+                  label="Payment Term"
+                  fullWidth
+                  size="small"
+                  required
+                  error={!!errors.termId}
+                  helperText={errors.termId?.message}
+                >
                   {terms.map((t: any) => (
                     <MenuItem key={t.id} value={t.id}>
                       {t.name}
@@ -227,6 +225,9 @@ function SupplierForm() {
                   label="AP Account (Chart of Accounts)"
                   fullWidth
                   size="small"
+                  required
+                  error={!!errors.accountId}
+                  helperText={errors.accountId?.message}
                 >
                   {accounts.map((a: any) => (
                     <MenuItem key={a.id} value={a.id}>
@@ -264,3 +265,4 @@ function SupplierForm() {
 }
 
 export default memo(SupplierForm)
+

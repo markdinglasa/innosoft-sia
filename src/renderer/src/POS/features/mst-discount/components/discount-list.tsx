@@ -77,7 +77,7 @@ export const DiscountList: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableSkeleton isLoading={isLoading} columns={6} rows={15}>
+            <TableSkeleton isLoading={isLoading} columns={7} rows={15}>
               {items.map((item: any) => (
                 <TableRow
                   key={item.id}
@@ -125,14 +125,14 @@ export const DiscountList: React.FC = () => {
               ))}
               {isError && (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                  <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
                     <Typography color="error">Failed to load discounts.</Typography>
                   </TableCell>
                 </TableRow>
               )}
               {!isError && items.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                  <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
                     <Typography variant="body2" color="text.secondary">
                       No discounts found.
                     </Typography>

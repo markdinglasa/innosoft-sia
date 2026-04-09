@@ -341,9 +341,7 @@ export class SeederService {
           repo.create({
             name: data.name,
             address: data.address,
-            telephoneNumber: data.telephoneNumber,
-            cellphoneNumber: data.cellphoneNumber,
-            faxNumber: data.faxNumber,
+            contactNumber: data.contactNumber,
             termId: term.id,
             tin: data.tin,
             accountId: account.id,

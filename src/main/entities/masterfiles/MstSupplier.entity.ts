@@ -14,10 +14,13 @@
 // 	[UpdateDateTime] [datetime] NOT NULL,
 // 	[IsLocked] [bit] NOT NULL,
 
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
+import { TrnPurchaseOrderEntity } from '../transactions/TrnPurchaseOrder.entity'
+import { TrnStockInEntity } from '../transactions/TrnStockIn.entity'
 import { MstAccountEntity } from './MstAccount.entity'
+import { MstItemEntity } from './MstItem.entity'
 import { MstTermEntity } from './MstTerm.entity'
 
 @Entity(POSEntity.MST_SUPPLIER)
@@ -26,9 +29,7 @@ export class MstSupplierEntity extends BaseEntity {
     super()
     this.name = ''
     this.address = ''
-    this.telephoneNumber = ''
-    this.cellphoneNumber = ''
-    this.faxNumber = ''
+    this.contactNumber = ''
     this.termId = 0
     this.tin = ''
     this.accountId = 0
@@ -41,14 +42,8 @@ export class MstSupplierEntity extends BaseEntity {
   @Column({ name: 'Address', type: 'nvarchar', length: 255, nullable: false })
   address: string
 
-  @Column({ name: 'TelephoneNumber', type: 'nvarchar', length: 50, nullable: false })
-  telephoneNumber: string
-
-  @Column({ name: 'CellphoneNumber', type: 'nvarchar', length: 50, nullable: false })
-  cellphoneNumber: string
-
-  @Column({ name: 'FaxNumber', type: 'nvarchar', length: 50, nullable: false })
-  faxNumber: string
+  @Column({ name: 'ContactNumber', type: 'nvarchar', length: 50, nullable: true, default: '' })
+  contactNumber: string
 
   @Column({ name: 'TermId', type: 'int', nullable: false })
   termId: number
@@ -70,5 +65,14 @@ export class MstSupplierEntity extends BaseEntity {
   @ManyToOne(() => MstAccountEntity)
   @JoinColumn({ name: 'AccountId' })
   account?: MstAccountEntity
+
+  @OneToMany(() => TrnPurchaseOrderEntity, (po) => po.supplier)
+  purchaseOrders?: TrnPurchaseOrderEntity[]
+
+  @OneToMany(() => TrnStockInEntity, (si) => si.supplier)
+  stockIns?: TrnStockInEntity[]
+
+  @OneToMany(() => MstItemEntity, (item) => item.defaultSupplier)
+  items?: MstItemEntity[]
 }
 

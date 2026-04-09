@@ -83,7 +83,7 @@ export const SupplierList: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableSkeleton isLoading={isLoading} columns={5} rows={15}>
+            <TableSkeleton isLoading={isLoading} columns={6} rows={15}>
               {suppliers.map((supplier: any) => (
                 <TableRow
                   key={supplier.id}
@@ -112,9 +112,7 @@ export const SupplierList: React.FC = () => {
                     </Typography>
                   </TableCell>
                   <TableCell>{supplier.address || 'N/A'}</TableCell>
-                  <TableCell align="right">
-                    {supplier.cellphoneNumber || supplier.telephoneNumber || 'N/A'}
-                  </TableCell>
+                  <TableCell align="right">{supplier.contactNumber || 'N/A'}</TableCell>
                   <TableCell align="right">
                     <Checkbox
                       checked={!!supplier.isDefault}

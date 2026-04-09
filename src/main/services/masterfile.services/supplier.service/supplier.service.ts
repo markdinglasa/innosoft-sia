@@ -19,7 +19,7 @@ export class SupplierService extends BaseService<MstSupplierEntity> implements I
    * Search fields for Supplier keyword search.
    */
   protected get searchFields(): string[] {
-    return ['name', 'address', 'telephoneNumber', 'cellphoneNumber', 'faxNumber', 'tin']
+    return ['name', 'address', 'contactNumber', 'tin']
   }
 
   /**
@@ -65,7 +65,7 @@ export class SupplierService extends BaseService<MstSupplierEntity> implements I
     const currentEntity = await this.repository.findOne({
       where: { id },
       withDeleted: true,
-      relations: ['term', 'account']
+      relations: ['purchaseOrders', 'stockIns', 'items']
     })
     if (!currentEntity) {
       throw new BadRequestException('Supplier not found for deletion.')
@@ -75,12 +75,18 @@ export class SupplierService extends BaseService<MstSupplierEntity> implements I
       throw new BadRequestException('Cannot delete default supplier.')
     }
 
-    if (currentEntity.term) {
-      throw new BadRequestException('Cannot delete supplier because they have existing terms.')
+    if (currentEntity.purchaseOrders && currentEntity.purchaseOrders.length > 0) {
+      throw new BadRequestException(
+        'Cannot delete supplier because they have existing purchase orders.'
+      )
     }
 
-    if (currentEntity.account) {
-      throw new BadRequestException('Cannot delete supplier because they have existing accounts.')
+    if (currentEntity.stockIns && currentEntity.stockIns.length > 0) {
+      throw new BadRequestException('Cannot delete supplier because they have existing stock ins.')
+    }
+
+    if (currentEntity.items && currentEntity.items.length > 0) {
+      throw new BadRequestException('Cannot delete supplier because they have existing items.')
     }
   }
 }
