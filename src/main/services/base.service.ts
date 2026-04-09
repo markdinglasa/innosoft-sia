@@ -59,7 +59,6 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
    * Directly uses AppDataSource to avoid circular dependency with SysAuditTrailService.
    */
   protected async audit(payload: {
-
     userId?: number
     action: string
     recordId?: string
@@ -69,8 +68,22 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
     // Avoid auditing the audit trail itself
     if (this.entity === SysAuditTrailEntity) return
 
+    const redact = (data: any) => {
+      if (!data || typeof data !== 'object') return data
+      const sensitiveKeys = ['password', 'secret', 'token', 'key', 'apiKey', 'credential']
+      const sanitized = { ...data }
+      for (const key of Object.keys(sanitized)) {
+        if (sensitiveKeys.some((sk) => key.toLowerCase().includes(sk))) {
+          sanitized[key] = '[REDACTED]'
+        } else if (typeof sanitized[key] === 'object') {
+          sanitized[key] = redact(sanitized[key])
+        }
+      }
+      return sanitized
+    }
+
     const currentUser = Store.get(SYSTEM_SELF)
-    const effectiveUserId = payload.userId || currentUser?.id || 1 // Fallback to 1 if no user found (though shouldn't happen)
+    const effectiveUserId = payload.userId || currentUser?.id || 1
 
     const entityMetadata = AppDataSource.getMetadata(this.entity)
     const tableName = entityMetadata.tableName
@@ -83,8 +96,8 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
         recordInformation: payload.recordId || 'none',
         actionInformation: payload.action,
         auditDate: new Date(),
-        oldData: payload.oldData ? JSON.stringify(payload.oldData) : null,
-        newData: payload.newData ? JSON.stringify(payload.newData) : null
+        oldData: payload.oldData ? JSON.stringify(redact(payload.oldData)) : null,
+        newData: payload.newData ? JSON.stringify(redact(payload.newData)) : null
       })
       await auditRepo.save(auditEntry)
     } catch (error) {

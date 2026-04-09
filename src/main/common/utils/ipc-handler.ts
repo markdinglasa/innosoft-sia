@@ -1,9 +1,9 @@
-import { IpcMainInvokeEvent, ipcMain } from 'electron'
-import { IpcResponseItem } from '@shared/types'
-import { AppException } from '../exceptions'
-import { verifyToken } from '../utils/jwt.util'
 import { SYSTEM_ACCESS_TOKEN } from '@shared/constants'
-import Store from '../../store/Store'
+import { IpcResponseItem } from '@shared/types'
+import { IpcMainInvokeEvent, ipcMain } from 'electron'
+import { AppException } from '../exceptions'
+import { CookieUtil } from '../utils/cookie.util'
+import { verifyToken } from '../utils/jwt.util'
 
 export function registerIpcHandler<T>(
   channel: string,
@@ -50,7 +50,7 @@ export function registerProtectedIpcHandler<T>(
   ipcMain.handle(channel, async (event, ...args): Promise<IpcResponseItem<T>> => {
     try {
       // Auth guard: validate access token
-      const accessToken = Store.get(SYSTEM_ACCESS_TOKEN)
+      const accessToken = await CookieUtil.get(SYSTEM_ACCESS_TOKEN)
       if (!accessToken) {
         return {
           success: false,

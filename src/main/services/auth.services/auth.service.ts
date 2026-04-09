@@ -10,6 +10,7 @@ import { LoginResponse, TokenPayload } from '@shared/types/auth.types'
 import * as bcrypt from 'bcrypt'
 import { FindOneOptions } from 'typeorm'
 import { ClosedDateException, UnauthorizedException } from '../../common/exceptions'
+import { CookieUtil } from '../../common/utils/cookie.util'
 import { generateAccessToken, generateRefreshToken, verifyToken } from '../../common/utils/jwt.util'
 import {
   MstBranchAccessEntity,
@@ -154,9 +155,11 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
     const accessToken = generateAccessToken(tokenPayload)
     const refreshToken = generateRefreshToken(tokenPayload)
 
-    // Store tokens and user in electron-store
-    Store.set(SYSTEM_ACCESS_TOKEN, accessToken)
-    Store.set(SYSTEM_REFRESH_TOKEN, refreshToken)
+    // Store tokens in secure HttpOnly cookies
+    await CookieUtil.set(SYSTEM_ACCESS_TOKEN, accessToken, 8 * 3600) // 8 hours
+    await CookieUtil.set(SYSTEM_REFRESH_TOKEN, refreshToken, 7 * 24 * 3600) // 7 days
+    
+    // Store user non-sensitive info in electron-store
     Store.set(SYSTEM_SELF, user)
     Store.set(SYSTEM_LOGIN_DATE, loginDate)
 
@@ -328,8 +331,8 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
         actionInformation: 'LOGOUT'
       })
     }
-    Store.set(SYSTEM_ACCESS_TOKEN, undefined as any)
-    Store.set(SYSTEM_REFRESH_TOKEN, undefined as any)
+    await CookieUtil.remove(SYSTEM_ACCESS_TOKEN)
+    await CookieUtil.remove(SYSTEM_REFRESH_TOKEN)
     Store.set(SYSTEM_SELF, undefined as any)
     Store.set(SYSTEM_LOGIN_DATE, undefined as any)
     Store.set(POS_MANAGER, undefined as any)
@@ -339,7 +342,7 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
    * Verifies the stored refresh token and generates a new token pair.
    */
   async refreshTokens(): Promise<LoginResponse> {
-    const refreshToken = Store.get(SYSTEM_REFRESH_TOKEN)
+    const refreshToken = await CookieUtil.get(SYSTEM_REFRESH_TOKEN)
 
     if (!refreshToken) {
       throw new UnauthorizedException('No refresh token found. Please log in again.')
@@ -377,9 +380,10 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
     const newAccessToken = generateAccessToken(tokenPayload)
     const newRefreshToken = generateRefreshToken(tokenPayload)
 
-    // Update store
-    Store.set(SYSTEM_ACCESS_TOKEN, newAccessToken)
-    Store.set(SYSTEM_REFRESH_TOKEN, newRefreshToken)
+    // Update secure cookies
+    await CookieUtil.set(SYSTEM_ACCESS_TOKEN, newAccessToken, 8 * 3600)
+    await CookieUtil.set(SYSTEM_REFRESH_TOKEN, newRefreshToken, 7 * 24 * 3600)
+    
     Store.set(SYSTEM_SELF, user)
     Store.set(SYSTEM_LOGIN_DATE, tokenPayload.loginDate)
 
@@ -410,7 +414,7 @@ export class AuthService extends BaseService<MstUserEntity> implements IAuthServ
    * Validates the stored access token (auth guard).
    */
   async validateAccessToken(): Promise<TokenPayload> {
-    const accessToken = Store.get(SYSTEM_ACCESS_TOKEN)
+    const accessToken = await CookieUtil.get(SYSTEM_ACCESS_TOKEN)
 
     if (!accessToken) {
       throw new UnauthorizedException('No access token found. Please log in.')

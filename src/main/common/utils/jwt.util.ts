@@ -1,8 +1,8 @@
 import { TokenPayload } from '@shared/types/auth.types'
 import jwt from 'jsonwebtoken'
 
-// In production, move this to an environment variable
-const JWT_SECRET = 'nutshell-jwt-secret-key-2026'
+// Use environment variable for the secret key
+const JWT_SECRET = process.env.JWT_SECRET || 'nutshell-jwt-secret-key-2026'
 const ACCESS_TOKEN_EXPIRY = '8h' // 8 hours
 const REFRESH_TOKEN_EXPIRY = '7d' // 7 days
 

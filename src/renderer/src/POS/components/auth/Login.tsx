@@ -26,19 +26,10 @@ export const Login = () => {
     const result = await login({ userName, password })
     
     if (result) {
-      // Store user session
+      // Store non-sensitive user profile in store
       window.electron.ipc.send(IpcChannel.setStoreValue, {
         key: SYSTEM_SELF,
         state: result.user
-      })
-      // Store tokens
-      window.electron.ipc.send(IpcChannel.setStoreValue, {
-        key: SYSTEM_ACCESS_TOKEN,
-        state: result.tokens.accessToken
-      })
-      window.electron.ipc.send(IpcChannel.setStoreValue, {
-        key: SYSTEM_REFRESH_TOKEN,
-        state: result.tokens.refreshToken
       })
       console.log('Login successful!', result.user)
     }
