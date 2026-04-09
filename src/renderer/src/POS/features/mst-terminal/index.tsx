@@ -1,7 +1,9 @@
-import { Add as AddIcon, Search as SearchIcon } from '@mui/icons-material'
-import { Box, Button, Drawer, InputAdornment, Paper, TextField } from '@mui/material'
+import { Add as AddIcon, Close, Search as SearchIcon } from '@mui/icons-material'
+import { Box, Button, Drawer, IconButton, InputAdornment, Paper, TextField } from '@mui/material'
+import { SystemPermissions } from '@shared/constants/permissions'
 import React from 'react'
 import PageLayout from '../../components/layout/page-layout'
+import { useAccessControl } from '../../hooks'
 import { TerminalForm } from './components/terminal-form'
 import { TerminalList } from './components/terminal-list'
 import { useTerminalHubStore } from './store/use-terminal-hub-store'
@@ -9,10 +11,16 @@ import { useTerminalHubStore } from './store/use-terminal-hub-store'
 const TerminalHub: React.FC = () => {
   const { searchKeyword, setSearchKeyword, isFormOpen, setIsFormOpen, setSelectedId } =
     useTerminalHubStore()
+
   const handleCreate = () => {
     setSelectedId(null)
     setIsFormOpen(true)
   }
+
+  // permissions
+  const { hasPermission } = useAccessControl()
+  const canAdd = hasPermission(SystemPermissions.TERMINAL_ADD)
+
   return (
     <PageLayout title="Terminal Management">
       <Box sx={{ mb: 3 }}>
@@ -31,10 +39,22 @@ const TerminalHub: React.FC = () => {
                 <InputAdornment position="start">
                   <SearchIcon sx={{ fontSize: 25 }} />
                 </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={() => setSearchKeyword('')}
+                    hidden={!searchKeyword}
+                  >
+                    <Close sx={{ fontSize: 25 }} />
+                  </IconButton>
+                </InputAdornment>
               )
             }}
           />
           <Button
+            disabled={!canAdd}
             variant="contained"
             startIcon={<AddIcon sx={{ fontSize: 25 }} />}
             onClick={handleCreate}

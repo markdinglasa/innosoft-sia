@@ -1,9 +1,7 @@
 import { Delete as DeleteIcon, Security as SecurityIcon } from '@mui/icons-material'
 import {
-  Box,
   Button,
   Chip,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -21,6 +19,8 @@ import {
 } from '@mui/material'
 import { ButtonType } from '@shared/types'
 import React from 'react'
+import { MstRoleEntity } from 'src/main/entities'
+import TableSkeleton from '../../../components/data-display/table-skeleton'
 import CircleButton from '../../../components/inputs/circle-button'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useRoleHubStore } from '../store/use-role-hub-store'
@@ -33,10 +33,13 @@ export const RoleList: React.FC = () => {
   const { data, isLoading, isError } = useList({ searchKeyword, page: page + 1, take: 30 })
 
   // Reset page when search changes
-  React.useEffect(function resetPageOnSearch() {
-    setPage(0)
-  }, [searchKeyword])
-  
+  React.useEffect(
+    function resetPageOnSearch() {
+      setPage(0)
+    },
+    [searchKeyword]
+  )
+
   const deleteMutation = useDeleteMutation()
 
   const handleEdit = (id: number) => {
@@ -54,18 +57,6 @@ export const RoleList: React.FC = () => {
       await deleteMutation.mutateAsync(deleteId)
       setDeleteId(null)
     }
-  }
-
-  if (isLoading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <CircularProgress size={32} />
-      </Box>
-    )
-  }
-
-  if (isError) {
-    return <Typography color="error">Failed to load roles.</Typography>
   }
 
   const roles = (data as any)?.items || []
@@ -87,53 +78,62 @@ export const RoleList: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {roles.map((role: any) => (
-              <TableRow
-                key={role.id}
-                hover
-                onClick={() => handleEdit(role.id)}
-                sx={{ cursor: 'pointer' }}
-              >
-                <TableCell>
-                  <SecurityIcon color="primary" sx={{ fontSize: 25 }} />
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2" fontWeight="medium">
-                    {role.name}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {role.description || 'No description'}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={`${role.permissions?.length || 0} Rights`}
-                    size="small"
-                    variant="outlined"
-                  />
-                </TableCell>
-                <TableCell align="right">
-                  <CircleButton
-                    onClick={(e) => handleDelete(e, role.id)}
-                    icon={<DeleteIcon sx={{ fontSize: 25 }} />}
-                    type={ButtonType.button}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-            {roles.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    No roles found.
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )}
+            <TableSkeleton isLoading={isLoading} columns={4} rows={3}>
+              {roles.map((role: MstRoleEntity) => (
+                <TableRow
+                  key={role.id}
+                  hover
+                  onClick={() => handleEdit(role.id)}
+                  sx={{ cursor: 'pointer' }}
+                >
+                  <TableCell>
+                    <SecurityIcon color="primary" sx={{ fontSize: 25 }} />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" fontWeight="medium">
+                      {role.name}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {role.description || 'No description'}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={`${role.permissions?.length || 0} Rights`}
+                      size="small"
+                      variant="outlined"
+                    />
+                  </TableCell>
+                  <TableCell align="right">
+                    <CircleButton
+                      onClick={(e) => handleDelete(e, role.id)}
+                      icon={<DeleteIcon sx={{ fontSize: 25 }} />}
+                      type={ButtonType.button}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+              {isError && (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                    <Typography color="error">Failed to load roles.</Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+              {!isError && roles.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      No roles found.
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableSkeleton>
           </TableBody>
         </Table>
       </TableContainer>
-      
+
       <TablePagination
         rowsPerPageOptions={[30]}
         component="div"
@@ -142,7 +142,6 @@ export const RoleList: React.FC = () => {
         page={page}
         onPageChange={(_, newPage) => setPage(newPage)}
       />
-
 
       <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}>
         <DialogTitle>Confirm Delete</DialogTitle>

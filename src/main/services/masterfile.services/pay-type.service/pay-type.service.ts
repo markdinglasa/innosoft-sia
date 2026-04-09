@@ -19,7 +19,7 @@ export class PayTypeService extends BaseService<MstPayTypeEntity> implements IPa
    * Search fields for PayType keyword search.
    */
   protected get searchFields(): string[] {
-    return ['payType']
+    return ['name']
   }
 
   /**
@@ -38,7 +38,10 @@ export class PayTypeService extends BaseService<MstPayTypeEntity> implements IPa
   /**
    * Validates before updating an existing PayType.
    */
-  protected async validateUpdate(id: any, data: QueryDeepPartialEntity<MstPayTypeEntity>): Promise<void> {
+  protected async validateUpdate(
+    id: any,
+    data: QueryDeepPartialEntity<MstPayTypeEntity>
+  ): Promise<void> {
     const currentEntity = await this.get(id)
     if (!currentEntity) {
       throw new BadRequestException('Pay Type not found for update.')
@@ -63,3 +66,4 @@ export class PayTypeService extends BaseService<MstPayTypeEntity> implements IPa
     }
   }
 }
+

@@ -1,7 +1,9 @@
-import { Add as AddIcon, Search as SearchIcon } from '@mui/icons-material'
-import { Box, Button, Drawer, InputAdornment, Paper, TextField } from '@mui/material'
+import { Add as AddIcon, Close, Search as SearchIcon } from '@mui/icons-material'
+import { Box, Button, Drawer, IconButton, InputAdornment, Paper, TextField } from '@mui/material'
+import { SystemPermissions } from '@shared/constants/permissions'
 import React from 'react'
 import PageLayout from '../../components/layout/page-layout'
+import { useAccessControl } from '../../hooks'
 import { TableGroupForm } from './components/table-group-form'
 import { TableGroupList } from './components/table-group-list'
 import { useTableGroupHubStore } from './store/use-table-group-hub-store'
@@ -9,10 +11,15 @@ import { useTableGroupHubStore } from './store/use-table-group-hub-store'
 const TableGroupHub: React.FC = () => {
   const { searchKeyword, setSearchKeyword, isFormOpen, setIsFormOpen, setSelectedId } =
     useTableGroupHubStore()
+
   const handleCreate = () => {
     setSelectedId(null)
     setIsFormOpen(true)
   }
+
+  const { hasPermission } = useAccessControl()
+  const canAdd = hasPermission(SystemPermissions.TABLE_GROUP_ADD)
+
   return (
     <PageLayout title="Table Group Management">
       <Box sx={{ mb: 3 }}>
@@ -31,10 +38,22 @@ const TableGroupHub: React.FC = () => {
                 <InputAdornment position="start">
                   <SearchIcon sx={{ fontSize: 25 }} />
                 </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={() => setSearchKeyword('')}
+                    hidden={!searchKeyword}
+                  >
+                    <Close sx={{ fontSize: 25 }} />
+                  </IconButton>
+                </InputAdornment>
               )
             }}
           />
           <Button
+            disabled={!canAdd}
             variant="contained"
             startIcon={<AddIcon sx={{ fontSize: 25 }} />}
             onClick={handleCreate}

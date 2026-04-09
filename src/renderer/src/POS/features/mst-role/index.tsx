@@ -1,5 +1,5 @@
-import { Add as AddIcon, Search as SearchIcon } from '@mui/icons-material'
-import { Box, Button, Drawer, InputAdornment, Paper, TextField } from '@mui/material'
+import { Add as AddIcon, Close, Search as SearchIcon } from '@mui/icons-material'
+import { Box, Button, Drawer, IconButton, InputAdornment, Paper, TextField } from '@mui/material'
 import React, { Suspense } from 'react'
 import PageLayout from '../../components/layout/page-layout'
 import { RoleFormSkeleton } from './components/role-form-skeleton'
@@ -40,6 +40,17 @@ const RoleHub: React.FC = () => {
               startAdornment: (
                 <InputAdornment position="start">
                   <SearchIcon sx={{ fontSize: 25 }} />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={() => setSearchKeyword('')}
+                    hidden={!searchKeyword}
+                  >
+                    <Close sx={{ fontSize: 25 }} />
+                  </IconButton>
                 </InputAdornment>
               )
             }}
