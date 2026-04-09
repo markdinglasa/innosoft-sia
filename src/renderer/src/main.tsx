@@ -14,8 +14,12 @@ import Wrapper from './Wrapper'
 import { setActiveUser } from './POS/store/manager'
 import { displayToast } from '@shared/utils'
 import { ToastType, IpcChannel } from '@shared/types'
+import { useState } from 'react'
+import { SessionExpiredDialog } from './POS/components/feedback'
 
 const Root = () => {
+  const [sessionExpiredOpen, setSessionExpiredOpen] = useState(false)
+
   /**
    * Centralized Authentication Error Handler.
    * Forces logout and redirection to login when session expires.
@@ -28,15 +32,15 @@ const Root = () => {
       errorMsg.includes('token') ||
       error.isUnauthorized === true // Custom flag from our auth-middleware
 
-    if (isUnauthorized) {
-      // 1. Force state reset to trigger redirection to login
+    if (isUnauthorized && !sessionExpiredOpen) {
+      // 1. Show the expiration dialog
+      setSessionExpiredOpen(true)
+
+      // 2. Force state reset to trigger redirection to login
       store.dispatch(setActiveUser(null))
 
-      // 2. Proactively clear tokens and session data in the main process
+      // 3. Proactively clear tokens and session data in the main process
       window.electron.ipc.invoke(IpcChannel.logout)
-
-      // 3. Inform the user (avoiding multiple rapid toasts)
-      displayToast('Session expired. Please log in again.', ToastType.error)
     }
   }
 
@@ -70,6 +74,10 @@ const Root = () => {
             <Suspense fallback={<Loader />}>
               <NotificationProvider>
                 <Wrapper />
+                <SessionExpiredDialog 
+                  open={sessionExpiredOpen} 
+                  onClose={() => setSessionExpiredOpen(false)} 
+                />
               </NotificationProvider>
             </Suspense>
           </QueryClientProvider>

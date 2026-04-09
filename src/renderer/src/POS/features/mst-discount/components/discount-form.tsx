@@ -1,5 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Close as CloseIcon, Percent as DiscountIcon, Save as SaveIcon } from '@mui/icons-material'
+import {
+  Add as AddIcon,
+  Close as CloseIcon,
+  Delete as DeleteIcon,
+  Inventory as ItemIcon,
+  Percent as DiscountIcon,
+  Save as SaveIcon
+} from '@mui/icons-material'
 import {
   Alert,
   Box,
@@ -8,13 +15,18 @@ import {
   FormControlLabel,
   Grid,
   IconButton,
+  MenuItem,
+  Paper,
+  Skeleton,
   Switch,
   TextField,
   Typography
 } from '@mui/material'
 import { memo, useEffect } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { ButtonType } from '@shared/types'
+import CircleButton from '../../../components/inputs/circle-button'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useDiscountHubStore } from '../store/use-discount-hub-store'
 import { DiscountFormSkeleton } from './discount-form-skeleton'
@@ -38,15 +50,25 @@ const discountSchema = z.object({
   dayThu: z.boolean().default(false),
   dayFri: z.boolean().default(false),
   daySat: z.boolean().default(false),
-  daySun: z.boolean().default(false)
+  daySun: z.boolean().default(false),
+  discountItems: z
+    .array(
+      z.object({
+        id: z.number().optional(),
+        itemId: z.number().min(1, 'Item is required'),
+        isAutoDiscount: z.boolean().default(false)
+      })
+    )
+    .optional()
 })
 
 type FormData = z.infer<typeof discountSchema>
 
 function DiscountForm() {
   const { selectedId, setIsFormOpen, setSelectedId } = useDiscountHubStore()
-  const { useGet, useSaveMutation } = useMasterfile('discount')
+  const { useGet, useSaveMutation, useLookup } = useMasterfile('discount')
   const { data: existing, isLoading } = useGet(selectedId)
+  const itemsLookup = useLookup('item')
   const saveMutation = useSaveMutation()
 
   const {
@@ -76,8 +98,14 @@ function DiscountForm() {
       dayThu: false,
       dayFri: false,
       daySat: false,
-      daySun: false
+      daySun: false,
+      discountItems: []
     }
+  })
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'discountItems'
   })
 
   const isDateScheduled = watch('isDateScheduled')
@@ -105,7 +133,8 @@ function DiscountForm() {
           dayThu: !!existing.dayThu,
           dayFri: !!existing.dayFri,
           daySat: !!existing.daySat,
-          daySun: !!existing.daySun
+          daySun: !!existing.daySun,
+          discountItems: existing.discountItems || []
         })
       } else {
         reset({
@@ -126,7 +155,8 @@ function DiscountForm() {
           dayThu: false,
           dayFri: false,
           daySat: false,
-          daySun: false
+          daySun: false,
+          discountItems: []
         })
       }
     },
@@ -134,7 +164,11 @@ function DiscountForm() {
   )
 
   const onSubmit = async (formData: FormData) => {
-    await saveMutation.mutateAsync({ ...formData, id: selectedId || undefined })
+    const { discountItems, ...parent } = formData
+    await saveMutation.mutateAsync({
+      parent: { ...parent, id: selectedId || undefined },
+      discountItems: discountItems || []
+    })
     handleClose()
   }
 
@@ -448,6 +482,100 @@ function DiscountForm() {
               </Box>
             </Grid>
           )}
+
+          <Grid item xs={12}>
+            <Box
+              sx={{
+                mt: 2,
+                mb: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
+              <Typography variant="subtitle2" color="text.secondary">
+                Assigned Items
+              </Typography>
+              <Button
+                size="small"
+                startIcon={<AddIcon />}
+                onClick={() => append({ itemId: 0, isAutoDiscount: false })}
+              >
+                Add Item
+              </Button>
+            </Box>
+            <Divider sx={{ mb: 2 }} />
+
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {fields.map((field, index) => (
+                <Paper key={field.id} variant="outlined" sx={{ p: 2 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                    <CircleButton
+                      icon={<DeleteIcon color="primary" sx={{ fontSize: 25 }} />}
+                      type={ButtonType.button}
+                      onClick={() => remove(index)}
+                    />
+                    <Grid container spacing={2}>
+                      <Grid item xs={12}>
+                        <Controller
+                          name={`discountItems.${index}.itemId`}
+                          control={control}
+                          render={({ field: itemField }) =>
+                            itemsLookup.isLoading ? (
+                              <Skeleton variant="rectangular" height={40} width="100%" />
+                            ) : (
+                              <TextField
+                                {...itemField}
+                                select
+                                label="Select Item"
+                                fullWidth
+                                size="small"
+                                error={!!errors.discountItems?.[index]?.itemId}
+                                helperText={errors.discountItems?.[index]?.itemId?.message}
+                                onChange={(e) => itemField.onChange(Number(e.target.value))}
+                              >
+                                {itemsLookup.data?.map((item: any) => (
+                                  <MenuItem key={item.id} value={item.id}>
+                                    {item.name}
+                                  </MenuItem>
+                                ))}
+                              </TextField>
+                            )
+                          }
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Controller
+                          name={`discountItems.${index}.isAutoDiscount`}
+                          control={control}
+                          render={({ field: autoField }) => (
+                            <FormControlLabel
+                              control={
+                                <Switch
+                                  size="small"
+                                  checked={!!autoField.value}
+                                  onChange={(e) => autoField.onChange(e.target.checked)}
+                                />
+                              }
+                              label="Auto Discount"
+                            />
+                          )}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </Paper>
+              ))}
+              {fields.length === 0 && (
+                <Box sx={{ py: 4, textAlign: 'center', bgcolor: 'action.hover', borderRadius: 1 }}>
+                  <ItemIcon sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
+                  <Typography variant="body2" color="text.secondary">
+                    No items assigned. Click "Add Item" to start.
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          </Grid>
         </Grid>
       </Box>
       <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider', display: 'flex', gap: 2 }}>

@@ -1,10 +1,10 @@
-import jwt from 'jsonwebtoken'
 import { TokenPayload } from '@shared/types/auth.types'
+import jwt from 'jsonwebtoken'
 
 // In production, move this to an environment variable
-const JWT_SECRET = 'innosoft-sia-jwt-secret-key-2026'
-const ACCESS_TOKEN_EXPIRY = '15m'   // 15 minutes
-const REFRESH_TOKEN_EXPIRY = '7d'   // 7 days
+const JWT_SECRET = 'nutshell-jwt-secret-key-2026'
+const ACCESS_TOKEN_EXPIRY = '8h' // 8 hours
+const REFRESH_TOKEN_EXPIRY = '7d' // 7 days
 
 /**
  * Generates a short-lived access token.
@@ -27,3 +27,4 @@ export function generateRefreshToken(payload: TokenPayload): string {
 export function verifyToken(token: string): TokenPayload {
   return jwt.verify(token, JWT_SECRET) as TokenPayload
 }
+

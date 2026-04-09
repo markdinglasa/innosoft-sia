@@ -3,16 +3,26 @@ import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity
 import { BadRequestException } from '../../../common/exceptions'
 import { transformAndValidate } from '../../../common/utils/validator'
 import { MstDiscountEntity } from '../../../entities/masterfiles/MstDiscount.entity'
-import { BaseService } from '../../base.service'
+import { MstDiscountItemEntity } from '../../../entities/masterfiles/MstDiscountItem.entity'
+import { ParentChildService } from '../../parent-child.service'
 import { CreateDiscountDto, UpdateDiscountDto } from './dto'
 
 export interface IDiscountService {
   // Add specific Discount methods here later
 }
 
-export class DiscountService extends BaseService<MstDiscountEntity> implements IDiscountService {
+export class DiscountService
+  extends ParentChildService<MstDiscountEntity>
+  implements IDiscountService
+{
   constructor() {
-    super(MstDiscountEntity)
+    super(MstDiscountEntity, [
+      {
+        entity: MstDiscountItemEntity,
+        foreignKey: 'discountId',
+        payloadKey: 'discountItems'
+      }
+    ])
   }
 
   /**
@@ -20,6 +30,13 @@ export class DiscountService extends BaseService<MstDiscountEntity> implements I
    */
   protected get searchFields(): string[] {
     return ['name', 'discountAlias']
+  }
+
+  /**
+   * Relations to include in fetch results.
+   */
+  protected get listRelations(): string[] {
+    return ['discountItems']
   }
 
   /**

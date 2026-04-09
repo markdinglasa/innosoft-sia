@@ -1,6 +1,7 @@
-import { AfterLoad, Column, Entity } from 'typeorm'
+import { AfterLoad, Column, Entity, OneToMany } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
+import { MstDiscountItemEntity } from './MstDiscountItem.entity'
 
 @Entity(POSEntity.MST_DISCOUNT)
 export class MstDiscountEntity extends BaseEntity {
@@ -105,4 +106,7 @@ export class MstDiscountEntity extends BaseEntity {
   setMandated() {
     this.mandated = MstDiscountEntity.mandatedDiscounts.includes(this.name)
   }
+
+  @OneToMany(() => MstDiscountItemEntity, (discountItem) => discountItem.discount)
+  discountItems?: MstDiscountItemEntity[]
 }
