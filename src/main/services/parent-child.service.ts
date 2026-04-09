@@ -1,7 +1,7 @@
-import { ObjectLiteral, DeepPartial, EntityTarget } from 'typeorm'
-import { BaseService } from './base.service'
-import { AppDataSource } from '../typeORM/configurations'
 import { ParentChildSavePayload, ParentChildSaveResult } from '@shared/types/masterfile.types'
+import { DeepPartial, EntityTarget, ObjectLiteral } from 'typeorm'
+import { AppDataSource } from '../typeORM/configurations'
+import { BaseService } from './base.service'
 
 /**
  * Configuration for a child entity sync.
@@ -34,11 +34,20 @@ export abstract class ParentChildService<T extends ObjectLiteral> extends BaseSe
   ): Promise<ParentChildSaveResult> {
     const { parent } = payload
 
+    // 0. Validation Hooks
+    if ((parent as any).id) {
+      await this.validateUpdate((parent as any).id, parent as any)
+    } else {
+      await this.validateCreate(parent)
+    }
+
     return await AppDataSource.transaction(async (manager) => {
       const parentRepo = manager.getRepository(this.parentEntity)
 
       // 1. Save or Update Parent
-      const savedParent = await parentRepo.save(parent)
+      // Use create() to ensure default values are applied for new records
+      const parentToSave = parentRepo.create(parent)
+      const savedParent = await parentRepo.save(parentToSave)
       const parentId = (savedParent as any).id
 
       let totalInserted = 0
@@ -57,15 +66,16 @@ export abstract class ParentChildService<T extends ObjectLiteral> extends BaseSe
         const existingChildIds = existingChildren.map((child: any) => child.id)
 
         // Prep submitted rows with parent ID
-        const normalizedSubmitted = submittedChildren.map((child: any) => ({
-          ...child,
-          [config.foreignKey]: parentId
-        }))
+        const normalizedSubmitted = submittedChildren.map((child: any) => {
+          // Use create() to properly instantiate entity with default values
+          return childRepo.create({
+            ...child,
+            [config.foreignKey]: parentId
+          })
+        })
 
         // Detect deletions
-        const incomingChildIds = submittedChildren
-          .filter((c: any) => c.id)
-          .map((c: any) => c.id)
+        const incomingChildIds = submittedChildren.filter((c: any) => c.id).map((c: any) => c.id)
 
         const childIdsToRemove = existingChildIds.filter((id) => !incomingChildIds.includes(id))
 
@@ -77,9 +87,11 @@ export abstract class ParentChildService<T extends ObjectLiteral> extends BaseSe
         // Save (Upsert)
         const savedChildren = await childRepo.save(normalizedSubmitted)
 
-        const currentInserted = savedChildren.filter((c: any) => !existingChildIds.includes(c.id)).length
+        const currentInserted = savedChildren.filter(
+          (c: any) => !existingChildIds.includes(c.id)
+        ).length
         totalInserted += currentInserted
-        totalUpdated += (savedChildren.length - currentInserted)
+        totalUpdated += savedChildren.length - currentInserted
       }
 
       // 3. Audit Trail

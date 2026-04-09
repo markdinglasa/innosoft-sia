@@ -4,7 +4,6 @@ import {
   Alert,
   Box,
   Button,
-  CircularProgress,
   Divider,
   FormControlLabel,
   Grid,
@@ -18,6 +17,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useDiscountHubStore } from '../store/use-discount-hub-store'
+import { DiscountFormSkeleton } from './discount-form-skeleton'
 
 const discountSchema = z.object({
   branchId: z.number().min(1, 'Branch is required'),
@@ -146,7 +146,7 @@ function DiscountForm() {
   if (selectedId && isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <CircularProgress size={32} />
+        <DiscountFormSkeleton />
       </Box>
     )
   }

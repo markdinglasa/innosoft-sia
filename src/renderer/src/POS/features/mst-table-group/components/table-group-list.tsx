@@ -17,7 +17,8 @@ import {
   Typography
 } from '@mui/material'
 import { SystemPermissions } from '@shared/constants/permissions'
-import { ButtonType } from '@shared/types'
+import { ButtonType, ToastType } from '@shared/types'
+import { displayToast } from '@shared/utils'
 import React from 'react'
 import TableSkeleton from '../../../components/data-display/table-skeleton'
 import CircleButton from '../../../components/inputs/circle-button'
@@ -45,7 +46,8 @@ export const TableGroupList: React.FC = () => {
   )
 
   const deleteMutation = useDeleteMutation()
-  const handleEdit = (id: number) => {
+  const handleEdit = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation()
     setSelectedId(id)
     setIsFormOpen(true)
   }
@@ -85,7 +87,16 @@ export const TableGroupList: React.FC = () => {
                 <TableRow
                   key={item.id}
                   hover
-                  onClick={() => handleEdit(item.id)}
+                  onClick={(e) => {
+                    if (!canEdit) {
+                      displayToast(
+                        'You do not have permission to edit this table group.',
+                        ToastType.error
+                      )
+                      return
+                    }
+                    handleEdit(e, item.id)
+                  }}
                   sx={{ cursor: 'pointer' }}
                 >
                   <TableCell>
@@ -145,7 +156,8 @@ export const TableGroupList: React.FC = () => {
           <Button onClick={() => setDeleteId(null)}>Cancel</Button>
           <Button
             onClick={confirmDelete}
-            color="error"
+            color="primary"
+            startIcon={<DeleteIcon sx={{ fontSize: 25 }} />}
             variant="contained"
             disabled={deleteMutation.isPending}
           >

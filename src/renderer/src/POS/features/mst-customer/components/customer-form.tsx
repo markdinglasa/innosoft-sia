@@ -8,7 +8,6 @@ import {
   Alert,
   Box,
   Button,
-  CircularProgress,
   Divider,
   FormControlLabel,
   Grid,
@@ -24,6 +23,7 @@ import { z } from 'zod'
 import AccessControl from '../../../components/utils/access-control'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useCustomerHubStore } from '../store/use-customer-hub-store'
+import { CustomerFormSkeleton } from './customer-form-skeleton'
 
 const customerSchema = z.object({
   name: z.string().min(2, 'Customer Name must be at least 2 characters'),
@@ -128,7 +128,7 @@ function CustomerForm() {
   if (selectedCustomerId && isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <CircularProgress size={32} />
+        <CustomerFormSkeleton />
       </Box>
     )
   }

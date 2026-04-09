@@ -1,20 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Close as CloseIcon, Save as SaveIcon, Store as StoreIcon } from '@mui/icons-material'
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  IconButton,
-  TextField,
-  Typography
-} from '@mui/material'
+import { Alert, Box, Button, Grid, IconButton, TextField, Typography } from '@mui/material'
 import { memo, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useBranchHubStore } from '../store/use-branch-hub-store'
+import { BranchFormSkeleton } from './branch-form-skeleton'
 
 const branchSchema = z.object({
   name: z.string().min(2, 'Branch must be at least 2 characters'),
@@ -81,7 +73,7 @@ function BranchForm() {
   if (selectedBranchId && isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <CircularProgress size={32} />
+        <BranchFormSkeleton />
       </Box>
     )
   }

@@ -2,17 +2,27 @@ import { DeepPartial } from 'typeorm'
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity'
 import { BadRequestException } from '../../../common/exceptions'
 import { transformAndValidate } from '../../../common/utils/validator'
+import { MstTableEntity } from '../../../entities/masterfiles/MstTable.entity'
 import { MstTableGroupEntity } from '../../../entities/masterfiles/MstTableGroup.entity'
-import { BaseService } from '../../base.service'
+import { ParentChildService } from '../../parent-child.service'
 import { CreateTableGroupDto, UpdateTableGroupDto } from './dto'
 
 export interface ITableGroupService {
   // Add specific TableGroup methods here later
 }
 
-export class TableGroupService extends BaseService<MstTableGroupEntity> implements ITableGroupService {
+export class TableGroupService
+  extends ParentChildService<MstTableGroupEntity>
+  implements ITableGroupService
+{
   constructor() {
-    super(MstTableGroupEntity)
+    super(MstTableGroupEntity, [
+      {
+        entity: MstTableEntity,
+        foreignKey: 'tableGroupId',
+        payloadKey: 'tables'
+      }
+    ])
   }
 
   /**
@@ -20,6 +30,13 @@ export class TableGroupService extends BaseService<MstTableGroupEntity> implemen
    */
   protected get searchFields(): string[] {
     return ['tableGroup']
+  }
+
+  /**
+   * Relations to include in fetch results.
+   */
+  protected get listRelations(): string[] {
+    return ['tables']
   }
 
   /**
@@ -38,7 +55,10 @@ export class TableGroupService extends BaseService<MstTableGroupEntity> implemen
   /**
    * Validates before updating an existing TableGroup.
    */
-  protected async validateUpdate(id: any, data: QueryDeepPartialEntity<MstTableGroupEntity>): Promise<void> {
+  protected async validateUpdate(
+    id: any,
+    data: QueryDeepPartialEntity<MstTableGroupEntity>
+  ): Promise<void> {
     const currentEntity = await this.get(id)
     if (!currentEntity) {
       throw new BadRequestException('Table Group not found for update.')
@@ -61,5 +81,10 @@ export class TableGroupService extends BaseService<MstTableGroupEntity> implemen
     if (!currentEntity) {
       throw new BadRequestException('Table Group not found for deletion.')
     }
+
+    if (currentEntity.isDefault) {
+      throw new BadRequestException('Default Table Group cannot be deleted.')
+    }
   }
 }
+

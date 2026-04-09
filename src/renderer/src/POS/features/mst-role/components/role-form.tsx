@@ -21,15 +21,15 @@ import {
 import { ButtonType, ToastType } from '@shared/types'
 import { displayToast } from '@shared/utils'
 import { truncate } from 'lodash'
-import React, { useEffect } from 'react'
+import { memo, useEffect } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { MstAccessRightEntity } from 'src/main/entities'
 import CircleButton from '../../../components/inputs/circle-button'
-import AccessControl from '../../../components/utils/access-control'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useRoleHubStore } from '../store/use-role-hub-store'
+import { RoleFormSkeleton } from './role-form-skeleton'
 
-export const RoleForm: React.FC = () => {
+function RoleForm() {
   const { selectedRoleId, setSelectedRoleId, setIsFormOpen } = useRoleHubStore()
   const { useGet, useSaveMutation, useLookup } = useMasterfile('role')
 
@@ -95,6 +95,14 @@ export const RoleForm: React.FC = () => {
     setIsFormOpen(false)
   }
 
+  if (selectedRoleId && isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+        <RoleFormSkeleton />
+      </Box>
+    )
+  }
+
   return (
     <Box
       component="form"
@@ -123,38 +131,27 @@ export const RoleForm: React.FC = () => {
             {saveMutation.error?.message || 'Failed to save role.'}
           </Alert>
         )}
-        <AccessControl condition={!!selectedRoleId && isLoading}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 1 }} />
-            </Grid>
-            <Grid item xs={12}>
-              <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 1 }} />
-            </Grid>
+
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <TextField
+              {...register('name', { required: 'Name is required' })}
+              label="Role Name"
+              fullWidth
+              error={!!errors.name}
+              helperText={errors.name?.message as string}
+            />
           </Grid>
-        </AccessControl>
-        <AccessControl condition={!isLoading}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                {...register('name', { required: 'Name is required' })}
-                label="Role Name"
-                fullWidth
-                error={!!errors.name}
-                helperText={errors.name?.message as string}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                {...register('description')}
-                label="Description"
-                fullWidth
-                multiline
-                rows={2}
-              />
-            </Grid>
+          <Grid item xs={12}>
+            <TextField
+              {...register('description')}
+              label="Description"
+              fullWidth
+              multiline
+              rows={2}
+            />
           </Grid>
-        </AccessControl>
+        </Grid>
 
         <Box sx={{ mt: 4, mb: 2 }}>
           <Box
@@ -191,7 +188,7 @@ export const RoleForm: React.FC = () => {
             {fields.map((field, index) => (
               <Paper key={field.id} variant="outlined" className="flex flex-row gap-2 p-2">
                 <CircleButton
-                  icon={<DeleteIcon sx={{ fontSize: 25 }} className="text-red-800" />}
+                  icon={<DeleteIcon color="primary" sx={{ fontSize: 25 }} />}
                   type={ButtonType.button}
                   onClick={() => remove(index)}
                 />
@@ -202,13 +199,7 @@ export const RoleForm: React.FC = () => {
                       control={control}
                       render={({ field }) =>
                         isAccessRightsLoading || isLoading ? (
-                          <Skeleton
-                            variant="rectangular"
-                            className="border-red"
-                            height={40}
-                            width="100%"
-                            sx={{ borderRadius: 1 }}
-                          />
+                          <Skeleton variant="rectangular" height={40} width="100%" />
                         ) : (
                           <TextField
                             {...field}
@@ -277,4 +268,6 @@ export const RoleForm: React.FC = () => {
     </Box>
   )
 }
+
+export default memo(RoleForm)
 

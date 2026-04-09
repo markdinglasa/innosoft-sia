@@ -7,9 +7,10 @@
 // 	[UpdateDateTime] [datetime] NOT NULL,
 // 	[IsLocked] [bit] NOT NULL,
 
-import { Column, Entity } from 'typeorm'
+import { Column, Entity, OneToMany } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
+import { MstTableEntity } from './MstTable.entity'
 
 @Entity(POSEntity.MST_TABLE_GROUP)
 export class MstTableGroupEntity extends BaseEntity {
@@ -26,6 +27,10 @@ export class MstTableGroupEntity extends BaseEntity {
   @Column({ name: 'Name', type: 'nvarchar', length: 50, nullable: false })
   name: string
 
-    @Column({ name: 'IsDefault', type: 'bit', nullable: false })
+  @Column({ name: 'IsDefault', type: 'bit', nullable: false })
   isDefault: boolean
+
+  @OneToMany(() => MstTableEntity, (table) => table.tableGroup)
+  tables?: MstTableEntity[]
 }
+

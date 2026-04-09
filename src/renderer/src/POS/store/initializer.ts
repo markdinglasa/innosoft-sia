@@ -9,7 +9,8 @@ export const loadPOSManagerStoreData = (dispatch: AppDispatch, store: LocalElect
     setManager({
       ...storeManager,
       activeBranches: [],
-      activeTerminal: null
+      activeTerminal: null,
+      activeBranch: null
     })
   )
 }

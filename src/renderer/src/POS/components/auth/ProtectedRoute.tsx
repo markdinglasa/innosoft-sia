@@ -66,7 +66,8 @@ export const ProtectedRoute: FC<ProtectedRouteProps> = ({
                 activePermissions: [],
                 loginDate: null,
                 activeBranches: [],
-                activeTerminal: null
+                activeTerminal: null,
+                activeBranch: null
               })
             )
           }

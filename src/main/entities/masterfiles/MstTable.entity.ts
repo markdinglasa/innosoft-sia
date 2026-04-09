@@ -22,8 +22,6 @@ export class MstTableEntity extends BaseEntity {
     // this.isClean = false
     this.isDefault = false
   }
-  
-
 
   @Column({ name: 'TableCode', type: 'nvarchar', length: 50, nullable: false })
   tableCode: string
@@ -40,11 +38,12 @@ export class MstTableEntity extends BaseEntity {
   // @Column({ name: 'LeftLocation', type: 'int', nullable: true })
   // leftLocation: number | null
 
-    @Column({ name: 'IsDefault', type: 'bit', nullable: false })
+  @Column({ name: 'IsDefault', type: 'bit', nullable: false })
   isDefault: boolean
 
   // FK Relationships
-  @ManyToOne(() => MstTableGroupEntity)
+  @ManyToOne(() => MstTableGroupEntity, (group) => group.tables)
   @JoinColumn({ name: 'TableGroupId' })
   tableGroup?: MstTableGroupEntity
 }
+
