@@ -1,12 +1,14 @@
 import { Add as AddIcon, Close, Search as SearchIcon } from '@mui/icons-material'
 import { Box, Button, Drawer, IconButton, InputAdornment, Paper, TextField } from '@mui/material'
 import { SystemPermissions } from '@shared/constants/permissions'
-import React from 'react'
+import React, { lazy, Suspense } from 'react'
 import PageLayout from '../../components/layout/page-layout'
 import { useAccessControl } from '../../hooks'
-import { TableGroupForm } from './components/table-group-form'
+import { TableGroupFormSkeleton } from './components/table-group-form-skeleton'
 import { TableGroupList } from './components/table-group-list'
 import { useTableGroupHubStore } from './store/use-table-group-hub-store'
+
+const TableGroupForm = lazy(() => import('./components/table-group-form'))
 
 const TableGroupHub: React.FC = () => {
   const { searchKeyword, setSearchKeyword, isFormOpen, setIsFormOpen, setSelectedId } =
@@ -21,7 +23,7 @@ const TableGroupHub: React.FC = () => {
   const canAdd = hasPermission(SystemPermissions.TABLE_GROUP_ADD)
 
   return (
-    <PageLayout title="Table Group Management">
+    <PageLayout title="Table Groups">
       <Box sx={{ mb: 3 }}>
         <Paper
           variant="outlined"
@@ -74,7 +76,9 @@ const TableGroupHub: React.FC = () => {
           sx: { width: { xs: '100%', sm: 400, md: 500 }, borderRadius: '12px 0 0 12px' }
         }}
       >
-        <TableGroupForm />
+        <Suspense fallback={<TableGroupFormSkeleton />}>
+          <TableGroupForm />
+        </Suspense>
       </Drawer>
     </PageLayout>
   )

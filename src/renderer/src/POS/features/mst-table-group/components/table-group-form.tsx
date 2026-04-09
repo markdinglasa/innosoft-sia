@@ -10,7 +10,6 @@ import {
   Alert,
   Box,
   Button,
-  CircularProgress,
   Divider,
   Grid,
   IconButton,
@@ -19,12 +18,13 @@ import {
   Typography
 } from '@mui/material'
 import { ButtonType } from '@shared/types'
-import React, { useEffect } from 'react'
+import { memo, useEffect } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import CircleButton from '../../../components/inputs/circle-button'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useTableGroupHubStore } from '../store/use-table-group-hub-store'
+import { TableGroupFormSkeleton } from './table-group-form-skeleton'
 
 const tableGroupSchema = z.object({
   name: z.string().min(1, 'Table Group Name is required'),
@@ -43,7 +43,7 @@ const tableGroupSchema = z.object({
 
 type FormData = z.infer<typeof tableGroupSchema>
 
-export const TableGroupForm: React.FC = () => {
+function TableGroupForm() {
   const { selectedId, setIsFormOpen, setSelectedId } = useTableGroupHubStore()
   const { useGet, useSaveMutation } = useMasterfile('tableGroup')
   const { data: existing, isLoading } = useGet(selectedId)
@@ -89,7 +89,7 @@ export const TableGroupForm: React.FC = () => {
   if (selectedId && isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <CircularProgress size={32} />
+        <TableGroupFormSkeleton />
       </Box>
     )
   }
@@ -241,4 +241,6 @@ export const TableGroupForm: React.FC = () => {
     </Box>
   )
 }
+
+export default memo(TableGroupForm)
 
