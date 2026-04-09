@@ -1,14 +1,15 @@
 import { Add as AddIcon, Close, Search as SearchIcon } from '@mui/icons-material'
 import { Box, Button, Drawer, IconButton, InputAdornment, Paper, TextField } from '@mui/material'
 import { SystemPermissions } from '@shared/constants/permissions'
-import React from 'react'
+import { lazy, memo, Suspense } from 'react'
 import PageLayout from '../../components/layout/page-layout'
 import { useAccessControl } from '../../hooks'
-import { TerminalForm } from './components/terminal-form'
+import { TerminalFormSkeleton } from './components/terminal-form-skeleton'
 import { TerminalList } from './components/terminal-list'
 import { useTerminalHubStore } from './store/use-terminal-hub-store'
 
-const TerminalHub: React.FC = () => {
+const TerminalForm = lazy(() => import('./components/terminal-form'))
+function TerminalHub() {
   const { searchKeyword, setSearchKeyword, isFormOpen, setIsFormOpen, setSelectedId } =
     useTerminalHubStore()
 
@@ -75,10 +76,12 @@ const TerminalHub: React.FC = () => {
           sx: { width: { xs: '100%', sm: 400, md: 500 }, borderRadius: '12px 0 0 12px' }
         }}
       >
-        <TerminalForm />
+        <Suspense fallback={<TerminalFormSkeleton />}>
+          <TerminalForm />
+        </Suspense>
       </Drawer>
     </PageLayout>
   )
 }
-export default TerminalHub
+export default memo(TerminalHub)
 

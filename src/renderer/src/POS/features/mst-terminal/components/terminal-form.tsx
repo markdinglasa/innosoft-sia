@@ -4,21 +4,13 @@ import {
   Save as SaveIcon,
   PointOfSale as TerminalIcon
 } from '@mui/icons-material'
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Divider,
-  IconButton,
-  TextField,
-  Typography
-} from '@mui/material'
-import React, { useEffect } from 'react'
+import { Alert, Box, Button, IconButton, TextField, Typography } from '@mui/material'
+import { memo, useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useTerminalHubStore } from '../store/use-terminal-hub-store'
+import { TerminalFormSkeleton } from './terminal-form-skeleton'
 
 const terminalSchema = z.object({
   name: z.string().min(1, 'Terminal Name is required')
@@ -26,7 +18,7 @@ const terminalSchema = z.object({
 
 type FormData = z.infer<typeof terminalSchema>
 
-export const TerminalForm: React.FC = () => {
+function TerminalForm() {
   const { selectedId, setIsFormOpen } = useTerminalHubStore()
   const { useGet, useSaveMutation } = useMasterfile('terminal')
   const { data: existing, isLoading } = useGet(selectedId)
@@ -58,59 +50,89 @@ export const TerminalForm: React.FC = () => {
     setIsFormOpen(false)
   }
 
+  const handleClose = () => {
+    setIsFormOpen(false)
+  }
+
+  if (selectedId && isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+        <TerminalFormSkeleton />
+      </Box>
+    )
+  }
+
   return (
-    <Box sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+      sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+    >
+      <Box
+        sx={{
+          p: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          bgcolor: 'primary.dark',
+          color: 'white'
+        }}
+      >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <TerminalIcon color="primary" sx={{ fontSize: 25 }} />
-          <Typography variant="h6">{selectedId ? 'Edit Terminal' : 'New Terminal'}</Typography>
+          <TerminalIcon sx={{ fontSize: 25 }} />
+          <Typography variant="h6">{selectedId ? 'Edit Pay Type' : 'New Pay Type'}</Typography>
         </Box>
-        <IconButton onClick={() => setIsFormOpen(false)}>
+        <IconButton size="small" onClick={handleClose} sx={{ color: 'white' }}>
           <CloseIcon sx={{ fontSize: 25 }} />
         </IconButton>
       </Box>
-      <Divider sx={{ mb: 3 }} />
-      {isLoading ? (
-        <CircularProgress />
-      ) : (
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
-        >
-          <Controller
-            name="name"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Terminal Name"
-                fullWidth
-                required
-                margin="normal"
-                placeholder="e.g. 01"
-                error={!!errors.name}
-                helperText={errors.name?.message}
-              />
-            )}
-          />
-          {saveMutation.isError && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              Failed to save.
-            </Alert>
-          )}
-          <Box sx={{ mt: 'auto', pt: 3 }}>
-            <Button
-              type="submit"
-              variant="contained"
+
+      <Box sx={{ p: 3, flexGrow: 1, overflow: 'auto' }}>
+        {saveMutation.isError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {saveMutation.error?.message || 'Sorry, Something went wrong.'}
+          </Alert>
+        )}
+
+        <Controller
+          name="name"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Terminal"
               fullWidth
-              startIcon={<SaveIcon sx={{ fontSize: 25 }} />}
-              disabled={saveMutation.isPending}
-            >
-              {saveMutation.isPending ? 'Saving...' : 'Save Terminal'}
-            </Button>
-          </Box>
-        </form>
-      )}
+              required
+              margin="normal"
+              placeholder="e.g. 01"
+              error={!!errors.name}
+              helperText={errors.name?.message}
+            />
+          )}
+        />
+      </Box>
+      <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider', display: 'flex', gap: 2 }}>
+        <Button
+          fullWidth
+          variant="outlined"
+          onClick={handleClose}
+          disabled={saveMutation.isPending}
+        >
+          Cancel
+        </Button>
+        <Button
+          fullWidth
+          variant="contained"
+          type="submit"
+          startIcon={<SaveIcon sx={{ fontSize: 25 }} />}
+          disabled={saveMutation.isPending}
+        >
+          {saveMutation.isPending ? 'Saving...' : 'Save Terminal'}
+        </Button>
+      </Box>
     </Box>
   )
 }
+
+export default memo(TerminalForm)
+
