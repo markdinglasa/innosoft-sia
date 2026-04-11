@@ -1,6 +1,7 @@
 import { Delete as DeleteIcon, Receipt as TaxIcon } from '@mui/icons-material'
 import {
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
@@ -79,7 +80,9 @@ export const TaxList: React.FC = () => {
 
               <TableCell>Tax</TableCell>
               <TableCell>Code</TableCell>
+              <TableCell align="left">Account</TableCell>
               <TableCell align="right">Rate (%)</TableCell>
+              <TableCell align="right">Default</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -107,7 +110,11 @@ export const TaxList: React.FC = () => {
                     </Typography>
                   </TableCell>
                   <TableCell>{item.code}</TableCell>
-                  <TableCell align="right">{Number(item.rate).toFixed(2)}</TableCell>
+                  <TableCell>{item.account?.name || '--'}</TableCell>
+                  <TableCell align="right">{parseFloat(item.rate)}</TableCell>
+                  <TableCell align="right">
+                    <Checkbox checked={!!item.isDefault} readOnly size="small" color="primary" />
+                  </TableCell>
                   <TableCell align="right">
                     <CircleButton
                       disabled={!canDelete}

@@ -19,7 +19,14 @@ export class TaxService extends BaseService<MstTaxEntity> implements ITaxService
    * Search fields for Tax keyword search.
    */
   protected get searchFields(): string[] {
-    return ['code', 'tax']
+    return ['code', 'name']
+  }
+
+  /**
+   * Relations to include in Tax listing.
+   */
+  protected get listRelations(): string[] {
+    return ['account']
   }
 
   /**
@@ -28,11 +35,6 @@ export class TaxService extends BaseService<MstTaxEntity> implements ITaxService
    */
   protected async validateCreate(data: DeepPartial<MstTaxEntity>): Promise<void> {
     const taxDto = await transformAndValidate(CreateTaxDto, data)
-
-    const existingCode = await this.repository.findOneBy({ code: taxDto.code })
-    if (existingCode) {
-      throw new BadRequestException(`Tax Code '${taxDto.code}' already exists.`)
-    }
 
     const existingName = await this.repository.findOneBy({ name: taxDto.name })
     if (existingName) {
@@ -43,20 +45,16 @@ export class TaxService extends BaseService<MstTaxEntity> implements ITaxService
   /**
    * Validates before updating an existing Tax.
    */
-  protected async validateUpdate(id: any, data: QueryDeepPartialEntity<MstTaxEntity>): Promise<void> {
+  protected async validateUpdate(
+    id: any,
+    data: QueryDeepPartialEntity<MstTaxEntity>
+  ): Promise<void> {
     const currentEntity = await this.get(id)
     if (!currentEntity) {
       throw new BadRequestException('Tax not found for update.')
     }
 
     const taxDto = await transformAndValidate(UpdateTaxDto, data)
-    
-    if (taxDto.code && taxDto.code !== currentEntity.code) {
-      const existingCode = await this.repository.findOneBy({ code: taxDto.code })
-      if (existingCode) {
-        throw new BadRequestException(`Tax Code '${taxDto.code}' already exists.`)
-      }
-    }
 
     if (taxDto.name && taxDto.name !== currentEntity.name) {
       const existingName = await this.repository.findOneBy({ name: taxDto.name })
@@ -74,5 +72,10 @@ export class TaxService extends BaseService<MstTaxEntity> implements ITaxService
     if (!currentEntity) {
       throw new BadRequestException('Tax not found for deletion.')
     }
+
+    if (currentEntity.isDefault) {
+      throw new BadRequestException('Tax is default and cannot be deleted.')
+    }
   }
 }
+

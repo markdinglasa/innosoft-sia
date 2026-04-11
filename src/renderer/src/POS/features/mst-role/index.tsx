@@ -18,7 +18,7 @@ const RoleHub: React.FC = () => {
   }
 
   return (
-    <PageLayout title="Role & Permission Management">
+    <PageLayout title="Role & Permissions">
       <Box sx={{ mb: 3 }}>
         <Paper
           variant="outlined"

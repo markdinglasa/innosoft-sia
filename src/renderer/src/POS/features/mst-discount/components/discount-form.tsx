@@ -3,7 +3,6 @@ import {
   Add as AddIcon,
   Close as CloseIcon,
   Delete as DeleteIcon,
-  Inventory as ItemIcon,
   Percent as DiscountIcon,
   Save as SaveIcon
 } from '@mui/icons-material'
@@ -22,10 +21,10 @@ import {
   TextField,
   Typography
 } from '@mui/material'
+import { ButtonType } from '@shared/types'
 import { memo, useEffect } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { ButtonType } from '@shared/types'
 import CircleButton from '../../../components/inputs/circle-button'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useDiscountHubStore } from '../store/use-discount-hub-store'
@@ -567,8 +566,7 @@ function DiscountForm() {
                 </Paper>
               ))}
               {fields.length === 0 && (
-                <Box sx={{ py: 4, textAlign: 'center', bgcolor: 'action.hover', borderRadius: 1 }}>
-                  <ItemIcon sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
+                <Box sx={{ textAlign: 'center' }}>
                   <Typography variant="body2" color="text.secondary">
                     No items assigned. Click "Add Item" to start.
                   </Typography>

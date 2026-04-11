@@ -1,6 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Close as CloseIcon, Receipt as TaxIcon, Save as SaveIcon } from '@mui/icons-material'
-import { Alert, Box, Button, Grid, IconButton, TextField, Typography } from '@mui/material'
+import { Close as CloseIcon, Save as SaveIcon, Receipt as TaxIcon } from '@mui/icons-material'
+import {
+  Alert,
+  Box,
+  Button,
+  Grid,
+  IconButton,
+  MenuItem,
+  Skeleton,
+  TextField,
+  Typography
+} from '@mui/material'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -11,15 +21,17 @@ import { TaxFormSkeleton } from './tax-form-skeleton'
 const taxSchema = z.object({
   code: z.string().min(1, 'Tax Code is required'),
   name: z.string().min(1, 'Tax Name is required'),
-  rate: z.coerce.number().min(0, 'Rate must be at least 0')
+  rate: z.coerce.number().min(0, 'Rate must be at least 0'),
+  accountId: z.number().min(1, 'Account is required')
 })
 
 type FormData = z.infer<typeof taxSchema>
 
 export const TaxForm: React.FC = () => {
   const { selectedId, setIsFormOpen, setSelectedId } = useTaxHubStore()
-  const { useGet, useSaveMutation } = useMasterfile('tax')
+  const { useGet, useSaveMutation, useLookup } = useMasterfile('tax')
   const { data: existing, isLoading } = useGet(selectedId)
+  const accountLookup = useLookup('account')
   const saveMutation = useSaveMutation()
 
   const {
@@ -29,14 +41,19 @@ export const TaxForm: React.FC = () => {
     formState: { errors }
   } = useForm({
     resolver: zodResolver(taxSchema),
-    defaultValues: { code: '', name: '', rate: 0 }
+    defaultValues: { code: '', name: '', rate: 0, accountId: 0 }
   })
 
   useEffect(
     function formResetter() {
       if (existing)
-        reset({ code: existing.code || '', name: existing.name || '', rate: existing.rate || 0 })
-      else reset({ code: '', name: '', rate: 0 })
+        reset({
+          code: existing.code || '',
+          name: existing.name || '',
+          rate: existing.rate || 0,
+          accountId: existing.accountId || 0
+        })
+      else reset({ code: '', name: '', rate: 0, accountId: 0 })
     },
     [existing, reset]
   )
@@ -90,24 +107,7 @@ export const TaxForm: React.FC = () => {
             {saveMutation.error?.message || 'Sorry, Something went wrong.'}
           </Alert>
         )}
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Controller
-              name="code"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Tax Code"
-                  fullWidth
-                  required
-                  margin="normal"
-                  error={!!errors.code}
-                  helperText={errors.code?.message}
-                />
-              )}
-            />
-          </Grid>
+        <Grid container>
           <Grid item xs={12}>
             <Controller
               name="name"
@@ -115,7 +115,7 @@ export const TaxForm: React.FC = () => {
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Tax Name"
+                  label="Tax"
                   fullWidth
                   required
                   margin="normal"
@@ -125,6 +125,28 @@ export const TaxForm: React.FC = () => {
               )}
             />
           </Grid>
+          <Grid item xs={12}>
+            <Controller
+              name="code"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  select
+                  label="Tax Code"
+                  fullWidth
+                  required
+                  margin="normal"
+                  error={!!errors.code}
+                  helperText={errors.code?.message}
+                >
+                  <MenuItem value="Inclusive">Inclusive</MenuItem>
+                  <MenuItem value="Exclusive">Exclusive</MenuItem>
+                </TextField>
+              )}
+            />
+          </Grid>
+
           <Grid item xs={12}>
             <Controller
               name="rate"
@@ -141,6 +163,36 @@ export const TaxForm: React.FC = () => {
                   helperText={errors.rate?.message}
                 />
               )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
+              name="accountId"
+              control={control}
+              render={({ field }) =>
+                accountLookup.isLoading ? (
+                  <Skeleton variant="rectangular" height={56} sx={{ mt: 1, mb: 1 }} />
+                ) : (
+                  <TextField
+                    {...field}
+                    select
+                    label="Account"
+                    fullWidth
+                    required
+                    margin="normal"
+                    error={!!errors.accountId}
+                    helperText={errors.accountId?.message}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  >
+                    <MenuItem value={0}>Select an Account</MenuItem>
+                    {accountLookup.data?.map((account: any) => (
+                      <MenuItem key={account.id} value={account.id}>
+                        {account.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )
+              }
             />
           </Grid>
         </Grid>

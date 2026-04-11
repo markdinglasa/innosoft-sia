@@ -22,7 +22,7 @@ const TaxHub: React.FC = () => {
   const canAdd = hasPermission(SystemPermissions.TAX_ADD)
 
   return (
-    <PageLayout title="Tax Management">
+    <PageLayout title="Taxes">
       <Box sx={{ mb: 3 }}>
         <Paper
           variant="outlined"
