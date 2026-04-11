@@ -20,6 +20,7 @@ import { SystemPermissions } from '@shared/constants/permissions'
 import { ButtonType, ToastType } from '@shared/types'
 import { displayToast } from '@shared/utils'
 import React from 'react'
+import { useSelector } from 'react-redux'
 import TableSkeleton from '../../../components/data-display/table-skeleton'
 import CircleButton from '../../../components/inputs/circle-button'
 import { useAccessControl } from '../../../hooks'
@@ -28,9 +29,15 @@ import { useTerminalHubStore } from '../store/use-terminal-hub-store'
 
 export const TerminalList: React.FC = () => {
   const { searchKeyword, setSelectedId, setIsFormOpen } = useTerminalHubStore()
+  const activeBranch = useSelector((state: any) => state.POS.manager.activeBranch)
   const { useList, useDeleteMutation } = useMasterfile('terminal')
   const [page, setPage] = React.useState(0)
-  const { data, isLoading, isError } = useList({ searchKeyword, page: page + 1, take: 30 })
+  const { data, isLoading, isError } = useList({
+    searchKeyword,
+    page: page + 1,
+    take: 30,
+    filters: activeBranch ? [{ field: 'branchId', value: activeBranch.id, operator: 'equal' }] : []
+  })
 
   // permissions
   const { hasPermission } = useAccessControl()

@@ -14,7 +14,7 @@ import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity
 import { MutationResponse, PaginatedResponse, PaginationOptionsDto } from '../../shared/types/pagination'
 import { SysAuditTrailEntity } from '../entities/utilities/SysAuditTrail.entity'
 import { AppDataSource } from '../typeORM/configurations'
-import { SYSTEM_SELF } from '@shared/constants'
+import { SYSTEM_SELF, POS_MANAGER } from '@shared/constants'
 import Store from '../store/Store'
 import connectivityService from './connectivity.service'
 import syncQueueService from './sync-queue.service'
@@ -140,11 +140,22 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
       order: { [orderBy]: order } as any
     }
 
+    // --- GLOBAL BRANCH ISOLATION ---
+    const activeBranchId = this.getActiveBranchId()
+    const metadata = AppDataSource.getMetadata(this.entity)
+    const hasBranchId = metadata.findColumnWithPropertyName('branchId')
+
+    const branchFilter = activeBranchId && hasBranchId ? { branchId: activeBranchId } : {}
+    // ---------------------------------
+
     // Apply keyword search if search string and fields are provided
     if (search && this.searchFields.length > 0) {
       findOptions.where = this.searchFields.map((field) => ({
-        [field]: Like(`%${search}%`)
+        [field]: Like(`%${search}%`),
+        ...branchFilter
       })) as any
+    } else if (Object.keys(branchFilter).length > 0) {
+      findOptions.where = branchFilter as any
     }
 
     // Process and Merge Filters
@@ -180,7 +191,8 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
       } else {
         findOptions.where = {
           ...(findOptions.where as any),
-          ...mergedFilters
+          ...mergedFilters,
+          ...branchFilter
         }
       }
     }
@@ -278,6 +290,17 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
     }
     // --- ONLINE PATH (original behavior) ---
     await this.validateCreate(data)
+
+    // --- GLOBAL BRANCH ASSIGNMENT ---
+    const metadata = AppDataSource.getMetadata(this.entity)
+    if (metadata.findColumnWithPropertyName('branchId') && !(data as any).branchId) {
+      const activeBranchId = this.getActiveBranchId()
+      if (activeBranchId) {
+        ;(data as any).branchId = activeBranchId
+      }
+    }
+    // ---------------------------------
+
     const newItem = this.repository.create(data)
     const result = await this.repository.save(newItem)
 
@@ -380,6 +403,14 @@ export abstract class BaseService<T extends ObjectLiteral> implements IBaseServi
       success: result.affected !== 0,
       message: 'Deleted successfully'
     }
+  }
+
+  /**
+   * Helper to get the active branch ID from the system store.
+   */
+  protected getActiveBranchId(): number | null {
+    const posManager = Store.get(POS_MANAGER) as any
+    return posManager?.activeBranch?.id || null
   }
 }
 

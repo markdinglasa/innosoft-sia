@@ -24,6 +24,7 @@ import {
 import { ButtonType } from '@shared/types'
 import { memo, useEffect } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
+import { useSelector } from 'react-redux'
 import { z } from 'zod'
 import CircleButton from '../../../components/inputs/circle-button'
 import { useMasterfile } from '../../../hooks/use-masterfile'
@@ -65,6 +66,7 @@ type FormData = z.infer<typeof discountSchema>
 
 function DiscountForm() {
   const { selectedId, setIsFormOpen, setSelectedId } = useDiscountHubStore()
+  const activeBranch = useSelector((state: any) => state.POS.manager.activeBranch)
   const { useGet, useSaveMutation, useLookup } = useMasterfile('discount')
   const { data: existing, isLoading } = useGet(selectedId)
   const itemsLookup = useLookup('item')
@@ -79,7 +81,7 @@ function DiscountForm() {
   } = useForm<FormData>({
     resolver: zodResolver(discountSchema) as any,
     defaultValues: {
-      branchId: 1,
+      branchId: activeBranch?.id || 0,
       name: '',
       discountAlias: '',
       discountRate: 0,
@@ -165,7 +167,11 @@ function DiscountForm() {
   const onSubmit = async (formData: FormData) => {
     const { discountItems, ...parent } = formData
     await saveMutation.mutateAsync({
-      parent: { ...parent, id: selectedId || undefined },
+      parent: {
+        ...parent,
+        id: selectedId || undefined,
+        branchId: activeBranch?.id || 0
+      },
       discountItems: discountItems || []
     })
     handleClose()

@@ -20,6 +20,7 @@ import {
 import { ButtonType } from '@shared/types'
 import { memo, useEffect } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
+import { useSelector } from 'react-redux'
 import { z } from 'zod'
 import CircleButton from '../../../components/inputs/circle-button'
 import { useMasterfile } from '../../../hooks/use-masterfile'
@@ -45,6 +46,7 @@ type FormData = z.infer<typeof tableGroupSchema>
 
 function TableGroupForm() {
   const { selectedId, setIsFormOpen, setSelectedId } = useTableGroupHubStore()
+  const activeBranch = useSelector((state: any) => state.POS.manager.activeBranch)
   const { useGet, useSaveMutation } = useMasterfile('tableGroup')
   const { data: existing, isLoading } = useGet(selectedId)
   const saveMutation = useSaveMutation()
@@ -75,7 +77,11 @@ function TableGroupForm() {
   const onSubmit = async (formData: FormData) => {
     const { tables, ...parent } = formData
     await saveMutation.mutateAsync({
-      parent: { ...parent, id: selectedId || undefined },
+      parent: { 
+        ...parent, 
+        id: selectedId || undefined,
+        branchId: activeBranch?.id || 1
+      },
       tables: tables || []
     })
     setIsFormOpen(false)

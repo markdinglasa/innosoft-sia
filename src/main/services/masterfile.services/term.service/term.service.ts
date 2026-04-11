@@ -19,7 +19,7 @@ export class TermService extends BaseService<MstTermEntity> implements ITermServ
    * Search fields for Term keyword search.
    */
   protected get searchFields(): string[] {
-    return ['term']
+    return ['name']
   }
 
   /**

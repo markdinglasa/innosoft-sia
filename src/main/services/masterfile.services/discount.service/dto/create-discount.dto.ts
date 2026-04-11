@@ -98,4 +98,9 @@ export class CreateDiscountDto {
   @IsNotEmpty()
   @MaxLength(100)
   discountAlias!: string
+
+  @ApiProperty({ description: 'The branch ID this discount belongs to' })
+  @IsNumber()
+  @IsNotEmpty()
+  branchId!: number
 }

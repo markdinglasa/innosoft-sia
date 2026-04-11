@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsNotEmpty, IsNumber, IsString, MaxLength } from 'class-validator'
+import { IsBoolean, IsNotEmpty, IsNumber, IsString, MaxLength } from 'class-validator'
 
 export class CreateTermDto {
   @ApiProperty({ description: 'Term name (e.g., COD, 30 Days)' })
@@ -12,4 +12,10 @@ export class CreateTermDto {
   @IsNumber()
   @IsNotEmpty()
   numberOfDays!: number
+
+  @ApiProperty({ description: 'Is this the default term?' })
+  @IsBoolean()
+  @IsNotEmpty()
+  isDefault!: boolean
 }
+

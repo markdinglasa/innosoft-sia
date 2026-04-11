@@ -7,19 +7,22 @@ import {
 import { Alert, Box, Button, IconButton, TextField, Typography } from '@mui/material'
 import { memo, useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useSelector } from 'react-redux'
 import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useTerminalHubStore } from '../store/use-terminal-hub-store'
 import { TerminalFormSkeleton } from './terminal-form-skeleton'
 
 const terminalSchema = z.object({
-  name: z.string().min(1, 'Terminal Name is required')
+  name: z.string().min(1, 'Terminal Name is required'),
+  isDefault: z.boolean()
 })
 
 type FormData = z.infer<typeof terminalSchema>
 
 function TerminalForm() {
   const { selectedId, setIsFormOpen } = useTerminalHubStore()
+  const activeBranch = useSelector((state: any) => state.POS.manager.activeBranch)
   const { useGet, useSaveMutation } = useMasterfile('terminal')
   const { data: existing, isLoading } = useGet(selectedId)
   const saveMutation = useSaveMutation()
@@ -29,24 +32,30 @@ function TerminalForm() {
     handleSubmit,
     reset,
     formState: { errors }
-  } = useForm<FormData>({
+  } = useForm({
     resolver: zodResolver(terminalSchema),
-    defaultValues: { name: '' }
+    defaultValues: { name: '', isDefault: false }
   })
 
   useEffect(
     function formResetter() {
       if (existing)
         reset({
-          name: existing.name || ''
+          name: existing.name || '',
+          isDefault: !!existing.isDefault
         })
-      else reset({ name: '' })
+      else reset({ name: '', isDefault: false })
     },
     [existing, reset]
   )
 
   const onSubmit = async (formData: FormData) => {
-    await saveMutation.mutateAsync({ ...formData, id: selectedId || undefined })
+    await saveMutation.mutateAsync({
+      ...formData,
+      id: selectedId || undefined,
+      branchId: activeBranch?.id || 1,
+      isDefault: false
+    })
     setIsFormOpen(false)
   }
 

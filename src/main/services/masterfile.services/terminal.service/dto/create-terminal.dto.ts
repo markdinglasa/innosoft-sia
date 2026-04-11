@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsBoolean, IsNotEmpty, IsString, MaxLength } from 'class-validator'
+import { IsBoolean, IsNotEmpty, IsNumber, IsString, MaxLength } from 'class-validator'
 
 export class CreateTerminalDto {
   @ApiProperty({ description: 'Terminal name' })
@@ -12,4 +12,10 @@ export class CreateTerminalDto {
   @IsBoolean()
   @IsNotEmpty()
   isDefault!: boolean
+
+  @ApiProperty({ description: 'The branch ID this terminal belongs to' })
+  @IsNumber()
+  @IsNotEmpty()
+  branchId!: number
 }
+

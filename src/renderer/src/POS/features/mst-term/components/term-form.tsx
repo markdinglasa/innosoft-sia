@@ -10,7 +10,8 @@ import { TermFormSkeleton } from './term-form-skeleton'
 
 const termSchema = z.object({
   name: z.string().min(1, 'Term is required'),
-  numberOfDays: z.coerce.number().min(0, 'Days must be at least 0')
+  numberOfDays: z.coerce.number().min(0, 'Days must be at least 0'),
+  isDefault: z.boolean()
 })
 
 type FormData = z.infer<typeof termSchema>
@@ -27,12 +28,17 @@ function TermForm() {
     formState: { errors }
   } = useForm({
     resolver: zodResolver(termSchema),
-    defaultValues: { name: '', numberOfDays: 0 }
+    defaultValues: { name: '', numberOfDays: 0, isDefault: false }
   })
 
   useEffect(
     function formResetter() {
-      if (existing) reset({ name: existing.name || '', numberOfDays: existing.numberOfDays || 0 })
+      if (existing)
+        reset({
+          name: existing.name || '',
+          numberOfDays: existing.numberOfDays || 0,
+          isDefault: existing.isDefault || false
+        })
       else reset({ name: '', numberOfDays: 0 })
     },
     [existing, reset]
@@ -44,7 +50,7 @@ function TermForm() {
   }
 
   const onSubmit = async (formData: FormData) => {
-    await saveMutation.mutateAsync({ ...formData, id: selectedId || undefined })
+    await saveMutation.mutateAsync({ ...formData, id: selectedId || undefined, isDefault: false })
     setIsFormOpen(false)
   }
 
