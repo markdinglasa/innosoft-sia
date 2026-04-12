@@ -4,7 +4,18 @@ import {
   Extension as ComponentIcon,
   Save as SaveIcon
 } from '@mui/icons-material'
-import { Alert, Box, Button, Grid, IconButton, TextField, Typography } from '@mui/material'
+import {
+  Alert,
+  Box,
+  Button,
+  FormControlLabel,
+  Grid,
+  IconButton,
+  MenuItem,
+  Switch,
+  TextField,
+  Typography
+} from '@mui/material'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -12,29 +23,62 @@ import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useItemComponentHubStore } from '../store/use-item-component-hub-store'
 import { ItemComponentFormSkeleton } from './item-component-form-skeleton'
 
-const itemComponentSchema = z.object({
-  itemId: z.coerce.number().min(1, 'Item ID required'),
-  componentItemId: z.coerce.number().min(1, 'Component Item ID required'),
-  quantity: z.coerce.number().min(1, 'Quantity must be at least 1')
-})
+interface FormData {
+  itemId: number
+  componentItemId: number
+  unitId: number
+  quantity: number
+  cost: number
+  amount: number
+  isPrinted: boolean
+}
 
-type FormData = z.infer<typeof itemComponentSchema>
+const itemComponentSchema: z.ZodType<FormData, any, any> = z.object({
+  itemId: z.coerce.number().min(1, 'Item required'),
+  componentItemId: z.coerce.number().min(1, 'Component required'),
+  unitId: z.coerce.number().min(1, 'Unit required'),
+  quantity: z.coerce.number().min(0.00001, 'Quantity is required'),
+  cost: z.coerce.number().min(0, 'Cost is required'),
+  amount: z.coerce.number().min(0).default(0),
+  isPrinted: z.boolean().default(false)
+})
 
 export const ItemComponentForm: React.FC = () => {
   const { selectedId, setIsFormOpen, setSelectedId } = useItemComponentHubStore()
-  const { useGet, useSaveMutation } = useMasterfile('itemComponent')
+  const { useGet, useSaveMutation, useLookup } = useMasterfile('itemComponent')
   const { data: existing, isLoading } = useGet(selectedId)
   const saveMutation = useSaveMutation()
+
+  const parentItemsLookup = useLookup('item', { filters: [{ isInventory: false }] })
+  const componentsLookup = useLookup('item', { filters: [{ isInventory: true }] })
+  const unitsLookup = useLookup('unit')
 
   const {
     control,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors }
-  } = useForm({
+  } = useForm<FormData>({
     resolver: zodResolver(itemComponentSchema),
-    defaultValues: { itemId: 0, componentItemId: 0, quantity: 1 }
+    defaultValues: {
+      itemId: 0,
+      componentItemId: 0,
+      unitId: 0,
+      quantity: 1,
+      cost: 0,
+      amount: 0,
+      isPrinted: false
+    }
   })
+
+  const watchQuantity = watch('quantity') as number
+  const watchCost = watch('cost') as number
+
+  useEffect(() => {
+    setValue('amount', (watchQuantity || 0) * (watchCost || 0))
+  }, [watchQuantity, watchCost, setValue])
 
   useEffect(
     function formResetter() {
@@ -42,9 +86,22 @@ export const ItemComponentForm: React.FC = () => {
         reset({
           itemId: existing.itemId || 0,
           componentItemId: existing.componentItemId || 0,
-          quantity: existing.quantity || 1
+          unitId: existing.unitId || 0,
+          quantity: existing.quantity || 1,
+          cost: existing.cost || 0,
+          amount: existing.amount || 0,
+          isPrinted: existing.isPrinted || false
         })
-      else reset({ itemId: 0, componentItemId: 0, quantity: 1 })
+      else
+        reset({
+          itemId: 0,
+          componentItemId: 0,
+          unitId: 0,
+          quantity: 1,
+          cost: 0,
+          amount: 0,
+          isPrinted: false
+        })
     },
     [existing, reset]
   )
@@ -106,14 +163,20 @@ export const ItemComponentForm: React.FC = () => {
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Item ID"
-                  type="number"
+                  select
+                  label="Finished Product (Parent)"
                   fullWidth
                   required
-                  margin="normal"
+                  size="small"
                   error={!!errors.itemId}
                   helperText={errors.itemId?.message}
-                />
+                >
+                  {parentItemsLookup.data?.map((item: any) => (
+                    <MenuItem key={item.id} value={item.id}>
+                      {item.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
               )}
             />
           </Grid>
@@ -124,14 +187,44 @@ export const ItemComponentForm: React.FC = () => {
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Component Item ID"
-                  type="number"
+                  select
+                  label="Ingredient (Component)"
                   fullWidth
                   required
-                  margin="normal"
+                  size="small"
                   error={!!errors.componentItemId}
                   helperText={errors.componentItemId?.message}
-                />
+                >
+                  {componentsLookup.data?.map((item: any) => (
+                    <MenuItem key={item.id} value={item.id}>
+                      {item.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
+              name="unitId"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  select
+                  label="Unit"
+                  fullWidth
+                  required
+                  size="small"
+                  error={!!errors.unitId}
+                  helperText={errors.unitId?.message}
+                >
+                  {unitsLookup.data?.map((unit: any) => (
+                    <MenuItem key={unit.id} value={unit.id}>
+                      {unit.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
               )}
             />
           </Grid>
@@ -146,9 +239,63 @@ export const ItemComponentForm: React.FC = () => {
                   type="number"
                   fullWidth
                   required
-                  margin="normal"
+                  size="small"
                   error={!!errors.quantity}
                   helperText={errors.quantity?.message}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
+              name="cost"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Unit Cost"
+                  type="number"
+                  fullWidth
+                  required
+                  size="small"
+                  error={!!errors.cost}
+                  helperText={errors.cost?.message}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
+              name="amount"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Total Amount"
+                  type="number"
+                  fullWidth
+                  required
+                  size="small"
+                  InputProps={{ readOnly: true }}
+                  error={!!errors.amount}
+                  helperText={errors.amount?.message}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
+              name="isPrinted"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                    />
+                  }
+                  label="Print on Slips"
                 />
               )}
             />

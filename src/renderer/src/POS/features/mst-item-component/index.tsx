@@ -22,7 +22,7 @@ const ItemComponentHub: React.FC = () => {
   const canAdd = hasPermission(SystemPermissions.ITEM_COMPONENT_ADD)
 
   return (
-    <PageLayout title="Item Component (BOM) Management">
+    <PageLayout title="Item Components (BOM)">
       <Box sx={{ mb: 3 }}>
         <Paper
           variant="outlined"
