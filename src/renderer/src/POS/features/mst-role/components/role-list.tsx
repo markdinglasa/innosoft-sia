@@ -116,7 +116,7 @@ export const RoleList: React.FC = () => {
               {isError && (
                 <TableRow>
                   <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
-                    <Typography color="error">Failed to load roles.</Typography>
+                    <Typography color="error">Failed to load role(s).</Typography>
                   </TableCell>
                 </TableRow>
               )}
@@ -124,7 +124,7 @@ export const RoleList: React.FC = () => {
                 <TableRow>
                   <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
                     <Typography variant="body2" color="text.secondary">
-                      No roles found.
+                      No role(s) found.
                     </Typography>
                   </TableCell>
                 </TableRow>

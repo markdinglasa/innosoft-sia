@@ -23,7 +23,7 @@ function UnitHub() {
   const canAdd = hasPermission(SystemPermissions.UNIT_ADD)
 
   return (
-    <PageLayout title="Unit Management">
+    <PageLayout title="Unit of Measures">
       <Box sx={{ mb: 3 }}>
         <Paper
           variant="outlined"

@@ -128,7 +128,7 @@ export const TaxList: React.FC = () => {
               {isError && (
                 <TableRow>
                   <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
-                    <Typography color="error">Failed to load taxes.</Typography>
+                    <Typography color="error">Failed to load tax(es).</Typography>
                   </TableCell>
                 </TableRow>
               )}
@@ -136,7 +136,7 @@ export const TaxList: React.FC = () => {
                 <TableRow>
                   <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
                     <Typography variant="body2" color="text.secondary">
-                      No taxes found.
+                      No tax(es) found.
                     </Typography>
                   </TableCell>
                 </TableRow>

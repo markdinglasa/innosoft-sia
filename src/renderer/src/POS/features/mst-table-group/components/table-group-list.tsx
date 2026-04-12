@@ -1,6 +1,7 @@
 import { Delete as DeleteIcon, TableChart as GroupIcon } from '@mui/icons-material'
 import {
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
@@ -85,11 +86,12 @@ export const TableGroupList: React.FC = () => {
             <TableRow>
               <TableCell width={50}></TableCell>
               <TableCell>Table Group</TableCell>
+              <TableCell>Default</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableSkeleton isLoading={isLoading} columns={3} rows={3}>
+            <TableSkeleton isLoading={isLoading} columns={4} rows={3}>
               {items.map((item: any) => (
                 <TableRow
                   key={item.id}
@@ -115,6 +117,9 @@ export const TableGroupList: React.FC = () => {
                     </Typography>
                   </TableCell>
                   <TableCell align="right">
+                    <Checkbox checked={!!item.isDefault} readOnly size="small" color="primary" />
+                  </TableCell>
+                  <TableCell align="right">
                     <CircleButton
                       disabled={!canDelete}
                       icon={<DeleteIcon sx={{ fontSize: 25 }} />}
@@ -126,16 +131,16 @@ export const TableGroupList: React.FC = () => {
               ))}
               {isError && (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
-                    <Typography color="error">Failed to load table groups.</Typography>
+                  <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
+                    <Typography color="error">Failed to load table group(s).</Typography>
                   </TableCell>
                 </TableRow>
               )}
               {!isError && items.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={3} align="center" sx={{ py: 4 }}>
+                  <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
                     <Typography variant="body2" color="text.secondary">
-                      No table groups found.
+                      No table group(s) found.
                     </Typography>
                   </TableCell>
                 </TableRow>

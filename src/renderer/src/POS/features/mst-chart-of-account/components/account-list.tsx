@@ -1,6 +1,7 @@
 import { AccountBalance as AccountIcon, Delete as DeleteIcon } from '@mui/icons-material'
 import {
   Button,
+  Checkbox,
   Chip,
   Dialog,
   DialogActions,
@@ -121,8 +122,8 @@ export const AccountList: React.FC = () => {
                   <TableCell>
                     <Chip label={item.type} size="small" variant="outlined" />
                   </TableCell>
-                  <TableCell align="center">
-                    {item.isDefault && <Chip label="Default" size="small" color="success" />}
+                  <TableCell align="right">
+                    <Checkbox checked={!!item.isDefault} readOnly size="small" color="primary" />
                   </TableCell>
                   <TableCell align="right">
                     <CircleButton

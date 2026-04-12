@@ -8,11 +8,9 @@ import {
   Alert,
   Box,
   Button,
-  FormControlLabel,
   Grid,
   IconButton,
   MenuItem,
-  Switch,
   TextField,
   Typography
 } from '@mui/material'
@@ -123,24 +121,7 @@ export const AccountForm: React.FC = () => {
             {saveMutation.error?.message || 'Sorry, Something went wrong.'}
           </Alert>
         )}
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Controller
-              name="code"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Account Code"
-                  fullWidth
-                  required
-                  margin="normal"
-                  error={!!errors.code}
-                  helperText={errors.code?.message}
-                />
-              )}
-            />
-          </Grid>
+        <Grid container>
           <Grid item xs={12}>
             <Controller
               name="name"
@@ -154,6 +135,23 @@ export const AccountForm: React.FC = () => {
                   margin="normal"
                   error={!!errors.name}
                   helperText={errors.name?.message}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
+              name="code"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Account Code"
+                  fullWidth
+                  required
+                  margin="normal"
+                  error={!!errors.code}
+                  helperText={errors.code?.message}
                 />
               )}
             />
@@ -182,7 +180,7 @@ export const AccountForm: React.FC = () => {
               )}
             />
           </Grid>
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <Controller
               name="isDefault"
               control={control}
@@ -198,7 +196,7 @@ export const AccountForm: React.FC = () => {
                 />
               )}
             />
-          </Grid>
+          </Grid> */}
         </Grid>
       </Box>
 

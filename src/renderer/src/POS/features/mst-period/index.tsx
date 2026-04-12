@@ -22,7 +22,7 @@ const PeriodHub: React.FC = () => {
   const canAdd = hasPermission(SystemPermissions.PERIOD_ADD)
 
   return (
-    <PageLayout title="Period Management">
+    <PageLayout title="Periods">
       <Box sx={{ mb: 3 }}>
         <Paper
           variant="outlined"

@@ -29,7 +29,7 @@ export class TableGroupService
    * Search fields for TableGroup keyword search.
    */
   protected get searchFields(): string[] {
-    return ['tableGroup']
+    return ['name']
   }
 
   /**

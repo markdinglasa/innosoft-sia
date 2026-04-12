@@ -118,7 +118,7 @@ export const TermList: React.FC = () => {
               {isError && (
                 <TableRow>
                   <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
-                    <Typography color="error">Failed to load terms.</Typography>
+                    <Typography color="error">Failed to load term(s).</Typography>
                   </TableCell>
                 </TableRow>
               )}
@@ -126,7 +126,7 @@ export const TermList: React.FC = () => {
                 <TableRow>
                   <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
                     <Typography variant="body2" color="text.secondary">
-                      No terms found.
+                      No term(s) found.
                     </Typography>
                   </TableCell>
                 </TableRow>

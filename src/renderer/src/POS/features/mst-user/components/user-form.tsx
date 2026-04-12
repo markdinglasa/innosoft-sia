@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Add as AddIcon,
   Close as CloseIcon,
@@ -17,12 +18,12 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import { ToastType } from '@shared/types'
+import { ButtonType, ToastType } from '@shared/types'
 import { displayToast } from '@shared/utils'
 import React, { useEffect } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import CircleButton from '../../../components/inputs/circle-button'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useUserHubStore } from '../store/use-user-hub-store'
 
@@ -33,9 +34,13 @@ const userSchema = z.object({
   password: z.string().optional().nullable(),
   type: z.enum(['Teller', 'Cashier', 'Admin']),
   status: z.enum(['Active', 'Inactive', 'Locked']),
-  branchAccesses: z.array(z.object({
-    branchId: z.string().min(1, 'Branch is required')
-  })).default([])
+  branchAccesses: z
+    .array(
+      z.object({
+        branchId: z.string().min(1, 'Branch is required')
+      })
+    )
+    .default([])
 })
 
 type FormData = z.infer<typeof userSchema>
@@ -101,8 +106,6 @@ export const UserForm: React.FC = () => {
         ...data,
         id: selectedUserId // TypeORM handles save/update based on ID
       }
-
-      console.log('pay-load:', payload)
       // If editing and password is empty, don't update it
       if (selectedUserId && !data.password) {
         delete payload.password
@@ -181,15 +184,6 @@ export const UserForm: React.FC = () => {
               helperText={errors.username?.message}
             />
           </Grid>
-          <Grid item xs={12}>
-            <TextField
-              {...register('email')}
-              label="Email"
-              fullWidth
-              error={!!errors.email}
-              helperText={errors.email?.message}
-            />
-          </Grid>
           <Grid item xs={6}>
             <Controller
               name="type"
@@ -203,7 +197,16 @@ export const UserForm: React.FC = () => {
               )}
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12}>
+            <TextField
+              {...register('email')}
+              label="Email"
+              fullWidth
+              error={!!errors.email}
+              helperText={errors.email?.message}
+            />
+          </Grid>
+          {/* <Grid item xs={6}>
             <Controller
               name="status"
               control={control}
@@ -215,7 +218,7 @@ export const UserForm: React.FC = () => {
                 </TextField>
               )}
             />
-          </Grid>
+          </Grid> */}
         </Grid>
 
         <Box sx={{ mt: 4, mb: 2 }}>
@@ -238,14 +241,13 @@ export const UserForm: React.FC = () => {
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {fields.map((field, index) => (
               <Paper key={field.id} variant="outlined" className="flex flex-row gap-2 p-2">
-                <IconButton
-                  size="small"
-                  color="error"
-                  sx={{ fontSize: 25 }}
+                <CircleButton
+                  //disabled={!canDelete}
+                  icon={<DeleteIcon sx={{ fontSize: 25 }} />}
                   onClick={() => remove(index)}
-                >
-                  <DeleteIcon fontSize="inherit" />
-                </IconButton>
+                  type={ButtonType.button}
+                />
+
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <Controller

@@ -1,6 +1,7 @@
-import { CalendarMonth as PeriodIcon, Delete as DeleteIcon } from '@mui/icons-material'
+import { Delete as DeleteIcon, CalendarMonth as PeriodIcon } from '@mui/icons-material'
 import {
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
@@ -77,18 +78,22 @@ export const PeriodList: React.FC = () => {
             <TableRow>
               <TableCell width={50}></TableCell>
               <TableCell>Period</TableCell>
+              <TableCell>Default</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableSkeleton isLoading={isLoading} columns={3} rows={15}>
+            <TableSkeleton isLoading={isLoading} columns={4} rows={15}>
               {items.map((item: any) => (
                 <TableRow
                   key={item.id}
                   hover
                   onClick={() => {
                     if (!canEdit) {
-                      displayToast('You do not have permission to edit this period.', ToastType.info)
+                      displayToast(
+                        'You do not have permission to edit this period.',
+                        ToastType.info
+                      )
                       return
                     }
                     handleEdit(item.id)
@@ -104,6 +109,9 @@ export const PeriodList: React.FC = () => {
                     </Typography>
                   </TableCell>
                   <TableCell align="right">
+                    <Checkbox checked={!!item.isDefault} readOnly size="small" color="primary" />
+                  </TableCell>
+                  <TableCell align="right">
                     <CircleButton
                       disabled={!canDelete}
                       icon={<DeleteIcon sx={{ fontSize: 25 }} />}
@@ -115,14 +123,14 @@ export const PeriodList: React.FC = () => {
               ))}
               {isError && (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                  <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
                     <Typography color="error">Failed to load periods.</Typography>
                   </TableCell>
                 </TableRow>
               )}
               {!isError && items.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={3} align="center" sx={{ py: 4 }}>
+                  <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
                     <Typography variant="body2" color="text.secondary">
                       No periods found.
                     </Typography>

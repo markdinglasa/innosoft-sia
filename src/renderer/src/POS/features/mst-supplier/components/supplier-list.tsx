@@ -134,7 +134,7 @@ export const SupplierList: React.FC = () => {
               {isError && (
                 <TableRow>
                   <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
-                    <Typography color="error">Failed to load suppliers.</Typography>
+                    <Typography color="error">Failed to load supplier(s).</Typography>
                   </TableCell>
                 </TableRow>
               )}
@@ -142,7 +142,7 @@ export const SupplierList: React.FC = () => {
                 <TableRow>
                   <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
                     <Typography variant="body2" color="text.secondary">
-                      No suppliers found.
+                      No supplier(s) found.
                     </Typography>
                   </TableCell>
                 </TableRow>

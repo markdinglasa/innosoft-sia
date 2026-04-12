@@ -23,7 +23,7 @@ function TerminalHub() {
   const canAdd = hasPermission(SystemPermissions.TERMINAL_ADD)
 
   return (
-    <PageLayout title="Terminal Management">
+    <PageLayout title="Terminals">
       <Box sx={{ mb: 3 }}>
         <Paper
           variant="outlined"
