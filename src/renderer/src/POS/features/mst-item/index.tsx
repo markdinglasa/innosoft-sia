@@ -23,7 +23,7 @@ const ItemHub: React.FC = () => {
   const canAdd = hasPermission(SystemPermissions.ITEM_ADD)
 
   return (
-    <PageLayout title="Catalog (Item & Inventory)">
+    <PageLayout title="Item Catalogs">
       <Box sx={{ mb: 3 }}>
         <Paper
           variant="outlined"

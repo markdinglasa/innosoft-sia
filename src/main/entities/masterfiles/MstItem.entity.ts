@@ -1,9 +1,11 @@
 
 
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
 import { MstAccountEntity } from './MstAccount.entity'
+import { MstItemPackageEntity } from './MstItemPackage.entity'
+import { MstItemPriceEntity } from './MstItemPrice.entity'
 import { MstSupplierEntity } from './MstSupplier.entity'
 import { MstTaxEntity } from './MstTax.entity'
 import { MstUnitEntity } from './MstUnit.entity'
@@ -143,5 +145,9 @@ export class MstItemEntity extends BaseEntity {
   @JoinColumn({ name: 'UnitId' })
   unit?: MstUnitEntity
 
+  @OneToMany(() => MstItemPriceEntity, (itemPrice) => itemPrice.item)
+  itemPrices?: MstItemPriceEntity[]
 
+  @OneToMany(() => MstItemPackageEntity, (itemPackage) => itemPackage.item)
+  itemPackages?: MstItemPackageEntity[]
 }

@@ -4,11 +4,36 @@ export function ItemFormSkeleton() {
   return (
     <Box sx={{ p: 3, flexGrow: 1 }}>
       <Grid container spacing={2}>
-        {Array.from({ length: 12 }).map((_, index) => (
-          <Grid key={index} item xs={12} sm={6} md={4}>
-            <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 1 }} />
-          </Grid>
-        ))}
+        <Grid item xs={6}>
+          <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 1 }} />
+        </Grid>
+        <Grid item xs={6}>
+          <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 1 }} />
+        </Grid>
+        <Grid item xs={12}>
+          <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 1 }} />
+        </Grid>
+        <Grid item xs={12}>
+          <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 1 }} />
+        </Grid>
+        <Grid item xs={12}>
+          <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 1 }} />
+        </Grid>
+        <Grid item xs={6}>
+          <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 1 }} />
+        </Grid>
+        <Grid item xs={6}>
+          <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 1 }} />
+        </Grid>
+        <Grid item xs={6}>
+          <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 1 }} />
+        </Grid>
+        <Grid item xs={6}>
+          <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 1 }} />
+        </Grid>
+        <Grid item xs={6}>
+          <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 1 }} />
+        </Grid>
       </Grid>
     </Box>
   )

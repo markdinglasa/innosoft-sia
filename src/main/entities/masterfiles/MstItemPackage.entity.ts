@@ -42,7 +42,7 @@ export class MstItemPackageEntity extends BaseEntity {
   isOptional: boolean
 
   // FK Relationships
-  @ManyToOne(() => MstItemEntity)
+  @ManyToOne(() => MstItemEntity, (item) => item.itemPackages)
   @JoinColumn({ name: 'ItemId' })
   item?: MstItemEntity
 

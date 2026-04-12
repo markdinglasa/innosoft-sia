@@ -5,23 +5,31 @@ import { MirrorBaseEntity } from '../generic/mirror.base.entity'
 export class MirrorUnitEntity extends MirrorBaseEntity {
   constructor() {
     super()
-    this.unit = ''
+    this.name = ''
+    this.description = null
   }
 
   @Column({ name: 'Unit', type: 'nvarchar', length: 50 })
-  unit: string
+  name: string
+
+  @Column({ name: 'Description', type: 'text', nullable: true })
+  description: string | null
 }
 
 @Entity('MstTax')
 export class MirrorTaxEntity extends MirrorBaseEntity {
   constructor() {
     super()
-    this.tax = ''
+    this.code = ''
+    this.name = ''
     this.rate = 0
   }
 
+  @Column({ name: 'Code', type: 'nvarchar', length: 50 })
+  code: string
+
   @Column({ name: 'Tax', type: 'nvarchar', length: 50 })
-  tax: string
+  name: string
 
   @Column({ name: 'Rate', type: 'decimal', precision: 18, scale: 5 })
   rate: number
@@ -33,7 +41,8 @@ export class MirrorItemEntity extends MirrorBaseEntity {
     super()
     this.itemCode = ''
     this.barCode = ''
-    this.itemDescription = ''
+    this.name = ''
+    this.description = ''
     this.price = 0
     this.category = ''
     this.unitId = 0
@@ -46,8 +55,11 @@ export class MirrorItemEntity extends MirrorBaseEntity {
   @Column({ name: 'BarCode', type: 'nvarchar', length: 255 })
   barCode: string
 
+  @Column({ name: 'Name', type: 'nvarchar', length: 255, nullable: true })
+  name: string
+
   @Column({ name: 'ItemDescription', type: 'nvarchar', length: 255 })
-  itemDescription: string
+  description: string
 
   @Column({ name: 'Price', type: 'decimal', precision: 18, scale: 5 })
   price: number
@@ -66,14 +78,14 @@ export class MirrorItemEntity extends MirrorBaseEntity {
 export class MirrorUserEntity extends MirrorBaseEntity {
   constructor() {
     super()
-    this.userName = ''
+    this.username = ''
     this.fullName = ''
     this.password = ''
     this.userType = ''
   }
 
   @Column({ name: 'UserName', type: 'nvarchar', length: 50 })
-  userName: string
+  username: string
 
   @Column({ name: 'FullName', type: 'nvarchar', length: 255 })
   fullName: string
@@ -89,20 +101,20 @@ export class MirrorUserEntity extends MirrorBaseEntity {
 export class MirrorDiscountEntity extends MirrorBaseEntity {
   constructor() {
     super()
-    this.discount = ''
+    this.name = ''
     this.discountRate = 0
-    this.isVatExempt = false
+    this.isVATExempt = false
     this.discountAlias = ''
   }
 
   @Column({ name: 'Discount', type: 'nvarchar', length: 250 })
-  discount: string
+  name: string
 
   @Column({ name: 'DiscountRate', type: 'decimal', precision: 18, scale: 5 })
   discountRate: number
 
   @Column({ name: 'IsVatExempt', type: 'boolean', default: false })
-  isVatExempt: boolean
+  isVATExempt: boolean
 
   @Column({ name: 'DiscountAlias', type: 'nvarchar', length: 100 })
   discountAlias: string
@@ -112,13 +124,13 @@ export class MirrorDiscountEntity extends MirrorBaseEntity {
 export class MirrorPayTypeEntity extends MirrorBaseEntity {
   constructor() {
     super()
-    this.payType = ''
+    this.name = ''
     this.accountId = null
     this.sortNumber = null
   }
 
   @Column({ name: 'PayType', type: 'nvarchar', length: 50 })
-  payType: string
+  name: string
 
   @Column({ name: 'AccountId', type: 'int', nullable: true })
   accountId: number | null
@@ -134,6 +146,7 @@ export class MirrorBranchEntity extends MirrorBaseEntity {
     this.name = ''
     this.address = ''
     this.isDefault = false
+    this.description = null
   }
 
   @Column({ name: 'Name', type: 'nvarchar', length: 250 })
@@ -141,6 +154,9 @@ export class MirrorBranchEntity extends MirrorBaseEntity {
 
   @Column({ name: 'Address', type: 'text', nullable: true })
   address: string
+
+  @Column({ name: 'Description', type: 'text', nullable: true })
+  description: string | null
 
   @Column({ name: 'IsDefault', type: 'boolean', default: false })
   isDefault: boolean
@@ -165,7 +181,7 @@ export class MirrorTerminalEntity extends MirrorBaseEntity {
 export class MirrorCustomerEntity extends MirrorBaseEntity {
   constructor() {
     super()
-    this.customer = ''
+    this.name = ''
     this.address = ''
     this.contactPerson = ''
     this.contactNumber = ''
@@ -173,7 +189,7 @@ export class MirrorCustomerEntity extends MirrorBaseEntity {
   }
 
   @Column({ name: 'Customer', type: 'nvarchar', length: 50 })
-  customer: string
+  name: string
 
   @Column({ name: 'Address', type: 'nvarchar', length: 255 })
   address: string
@@ -187,3 +203,4 @@ export class MirrorCustomerEntity extends MirrorBaseEntity {
   @Column({ name: 'TIN', type: 'nvarchar', length: 50 })
   tin: string
 }
+

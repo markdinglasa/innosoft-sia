@@ -5,6 +5,7 @@ import { transformAndValidate } from '../../../common/utils/validator'
 import { MstItemEntity } from '../../../entities/masterfiles/MstItem.entity'
 import { MstItemPackageEntity } from '../../../entities/masterfiles/MstItemPackage.entity'
 import { MstItemPriceEntity } from '../../../entities/masterfiles/MstItemPrice.entity'
+import { AppDataSource } from '../../../typeORM/configurations'
 import { ParentChildService } from '../../parent-child.service'
 import { CreateItemDto, UpdateItemDto } from './dto'
 
@@ -26,12 +27,18 @@ export class ItemService extends ParentChildService<MstItemEntity> implements II
     ])
   }
 
-
   /**
    * Search fields for Item keyword search.
    */
   protected get searchFields(): string[] {
-    return ['itemCode', 'barCode', 'itemDescription', 'alias', 'genericName']
+    return ['itemCode', 'barCode', 'name', 'description', 'genericName']
+  }
+
+  /**
+   * Relations to include in fetch results.
+   */
+  protected get listRelations(): string[] {
+    return ['itemPrices', 'itemPackages', 'unit']
   }
 
   /**
@@ -39,15 +46,31 @@ export class ItemService extends ParentChildService<MstItemEntity> implements II
    * Ensures ItemCode and BarCode are unique.
    */
   protected async validateCreate(data: DeepPartial<MstItemEntity>): Promise<void> {
+    // Provide defaults for technical fields not in form
+    data.salesAccountId = data.salesAccountId || 1
+    data.assetAccountId = data.assetAccountId || 1
+    data.costAccountId = data.costAccountId || 1
+    data.inTaxId = data.inTaxId || 1
+    data.outTaxId = data.outTaxId || 1
+    data.defaultSupplierId = data.defaultSupplierId || 1
+    data.genericName = data.genericName || ''
+    data.category = data.category || ''
+    data.imagePath = data.imagePath || ''
+    data.reorderQuantity = data.reorderQuantity || 0
+    data.onhandQuantity = data.onhandQuantity || 0
+    data.markUp = data.markUp || 0
+    data.isInventory = data.isInventory ?? true
+    data.isPackage = data.isPackage ?? false
+
     const itemDto = await transformAndValidate(CreateItemDto, data)
-    
+
     const existingCode = await this.repository.findOneBy({ itemCode: itemDto.itemCode })
     if (existingCode) {
       throw new BadRequestException(`Item Code '${itemDto.itemCode}' already exists.`)
     }
 
     const existingBarCode = await this.repository.findOneBy({ barCode: itemDto.barCode })
-    if (existingBarCode) {
+    if (existingBarCode && itemDto.barCode) {
       throw new BadRequestException(`Bar Code '${itemDto.barCode}' already exists.`)
     }
   }
@@ -56,7 +79,10 @@ export class ItemService extends ParentChildService<MstItemEntity> implements II
    * Validates before updating an existing Item.
    * Ensures modified ItemCode and BarCode do not conflict with other existing records.
    */
-  protected async validateUpdate(id: any, data: QueryDeepPartialEntity<MstItemEntity>): Promise<void> {
+  protected async validateUpdate(
+    id: any,
+    data: QueryDeepPartialEntity<MstItemEntity>
+  ): Promise<void> {
     const currentItem = await this.get(id)
     if (!currentItem) {
       throw new BadRequestException('Item not found for update.')
@@ -83,7 +109,7 @@ export class ItemService extends ParentChildService<MstItemEntity> implements II
 
   /**
    * Validates before deleting an Item.
-   * Ensures the item is not in-use (e.g., in transactions, inventory).
+   * Cleans up related records and ensures the item is not in-use.
    */
   protected async validateDelete(id: any): Promise<void> {
     const currentItem = await this.get(id)
@@ -91,9 +117,19 @@ export class ItemService extends ParentChildService<MstItemEntity> implements II
       throw new BadRequestException('Item not found for deletion.')
     }
 
-    // TODO: Implement actual in-use checks here in the future
-    // e.g. Check SalesInvoiceItemEntity or InventoryEntity
-    // const isInUse = await salesItemRepo.findOneBy({ itemId: id })
-    // if (isInUse) throw new BadRequestException('Cannot delete Item because it is currently in-use in a transaction.')
+    // Manual cleanup of related records to satisfy FK constraints
+    await AppDataSource.transaction(async (manager) => {
+      // 1. Delete Item Prices
+      await manager.delete(MstItemPriceEntity, { itemId: id })
+
+      // 2. Delete Item Packages (where this item is the parent)
+      await manager.delete(MstItemPackageEntity, { itemId: id })
+
+      // 3. Delete Package references (where this item IS a component of another package)
+      await manager.delete(MstItemPackageEntity, { packageItemId: id })
+    })
+
+    // TODO: Further in-use checks (SalesInvoice, etc.)
   }
 }
+

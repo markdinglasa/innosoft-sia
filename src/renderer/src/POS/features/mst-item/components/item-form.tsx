@@ -10,6 +10,7 @@ import {
   Alert,
   Box,
   Button,
+  Divider,
   FormControlLabel,
   Grid,
   IconButton,
@@ -17,37 +18,41 @@ import {
   Paper,
   Switch,
   Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Tabs,
   TextField,
   Typography
 } from '@mui/material'
+import { ButtonType } from '@shared/types'
 import { memo, useEffect, useState } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
+import CircleButton from '../../../components/inputs/circle-button'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useItemHubStore } from '../store/use-item-hub-store'
 import { ItemFormSkeleton } from './item-form-skeleton'
 
 const itemSchema = z.object({
   itemCode: z.string().min(1, 'Item Code is required'),
-  barCode: z.string().nullable().optional(),
+  barCode: z.string().nullable().optional().or(z.literal('')),
   name: z.string().min(1, 'Item Name is required'),
-  description: z.string().nullable().optional(),
-  category: z.string().nullable().optional(),
-  unitId: z.string().min(1, 'Base Unit is required'),
+  description: z.string().nullable().optional().or(z.literal('')),
+  genericName: z.string().nullable().optional().or(z.literal('')),
+  category: z.string().nullable().optional().or(z.literal('')),
+  unitId: z.coerce.number().min(1, 'Base Unit is required'),
   price: z.coerce.number().min(0, 'Default Price must be at least 0'),
   cost: z.coerce.number().min(0, 'Standard Cost must be at least 0'),
+  salesAccountId: z.coerce.number().min(1, 'Sales Account is required'),
+  assetAccountId: z.coerce.number().min(1, 'Asset Account is required'),
+  costAccountId: z.coerce.number().min(1, 'Cost Account is required'),
+  inTaxId: z.coerce.number().min(1, 'Inbound Tax is required'),
+  outTaxId: z.coerce.number().min(1, 'Outbound Tax is required'),
+  defaultSupplierId: z.coerce.number().optional().nullable(),
   isInventory: z.boolean().default(true),
   isPackage: z.boolean().default(false),
   itemPrices: z
     .array(
       z.object({
+        id: z.number().optional(),
         priceDescription: z.string().min(1, 'Description is required'),
         price: z.coerce.number().min(0, 'Price must be at least 0'),
         triggerQuantity: z.coerce.number().min(0, 'Min Qty must be at least 0')
@@ -65,6 +70,9 @@ function ItemForm() {
   const { useGet, useSaveMutation, useLookup } = useMasterfile('item')
   const { data: units = [] } = useLookup('unit')
   const { data: categories = [] } = useLookup('itemGroup')
+  const { data: accounts = [] } = useLookup('account')
+  const { data: taxes = [] } = useLookup('tax')
+  const { data: suppliers = [] } = useLookup('supplier')
 
   const { data: item, isLoading } = useGet(selectedId)
   const saveMutation = useSaveMutation()
@@ -82,10 +90,17 @@ function ItemForm() {
       barCode: '',
       name: '',
       description: '',
+      genericName: '',
       category: '',
-      unitId: '',
+      unitId: 0 as any,
       price: 0,
       cost: 0,
+      salesAccountId: 6, // Default to Sales Account from seed if possible or 1
+      assetAccountId: 3, // Default to Inventory Account
+      costAccountId: 7, // Default to Cost of Sales
+      inTaxId: 0,
+      outTaxId: 0,
+      defaultSupplierId: '' as any,
       isInventory: true,
       isPackage: false,
       itemPrices: []
@@ -103,45 +118,80 @@ function ItemForm() {
 
   useEffect(
     function formResetter() {
+      // Create mode
+      if (!selectedId) {
+        reset({
+          itemCode: '',
+          barCode: '',
+          name: '',
+          description: '',
+          genericName: '',
+          category: '',
+          unitId: '' as any,
+          price: 0,
+          cost: 0,
+          salesAccountId: 6,
+          assetAccountId: 3,
+          costAccountId: 7,
+          inTaxId: 1,
+          outTaxId: 1,
+          defaultSupplierId: '' as any,
+          isInventory: true,
+          isPackage: false,
+          itemPrices: []
+        })
+        return
+      }
+
+      // Edit mode
       if (item) {
         reset({
           itemCode: item.itemCode || '',
           barCode: item.barCode || '',
           name: item.name || '',
           description: item.description || '',
+          genericName: item.genericName || '',
           category: item.category || '',
-          unitId: item.unitId || '',
+          unitId: item.unitId ?? '',
           price: item.price || 0,
           cost: item.cost || 0,
+          salesAccountId: item.salesAccountId || 6,
+          assetAccountId: item.assetAccountId || 3,
+          costAccountId: item.costAccountId || 7,
+          inTaxId: item.inTaxId || 1,
+          outTaxId: item.outTaxId || 1,
+          defaultSupplierId: item.defaultSupplierId ?? '',
           isInventory: !!item.isInventory,
           isPackage: !!item.isPackage,
-          itemPrices: item.itemPrices || []
-        })
-      } else {
-        reset({
-          itemCode: '',
-          barCode: '',
-          name: '',
-          description: '',
-          category: '',
-          unitId: '',
-          price: 0,
-          cost: 0,
-          isInventory: true,
-          isPackage: false,
-          itemPrices: []
+          itemPrices: (item.itemPrices || []).map((p: any) => ({
+            id: p.id,
+            priceDescription: p.priceDescription,
+            price: Number(p.price),
+            triggerQuantity: Number(p.triggerQuantity)
+          }))
         })
       }
     },
-    [item, reset]
+    [item, reset, selectedId]
   )
 
   const onSubmit = async (data: FormData) => {
-    await saveMutation.mutateAsync({
-      ...data,
-      id: selectedId || undefined
-    })
-    handleClose()
+    try {
+      const { itemPrices, ...baseFields } = data
+      const payload: any = {
+        parent: {
+          ...baseFields,
+          id: selectedId || undefined
+        },
+        itemPrices: itemPrices || []
+      }
+
+      await saveMutation.mutateAsync(payload)
+      handleClose()
+    } catch (error: unknown) {
+      // Form errors are handled by field state, but we catch async issues here
+      console.error('Save failed:', error)
+    }
   }
 
   const handleClose = () => {
@@ -185,10 +235,13 @@ function ItemForm() {
       <Tabs
         value={activeTab}
         onChange={(_, v) => setActiveTab(v)}
-        variant="fullWidth"
+        variant="scrollable"
+        scrollButtons="auto"
         sx={{ borderBottom: 1, borderColor: 'divider' }}
       >
         <Tab label="General" />
+        <Tab label="GL Accounts" />
+        <Tab label="Taxes" />
         <Tab label="Prices" />
         <Tab label="Packages" disabled={!selectedId} />
       </Tabs>
@@ -228,6 +281,9 @@ function ItemForm() {
               />
             </Grid>
             <Grid item xs={12}>
+              <TextField {...register('genericName')} label="Generic Name" fullWidth size="small" />
+            </Grid>
+            <Grid item xs={12}>
               <TextField
                 {...register('description')}
                 label="Description"
@@ -242,7 +298,14 @@ function ItemForm() {
                 name="category"
                 control={control}
                 render={({ field }) => (
-                  <TextField {...field} select label="Category" fullWidth size="small">
+                  <TextField
+                    {...field}
+                    value={field.value ?? ''}
+                    select
+                    label="Category"
+                    fullWidth
+                    size="small"
+                  >
                     {categories.map((c: any) => (
                       <MenuItem key={c.id} value={c.name}>
                         {c.name}
@@ -260,6 +323,7 @@ function ItemForm() {
                 render={({ field }) => (
                   <TextField
                     {...field}
+                    value={field.value ?? ''}
                     select
                     label="Base Unit"
                     fullWidth
@@ -323,84 +387,253 @@ function ItemForm() {
         )}
 
         {activeTab === 1 && (
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: 'block' }}>
+                Map this item to specific General Ledger accounts for financial reporting.
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Controller
+                name="salesAccountId"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    value={field.value ?? ''}
+                    select
+                    label="Sales Account"
+                    fullWidth
+                    size="small"
+                    required
+                  >
+                    {accounts.map((a: any) => (
+                      <MenuItem key={a.id} value={a.id}>
+                        {a.code} - {a.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Controller
+                name="assetAccountId"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    value={field.value ?? ''}
+                    select
+                    label="Asset (Inventory) Account"
+                    fullWidth
+                    size="small"
+                    required
+                  >
+                    {accounts.map((a: any) => (
+                      <MenuItem key={a.id} value={a.id}>
+                        {a.code} - {a.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Controller
+                name="costAccountId"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    value={field.value ?? ''}
+                    select
+                    label="Cost of Sales Account"
+                    fullWidth
+                    size="small"
+                    required
+                  >
+                    {accounts.map((a: any) => (
+                      <MenuItem key={a.id} value={a.id}>
+                        {a.code} - {a.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Controller
+                name="defaultSupplierId"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    value={field.value ?? ''}
+                    select
+                    label="Default Supplier"
+                    fullWidth
+                    size="small"
+                  >
+                    <MenuItem value="">None</MenuItem>
+                    {suppliers.map((s: any) => (
+                      <MenuItem key={s.id} value={s.id}>
+                        {s.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+              />
+            </Grid>
+          </Grid>
+        )}
+
+        {activeTab === 2 && (
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: 'block' }}>
+                Tax configuration for purchasing and selling this item.
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Controller
+                name="inTaxId"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    value={field.value ?? ''}
+                    select
+                    label="Purchase Tax (Inbound)"
+                    fullWidth
+                    size="small"
+                    required
+                  >
+                    {taxes.map((t: any) => (
+                      <MenuItem key={t.id} value={t.id}>
+                        {t.name} ({t.rate}%)
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Controller
+                name="outTaxId"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    value={field.value ?? ''}
+                    select
+                    label="Sales Tax (Outbound)"
+                    fullWidth
+                    size="small"
+                    required
+                  >
+                    {taxes.map((t: any) => (
+                      <MenuItem key={t.id} value={t.id}>
+                        {t.name} ({t.rate}%)
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+              />
+            </Grid>
+          </Grid>
+        )}
+
+        {activeTab === 3 && (
           <Box>
             <Box
-              sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
+              sx={{
+                mt: 2,
+                mb: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
             >
               <Typography variant="caption" color="text.secondary">
                 Special pricing tiers and branch-specific rates.
               </Typography>
               <Button
-                variant="outlined"
                 size="small"
+                variant="outlined"
                 startIcon={<AddIcon />}
                 onClick={() => appendPrice({ priceDescription: '', price: 0, triggerQuantity: 0 })}
               >
-                Add Price Tier
+                Price Tier
               </Button>
             </Box>
+            <Divider sx={{ mb: 2 }} />
 
-            <TableContainer component={Paper} variant="outlined">
-              <Table size="small">
-                <TableHead sx={{ bgcolor: 'grey.50' }}>
-                  <TableRow>
-                    <TableCell>Description</TableCell>
-                    <TableCell align="right">Price</TableCell>
-                    <TableCell align="right">Min Qty</TableCell>
-                    <TableCell width={50}></TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {priceFields.map((field, index) => (
-                    <TableRow key={field.id}>
-                      <TableCell>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {priceFields.map((field, index) => (
+                <Paper key={field.id} variant="outlined" sx={{ p: 2 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                    <CircleButton
+                      icon={<DeleteIcon color="primary" sx={{ fontSize: 25 }} />}
+                      type={ButtonType.button}
+                      onClick={() => removePrice(index)}
+                    />
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={6}>
                         <TextField
                           {...register(`itemPrices.${index}.priceDescription`)}
+                          label="Description"
                           fullWidth
+                          size="small"
                           required
-                          variant="standard"
                           placeholder="e.g. Wholesale"
                           error={!!errors.itemPrices?.[index]?.priceDescription}
+                          helperText={errors.itemPrices?.[index]?.priceDescription?.message}
                         />
-                      </TableCell>
-                      <TableCell>
+                      </Grid>
+                      <Grid item xs={12} sm={3}>
                         <TextField
                           {...register(`itemPrices.${index}.price`)}
                           type="number"
+                          label="Price"
                           fullWidth
+                          size="small"
                           required
-                          variant="standard"
-                          sx={{ textAlign: 'right' }}
                           error={!!errors.itemPrices?.[index]?.price}
+                          helperText={errors.itemPrices?.[index]?.price?.message}
                         />
-                      </TableCell>
-                      <TableCell>
+                      </Grid>
+                      <Grid item xs={12} sm={3}>
                         <TextField
                           {...register(`itemPrices.${index}.triggerQuantity`)}
                           type="number"
+                          label="Min Quantity"
                           fullWidth
+                          size="small"
                           required
-                          variant="standard"
                           error={!!errors.itemPrices?.[index]?.triggerQuantity}
+                          helperText={errors.itemPrices?.[index]?.triggerQuantity?.message}
                         />
-                      </TableCell>
-                      <TableCell align="right">
-                        <IconButton size="small" color="error" onClick={() => removePrice(index)}>
-                          <DeleteIcon fontSize="inherit" />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  {priceFields.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={4} align="center" sx={{ py: 3, color: 'text.secondary' }}>
-                        No special price tiers defined.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </Paper>
+              ))}
+              {priceFields.length === 0 && (
+                <Box sx={{ textAlign: 'center', py: 4, bgcolor: 'grey.50', borderRadius: 1 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    No special pricing tiers defined. Click "Add Price Tier" to start.
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          </Box>
+        )}
+        {activeTab === 4 && (
+          <Box sx={{ p: 4, textAlign: 'center', bgcolor: 'grey.50', borderRadius: 1 }}>
+            <Typography variant="body2" color="text.secondary">
+              Package components management coming soon.
+            </Typography>
           </Box>
         )}
       </Box>
@@ -429,3 +662,4 @@ function ItemForm() {
 }
 
 export default memo(ItemForm)
+

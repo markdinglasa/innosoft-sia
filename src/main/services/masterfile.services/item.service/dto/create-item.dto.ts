@@ -18,53 +18,58 @@ export class CreateItemDto {
 
   @ApiProperty({ description: 'Barcode for the item' })
   @IsString()
+  @IsOptional()
+  @MaxLength(255)
+  barCode?: string
+
+  @ApiProperty({ description: 'Full name of the item' })
+  @IsString()
   @IsNotEmpty()
   @MaxLength(255)
-  barCode!: string
+  name!: string
 
   @ApiProperty({ description: 'Full description of the item' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @MaxLength(255)
-  itemDescription!: string
-
-  @ApiProperty({ description: 'Alias or short name' })
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(255)
-  alias!: string
+  description?: string
 
   @ApiProperty({ description: 'Generic name of the item' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @MaxLength(255)
-  genericName!: string
+  genericName?: string
 
   @ApiProperty({ description: 'Item category' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @MaxLength(255)
-  category!: string
+  category?: string
 
   @ApiProperty()
   @IsNumber()
-  salesAccountId!: number
+  @IsOptional()
+  salesAccountId?: number
 
   @ApiProperty()
   @IsNumber()
-  assetAccountId!: number
+  @IsOptional()
+  assetAccountId?: number
 
   @ApiProperty()
   @IsNumber()
-  costAccountId!: number
+  @IsOptional()
+  costAccountId?: number
 
   @ApiProperty()
   @IsNumber()
-  inTaxId!: number
+  @IsOptional()
+  inTaxId?: number
 
   @ApiProperty()
   @IsNumber()
-  outTaxId!: number
+  @IsOptional()
+  outTaxId?: number
 
   @ApiProperty()
   @IsNumber()
@@ -72,7 +77,8 @@ export class CreateItemDto {
 
   @ApiProperty()
   @IsNumber()
-  defaultSupplierId!: number
+  @IsOptional()
+  defaultSupplierId?: number
 
   @ApiProperty()
   @IsNumber()
@@ -80,7 +86,8 @@ export class CreateItemDto {
 
   @ApiProperty()
   @IsNumber()
-  markUp!: number
+  @IsOptional()
+  markUp?: number
 
   @ApiProperty()
   @IsNumber()
@@ -88,20 +95,24 @@ export class CreateItemDto {
 
   @ApiProperty()
   @IsString()
+  @IsOptional()
   @MaxLength(255)
-  imagePath!: string
+  imagePath?: string
 
   @ApiProperty()
   @IsNumber()
-  reorderQuantity!: number
+  @IsOptional()
+  reorderQuantity?: number
 
   @ApiProperty()
   @IsNumber()
-  onhandQuantity!: number
+  @IsOptional()
+  onhandQuantity?: number
 
   @ApiProperty()
   @IsBoolean()
-  isInventory!: boolean
+  @IsOptional()
+  isInventory?: boolean
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -128,5 +139,6 @@ export class CreateItemDto {
 
   @ApiProperty()
   @IsBoolean()
-  isPackage!: boolean
+  @IsOptional()
+  isPackage?: boolean
 }

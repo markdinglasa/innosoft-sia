@@ -33,7 +33,7 @@ export class MstItemPriceEntity extends BaseEntity {
   triggerQuantity: number
 
   // FK Relationships
-  @ManyToOne(() => MstItemEntity)
+  @ManyToOne(() => MstItemEntity, (item) => item.itemPrices)
   @JoinColumn({ name: 'ItemId' })
   item?: MstItemEntity
 }
