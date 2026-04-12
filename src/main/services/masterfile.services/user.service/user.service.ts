@@ -6,6 +6,9 @@ import { BadRequestException } from '../../../common/exceptions'
 import { transformAndValidate } from '../../../common/utils/validator'
 import { MstBranchAccessEntity } from '../../../entities/masterfiles/MstBranchAccess.entity'
 import { MstUserEntity } from '../../../entities/masterfiles/MstUser.entity'
+import { MstUserRolesEntity } from '../../../entities/masterfiles/MstUserRoles.entity'
+import { SysUserTerminalEntity } from '../../../entities/utilities/SysUserTerminal.entity'
+import { AppDataSource } from '../../../typeORM/configurations'
 import { ParentChildService } from '../../parent-child.service'
 import { CreateUserDto, UpdateUserDto } from './dto'
 
@@ -91,11 +94,30 @@ export class UserService extends ParentChildService<MstUserEntity> implements IU
 
   /**
    * Validates before deleting a User.
+   * Cleans up related records and prevents deletion of default users.
    */
   protected async validateDelete(id: any): Promise<void> {
     const currentEntity = await this.get(id)
     if (!currentEntity) {
       throw new BadRequestException('User not found for deletion.')
     }
+
+    if (currentEntity.isDefault) {
+      throw new BadRequestException(`User '${currentEntity.username}' is a default system account and cannot be deleted.`)
+    }
+
+    // Manual cleanup of related records to satisfy FK constraints
+    await AppDataSource.transaction(async (manager) => {
+      // 1. Delete Branch Accesses
+      await manager.delete(MstBranchAccessEntity, { userId: id })
+
+      // 2. Delete User Roles
+      await manager.delete(MstUserRolesEntity, { userId: id })
+
+      // 3. Delete User Terminal Assignments
+      await manager.delete(SysUserTerminalEntity, { userId: id })
+
+      // No need to delete the user here, the BaseService will do it after validateDelete
+    })
   }
 }

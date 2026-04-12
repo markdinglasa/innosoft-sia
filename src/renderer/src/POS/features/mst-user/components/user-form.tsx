@@ -32,12 +32,12 @@ const userSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
   email: z.string().email('Invalid email').optional().nullable().or(z.literal('')),
   password: z.string().optional().nullable(),
-  type: z.enum(['Teller', 'Cashier', 'Admin']),
+  type: z.enum(['Teller', 'Cashier', 'Administrator']),
   status: z.enum(['Active', 'Inactive', 'Locked']),
   branchAccesses: z
     .array(
       z.object({
-        branchId: z.string().min(1, 'Branch is required')
+        branchId: z.coerce.number().min(1, 'Branch is required')
       })
     )
     .default([])
@@ -52,6 +52,7 @@ export const UserForm: React.FC = () => {
 
   const { data: user, isLoading } = useGet(selectedUserId)
   const saveMutation = useSaveMutation()
+  console.log('user:', user)
 
   const {
     control,
@@ -79,13 +80,8 @@ export const UserForm: React.FC = () => {
 
   useEffect(
     function formResetter() {
-      if (user) {
-        reset({
-          ...user,
-          password: '', // Don't show password for editing
-          branchAccesses: user.branchAccesses || []
-        })
-      } else {
+      // Create mode
+      if (!selectedUserId) {
         reset({
           username: '',
           fullName: '',
@@ -95,23 +91,45 @@ export const UserForm: React.FC = () => {
           status: 'Active',
           branchAccesses: []
         })
+        return
+      }
+
+      // Edit mode - Only reset if data is loaded
+      if (user) {
+        reset({
+          username: user.username || '',
+          fullName: user.fullName || '',
+          email: user.email || '',
+          password: '', // Password stays empty unless intentionally changed
+          type: user.type || 'Teller',
+          status: user.status || 'Active',
+          branchAccesses: (user.branchAccesses || []).map((ba: any) => ({
+            branchId: Number(ba.branchId)
+          }))
+        })
       }
     },
-    [user, reset]
+    [user, reset, selectedUserId]
   )
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (formData: FormData) => {
     try {
+      const { branchAccesses, ...userProps } = formData
       const payload: any = {
-        ...data,
-        id: selectedUserId // TypeORM handles save/update based on ID
+        parent: {
+          ...userProps,
+          id: selectedUserId || undefined
+        },
+        branchAccesses: branchAccesses || []
       }
+
       // If editing and password is empty, don't update it
-      if (selectedUserId && !data.password) {
-        delete payload.password
-      } else if (!selectedUserId && !data.password) {
-        // Handle new user password if needed, but UI says system generated
-        delete payload.password
+      if (selectedUserId && !userProps.password) {
+        delete payload.parent.password
+      } else if (!selectedUserId && !userProps.password) {
+        // For new users, we must provide a password since it's required in CreateUserDto
+        // If the form doesn't have it, we use a default
+        payload.parent.password = 'Innosoft@123456'
       }
 
       await saveMutation.mutateAsync(payload)
@@ -192,7 +210,7 @@ export const UserForm: React.FC = () => {
                 <TextField {...field} select label="User Type" fullWidth required>
                   <MenuItem value="Teller">Teller</MenuItem>
                   <MenuItem value="Cashier">Cashier</MenuItem>
-                  <MenuItem value="Admin">Admin</MenuItem>
+                  <MenuItem value="Administrator">Administrator</MenuItem>
                 </TextField>
               )}
             />
@@ -206,7 +224,7 @@ export const UserForm: React.FC = () => {
               helperText={errors.email?.message}
             />
           </Grid>
-          {/* <Grid item xs={6}>
+          <Grid item xs={6}>
             <Controller
               name="status"
               control={control}
@@ -218,7 +236,7 @@ export const UserForm: React.FC = () => {
                 </TextField>
               )}
             />
-          </Grid> */}
+          </Grid>
         </Grid>
 
         <Box sx={{ mt: 4, mb: 2 }}>

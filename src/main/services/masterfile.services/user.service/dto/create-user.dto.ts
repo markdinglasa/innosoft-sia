@@ -31,8 +31,13 @@ export class CreateUserDto {
   @MaxLength(255)
   userCardNumber?: string | null
 
-  @ApiProperty({ description: 'User status', enum: ['Active', 'Suspended', 'Deactivated', 'Terminated'] })
-  @IsEnum(['Active', 'Suspended', 'Deactivated', 'Terminated'])
+  @ApiProperty({ description: 'User type', enum: ['Teller', 'Cashier', 'Administrator'] })
+  @IsEnum(['Teller', 'Cashier', 'Administrator'])
+  @IsNotEmpty()
+  type!: string
+
+  @ApiProperty({ description: 'User status', enum: ['Active', 'Inactive', 'Locked'] })
+  @IsEnum(['Active', 'Inactive', 'Locked'])
   @IsNotEmpty()
   status!: string
 

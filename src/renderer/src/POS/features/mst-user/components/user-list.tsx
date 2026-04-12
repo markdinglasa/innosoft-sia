@@ -187,9 +187,10 @@ export const UserList: React.FC = () => {
           <Button onClick={() => setDeleteId(null)}>Cancel</Button>
           <Button
             onClick={confirmDelete}
-            color="error"
+            color="primary"
             variant="contained"
             disabled={deleteMutation.isPending}
+            startIcon={<DeleteIcon sx={{ fontSize: 25 }} />}
           >
             {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
           </Button>
