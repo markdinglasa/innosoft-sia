@@ -46,16 +46,18 @@ export const TaxForm: React.FC = () => {
 
   useEffect(
     function formResetter() {
-      if (existing)
+      if (selectedId && existing) {
         reset({
           code: existing.code || '',
           name: existing.name || '',
           rate: existing.rate || 0,
           accountId: existing.accountId || 0
         })
-      else reset({ code: '', name: '', rate: 0, accountId: 0 })
+      } else if (!selectedId) {
+        reset({ code: '', name: '', rate: 0, accountId: 0 })
+      }
     },
-    [existing, reset]
+    [existing, reset, selectedId]
   )
 
   const handleClose = () => {

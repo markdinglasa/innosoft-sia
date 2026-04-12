@@ -68,10 +68,13 @@ function TableGroupForm() {
 
   useEffect(
     function formResetter() {
-      if (existing) reset({ name: existing.name || '', tables: existing.tables || [] })
-      else reset({ name: '', tables: [] })
+      if (selectedId && existing) {
+        reset({ name: existing.name || '', tables: existing.tables || [] })
+      } else if (!selectedId) {
+        reset({ name: '', tables: [] })
+      }
     },
-    [existing, reset]
+    [existing, reset, selectedId]
   )
 
   const onSubmit = async (formData: FormData) => {

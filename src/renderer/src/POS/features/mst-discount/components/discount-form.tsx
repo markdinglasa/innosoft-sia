@@ -115,8 +115,9 @@ function DiscountForm() {
 
   useEffect(
     function formResetter() {
-      if (existing) {
+      if (selectedId && existing) {
         reset({
+          branchId: existing.branchId || activeBranch?.id || 0,
           name: existing.name || '',
           discountAlias: existing.discountAlias || '',
           discountRate: existing.discountRate || 0,
@@ -137,8 +138,9 @@ function DiscountForm() {
           daySun: !!existing.daySun,
           discountItems: existing.discountItems || []
         })
-      } else {
+      } else if (!selectedId) {
         reset({
+          branchId: activeBranch?.id || 0,
           name: '',
           discountAlias: '',
           discountRate: 0,
@@ -161,7 +163,7 @@ function DiscountForm() {
         })
       }
     },
-    [existing, reset]
+    [existing, reset, selectedId, activeBranch]
   )
 
   const onSubmit = async (formData: FormData) => {

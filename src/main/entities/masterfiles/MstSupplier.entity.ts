@@ -58,7 +58,7 @@ export class MstSupplierEntity extends BaseEntity {
   isDefault: boolean
 
   // FK Relationships
-  @ManyToOne(() => MstTermEntity)
+  @ManyToOne(() => MstTermEntity, (term) => term.suppliers)
   @JoinColumn({ name: 'TermId' })
   term?: MstTermEntity
 

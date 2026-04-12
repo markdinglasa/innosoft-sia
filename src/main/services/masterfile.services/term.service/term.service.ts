@@ -38,7 +38,10 @@ export class TermService extends BaseService<MstTermEntity> implements ITermServ
   /**
    * Validates before updating an existing Term.
    */
-  protected async validateUpdate(id: any, data: QueryDeepPartialEntity<MstTermEntity>): Promise<void> {
+  protected async validateUpdate(
+    id: any,
+    data: QueryDeepPartialEntity<MstTermEntity>
+  ): Promise<void> {
     const currentEntity = await this.get(id)
     if (!currentEntity) {
       throw new BadRequestException('Term not found for update.')
@@ -57,9 +60,30 @@ export class TermService extends BaseService<MstTermEntity> implements ITermServ
    * Validates before deleting a Term.
    */
   protected async validateDelete(id: any): Promise<void> {
-    const currentEntity = await this.get(id)
+    const currentEntity = await this.repository.findOne({
+      where: { id },
+      relations: ['customers', 'suppliers', 'orders']
+    })
+
     if (!currentEntity) {
       throw new BadRequestException('Term not found for deletion.')
     }
+
+    if (currentEntity.isDefault) {
+      throw new BadRequestException('Default term cannot be deleted.')
+    }
+
+    if (currentEntity.customers && currentEntity.customers.length > 0) {
+      throw new BadRequestException('Cannot delete term because it is currently used by customers.')
+    }
+
+    if (currentEntity.suppliers && currentEntity.suppliers.length > 0) {
+      throw new BadRequestException('Cannot delete term because it is currently used by suppliers.')
+    }
+
+    if (currentEntity.orders && currentEntity.orders.length > 0) {
+      throw new BadRequestException('Cannot delete term because it is currently used in transactions.')
+    }
   }
 }
+

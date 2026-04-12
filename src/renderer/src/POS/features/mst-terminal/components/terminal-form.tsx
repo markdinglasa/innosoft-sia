@@ -39,14 +39,16 @@ function TerminalForm() {
 
   useEffect(
     function formResetter() {
-      if (existing)
+      if (selectedId && existing) {
         reset({
           name: existing.name || '',
           isDefault: !!existing.isDefault
         })
-      else reset({ name: '', isDefault: false })
+      } else if (!selectedId) {
+        reset({ name: '', isDefault: false })
+      }
     },
-    [existing, reset]
+    [existing, reset, selectedId]
   )
 
   const onSubmit = async (formData: FormData) => {

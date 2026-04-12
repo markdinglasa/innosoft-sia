@@ -163,7 +163,7 @@ export class TrnOrderEntity extends BaseEntity {
   @JoinColumn({ name: 'AccountId' })
   account?: MstAccountEntity
 
-  @ManyToOne(() => MstTermEntity)
+  @ManyToOne(() => MstTermEntity, (term) => term.orders)
   @JoinColumn({ name: 'TermId' })
   term?: MstTermEntity
 

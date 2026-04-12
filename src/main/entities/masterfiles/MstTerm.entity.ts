@@ -1,4 +1,7 @@
-import { Column, Entity } from 'typeorm'
+import { Column, Entity, OneToMany } from 'typeorm'
+import { MstCustomerEntity } from './MstCustomer.entity'
+import { MstSupplierEntity } from './MstSupplier.entity'
+import { TrnOrderEntity } from '../transactions/TrnOrder.entity'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
 
@@ -19,4 +22,13 @@ export class MstTermEntity extends BaseEntity {
 
   @Column({ name: 'IsDefault', type: 'bit', nullable: false })
   isDefault: boolean
+
+  @OneToMany(() => MstCustomerEntity, (customer) => customer.term)
+  customers?: MstCustomerEntity[]
+
+  @OneToMany(() => MstSupplierEntity, (supplier) => supplier.term)
+  suppliers?: MstSupplierEntity[]
+
+  @OneToMany(() => TrnOrderEntity, (order) => order.term)
+  orders?: TrnOrderEntity[]
 }

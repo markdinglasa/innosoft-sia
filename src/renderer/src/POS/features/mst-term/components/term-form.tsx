@@ -18,6 +18,7 @@ type FormData = z.infer<typeof termSchema>
 function TermForm() {
   const { selectedId, setIsFormOpen, setSelectedId } = useTermHubStore()
   const { useGet, useSaveMutation } = useMasterfile('term')
+
   const { data: existing, isLoading } = useGet(selectedId)
   const saveMutation = useSaveMutation()
 
@@ -33,15 +34,17 @@ function TermForm() {
 
   useEffect(
     function formResetter() {
-      if (existing)
+      if (selectedId && existing) {
         reset({
           name: existing.name || '',
           numberOfDays: existing.numberOfDays || 0,
           isDefault: existing.isDefault || false
         })
-      else reset({ name: '', numberOfDays: 0 })
+      } else if (!selectedId) {
+        reset({ name: '', numberOfDays: 0, isDefault: false })
+      }
     },
-    [existing, reset]
+    [existing, reset, selectedId]
   )
 
   const handleClose = () => {
