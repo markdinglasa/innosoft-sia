@@ -78,7 +78,7 @@ export const PeriodList: React.FC = () => {
             <TableRow>
               <TableCell width={50}></TableCell>
               <TableCell>Period</TableCell>
-              <TableCell>Default</TableCell>
+              <TableCell align="right">Default</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>

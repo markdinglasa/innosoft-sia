@@ -11,7 +11,7 @@ const ItemComponentHub: React.FC = () => {
         variant="outlined"
         sx={{
           display: 'flex',
-          height: 'calc(100vh - 180px)',
+          height: 'calc(100vh - 10rem)',
           overflow: 'hidden',
           borderRadius: 2
         }}
