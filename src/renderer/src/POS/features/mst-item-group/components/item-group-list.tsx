@@ -76,7 +76,7 @@ export const ItemGroupList: React.FC = () => {
           <TableHead>
             <TableRow>
               <TableCell width={50}></TableCell>
-              <TableCell>Item Group</TableCell>
+              <TableCell>Category</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>

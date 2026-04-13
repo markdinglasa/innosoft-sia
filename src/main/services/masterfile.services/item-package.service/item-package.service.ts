@@ -16,10 +16,14 @@ export class ItemPackageService extends BaseService<MstItemPackageEntity> implem
   }
 
   /**
-   * Search fields for ItemPackage keyword search.
-   * Search by parent or package item IDs.
+   * Optional relations to include in results.
    */
-  protected get searchFields(): string[] {
+  protected get listRelations(): string[] {
+    return ['packageItem', 'unit']
+  }
+
+  /**
+   * Search fields for ItemPackage keyword search.
     return ['itemId', 'packageItemId']
   }
 

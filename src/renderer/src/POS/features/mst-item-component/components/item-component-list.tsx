@@ -1,43 +1,37 @@
-import { Extension as ComponentIcon, Delete as DeleteIcon } from '@mui/icons-material'
+import { Extension as ComponentIcon, Search as SearchIcon } from '@mui/icons-material'
 import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
+  Box,
+  Chip,
+  Divider,
+  InputAdornment,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Skeleton,
   TablePagination,
-  TableRow,
+  TextField,
   Typography
 } from '@mui/material'
-import { SystemPermissions } from '@shared/constants/permissions'
-import { ButtonType, ToastType } from '@shared/types'
-import { displayToast } from '@shared/utils'
 import React from 'react'
-import TableSkeleton from '../../../components/data-display/table-skeleton'
-import CircleButton from '../../../components/inputs/circle-button'
-import { useAccessControl } from '../../../hooks'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useItemComponentHubStore } from '../store/use-item-component-hub-store'
 
 export const ItemComponentList: React.FC = () => {
-  const { searchKeyword, setSelectedId, setIsFormOpen } = useItemComponentHubStore()
-  const { useList, useDeleteMutation } = useMasterfile('itemComponent')
+  const { searchKeyword, setSearchKeyword, selectedParentId, setSelectedParent } =
+    useItemComponentHubStore()
+
+  const { useList } = useMasterfile('item')
   const [page, setPage] = React.useState(0)
-  const { data, isLoading, isError } = useList({ searchKeyword, page: page + 1, take: 30 })
 
-  // permissions
-  const { hasPermission } = useAccessControl()
-  const canEdit = hasPermission(SystemPermissions.ITEM_COMPONENT_EDIT)
-  const canDelete = hasPermission(SystemPermissions.ITEM_COMPONENT_REMOVE)
+  // Fetch only uninventoriable items (finished products / BOM parents)
+  const { data, isLoading, isError } = useList({
+    searchKeyword,
+    page: page + 1,
+    take: 20,
+    filters: [{ isInventory: false }]
+  })
 
-  // Reset page when search changes
   React.useEffect(
     function resetPageOnSearch() {
       setPage(0)
@@ -45,129 +39,147 @@ export const ItemComponentList: React.FC = () => {
     [searchKeyword]
   )
 
-  const deleteMutation = useDeleteMutation()
-  const handleEdit = (id: number) => {
-    setSelectedId(id)
-    setIsFormOpen(true)
-  }
-
-  const [deleteId, setDeleteId] = React.useState<number | null>(null)
-  const handleDelete = (e: React.MouseEvent, id: number) => {
-    e.stopPropagation()
-    setDeleteId(id)
-  }
-
-  const confirmDelete = async () => {
-    if (deleteId) {
-      await deleteMutation.mutateAsync(deleteId)
-      setDeleteId(null)
-    }
-  }
-
   const items = (data as any)?.items || []
+
   return (
-    <>
-      <TableContainer
-        component={Paper}
-        variant="outlined"
-        sx={{ maxHeight: 'calc(100vh - 250px)' }}
-      >
-        <Table stickyHeader size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell width={50}></TableCell>
-              <TableCell>Component</TableCell>
-              <TableCell>Parent Item</TableCell>
-              <TableCell align="right">Quantity</TableCell>
-              <TableCell align="right">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <TableSkeleton isLoading={isLoading} columns={5} rows={15}>
-              {items.map((item: any) => (
-                <TableRow
-                  key={item.id}
-                  hover
-                  onClick={() => {
-                    if (!canEdit) {
-                      displayToast(
-                        'You do not have permission to edit this item component.',
-                        ToastType.info
-                      )
-                      return
-                    }
-                    handleEdit(item.id)
-                  }}
-                  sx={{ cursor: 'pointer' }}
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        borderRight: 1,
+        borderColor: 'divider'
+      }}
+    >
+      {/* Header */}
+      <Box sx={{ p: 2, bgcolor: 'primary.dark', color: 'white', height: '6.5rem' }}>
+        <Typography variant="subtitle1" fontWeight="bold">
+          Products
+        </Typography>
+        <Typography variant="caption" sx={{ opacity: 0.8 }}>
+          Select an item to manage its components
+        </Typography>
+      </Box>
+
+      {/* Search */}
+      <Box sx={{ px: 2, py: 1.5, borderBottom: 1, borderColor: 'divider' }}>
+        <TextField
+          fullWidth
+          size="small"
+          placeholder="Search finished products..."
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ fontSize: 20 }} />
+              </InputAdornment>
+            )
+          }}
+        />
+      </Box>
+
+      {/* List */}
+      <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+        {isLoading && (
+          <List disablePadding>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <React.Fragment key={i}>
+                <Box sx={{ px: 2, py: 1.5, display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Skeleton variant="circular" width={32} height={32} />
+                  <Box sx={{ flex: 1 }}>
+                    <Skeleton variant="text" width="70%" />
+                    <Skeleton variant="text" width="40%" />
+                  </Box>
+                </Box>
+                <Divider />
+              </React.Fragment>
+            ))}
+          </List>
+        )}
+
+        {isError && (
+          <Box sx={{ p: 3, textAlign: 'center' }}>
+            <Typography color="error" variant="body2">
+              Failed to load items.
+            </Typography>
+          </Box>
+        )}
+
+        {!isLoading && !isError && items.length === 0 && (
+          <Box sx={{ p: 4, textAlign: 'center' }}>
+            <ComponentIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
+            <Typography variant="body2" color="text.secondary">
+              No uninventoriable items found.
+            </Typography>
+            <Typography variant="caption" color="text.disabled">
+              Items with &quot;Is Inventory&quot; disabled will appear here.
+            </Typography>
+          </Box>
+        )}
+
+        {!isLoading && !isError && items.length > 0 && (
+          <List disablePadding>
+            {items.map((item: any, idx: number) => (
+              <React.Fragment key={item.id}>
+                <ListItemButton
+                  selected={selectedParentId === item.id}
+                  onClick={() => setSelectedParent(item.id, item.name)}
                 >
-                  <TableCell>
-                    <ComponentIcon color="primary" sx={{ fontSize: 25 }} />
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" fontWeight="medium">
-                      {item.componentItem?.name || `Component #${item.id}`}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>{item.item?.name || '—'}</TableCell>
-                  <TableCell align="right">{item.quantity || 1}</TableCell>
-                  <TableCell align="right">
-                    <CircleButton
-                      disabled={!canDelete}
-                      icon={<DeleteIcon sx={{ fontSize: 25 }} />}
-                      onClick={(e) => handleDelete(e, item?.id)}
-                      type={ButtonType.button}
+                  <ListItemIcon sx={{ minWidth: 40 }}>
+                    <ComponentIcon
+                      color={selectedParentId === item.id ? 'primary' : 'action'}
+                      sx={{ fontSize: 24 }}
                     />
-                  </TableCell>
-                </TableRow>
-              ))}
-              {isError && (
-                <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
-                    <Typography color="error">Failed to load item components.</Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-              {!isError && items.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
-                    <Typography variant="body2" color="text.secondary">
-                      No item components found.
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableSkeleton>
-          </TableBody>
-        </Table>
+                  </ListItemIcon>
+                  <ListItemText
+                    secondaryTypographyProps={{ component: 'div' }}
+                    primary={
+                      <Typography
+                        variant="body2"
+                        fontWeight={selectedParentId === item.id ? 'bold' : 'medium'}
+                        noWrap
+                      >
+                        {item.name}
+                      </Typography>
+                    }
+                    secondary={
+                      <Box sx={{ display: 'flex', gap: 0.5, mt: 0.25, flexWrap: 'wrap' }}>
+                        {item.itemGroup?.name && (
+                          <Chip
+                            label={item.itemGroup.name}
+                            size="small"
+                            sx={{ fontSize: 10, height: 18 }}
+                          />
+                        )}
+                        {item.code && (
+                          <Typography variant="caption" color="text.disabled">
+                            {item.code}
+                          </Typography>
+                        )}
+                      </Box>
+                    }
+                  />
+                </ListItemButton>
+                {idx < items.length - 1 && <Divider />}
+              </React.Fragment>
+            ))}
+          </List>
+        )}
+      </Box>
+
+      {/* Pagination */}
+      <Box sx={{ borderTop: 1, borderColor: 'divider' }}>
         <TablePagination
-          rowsPerPageOptions={[30]}
+          rowsPerPageOptions={[20]}
           component="div"
           count={(data as any)?.meta?.totalItems || 0}
-          rowsPerPage={30}
+          rowsPerPage={20}
           page={page}
           onPageChange={(_, newPage) => setPage(newPage)}
         />
-      </TableContainer>
-
-      <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}>
-        <DialogTitle>Confirm Delete</DialogTitle>
-        <DialogContent>
-          <DialogContentText>Delete this item component? This cannot be undone.</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteId(null)}>Cancel</Button>
-          <Button
-            onClick={confirmDelete}
-            color="primary"
-            startIcon={<DeleteIcon sx={{ fontSize: 25 }} />}
-            variant="contained"
-            disabled={deleteMutation.isPending}
-          >
-            {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
+      </Box>
+    </Box>
   )
 }
 

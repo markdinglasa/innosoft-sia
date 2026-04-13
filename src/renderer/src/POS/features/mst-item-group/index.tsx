@@ -22,7 +22,7 @@ const ItemGroupHub: React.FC = () => {
   const canAdd = hasPermission(SystemPermissions.ITEM_GROUP_ADD)
 
   return (
-    <PageLayout title="Item Group Management">
+    <PageLayout title="Item Categories">
       <Box sx={{ mb: 3 }}>
         <Paper
           variant="outlined"
@@ -60,7 +60,7 @@ const ItemGroupHub: React.FC = () => {
             onClick={handleCreate}
             sx={{ px: 3, whiteSpace: 'nowrap' }}
           >
-            New Item Group
+            New Category
           </Button>
         </Paper>
       </Box>

@@ -51,7 +51,7 @@ const MENU_ITEMS: MenuProps[] = [
         page: POSPages.ITEM
       },
       {
-        label: 'Item Groups',
+        label: 'Item Categories',
         page: POSPages.ITEM_GROUP
       },
       {

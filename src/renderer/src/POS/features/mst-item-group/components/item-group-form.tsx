@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Category as GroupIcon, Close as CloseIcon, Save as SaveIcon } from '@mui/icons-material'
+import { Close as CloseIcon, Category as GroupIcon, Save as SaveIcon } from '@mui/icons-material'
 import { Alert, Box, Button, Grid, IconButton, TextField, Typography } from '@mui/material'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -74,7 +74,7 @@ export const ItemGroupForm: React.FC = () => {
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <GroupIcon sx={{ fontSize: 25 }} />
-          <Typography variant="h6">{selectedId ? 'Edit Item Group' : 'New Item Group'}</Typography>
+          <Typography variant="h6">{selectedId ? 'Edit Category' : 'New Category'}</Typography>
         </Box>
         <IconButton size="small" onClick={handleClose} sx={{ color: 'white' }}>
           <CloseIcon sx={{ fontSize: 25 }} />
@@ -95,7 +95,7 @@ export const ItemGroupForm: React.FC = () => {
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Item Group"
+                  label="Category"
                   fullWidth
                   required
                   margin="normal"

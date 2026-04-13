@@ -10,18 +10,28 @@ export interface IItemComponentService {
   // Add specific ItemComponent methods here later
 }
 
-export class ItemComponentService extends BaseService<MstItemComponentEntity> implements IItemComponentService {
+export class ItemComponentService
+  extends BaseService<MstItemComponentEntity>
+  implements IItemComponentService
+{
   constructor() {
     super(MstItemComponentEntity)
+  }
+
+  /**
+   * Optional relations to include in results.
+   */
+  protected get listRelations(): string[] {
+    return ['componentItem', 'unit']
   }
 
   /**
    * Search fields for ItemComponent keyword search.
    * Search by parent or component item IDs.
    */
-  protected get searchFields(): string[] {
-    return ['itemId', 'componentItemId']
-  }
+  // protected get searchFields(): string[] {
+  //   return ['itemId', 'componentItemId']
+  // }
 
   /**
    * Validates before creating a new ItemComponent.
@@ -30,11 +40,11 @@ export class ItemComponentService extends BaseService<MstItemComponentEntity> im
   protected async validateCreate(data: DeepPartial<MstItemComponentEntity>): Promise<void> {
     const componentDto = await transformAndValidate(CreateItemComponentDto, data)
 
-    const existingComponent = await this.repository.findOneBy({ 
+    const existingComponent = await this.repository.findOneBy({
       itemId: componentDto.itemId,
       componentItemId: componentDto.componentItemId
     })
-    
+
     if (existingComponent) {
       throw new BadRequestException('This component is already assigned to this item.')
     }
@@ -43,23 +53,26 @@ export class ItemComponentService extends BaseService<MstItemComponentEntity> im
   /**
    * Validates before updating an existing ItemComponent.
    */
-  protected async validateUpdate(id: any, data: QueryDeepPartialEntity<MstItemComponentEntity>): Promise<void> {
+  protected async validateUpdate(
+    id: any,
+    data: QueryDeepPartialEntity<MstItemComponentEntity>
+  ): Promise<void> {
     const currentEntity = await this.get(id)
     if (!currentEntity) {
       throw new BadRequestException('Item Component not found for update.')
     }
 
     const componentDto = await transformAndValidate(UpdateItemComponentDto, data)
-    
+
     const itemId = componentDto.itemId ?? currentEntity.itemId
     const componentItemId = componentDto.componentItemId ?? currentEntity.componentItemId
 
     if (itemId !== currentEntity.itemId || componentItemId !== currentEntity.componentItemId) {
-      const existingComponent = await this.repository.findOneBy({ 
+      const existingComponent = await this.repository.findOneBy({
         itemId,
         componentItemId
       })
-      
+
       if (existingComponent) {
         throw new BadRequestException('This component is already assigned to this item.')
       }
@@ -76,3 +89,4 @@ export class ItemComponentService extends BaseService<MstItemComponentEntity> im
     }
   }
 }
+
