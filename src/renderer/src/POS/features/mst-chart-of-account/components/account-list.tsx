@@ -82,8 +82,8 @@ export const AccountList: React.FC = () => {
             <TableRow>
               <TableCell width={50}></TableCell>
               <TableCell>Account</TableCell>
-              <TableCell>Code</TableCell>
-              <TableCell>Type</TableCell>
+              <TableCell align="right">Code</TableCell>
+              <TableCell align="right">Type</TableCell>
               <TableCell align="right">Default</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
@@ -114,12 +114,12 @@ export const AccountList: React.FC = () => {
                       {item.name}
                     </Typography>
                   </TableCell>
-                  <TableCell>
+                  <TableCell align="right">
                     <Typography variant="caption" color="text.secondary">
                       {item.code}
                     </Typography>
                   </TableCell>
-                  <TableCell>
+                  <TableCell align="right">
                     <Chip label={item.type} size="small" variant="outlined" />
                   </TableCell>
                   <TableCell align="right">
