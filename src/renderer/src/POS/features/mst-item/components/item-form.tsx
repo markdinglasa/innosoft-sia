@@ -243,7 +243,6 @@ function ItemForm() {
         <Tab label="GL Accounts" />
         <Tab label="Taxes" />
         <Tab label="Prices" />
-        <Tab label="Packages" disabled={!selectedId} />
       </Tabs>
 
       <Box sx={{ p: 3, flexGrow: 1, overflow: 'auto' }}>
@@ -564,7 +563,7 @@ function ItemForm() {
                 startIcon={<AddIcon />}
                 onClick={() => appendPrice({ priceDescription: '', price: 0, triggerQuantity: 0 })}
               >
-                Price Tier
+                New Price Tier
               </Button>
             </Box>
             <Divider sx={{ mb: 2 }} />
@@ -622,7 +621,7 @@ function ItemForm() {
               {priceFields.length === 0 && (
                 <Box sx={{ textAlign: 'center', py: 4, bgcolor: 'grey.50', borderRadius: 1 }}>
                   <Typography variant="body2" color="text.secondary">
-                    No special pricing tiers defined. Click "Add Price Tier" to start.
+                    No special pricing tiers defined. Click "New Price Tier" to start.
                   </Typography>
                 </Box>
               )}
