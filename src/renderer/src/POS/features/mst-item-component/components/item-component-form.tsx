@@ -99,17 +99,13 @@ export const ItemComponentForm: React.FC = () => {
   const childrenLookup = useLookup('item', { filters: lookupFilters })
   const unitsLookup = useLookup('unit')
 
-  const {
-    data: listData,
-    isLoading: isLoadingList,
-    isError: isListError
-  } = useList({
+  const { data: listData, isLoading: isLoadingList } = useList({
     page: 1,
     take: 100,
     filters: [{ itemId: selectedParentId }]
   })
 
-  const items = (listData as any)?.items || []
+  const items = listData?.items || []
 
   // Delete dialog state
   const [deleteId, setDeleteId] = React.useState<number | null>(null)
@@ -146,7 +142,7 @@ export const ItemComponentForm: React.FC = () => {
     function formResetter() {
       if (existing) {
         reset({
-          childId: (existing as any)[childKey] || '',
+          childId: existing[childKey] || '',
           unitId: existing.unitId || '',
           quantity: existing.quantity || 1,
           cost: existing.cost || 0,
@@ -256,7 +252,7 @@ export const ItemComponentForm: React.FC = () => {
           </Box>
         </Box>
         <Chip
-          label={`${items.length} item${items.length !== 1 ? 's' : ''}`}
+          label={`${items.length} item${items.length === 1 ? '' : 's'}`}
           size="small"
           sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white', fontWeight: 'bold' }}
         />
@@ -432,19 +428,7 @@ export const ItemComponentForm: React.FC = () => {
 
         <Divider sx={{ mb: 2 }} />
 
-        {!showAddForm ? (
-          <Box className="flex justify-end">
-            <Button
-              variant="outlined"
-              startIcon={<AddIcon />}
-              onClick={() => setShowAddForm(true)}
-              disabled={!canAdd}
-              fullWidth
-            >
-              New {isBOM ? 'Component' : 'Package Item'}
-            </Button>
-          </Box>
-        ) : (
+        {showAddForm ? (
           <Paper variant="outlined" sx={{ p: 2 }}>
             <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 1.5 }}>
               {selectedId ? 'Edit' : 'Add'} {isBOM ? 'Ingredient' : 'Package Item'}
@@ -548,6 +532,7 @@ export const ItemComponentForm: React.FC = () => {
                           type="number"
                           fullWidth
                           size="small"
+                          aria-readonly={true}
                           InputProps={{ readOnly: true }}
                         />
                       )}
@@ -588,6 +573,18 @@ export const ItemComponentForm: React.FC = () => {
               </Box>
             )}
           </Paper>
+        ) : (
+          <Box className="flex justify-end">
+            <Button
+              variant="outlined"
+              startIcon={<AddIcon />}
+              onClick={() => setShowAddForm(true)}
+              disabled={!canAdd}
+              fullWidth
+            >
+              New {isBOM ? 'Component' : 'Package Item'}
+            </Button>
+          </Box>
         )}
       </Box>
 

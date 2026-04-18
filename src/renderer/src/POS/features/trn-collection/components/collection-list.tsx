@@ -1,7 +1,8 @@
 import {
   ReceiptLong as CollectionIcon,
   Delete as DeleteIcon,
-  Edit as EditIcon
+  Edit as EditIcon,
+  Visibility as ViewIcon
 } from '@mui/icons-material'
 import {
   Box,
@@ -24,15 +25,22 @@ import {
   TableRow,
   Typography
 } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
+import TableSkeleton from '../../../components/data-display/table-skeleton'
 import { useMasterfile } from '../../../hooks/use-masterfile'
+import { useCollectionExport } from '../hooks/use-collection-export'
 import { useCollectionHubStore } from '../store/use-collection-hub-store'
+import { CollectionPreview } from './collection-preview'
 
 export const CollectionList: React.FC = () => {
   const { searchKeyword, setSelectedId, setIsFormOpen } = useCollectionHubStore()
-  const { useList, useDeleteMutation } = useMasterfile('collection')
+  const { useList, useGet, useDeleteMutation } = useMasterfile('collection')
   const [page, setPage] = React.useState(0)
   const { data, isLoading, isError } = useList({ searchKeyword, page: page + 1, take: 30 })
+
+  const [previewId, setPreviewId] = useState<number | null>(null)
+  const { data: previewData } = useGet(previewId)
+  const { exportToPDF, exportToCSV, exportToXLSX } = useCollectionExport()
 
   // Reset page when search changes
   React.useEffect(
@@ -62,7 +70,7 @@ export const CollectionList: React.FC = () => {
       </Box>
     )
   if (isError) return <Typography color="error">Failed to load collections.</Typography>
-  const items = (data as any)?.items || []
+  const items = data?.items || []
   return (
     <>
       <TableContainer
@@ -83,77 +91,95 @@ export const CollectionList: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {items.map((item: any) => (
-              <TableRow
-                key={item.id}
-                hover
-                onClick={() => handleEdit(item.id)}
-                sx={{ cursor: 'pointer' }}
-              >
-                <TableCell>
-                  <CollectionIcon color="action" sx={{ fontSize: 25 }} />
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2" fontWeight="medium">
-                    {item.collectionNumber}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  {item.collectionDate ? new Date(item.collectionDate).toLocaleDateString() : '—'}
-                </TableCell>
-                <TableCell>{item.manualORNumber || '—'}</TableCell>
-                <TableCell align="right">{Number(item.amount || 0).toFixed(2)}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={item.isCancelled ? 'Cancelled' : 'Active'}
-                    size="small"
-                    color={item.isCancelled ? 'error' : 'success'}
-                  />
-                </TableCell>
-                <TableCell align="right">
-                  <IconButton
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleEdit(item.id)
-                    }}
-                  >
-                    <EditIcon sx={{ fontSize: 25 }} />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    color="error"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleDelete(item.id)
-                    }}
-                  >
-                    <DeleteIcon sx={{ fontSize: 25 }} />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-            {items.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    No collections found.
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )}
+            <TableSkeleton isLoading={isLoading} rows={30} columns={7}>
+              {items.map((item: any) => (
+                <TableRow
+                  key={item.id}
+                  hover
+                  onClick={() => handleEdit(item.id)}
+                  sx={{ cursor: 'pointer' }}
+                >
+                  <TableCell>
+                    <CollectionIcon color="action" sx={{ fontSize: 25 }} />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" fontWeight="medium">
+                      {item.collectionNumber}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    {item.collectionDate ? new Date(item.collectionDate).toLocaleDateString() : '—'}
+                  </TableCell>
+                  <TableCell>{item.manualORNumber || '—'}</TableCell>
+                  <TableCell align="right">{Number(item.amount || 0).toFixed(2)}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={item.isCancelled ? 'Cancelled' : 'Active'}
+                      size="small"
+                      color={item.isCancelled ? 'error' : 'success'}
+                    />
+                  </TableCell>
+                  <TableCell align="right">
+                    <IconButton
+                      size="small"
+                      color="info"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setPreviewId(item.id)
+                      }}
+                    >
+                      <ViewIcon sx={{ fontSize: 25 }} />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleEdit(item.id)
+                      }}
+                    >
+                      <EditIcon sx={{ fontSize: 25 }} />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      color="error"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDelete(item.id)
+                      }}
+                    >
+                      <DeleteIcon sx={{ fontSize: 25 }} />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {isError && (
+                <TableRow>
+                  <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
+                    <Typography color="error">Failed to load collection(s).</Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+              {!isError && items.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      No collection(s) found.
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableSkeleton>
           </TableBody>
         </Table>
+        <TablePagination
+          rowsPerPageOptions={[30]}
+          component="div"
+          count={data?.meta?.totalItems || 0}
+          rowsPerPage={30}
+          page={page}
+          onPageChange={(_, newPage) => setPage(newPage)}
+        />
       </TableContainer>
-
-      <TablePagination
-        rowsPerPageOptions={[30]}
-        component="div"
-        count={(data as any)?.meta?.totalItems || 0}
-        rowsPerPage={30}
-        page={page}
-        onPageChange={(_, newPage) => setPage(newPage)}
-      />
 
       <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}>
         <DialogTitle>Confirm Delete</DialogTitle>
@@ -172,6 +198,18 @@ export const CollectionList: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <CollectionPreview
+        open={previewId !== null}
+        onClose={() => setPreviewId(null)}
+        data={previewData}
+        onExport={(format) => {
+          const filename = `Collection_${previewData.collectionNumber}`
+          if (format === 'pdf') exportToPDF('receipt-content', filename)
+          if (format === 'csv') exportToCSV(previewData, filename)
+          if (format === 'xlsx') exportToXLSX(previewData, filename)
+        }}
+      />
     </>
   )
 }

@@ -1,10 +1,12 @@
 import { Add as AddIcon, Search as SearchIcon } from '@mui/icons-material'
 import { Box, Button, Drawer, InputAdornment, Paper, TextField } from '@mui/material'
-import React from 'react'
+import React, { Suspense } from 'react'
 import PageLayout from '../../components/layout/page-layout'
+import { CollectionFormSkeleton } from './components/collection-form-skeleton'
 import { CollectionList } from './components/collection-list'
 import { useCollectionHubStore } from './store/use-collection-hub-store'
 
+const CollectionForm = React.lazy(() => import('./components/collection-form'))
 const CollectionHub: React.FC = () => {
   const { searchKeyword, setSearchKeyword, isFormOpen, setIsFormOpen, setSelectedId } =
     useCollectionHubStore()
@@ -51,12 +53,15 @@ const CollectionHub: React.FC = () => {
         open={isFormOpen}
         onClose={() => setIsFormOpen(false)}
         PaperProps={{
-          sx: { width: { xs: '100%', sm: 500, md: 600 }, borderRadius: '12px 0 0 12px' }
+          sx: {
+            width: { xs: '100%', sm: 600, md: 800 }, // Scaled slightly larger for lines
+            borderRadius: '12px 0 0 12px'
+          }
         }}
       >
-        <Box sx={{ p: 3 }}>
-          <em>Collection form — coming soon</em>
-        </Box>
+        <Suspense fallback={<CollectionFormSkeleton />}>
+          <CollectionForm />
+        </Suspense>
       </Drawer>
     </PageLayout>
   )

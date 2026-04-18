@@ -67,7 +67,7 @@ export const DiscountList: React.FC = () => {
     }
   }
 
-  const items = (data as any)?.items || []
+  const items = data?.items || []
   return (
     <>
       <TableContainer component={Paper} variant="outlined">
@@ -110,7 +110,7 @@ export const DiscountList: React.FC = () => {
                     </Typography>
                   </TableCell>
                   <TableCell>{item.discountAlias || '—'}</TableCell>
-                  <TableCell align="right">{parseFloat(item.discountRate)}%</TableCell>
+                  <TableCell align="right">{Number.parseFloat(item.discountRate)}%</TableCell>
                   <TableCell align="right">
                     <Checkbox checked={!!item.isVATExempt} readOnly size="small" />
                   </TableCell>
@@ -133,7 +133,7 @@ export const DiscountList: React.FC = () => {
               {isError && (
                 <TableRow>
                   <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
-                    <Typography color="error">Failed to load discounts.</Typography>
+                    <Typography color="error">Failed to load discount(s).</Typography>
                   </TableCell>
                 </TableRow>
               )}
@@ -141,7 +141,7 @@ export const DiscountList: React.FC = () => {
                 <TableRow>
                   <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
                     <Typography variant="body2" color="text.secondary">
-                      No discounts found.
+                      No discount(s) found.
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -152,7 +152,7 @@ export const DiscountList: React.FC = () => {
         <TablePagination
           rowsPerPageOptions={[30]}
           component="div"
-          count={(data as any)?.meta?.totalItems || 0}
+          count={data?.meta?.totalItems || 0}
           rowsPerPage={30}
           page={page}
           onPageChange={(_, newPage) => setPage(newPage)}
