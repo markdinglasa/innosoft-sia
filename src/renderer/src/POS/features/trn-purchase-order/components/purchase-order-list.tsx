@@ -1,7 +1,13 @@
-import { Delete as DeleteIcon, Edit as EditIcon, ShoppingCart as POIcon } from '@mui/icons-material'
+import {
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+  ShoppingCart as POIcon,
+  LocalShipping as ShippingIcon
+} from '@mui/icons-material'
 import {
   Box,
   Button,
+  Chip,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -17,47 +23,76 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Tooltip,
   Typography
 } from '@mui/material'
-import React from 'react'
-import { useMasterfile } from '../../../hooks/use-masterfile'
+import { PurchaseOrderStatus } from '@shared/types/purchase-order.types'
+import React, { useState } from 'react'
+import { useDeletePurchaseOrder, usePurchaseOrders } from '../hooks/use-purchase-order'
 import { usePurchaseOrderHubStore } from '../store/use-purchase-order-hub-store'
+import ReceivingForm from './receiving-form'
 
 export const PurchaseOrderList: React.FC = () => {
   const { searchKeyword, setSelectedId, setIsFormOpen } = usePurchaseOrderHubStore()
-  const { useList, useDeleteMutation } = useMasterfile('purchaseOrder')
-  const [page, setPage] = React.useState(0)
-  const { data, isLoading, isError } = useList({ searchKeyword, page: page + 1, take: 30 })
+  const [page, setPage] = useState(0)
+  const { data, isLoading, isError } = usePurchaseOrders({
+    searchKeyword,
+    page: page + 1,
+    take: 30
+  })
+  const deleteMutation = useDeletePurchaseOrder()
 
-  // Reset page when search changes
-  React.useEffect(
-    function resetPageOnSearch() {
-      setPage(0)
-    },
-    [searchKeyword]
-  )
+  const [deleteId, setDeleteId] = useState<number | null>(null)
+  const [receivingPO, setReceivingPO] = useState<string | null>(null)
 
-  const deleteMutation = useDeleteMutation()
   const handleEdit = (id: number) => {
     setSelectedId(id)
     setIsFormOpen(true)
   }
-  const [deleteId, setDeleteId] = React.useState<number | null>(null)
-  const handleDelete = (id: number) => setDeleteId(id)
+
+  const handleReceive = (po: string) => {
+    setReceivingPO(po)
+  }
+
   const confirmDelete = async () => {
     if (deleteId) {
       await deleteMutation.mutateAsync(deleteId)
       setDeleteId(null)
     }
   }
+
+  const getStatusColor = (status: PurchaseOrderStatus) => {
+    switch (status) {
+      case PurchaseOrderStatus.DRAFT:
+        return 'default'
+      case PurchaseOrderStatus.PENDING_APPROVAL:
+        return 'warning'
+      case PurchaseOrderStatus.APPROVED:
+        return 'info'
+      case PurchaseOrderStatus.PARTIALLY_RECEIVED:
+        return 'primary'
+      case PurchaseOrderStatus.COMPLETED:
+        return 'success'
+      case PurchaseOrderStatus.REJECTED:
+        return 'error'
+      case PurchaseOrderStatus.CANCELLED:
+        return 'error'
+      default:
+        return 'default'
+    }
+  }
+
   if (isLoading)
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
         <CircularProgress size={32} />
       </Box>
     )
+
   if (isError) return <Typography color="error">Failed to load purchase orders.</Typography>
+
   const items = (data as any)?.items || []
+
   return (
     <>
       <TableContainer
@@ -72,7 +107,8 @@ export const PurchaseOrderList: React.FC = () => {
               <TableCell>PO #</TableCell>
               <TableCell>Date</TableCell>
               <TableCell>Supplier</TableCell>
-              <TableCell align="right">Amount</TableCell>
+              <TableCell align="right">Total Amount</TableCell>
+              <TableCell>Status</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -81,14 +117,14 @@ export const PurchaseOrderList: React.FC = () => {
               <TableRow
                 key={item.id}
                 hover
-                onClick={() => handleEdit(item.id)}
                 sx={{ cursor: 'pointer' }}
+                onClick={() => handleEdit(item.id)}
               >
                 <TableCell>
-                  <POIcon color="action" sx={{ fontSize: 25 }} />
+                  <POIcon color="action" />
                 </TableCell>
                 <TableCell>
-                  <Typography variant="body2" fontWeight="medium">
+                  <Typography variant="body2" fontWeight="bold">
                     {item.purchaseOrderNumber}
                   </Typography>
                 </TableCell>
@@ -98,36 +134,56 @@ export const PurchaseOrderList: React.FC = () => {
                     : '—'}
                 </TableCell>
                 <TableCell>{item.supplier?.name || '—'}</TableCell>
-                <TableCell align="right">{Number(item.amount || 0).toFixed(2)}</TableCell>
                 <TableCell align="right">
-                  <IconButton
+                  {Number(item.totalAmount || 0).toLocaleString(undefined, {
+                    minimumFractionDigits: 2
+                  })}
+                </TableCell>
+                <TableCell>
+                  <Chip
+                    label={item.status.replace('_', ' ')}
+                    color={getStatusColor(item.status) as any}
                     size="small"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleEdit(item.id)
-                    }}
-                  >
-                    <EditIcon sx={{ fontSize: 25 }} />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    color="error"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleDelete(item.id)
-                    }}
-                  >
-                    <DeleteIcon sx={{ fontSize: 25 }} />
-                  </IconButton>
+                    variant="outlined"
+                  />
+                </TableCell>
+                <TableCell align="right" onClick={(e) => e.stopPropagation()}>
+                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 0.5 }}>
+                    {(item.status === PurchaseOrderStatus.APPROVED ||
+                      item.status === PurchaseOrderStatus.PARTIALLY_RECEIVED) && (
+                      <Tooltip title="Receive Items">
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          onClick={() => handleReceive(item)}
+                        >
+                          <ShippingIcon sx={{ fontSize: 20 }} />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                    <Tooltip title="Edit">
+                      <IconButton size="small" onClick={() => handleEdit(item.id)}>
+                        <EditIcon sx={{ fontSize: 20 }} />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete">
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => setDeleteId(item.id)}
+                        disabled={item.status !== PurchaseOrderStatus.DRAFT}
+                      >
+                        <DeleteIcon sx={{ fontSize: 20 }} />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
                 </TableCell>
               </TableRow>
             ))}
             {items.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    No purchase orders found.
-                  </Typography>
+                <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
+                  No purchase orders found.
                 </TableCell>
               </TableRow>
             )}
@@ -144,10 +200,22 @@ export const PurchaseOrderList: React.FC = () => {
         onPageChange={(_, newPage) => setPage(newPage)}
       />
 
+      {/* Receiving Form Dialog */}
+      {receivingPO && (
+        <ReceivingForm
+          open={!!receivingPO}
+          onClose={() => setReceivingPO(null)}
+          purchaseOrder={receivingPO}
+        />
+      )}
+
+      {/* Delete Confirmation */}
       <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
-          <DialogContentText>Delete this purchase order? This cannot be undone.</DialogContentText>
+          <DialogContentText>
+            Delete this purchase order? This can only be done for DRAFT orders.
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteId(null)}>Cancel</Button>

@@ -82,6 +82,14 @@ export enum TransactionIpcChannel {
   PURCHASE_ORDER_LINE_CREATE = 'transactions:purchase-order-line:create',
   PURCHASE_ORDER_LINE_UPDATE = 'transactions:purchase-order-line:update',
   PURCHASE_ORDER_LINE_DELETE = 'transactions:purchase-order-line:delete',
+  PURCHASE_ORDER_SUBMIT_APPROVAL = 'transactions:purchase-order:submit-approval',
+  PURCHASE_ORDER_APPROVE = 'transactions:purchase-order:approve',
+  PURCHASE_ORDER_REJECT = 'transactions:purchase-order:reject',
+  PURCHASE_ORDER_RECEIVE = 'transactions:purchase-order:receive',
+
+  // Supplier Catalog (Technically a masterfile but linked to PO)
+  SUPPLIER_CATALOG_IMPORT = 'transactions:supplier-catalog:import',
+  SUPPLIER_CATALOG_LIST = 'transactions:supplier-catalog:list',
 
   // Disbursement
   DISBURSEMENT_LIST = 'transactions:disbursement:list',

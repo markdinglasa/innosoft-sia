@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm'
 import { POSEntity } from '../entity-names'
-import { MstTerminalEntity } from "../masterfiles"
+import { MstTerminalEntity } from '../masterfiles'
 
 // per terminal settings
 @Entity(POSEntity.SYS_SETTINGS)
@@ -48,6 +48,7 @@ export class SysSettingsEntity {
     this.restaurantView = ''
     this.receiptFooter = ''
     this.invoiceFooter = ''
+    this.purchaseOrderApprovalThreshold = 0
   }
 
   @PrimaryColumn({ name: 'Id', type: 'int', nullable: false })
@@ -179,9 +180,20 @@ export class SysSettingsEntity {
   @Column({ name: 'InvoiceFooter', type: 'text', nullable: true })
   invoiceFooter: string
 
+  @Column({
+    name: 'PurchaseOrderApprovalThreshold',
+    type: 'decimal',
+    precision: 18,
+    scale: 5,
+    nullable: false,
+    default: 0
+  })
+  purchaseOrderApprovalThreshold: number
+
   // FK Relations
 
   @ManyToOne(() => MstTerminalEntity, (terminal) => terminal.sysSettings)
   @JoinColumn({ name: 'TerminalId' })
   terminal?: MstTerminalEntity
 }
+

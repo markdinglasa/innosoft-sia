@@ -1,15 +1,61 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import {
   IsDate,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
-  MaxLength
+  MaxLength,
+  ValidateNested
 } from 'class-validator'
 import { Type } from 'class-transformer'
+import { PurchaseOrderStatus } from '../../../../../shared/types/purchase-order.types'
+
+export class CreatePurchaseOrderLineDto {
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  itemId!: number
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  unitId!: number
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  quantity!: number
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  unitCost!: number
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  description?: string | null
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  taxRate?: number
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  discountRate?: number
+}
 
 export class CreatePurchaseOrderDto {
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  branchId!: number
+
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
@@ -30,12 +76,18 @@ export class CreatePurchaseOrderDto {
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
-  amount!: number
-
-  @ApiProperty()
-  @IsNumber()
-  @IsNotEmpty()
   supplierId!: number
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsEnum(PurchaseOrderStatus)
+  status?: PurchaseOrderStatus
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  expectedDeliveryDate?: Date | null
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -61,4 +113,9 @@ export class CreatePurchaseOrderDto {
   @IsOptional()
   @IsNumber()
   requestedBy?: number | null
+
+  @ApiProperty({ type: [CreatePurchaseOrderLineDto] })
+  @ValidateNested({ each: true })
+  @Type(() => CreatePurchaseOrderLineDto)
+  lineItems!: CreatePurchaseOrderLineDto[]
 }

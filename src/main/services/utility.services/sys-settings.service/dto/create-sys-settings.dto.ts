@@ -207,8 +207,13 @@ export class CreateSysSettingsDto {
   @IsOptional()
   receiptFooter?: string
 
-  @ApiPropertyOptional({ description: 'Invoice footer text' })
-  @IsString()
+  @ApiPropertyOptional()
   @IsOptional()
+  @IsString()
   invoiceFooter?: string
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  purchaseOrderApprovalThreshold?: number
 }
