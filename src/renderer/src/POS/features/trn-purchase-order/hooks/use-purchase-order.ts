@@ -4,9 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 const { ipcRenderer } = globalThis.electron
 
-export const usePurchaseOrders = (
-  options?: PaginationOptionsDto & { searchKeyword?: string; take?: number }
-) => {
+export const usePurchaseOrders = (options?: PaginationOptionsDto) => {
   return useQuery({
     queryKey: ['purchase-orders', options],
     queryFn: () => ipcRenderer.invoke(TransactionIpcChannel.PURCHASE_ORDER_LIST, options)

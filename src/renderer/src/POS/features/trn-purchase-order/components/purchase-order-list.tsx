@@ -1,6 +1,7 @@
 import {
   Delete as DeleteIcon,
   Edit as EditIcon,
+  Download as ExportIcon,
   ShoppingCart as POIcon,
   LocalShipping as ShippingIcon
 } from '@mui/icons-material'
@@ -15,6 +16,8 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
+  Menu,
+  MenuItem,
   Paper,
   Table,
   TableBody,
@@ -29,21 +32,26 @@ import {
 import { PurchaseOrderStatus } from '@shared/types/purchase-order.types'
 import React, { useState } from 'react'
 import { useDeletePurchaseOrder, usePurchaseOrders } from '../hooks/use-purchase-order'
+import { usePurchaseOrderExport } from '../hooks/use-purchase-order-export'
 import { usePurchaseOrderHubStore } from '../store/use-purchase-order-hub-store'
+import { PurchaseOrderPrintable } from './purchase-order-printable'
 import ReceivingForm from './receiving-form'
 
 export const PurchaseOrderList: React.FC = () => {
   const { searchKeyword, setSelectedId, setIsFormOpen } = usePurchaseOrderHubStore()
   const [page, setPage] = useState(0)
   const { data, isLoading, isError } = usePurchaseOrders({
-    searchKeyword,
+    search: searchKeyword,
     page: page + 1,
-    take: 30
+    limit: 30
   })
   const deleteMutation = useDeletePurchaseOrder()
+  const { exportToCSV, exportToXLSX, exportToPDF } = usePurchaseOrderExport()
 
   const [deleteId, setDeleteId] = useState<number | null>(null)
   const [receivingPO, setReceivingPO] = useState<string | null>(null)
+  const [exportAnchorEl, setExportAnchorEl] = useState<null | HTMLElement>(null)
+  const [exportData, setExportData] = useState<any>(null)
 
   const handleEdit = (id: number) => {
     setSelectedId(id)
@@ -59,6 +67,29 @@ export const PurchaseOrderList: React.FC = () => {
       await deleteMutation.mutateAsync(deleteId)
       setDeleteId(null)
     }
+  }
+
+  const handleExportClick = (event: React.MouseEvent<HTMLElement>, item: any) => {
+    setExportAnchorEl(event.currentTarget)
+    setExportData(item)
+  }
+
+  const handleExportClose = () => {
+    setExportAnchorEl(null)
+    setExportData(null)
+  }
+
+  const handleExport = (type: 'CSV' | 'XLSX' | 'PDF') => {
+    if (!exportData) return
+    const filename = `PO_${exportData.purchaseOrderNumber}_${Date.now()}`
+
+    if (type === 'CSV') exportToCSV(exportData, filename)
+    if (type === 'XLSX') exportToXLSX(exportData, filename)
+    if (type === 'PDF') {
+      // Small delay to ensure printable component is ready if needed
+      setTimeout(() => exportToPDF(`po-printable-${exportData.id}`, filename), 100)
+    }
+    handleExportClose()
   }
 
   const getStatusColor = (status: PurchaseOrderStatus) => {
@@ -91,7 +122,7 @@ export const PurchaseOrderList: React.FC = () => {
 
   if (isError) return <Typography color="error">Failed to load purchase orders.</Typography>
 
-  const items = (data as any)?.items || []
+  const items = data?.items || []
 
   return (
     <>
@@ -161,6 +192,15 @@ export const PurchaseOrderList: React.FC = () => {
                         </IconButton>
                       </Tooltip>
                     )}
+                    <Tooltip title="Export PO">
+                      <IconButton
+                        size="small"
+                        color="success"
+                        onClick={(e) => handleExportClick(e, item)}
+                      >
+                        <ExportIcon sx={{ fontSize: 20 }} />
+                      </IconButton>
+                    </Tooltip>
                     <Tooltip title="Edit">
                       <IconButton size="small" onClick={() => handleEdit(item.id)}>
                         <EditIcon sx={{ fontSize: 20 }} />
@@ -194,7 +234,7 @@ export const PurchaseOrderList: React.FC = () => {
       <TablePagination
         rowsPerPageOptions={[30]}
         component="div"
-        count={(data as any)?.meta?.totalItems || 0}
+        count={data?.meta?.totalItems || 0}
         rowsPerPage={30}
         page={page}
         onPageChange={(_, newPage) => setPage(newPage)}
@@ -229,6 +269,24 @@ export const PurchaseOrderList: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Export Menu */}
+      <Menu
+        anchorEl={exportAnchorEl}
+        open={Boolean(exportAnchorEl)}
+        onClose={handleExportClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <MenuItem onClick={() => handleExport('CSV')}>Export to CSV</MenuItem>
+        <MenuItem onClick={() => handleExport('XLSX')}>Export to Excel</MenuItem>
+        <MenuItem onClick={() => handleExport('PDF')}>Export to PDF</MenuItem>
+      </Menu>
+
+      {/* Hidden printable components for all items in current view */}
+      {items.map((item: any) => (
+        <PurchaseOrderPrintable key={item.id} data={item} id={`po-printable-${item.id}`} />
+      ))}
     </>
   )
 }

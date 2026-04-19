@@ -64,7 +64,7 @@ export const DebitCreditMemoList: React.FC = () => {
 
   if (isError) return <Typography color="error">Failed to load memos.</Typography>
 
-  const items = (data as any)?.items || []
+  const items = data?.items || []
 
   return (
     <>
@@ -163,7 +163,7 @@ export const DebitCreditMemoList: React.FC = () => {
       <TablePagination
         rowsPerPageOptions={[30]}
         component="div"
-        count={(data as any)?.meta?.totalItems || 0}
+        count={data?.meta?.totalItems || 0}
         rowsPerPage={30}
         page={page}
         onPageChange={(_, newPage) => setPage(newPage)}
