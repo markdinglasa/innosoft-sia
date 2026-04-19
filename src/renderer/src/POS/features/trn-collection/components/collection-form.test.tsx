@@ -33,7 +33,10 @@ describe('CollectionForm Logic Verification', () => {
     period: [{ id: 1, name: 'April 2026' }],
     customer: [{ id: 1, name: 'Walk-in Customer' }],
     terminal: [{ id: 1, name: 'POS-01' }],
-    payType: [{ id: 1, name: 'Cash' }, { id: 2, name: 'Check' }],
+    payType: [
+      { id: 1, name: 'Cash' },
+      { id: 2, name: 'Check' }
+    ],
     account: [{ id: 1, code: '101', name: 'Cash in Hand' }]
   }
 
@@ -71,11 +74,10 @@ describe('CollectionForm Logic Verification', () => {
 
     // Find the amount input for the first line
     // Since it's a table, we target the number input
-    const amountInput = screen.getByLabelText('') // This might be tricky, let's use display role or type
     const inputs = screen.getAllByRole('spinbutton')
     // Index 0 might be Tender Amount if it's rendered. Let's find by register name if possible or just order.
     // In our implementation, 'amount' is a display h5, 'tenderAmount' is 'spinbutton', line amounts are 'spinbutton'
-    
+
     // Fill first line amount
     fireEvent.change(inputs[0], { target: { value: '100' } })
 
@@ -134,3 +136,4 @@ describe('CollectionForm Logic Verification', () => {
     })
   })
 })
+

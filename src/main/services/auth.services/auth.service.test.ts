@@ -47,12 +47,12 @@ describe('AuthService', () => {
     }
     const { AppDataSource } = await import('../../typeORM/configurations')
     ;(AppDataSource.getRepository as any).mockReturnValue(mockRepo)
-    
+
     // Reset Store mock
     const storeMap = new Map()
     ;(Store.get as any).mockImplementation((key: string) => storeMap.get(key))
     ;(Store.set as any).mockImplementation((key: string, val: any) => storeMap.set(key, val))
-    
+
     authService = new AuthService()
 
     // Default query builder mock for checkIsDateClosed
@@ -66,7 +66,9 @@ describe('AuthService', () => {
   describe('login security features', () => {
     it('should throw generic error message for non-existent user', async () => {
       mockRepo.findOne.mockResolvedValue(null)
-      await expect(authService.login('unknown', 'password')).rejects.toThrow('Invalid username or password.')
+      await expect(authService.login('unknown', 'password')).rejects.toThrow(
+        'Invalid username or password.'
+      )
     })
 
     it('should throw generic error message for wrong password', async () => {
@@ -77,7 +79,9 @@ describe('AuthService', () => {
       mockRepo.findOne.mockResolvedValue(user)
       ;(bcrypt.compare as any).mockResolvedValue(false)
 
-      await expect(authService.login('test', 'wrong')).rejects.toThrow('Invalid username or password.')
+      await expect(authService.login('test', 'wrong')).rejects.toThrow(
+        'Invalid username or password.'
+      )
     })
 
     it('should throw generic error message if user status is InActive', async () => {
@@ -88,7 +92,9 @@ describe('AuthService', () => {
       mockRepo.findOne.mockResolvedValue(user)
       ;(bcrypt.compare as any).mockResolvedValue(true)
 
-      await expect(authService.login('test', 'password')).rejects.toThrow('Invalid username or password.')
+      await expect(authService.login('test', 'password')).rejects.toThrow(
+        'Invalid username or password.'
+      )
     })
 
     it('should track failed attempts and lock account after 5 failures', async () => {
@@ -97,8 +103,10 @@ describe('AuthService', () => {
       // 4 failures already
       Store.set('auth_failed_testuser' as any, 4)
 
-      await expect(authService.login('testuser', 'password')).rejects.toThrow('Invalid username or password.')
-      
+      await expect(authService.login('testuser', 'password')).rejects.toThrow(
+        'Invalid username or password.'
+      )
+
       expect(Store.get('auth_failed_testuser' as any)).toBe(5)
       expect(Store.get('auth_lockout_testuser' as any)).toBeGreaterThan(Date.now())
     })
@@ -117,11 +125,11 @@ describe('AuthService', () => {
       user.status = 'Active'
       mockRepo.findOne.mockResolvedValue(user)
       ;(bcrypt.compare as any).mockResolvedValue(true)
-      
+
       Store.set('auth_failed_testuser' as any, 3)
 
       await authService.login('testuser', 'password')
-      
+
       expect(Store.get('auth_failed_testuser' as any)).toBe(0)
     })
   })
@@ -157,7 +165,9 @@ describe('AuthService', () => {
       // Mock date as closed
       mockRepo.createQueryBuilder().getCount.mockResolvedValue(1)
 
-      await expect(authService.login('testuser', 'password', yesterday)).rejects.toThrow(/already closed/)
+      await expect(authService.login('testuser', 'password', yesterday)).rejects.toThrow(
+        /already closed/
+      )
     })
 
     it('should allow login with closed date if valid manager override provided', async () => {
@@ -166,7 +176,7 @@ describe('AuthService', () => {
       user.username = 'testuser'
       user.password = 'hashed'
       user.status = 'Active'
-      
+
       const manager = new MstUserEntity()
       manager.username = 'manager'
       manager.password = 'm_hashed'
@@ -189,3 +199,4 @@ describe('AuthService', () => {
     })
   })
 })
+

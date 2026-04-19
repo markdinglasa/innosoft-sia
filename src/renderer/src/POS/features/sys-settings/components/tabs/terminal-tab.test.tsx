@@ -1,4 +1,3 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { TerminalTab } from './terminal-tab'
@@ -14,10 +13,26 @@ vi.mock('@mui/material', async () => {
     Divider: () => <hr />,
     Typography: ({ children }: any) => <span>{children}</span>,
     Skeleton: () => <div>Loading...</div>,
-    Switch: (props: any) => <input type="checkbox" checked={props.checked} onChange={props.onChange} aria-label={props['aria-label']} />,
-    Button: (props: any) => <button onClick={props.onClick} disabled={props.disabled}>{props.children}</button>,
-    FormControlLabel: ({ control, label }: any) => <label>{control}{label}</label>,
-    CircularProgress: () => <div>Loading...</div>,
+    Switch: (props: any) => (
+      <input
+        type="checkbox"
+        checked={props.checked}
+        onChange={props.onChange}
+        aria-label={props['aria-label']}
+      />
+    ),
+    Button: (props: any) => (
+      <button onClick={props.onClick} disabled={props.disabled}>
+        {props.children}
+      </button>
+    ),
+    FormControlLabel: ({ control, label }: any) => (
+      <label>
+        {control}
+        {label}
+      </label>
+    ),
+    CircularProgress: () => <div>Loading...</div>
   }
 })
 
@@ -25,20 +40,20 @@ vi.mock('@mui/material', async () => {
 const mockUpdateMutate = vi.fn()
 vi.mock('../../api/sys-settings.queries', () => ({
   useActiveTerminalId: vi.fn(() => ({ data: 1, isLoading: false, isError: false })),
-  useSysSettings: vi.fn(() => ({ 
-    data: { id: 1, terminalId: 1, isPartialPrint: 1 }, 
+  useSysSettings: vi.fn(() => ({
+    data: { id: 1, terminalId: 1, isPartialPrint: 1 },
     isLoading: false,
-    isError: false 
-  })),
+    isError: false
+  }))
 }))
 
 vi.mock('../../api/sys-settings.mutations', () => ({
-  useUpdateSettings: vi.fn(() => ({ 
-    mutate: mockUpdateMutate, 
+  useUpdateSettings: vi.fn(() => ({
+    mutate: mockUpdateMutate,
     isPending: false,
     isSuccess: false,
     isError: false
-  })),
+  }))
 }))
 
 describe('TerminalTab Component', () => {
@@ -55,3 +70,4 @@ describe('TerminalTab Component', () => {
     expect(switchEl).not.toBeChecked()
   })
 })
+

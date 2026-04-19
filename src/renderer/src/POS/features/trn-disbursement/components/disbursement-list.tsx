@@ -1,4 +1,4 @@
-import { Delete as DeleteIcon, MoneyOff as DisbIcon, Edit as EditIcon } from '@mui/icons-material'
+import { Delete as DeleteIcon, MoneyOff as DisbIcon, Edit as EditIcon, Print as PrintIcon } from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -18,15 +18,19 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Typography
+  Typography,
+  Tooltip
 } from '@mui/material'
 import React from 'react'
 import { useMasterfile } from '../../../hooks/use-masterfile'
 import { useDisbursementHubStore } from '../store/use-disbursement-hub-store'
+import { useDisbursement } from '../hooks/use-disbursement'
 
 export const DisbursementList: React.FC = () => {
   const { searchKeyword, setSelectedId, setIsFormOpen } = useDisbursementHubStore()
   const { useList, useDeleteMutation } = useMasterfile('disbursement')
+  const { usePrintReceipt } = useDisbursement()
+  const printMutation = usePrintReceipt()
   const [page, setPage] = React.useState(0)
   const { data, isLoading, isError } = useList({ searchKeyword, page: page + 1, take: 30 })
 
@@ -39,10 +43,16 @@ export const DisbursementList: React.FC = () => {
   )
 
   const deleteMutation = useDeleteMutation()
+  
   const handleEdit = (id: number) => {
     setSelectedId(id)
     setIsFormOpen(true)
   }
+
+  const handlePrint = (id: number) => {
+    printMutation.mutate(id)
+  }
+
   const [deleteId, setDeleteId] = React.useState<number | null>(null)
   const handleDelete = (id: number) => setDeleteId(id)
   const confirmDelete = async () => {
@@ -51,14 +61,18 @@ export const DisbursementList: React.FC = () => {
       setDeleteId(null)
     }
   }
+
   if (isLoading)
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
         <CircularProgress size={32} />
       </Box>
     )
+
   if (isError) return <Typography color="error">Failed to load disbursements.</Typography>
+
   const items = (data as any)?.items || []
+
   return (
     <>
       <TableContainer
@@ -109,25 +123,41 @@ export const DisbursementList: React.FC = () => {
                   />
                 </TableCell>
                 <TableCell align="right">
-                  <IconButton
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleEdit(item.id)
-                    }}
-                  >
-                    <EditIcon sx={{ fontSize: 25 }} />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    color="error"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleDelete(item.id)
-                    }}
-                  >
-                    <DeleteIcon sx={{ fontSize: 25 }} />
-                  </IconButton>
+                  <Tooltip title="Print Receipt">
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handlePrint(item.id)
+                      }}
+                      disabled={printMutation.isPending}
+                    >
+                      <PrintIcon sx={{ fontSize: 25 }} />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Edit">
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleEdit(item.id)
+                      }}
+                    >
+                      <EditIcon sx={{ fontSize: 25 }} />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Delete">
+                    <IconButton
+                      size="small"
+                      color="error"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDelete(item.id)
+                      }}
+                    >
+                      <DeleteIcon sx={{ fontSize: 25 }} />
+                    </IconButton>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             ))}
@@ -143,7 +173,6 @@ export const DisbursementList: React.FC = () => {
           </TableBody>
         </Table>
       </TableContainer>
-
       <TablePagination
         rowsPerPageOptions={[30]}
         component="div"
@@ -152,6 +181,7 @@ export const DisbursementList: React.FC = () => {
         page={page}
         onPageChange={(_, newPage) => setPage(newPage)}
       />
+
 
       <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}>
         <DialogTitle>Confirm Delete</DialogTitle>
