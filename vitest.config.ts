@@ -1,5 +1,5 @@
+import { resolve } from 'node:path'
 import { defineConfig } from 'vitest/config'
-import { resolve } from 'path'
 
 export default defineConfig({
   test: {
@@ -10,6 +10,8 @@ export default defineConfig({
       '@main': resolve(__dirname, './src/main'),
       '@shared': resolve(__dirname, './src/shared'),
       '@renderer': resolve(__dirname, './src/renderer'),
-    },
-  },
+      '@pos': resolve(__dirname, './src/renderer/src/POS')
+    }
+  }
 })
+

@@ -17,8 +17,11 @@ import {
 } from '@mui/material'
 import { memo, useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useSelector } from 'react-redux'
+import { MstUserEntity } from 'src/main/entities'
 import { z } from 'zod'
 import { useMasterfile } from '../../../hooks/use-masterfile'
+import { useAuth } from '../../authentication/hooks/use-auth'
 import { useDisbursementHubStore } from '../store/use-disbursement-hub-store'
 import { DisbursementType } from '../types/disbursement.types'
 import { CashDenominationCalculator } from './cash-denomination-calculator'
@@ -74,11 +77,11 @@ const defaultValues: Partial<DisbursementFormValues> = {
   amount: 0,
   payee: '',
   remarks: '',
-  accountId: 0,
-  payTypeId: 0,
-  preparedBy: 0,
-  checkedBy: 0,
-  approvedBy: 0,
+  accountId: '' as any,
+  payTypeId: '' as any,
+  preparedBy: '' as any,
+  checkedBy: '' as any,
+  approvedBy: '' as any,
   isReturn: false,
   amount1000: 0,
   amount500: 0,
@@ -98,6 +101,10 @@ const defaultValues: Partial<DisbursementFormValues> = {
 function DisbursementForm() {
   const { selectedId, setSelectedId, setIsFormOpen, denominations, setDenominations } =
     useDisbursementHubStore()
+  const { user } = useAuth()
+  const activeTerminal = useSelector((state: any) => state.POS.manager.activeTerminal)
+  const activeBranch = useSelector((state: any) => state.POS.manager.activeBranch)
+
   const { useGet, useSaveMutation, useLookup } = useMasterfile('disbursement')
 
   const { data: accounts = [] } = useLookup('account')
@@ -127,44 +134,48 @@ function DisbursementForm() {
     ?.name?.toUpperCase()
     .includes('CASH')
 
-  useEffect(() => {
-    if (selectedId && disbursement) {
-      reset({
-        ...disbursement,
-        disbursementDate: disbursement.disbursementDate
-          ? new Date(disbursement.disbursementDate).toISOString().split('T')[0]
-          : '',
-        remarks: disbursement.remarks || '',
-        disbursementNumber: disbursement.disbursementNumber || ''
-      })
-      // Sync store denominations if it's an edit
-      const denoms = {
-        amount1000: disbursement.amount1000 || 0,
-        amount500: disbursement.amount500 || 0,
-        amount200: disbursement.amount200 || 0,
-        amount100: disbursement.amount100 || 0,
-        amount50: disbursement.amount50 || 0,
-        amount20: disbursement.amount20 || 0,
-        amount10: disbursement.amount10 || 0,
-        amount5: disbursement.amount5 || 0,
-        amount1: disbursement.amount1 || 0,
-        amount025: disbursement.amount025 || 0,
-        amount010: disbursement.amount010 || 0,
-        amount005: disbursement.amount005 || 0,
-        amount001: disbursement.amount001 || 0
+  useEffect(
+    function formResetter() {
+      if (selectedId && disbursement) {
+        reset({
+          ...disbursement,
+          disbursementDate: disbursement.disbursementDate
+            ? new Date(disbursement.disbursementDate).toISOString().split('T')[0]
+            : '',
+          remarks: disbursement.remarks || '',
+          disbursementNumber: disbursement.disbursementNumber || ''
+        })
+        // Sync store denominations if it's an edit
+        const denoms = {
+          amount1000: disbursement.amount1000 || 0,
+          amount500: disbursement.amount500 || 0,
+          amount200: disbursement.amount200 || 0,
+          amount100: disbursement.amount100 || 0,
+          amount50: disbursement.amount50 || 0,
+          amount20: disbursement.amount20 || 0,
+          amount10: disbursement.amount10 || 0,
+          amount5: disbursement.amount5 || 0,
+          amount1: disbursement.amount1 || 0,
+          amount025: disbursement.amount025 || 0,
+          amount010: disbursement.amount010 || 0,
+          amount005: disbursement.amount005 || 0,
+          amount001: disbursement.amount001 || 0
+        }
+        setDenominations(denoms)
+      } else if (!selectedId) {
+        reset({
+          ...defaultValues,
+          preparedBy: user?.id || ('' as any),
+          disbursementNumber: `DISB-${new Date().getFullYear()}-${Math.floor(
+            1000 + Math.random() * 9000
+          )
+            .toString()
+            .padStart(4, '0')}`
+        })
       }
-      setDenominations(denoms)
-    } else if (!selectedId) {
-      reset({
-        ...defaultValues,
-        disbursementNumber: `DISB-${new Date().getFullYear()}-${Math.floor(
-          1000 + Math.random() * 9000
-        )
-          .toString()
-          .padStart(4, '0')}`
-      })
-    }
-  }, [selectedId, disbursement, reset, setDenominations])
+    },
+    [selectedId, disbursement, reset, setDenominations, user]
+  )
 
   const onSubmit = async (data: DisbursementFormValues) => {
     if (isCashPayment) {
@@ -188,6 +199,9 @@ function DisbursementForm() {
     await saveMutation.mutateAsync({
       ...data,
       ...denominations,
+      branchId: activeBranch?.id || 1,
+      terminalId: activeTerminal?.id || 1,
+      periodId: 1, // Defaulting to 1 for manual disbursements outside shift if needed, or based on shift logic
       id: selectedId || undefined
     })
     handleClose()
@@ -206,6 +220,7 @@ function DisbursementForm() {
       onSubmit={handleSubmit(onSubmit)}
       sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}
     >
+      <input type="hidden" {...register('disbursementNumber')} />
       <Box
         sx={{
           p: 2,
@@ -270,6 +285,7 @@ function DisbursementForm() {
                   label="Type"
                   fullWidth
                   size="small"
+                  placeholder="Select disbursement type"
                   error={!!errors.disbursementType}
                   helperText={errors.disbursementType?.message || ''}
                 >
@@ -317,6 +333,7 @@ function DisbursementForm() {
                   fullWidth
                   size="small"
                   required
+                  placeholder="Select payment type"
                   error={!!errors.payTypeId}
                   helperText={errors.payTypeId?.message}
                 >
@@ -395,9 +412,9 @@ function DisbursementForm() {
                   required
                   error={!!errors.preparedBy}
                 >
-                  {users.map((u: any) => (
+                  {users.map((u: MstUserEntity) => (
                     <MenuItem key={u.id} value={u.id}>
-                      {u.name}
+                      {u.fullName}
                     </MenuItem>
                   ))}
                 </TextField>
@@ -418,9 +435,9 @@ function DisbursementForm() {
                   required
                   error={!!errors.checkedBy}
                 >
-                  {users.map((u: any) => (
+                  {users.map((u: MstUserEntity) => (
                     <MenuItem key={u.id} value={u.id}>
-                      {u.name}
+                      {u.fullName}
                     </MenuItem>
                   ))}
                 </TextField>
@@ -442,9 +459,9 @@ function DisbursementForm() {
                   error={!!errors.approvedBy}
                   helperText={errors.approvedBy?.message}
                 >
-                  {users.map((u: any) => (
+                  {users.map((u: MstUserEntity) => (
                     <MenuItem key={u.id} value={u.id}>
-                      {u.name}
+                      {u.fullName}
                     </MenuItem>
                   ))}
                 </TextField>

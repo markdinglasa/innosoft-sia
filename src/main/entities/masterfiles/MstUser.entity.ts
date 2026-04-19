@@ -11,9 +11,16 @@
 // 	[IsLocked] [bit] NOT NULL,
 // 	[Role] [nvarchar](50) NULL,
 
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
+} from 'typeorm'
 import { POSEntity } from '../entity-names'
-import { SysUserTerminalEntity } from "../utilities/SysUserTerminal.entity"
+import { SysUserTerminalEntity } from '../utilities/SysUserTerminal.entity'
 import { MstBranchAccessEntity } from './MstBranchAccess.entity'
 import { MstUserRolesEntity } from './MstUserRoles.entity'
 
@@ -33,31 +40,31 @@ export class MstUserEntity {
     this.isDefault = false
   }
 
-    @PrimaryGeneratedColumn({ name: 'Id', type: 'int' })
-    id!: number
-  
-    @Column({ name: 'IsLocked', type: 'bit' })
-    isLocked: boolean
+  @PrimaryGeneratedColumn({ name: 'Id', type: 'int' })
+  id!: number
 
-    @Column({ name: 'IsDefault', type: 'bit' })
-    isDefault: boolean
-  
-    @CreateDateColumn({ name: 'EntryDateTime', type: 'datetimeoffset' })
-    entryDateTime: Date
+  @Column({ name: 'IsLocked', type: 'bit' })
+  isLocked: boolean
 
-    @UpdateDateColumn({ name: 'UpdateDateTime', type: 'datetimeoffset', nullable: true })
-    updateDateTime?: Date | null
-  
- @Column({ name: 'Type', type: 'nvarchar', length: 50, nullable: false })
+  @Column({ name: 'IsDefault', type: 'bit' })
+  isDefault: boolean
+
+  @CreateDateColumn({ name: 'EntryDateTime', type: 'datetimeoffset' })
+  entryDateTime: Date
+
+  @UpdateDateColumn({ name: 'UpdateDateTime', type: 'datetimeoffset', nullable: true })
+  updateDateTime?: Date | null
+
+  @Column({ name: 'Type', type: 'nvarchar', length: 50, nullable: false })
   type: string
 
   @Column({ name: 'UserName', type: 'nvarchar', length: 50, nullable: false })
   username: string
 
-  @Column({ name: 'Password', type: 'text',  nullable: false })
+  @Column({ name: 'Password', type: 'text', nullable: false })
   password: string
 
-    @Column({ name: 'Email', type: 'nvarchar', length:255,  nullable: false })
+  @Column({ name: 'Email', type: 'nvarchar', length: 255, nullable: false })
   email: string
 
   @Column({ name: 'FullName', type: 'nvarchar', length: 255, nullable: false })
@@ -85,3 +92,4 @@ export class MstUserEntity {
   // virtual fields
   permissions?: string[]
 }
+
