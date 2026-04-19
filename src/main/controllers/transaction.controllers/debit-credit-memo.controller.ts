@@ -9,3 +9,4 @@ registerProtectedIpcHandler(TransactionIpcChannel.DEBIT_CREDIT_MEMO_GET, async (
 registerProtectedIpcHandler(TransactionIpcChannel.DEBIT_CREDIT_MEMO_CREATE, async (_event, { payload, userId }) => await debitCreditMemoService.create(payload, userId))
 registerProtectedIpcHandler(TransactionIpcChannel.DEBIT_CREDIT_MEMO_UPDATE, async (_event, { id, payload, userId }) => await debitCreditMemoService.update(id, payload, userId))
 registerProtectedIpcHandler(TransactionIpcChannel.DEBIT_CREDIT_MEMO_DELETE, async (_event, { id, userId }) => await debitCreditMemoService.delete(id, userId))
+registerProtectedIpcHandler(TransactionIpcChannel.DEBIT_CREDIT_MEMO_PROCESS_ISO, async (_event, { message, userId }) => await debitCreditMemoService.createFromIso8583(message, userId))

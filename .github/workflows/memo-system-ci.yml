@@ -1,0 +1,190 @@
+name: Memo System CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'src/memo/**'
+      - 'package.json'
+      - 'tsconfig.memo.json'
+      - 'vitest.config.ts'
+      - '.github/workflows/memo-system-ci.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'src/memo/**'
+      - 'package.json'
+      - 'tsconfig.memo.json'
+      - 'vitest.config.ts'
+      - '.github/workflows/memo-system-ci.yml'
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM
+
+jobs:
+  test:
+    name: Test Memo System
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Type check memo system
+      run: npm run typecheck:memo
+    
+    - name: Lint memo system
+      run: npm run lint:security
+    
+    - name: Run unit tests
+      run: npm run test:memo:unit
+    
+    - name: Run property-based tests
+      run: npm run test:memo:pbt
+    
+    - name: Run all memo tests
+      run: npm run test:memo
+    
+    - name: Generate test coverage
+      run: npm run test:coverage
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/coverage-final.json
+        flags: memo-system
+        name: memo-system-coverage
+    
+    - name: Check test coverage
+      run: |
+        # Check if coverage meets minimum thresholds
+        if [ -f "./coverage/coverage-summary.json" ]; then
+          COVERAGE=$(node -e "const cov = require('./coverage/coverage-summary.json'); console.log(cov.total.lines.pct);")
+          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+            echo "Coverage is below 80%: $COVERAGE%"
+            exit 1
+          fi
+        fi
+  
+  build:
+    name: Build Memo System
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Build memo system
+      run: npm run build:memo
+    
+    - name: Verify build output
+      run: |
+        if [ -d "./dist/memo" ]; then
+          echo "Build output exists at ./dist/memo"
+          ls -la ./dist/memo/
+        else
+          echo "Build output not found"
+          exit 1
+        fi
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: memo-system-build
+        path: dist/memo/
+        retention-days: 7
+  
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run npm audit
+      run: npm audit --audit-level=high
+    
+    - name: Run security linting
+      run: npm run lint:security
+    
+    - name: Run OWASP Dependency Check
+      uses: dependency-check/Dependency-Check_Action@main
+      with:
+        project: 'innosoft-pos-memo-system'
+        path: '.'
+        format: 'HTML'
+        out: './reports'
+        args: '--scan src/memo --disableYarnAudit --disableNodeAudit'
+    
+    - name: Upload security report
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-reports
+        path: reports/
+        retention-days: 30
+  
+  deploy:
+    name: Deploy Documentation
+    runs-on: ubuntu-latest
+    needs: [test, build, security-scan]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+    
+    - name: Generate API documentation
+      run: |
+        # This would generate TypeDoc documentation for the memo system
+        # For now, create a placeholder
+        mkdir -p docs/memo-system
+        echo "# Memo System API Documentation" > docs/memo-system/README.md
+        echo "Generated: $(date)" >> docs/memo-system/README.md
+        echo "Version: 1.0.0" >> docs/memo-system/README.md
+    
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/memo-system
+        destination_dir: memo-system
+        keep_files: false

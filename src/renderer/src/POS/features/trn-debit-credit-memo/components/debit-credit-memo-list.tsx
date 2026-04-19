@@ -2,6 +2,7 @@ import { Delete as DeleteIcon, Edit as EditIcon, NoteAlt as MemoIcon } from '@mu
 import {
   Box,
   Button,
+  Chip,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -20,14 +21,17 @@ import {
   Typography
 } from '@mui/material'
 import React from 'react'
-import { useMasterfile } from '../../../hooks/use-masterfile'
+import { useDebitCreditMemos, useDeleteDebitCreditMemo } from '../hooks/use-debit-credit-memo'
 import { useDebitCreditMemoHubStore } from '../store/use-debit-credit-memo-hub-store'
 
 export const DebitCreditMemoList: React.FC = () => {
   const { searchKeyword, setSelectedId, setIsFormOpen } = useDebitCreditMemoHubStore()
-  const { useList, useDeleteMutation } = useMasterfile('debitCreditMemo')
   const [page, setPage] = React.useState(0)
-  const { data, isLoading, isError } = useList({ searchKeyword, page: page + 1, take: 30 })
+  const { data, isLoading, isError } = useDebitCreditMemos({
+    search: searchKeyword,
+    page: page + 1,
+    limit: 30
+  })
 
   // Reset page when search changes
   React.useEffect(
@@ -37,7 +41,7 @@ export const DebitCreditMemoList: React.FC = () => {
     [searchKeyword]
   )
 
-  const deleteMutation = useDeleteMutation()
+  const deleteMutation = useDeleteDebitCreditMemo()
   const handleEdit = (id: number) => {
     setSelectedId(id)
     setIsFormOpen(true)
@@ -50,14 +54,18 @@ export const DebitCreditMemoList: React.FC = () => {
       setDeleteId(null)
     }
   }
+
   if (isLoading)
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
         <CircularProgress size={32} />
       </Box>
     )
+
   if (isError) return <Typography color="error">Failed to load memos.</Typography>
+
   const items = (data as any)?.items || []
+
   return (
     <>
       <TableContainer
@@ -71,6 +79,9 @@ export const DebitCreditMemoList: React.FC = () => {
               <TableCell width={50}></TableCell>
               <TableCell>Memo #</TableCell>
               <TableCell>Date</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell align="right">Amount</TableCell>
+              <TableCell>Terminal</TableCell>
               <TableCell>Particulars</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
@@ -94,6 +105,24 @@ export const DebitCreditMemoList: React.FC = () => {
                 <TableCell>
                   {item.dcMemoDate ? new Date(item.dcMemoDate).toLocaleDateString() : '—'}
                 </TableCell>
+                <TableCell>
+                  <Chip
+                    label={item.memoType}
+                    size="small"
+                    color={item.memoType === 'DEBIT' ? 'primary' : 'secondary'}
+                    variant="outlined"
+                  />
+                </TableCell>
+                <TableCell align="right">
+                  <Typography
+                    variant="body2"
+                    fontWeight="bold"
+                    color={item.memoType === 'DEBIT' ? 'primary.main' : 'secondary.main'}
+                  >
+                    ${Number(item.amount || 0).toFixed(2)}
+                  </Typography>
+                </TableCell>
+                <TableCell>{item.terminalId || '—'}</TableCell>
                 <TableCell>{item.particulars || '—'}</TableCell>
                 <TableCell align="right">
                   <IconButton
@@ -120,7 +149,7 @@ export const DebitCreditMemoList: React.FC = () => {
             ))}
             {items.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
+                <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
                   <Typography variant="body2" color="text.secondary">
                     No memos found.
                   </Typography>

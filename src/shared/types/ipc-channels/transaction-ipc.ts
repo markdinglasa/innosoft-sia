@@ -111,6 +111,7 @@ export enum TransactionIpcChannel {
   DEBIT_CREDIT_MEMO_CREATE = 'transactions:debit-credit-memo:create',
   DEBIT_CREDIT_MEMO_UPDATE = 'transactions:debit-credit-memo:update',
   DEBIT_CREDIT_MEMO_DELETE = 'transactions:debit-credit-memo:delete',
+  DEBIT_CREDIT_MEMO_PROCESS_ISO = 'transactions:debit-credit-memo:process-iso',
 
   // Debit Credit Memo Line
   DEBIT_CREDIT_MEMO_LINE_LIST = 'transactions:debit-credit-memo-line:list',

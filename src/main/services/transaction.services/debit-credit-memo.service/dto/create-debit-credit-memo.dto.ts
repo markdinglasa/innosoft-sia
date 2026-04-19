@@ -29,8 +29,34 @@ export class CreateDebitCreditMemoDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @MaxLength(255)
+  @MaxLength(20)
+  memoType!: 'DEBIT' | 'CREDIT'
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  amount!: number
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(500)
   particulars!: string
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @MaxLength(50)
+  terminalId?: string
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @MaxLength(50)
+  cardType?: string
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @MaxLength(100)
+  authorizationCode?: string
 
   @ApiProperty()
   @IsNumber()

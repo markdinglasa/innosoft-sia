@@ -16,6 +16,11 @@ export class TrnDebitCreditMemoEntity extends BaseEntity {
     this.preparedBy = 0
     this.checkedBy = 0
     this.approvedBy = 0
+    this.memoType = 'DEBIT'
+    this.amount = 0
+    this.terminalId = ''
+    this.cardType = ''
+    this.authorizationCode = ''
   }
   @Column({ name: 'BranchId', type: 'int', nullable: false })
   branchId: number
@@ -29,8 +34,23 @@ export class TrnDebitCreditMemoEntity extends BaseEntity {
   @Column({ name: 'DCMemoDate', type: 'datetimeoffset', nullable: false })
   dcMemoDate: Date
 
-  @Column({ name: 'Particulars', type: 'nvarchar', length: 255, nullable: false })
+  @Column({ name: 'MemoType', type: 'nvarchar', length: 20, nullable: false })
+  memoType: 'DEBIT' | 'CREDIT'
+
+  @Column({ name: 'Amount', type: 'decimal', precision: 18, scale: 5, nullable: false })
+  amount: number
+
+  @Column({ name: 'Particulars', type: 'nvarchar', length: 500, nullable: false })
   particulars: string
+
+  @Column({ name: 'TerminalId', type: 'nvarchar', length: 50, nullable: true })
+  terminalId?: string
+
+  @Column({ name: 'CardType', type: 'nvarchar', length: 50, nullable: true })
+  cardType?: string
+
+  @Column({ name: 'AuthorizationCode', type: 'nvarchar', length: 100, nullable: true })
+  authorizationCode?: string
 
   @Column({ name: 'PreparedBy', type: 'int', nullable: false })
   preparedBy: number
@@ -57,6 +77,5 @@ export class TrnDebitCreditMemoEntity extends BaseEntity {
   @ManyToOne(() => MstUserEntity)
   @JoinColumn({ name: 'ApprovedBy' })
   approvedByUser?: MstUserEntity
-
-
 }
+
