@@ -1,4 +1,3 @@
-import { License } from '@renderer/License'
 import { Splash } from '@shared/components'
 import { Error } from '@shared/messages'
 import { getActiveLicense } from '@shared/selectors'
@@ -16,7 +15,7 @@ export const MainArea: SFC = ({ className }) => {
   useEffect(() => {
     const checkLicense = async () => {
       try {
-        const response: Response = await window.electron.sql.post(SqlChannel.isLicense, license)
+        const response: Response = await globalThis.electron.sql.post(SqlChannel.isLicense, license)
         setIsLicenseValid(response.IsSomething!)
         if (!response.IsSomething && response.IsSomething === false) {
           const snackbar: Snackbar = {
@@ -26,7 +25,7 @@ export const MainArea: SFC = ({ className }) => {
           }
           dispatch(setSnackbar(snackbar))
         }
-      } catch (error: any) {
+      } catch {
         setIsLicenseValid(false)
         const snackbar: Snackbar = {
           display: true,
@@ -54,7 +53,7 @@ export const MainArea: SFC = ({ className }) => {
     if (showSplash || isLicenseValid === null) {
       return <Splash message="Please wait..." />
     }
-    return isLicenseValid ? <AppMain /> : <License />
+    return <AppMain />
   }
 
   return (
