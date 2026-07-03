@@ -1,3 +1,4 @@
+import { License } from '@renderer/License'
 import { Splash } from '@shared/components'
 import { Error } from '@shared/messages'
 import { getActiveLicense } from '@shared/selectors'
@@ -53,7 +54,7 @@ export const MainArea: SFC = ({ className }) => {
     if (showSplash || isLicenseValid === null) {
       return <Splash message="Please wait..." />
     }
-    return <AppMain />
+    return isLicenseValid ? <AppMain /> : <License />
   }
 
   return (

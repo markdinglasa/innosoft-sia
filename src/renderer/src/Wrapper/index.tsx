@@ -57,7 +57,7 @@ export const Wrapper: FC = () => {
   }
 
   const renderSnackbar = () => {
-    if (snackbar && snackbar.display)
+    if (snackbar?.display)
       return (
         <CSnackbar message={snackbar.message} type={snackbar.type} onClose={handleCloseSnackbar} />
       )
