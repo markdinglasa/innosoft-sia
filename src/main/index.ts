@@ -15,8 +15,8 @@ import {
 } from 'electron'
 import installer, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import electronStore from 'electron-store'
-import fs from 'fs'
-import path, { join } from 'path'
+import fs from 'node:fs'
+import path, { join } from 'node:path'
 import 'reflect-metadata'
 import { NODE_ENV } from './constants'
 import './controllers'
@@ -40,12 +40,12 @@ const createWindow = (url: string): BrowserWindow => {
     width: isDev ? width : 410,
     height: isDev ? height - 100 : 700,
     icon: path.join(__dirname, '../shared/assets/favicon.ico'),
-    show: isDev ? true : false,
-    autoHideMenuBar: isDev ? false : true,
+    show: !!isDev,
+    autoHideMenuBar: !isDev,
     center: true,
     frame: true,
-    resizable: isDev ? true : false,
-    fullscreenable: isDev ? true : false,
+    resizable: !!isDev,
+    fullscreenable: !!isDev,
     fullscreen: false,
     //vibrancy: isDev ? 'titlebar' : 'under-window',
     title: 'Innosoft Sales Insights & Analytics',
@@ -57,7 +57,7 @@ const createWindow = (url: string): BrowserWindow => {
       sandbox: false,
       nodeIntegration: true,
       contextIsolation: true,
-      devTools: isDev ? true : false
+      devTools: !!isDev
     }
   })
 
@@ -104,9 +104,7 @@ const createWindow = (url: string): BrowserWindow => {
 }
 
 const gotTheLock = app.requestSingleInstanceLock()
-if (!gotTheLock) {
-  app.quit()
-} else {
+if (gotTheLock) {
   app.on('second-instance', (_event, _commandLine, _workingDirectory) => {
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore()
@@ -187,4 +185,6 @@ if (!gotTheLock) {
       app.quit()
     }
   })
+} else {
+  app.quit()
 }
