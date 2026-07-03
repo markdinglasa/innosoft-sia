@@ -30,26 +30,19 @@ export class AllianceReportService {
    */
   static async getControlNumber(terminalId: number, dates: string): Promise<number> {
     const formattedDate = format(new Date(dates), 'yyyy-MM-dd')
-    const dailyGrossSales = await AppDataSource.getRepository(TrnSalesEntity)
-      .createQueryBuilder('sales')
-      .leftJoin('sales.salesLines', 'salesLine')
-      .innerJoin('salesLine.discount', 'discount')
-      .select('CAST(sales.salesDate AS DATE)', 'SalesDate')
-      .addSelect(
-        `SUM(ROUND(
-          CASE 
-            WHEN discount.discount NOT IN ('Senior Citizen Discount', 'PWD') 
-            THEN salesLine.price 
-            ELSE (salesLine.price1 + salesLine.price2LessTax) 
-          END * salesLine.quantity, 2))`,
-        'GrossSales'
-      )
-      .where('sales.terminalId = :terminalId', { terminalId })
-      .andWhere('CAST(sales.salesDate AS DATE) <= :dates', { dates: formattedDate })
-      .groupBy('CAST(sales.salesDate AS DATE)')
+    const collections = await AppDataSource.getRepository(TrnCollectionEntity)
+      .createQueryBuilder('collection')
+      .select('CAST(collection.collectionDate AS DATE)', 'SalesDate')
+      .where('collection.terminalId = :terminalId', { terminalId })
+      .andWhere('CAST(collection.collectionDate AS DATE) <= :dates', { dates: formattedDate })
+      .andWhere('collection.isLocked = :isLocked', { isLocked: true })
+      .andWhere('collection.isCancelled = :isCancelled', { isCancelled: false })
+      .andWhere('(collection.isReturned IS NULL OR collection.isReturned = 0)')
+      .andWhere('collection.amount > 0')
+      .groupBy('CAST(collection.collectionDate AS DATE)')
       .getRawMany()
 
-    return dailyGrossSales.filter((row) => Number(row.GrossSales) > 0).length
+    return collections.length
   }
 
   /**
@@ -253,7 +246,7 @@ export class AllianceReportService {
       .andWhere('CAST(collection.collectionDate AS DATE) = :dates', { dates: formattedDate })
       .getRawOne()
 
-    if (!result || !result.trxcnt) return null
+    if (!result?.trxcnt) return null
 
     // Get payment aggregates
     const payments = await AppDataSource.getRepository(TrnCollectionEntity)
@@ -396,6 +389,8 @@ export class AllianceReportService {
   /**
    * Get Transactions (List of sales in EOD)
    */
+
+  // SONARQUBE ISSUE: Refactor this function to reduce its Cognitive Complexity from 113 to the 15 allowed.
   static async getTransactionList(terminalId: number, dates: string): Promise<AllianceSalesTrx[]> {
     const formattedDate = format(new Date(dates), 'yyyy-MM-dd')
 
@@ -419,7 +414,7 @@ export class AllianceReportService {
     for (const s of sales) {
       // Loop over collections since a receipt corresponds to a collection
       for (const c of s.collections || []) {
-        const receiptno = (c.collectionNumber || '').replace(/-/g, '')
+        const receiptno = (c.collectionNumber || '').replaceAll('-', '')
 
         // Sum payment types
         let cash = 0
@@ -433,7 +428,7 @@ export class AllianceReportService {
           const amt = Number(cl.amount || 0)
           if (!c.isCancelled && (c.isReturned ?? 0) === 0) {
             if (payType === 'Cash') {
-              cash += amt > Number(c.amount) ? Number(c.amount) : amt
+              cash += Math.min(amt, Number(c.amount))
             } else if (payType === 'Credit Card') {
               credit += amt
             } else if (payType === 'Charge') {
@@ -646,7 +641,7 @@ export class AllianceReportService {
     for (const sl of collection.sales.salesLines) {
       if (sl.itemId === 1) continue // Skip service charge line item
 
-      const sku = (sl.item?.barCode || 'NA').replace(/&/g, ' ')
+      const sku = (sl.item?.barCode || 'NA').replaceAll('&', ' ')
       const qty = Number(sl.quantity || 0)
       const unitprice = Number(sl.price || 0)
       const discAmt = Number(sl.discountAmount || 0) * qty
@@ -961,6 +956,152 @@ export class AllianceReportService {
       return { IsSomething: true, Message: Success.s00x00 }
     } catch (error: any) {
       console.error('Error generating Alliance salesEOD report:', error)
+      return { IsSomething: false, Message: error.message || Error.e00x02 }
+    }
+  }
+
+  /**
+   * Main orchestrator to generate Alliance Online Sales PRE-EOD XML Report
+   */
+  static async generateOnlineSalesPREEOD(
+    path: string,
+    dates: string,
+    category: string,
+    data: { Terminal: number; TenantCode: string; POSKey: string }
+  ): Promise<Response> {
+    try {
+      const Terminal = data?.Terminal ?? 0
+      const Dates = formatDateDash(new Date(dates ?? new Date()))
+
+      // 1. Get Control Number
+      const controlNumber = await this.getControlNumber(Terminal, Dates)
+
+      // 2. Get Master Products
+      const products = await this.getMasterProducts(Terminal, Dates)
+
+      // 3. Get Transaction list
+      const transactions = await this.getTransactionList(Terminal, Dates)
+
+      const fileName = generateAllianceFilename(
+        AllianceType.onlineSalesPREEOD,
+        data.TenantCode,
+        data.Terminal,
+        controlNumber,
+        dates
+      )
+      const filePath = paths.join(path, `${fileName}`)
+
+      // Format identity tags
+      const SalesId = `
+      <id>
+        <tenantid>${data.TenantCode ?? 'NA'}</tenantid>
+        <key>${data.POSKey ?? 'NA'}</key>
+        <tmid>${data.Terminal.toString().padStart(4, '0') ?? 1}</tmid>
+        <doc>SALES_PREEOD</doc>
+      </id>
+      `
+
+      // Format Master Products list
+      const Master = products
+        .map((item) => {
+          return [
+            `<product>
+              <sku>${item?.sku ?? 0}</sku>
+              <name>${item?.name ?? 'NA'}</name>
+              <inventory>${item?.inventory ?? 0}</inventory>
+              <price>${Number(item?.price ?? 0).toFixed(2)}</price>
+              <category>${category ?? '01'}</category>
+            </product>`
+          ].join('\n')
+        })
+        .join('\n')
+
+      // Format transaction items
+      const trxListXml = await Promise.all(
+        transactions.map(async (item) => {
+          const lines = await this.getProductLines(Terminal, Dates, String(item.receiptno))
+          const salesLineXml = lines
+            .map((lineItem) => {
+              return `
+              <line>
+                <sku>${lineItem.sku ?? 'NA'}</sku>
+                <qty>${lineItem.qty ?? 0}</qty>
+                <unitprice>${formatNumber(lineItem.unitprice)}</unitprice>
+                <disc>${formatNumber(lineItem.disc)}</disc>
+                <senior>${formatNumber(lineItem.senior)}</senior>
+                <pwd>${formatNumber(lineItem.pwd)}</pwd>
+                <diplomat>${formatNumber(lineItem.diplomat)}</diplomat>
+                <taxtype>${lineItem.taxtype ?? 'NA'}</taxtype>
+                <tax>${formatNumber(lineItem.tax)}</tax>
+                <memo>NA</memo>
+                <total>${formatNumber(lineItem.total)}</total>
+              </line>`
+            })
+            .join('\n')
+
+          return `
+          <trx>
+            <receiptno>${item.receiptno}</receiptno>
+            <void>${formatNumber(item.void)}</void>
+            <cash>${formatNumber(item.cash)}</cash>
+            <credit>${formatNumber(item.credit)}</credit>
+            <charge>${formatNumber(item.charge)}</charge>
+            <giftcheck>${formatNumber(item.giftcheck)}</giftcheck>
+            <othertender>${formatNumber(item.othertender)}</othertender>
+            <linedisc>${formatNumber(item.linedisc)}</linedisc>
+            <linesenior>${formatNumber(item.linesenior)}</linesenior>
+            <evat>${formatNumber(item.evat)}</evat>
+            <linepwd>${formatNumber(item.linepwd)}</linepwd>
+            <linediplomat>${formatNumber(item.linediplomat)}</linediplomat>
+            <subtotal>${formatNumber(item.subtotal)}</subtotal>
+            <disc>${formatNumber(item.disc)}</disc>
+            <senior>${formatNumber(item.senior)}</senior>
+            <pwd>${formatNumber(item.pwd)}</pwd>
+            <diplomat>${formatNumber(item.diplomat)}</diplomat>
+            <vat>${formatNumber(item.vat)}</vat>
+            <exvat>${formatNumber(item.exvat)}</exvat>
+            <incvat>${formatNumber(item.vat)}</incvat>
+            <localtax>${formatNumber(item.localtax)}</localtax>
+            <amusement>${formatNumber(item.amusement)}</amusement>
+            <service>${formatNumber(item.service)}</service>
+            <taxsale>${formatNumber(item.taxsale)}</taxsale>
+            <notaxsale>${formatNumber(item.notaxsale)}</notaxsale>
+            <taxexsale>${formatNumber(item.taxexsale)}</taxexsale>
+            <taxincsale>${formatNumber(item.taxsale)}</taxincsale>
+            <zerosale>${formatNumber(item.zerosale)}</zerosale>
+            <vatexempt>${formatNumber(item.vatexempt)}</vatexempt>
+            <customercount>${item.customercnt ?? 0}</customercount>
+            <gross>${formatNumber(item.gross)}</gross>
+            <refund>${formatNumber(item.refund)}</refund>
+            <taxrate>${formatNumber(item.taxrate)}</taxrate>
+            <posted>${item.posted ?? 'NA'}</posted>
+            <memo>NA</memo>
+            ${salesLineXml}
+          </trx>`
+        })
+      )
+
+      const content = `
+      <root>
+        ${SalesId}
+        <sales>
+        <date>${formatDateYYYYMMDD(new Date(dates))}</date>
+        ${trxListXml.join('\n') ?? ''}
+        </sales>
+        <master>
+        ${Master}
+        </master>
+      </root>
+      `
+
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath)
+      }
+      fs.writeFileSync(filePath, content, 'utf8')
+
+      return { IsSomething: true, Message: Success.s00x00 }
+    } catch (error: any) {
+      console.error('Error generating Alliance onlineSalesPREEOD report:', error)
       return { IsSomething: false, Message: error.message || Error.e00x02 }
     }
   }

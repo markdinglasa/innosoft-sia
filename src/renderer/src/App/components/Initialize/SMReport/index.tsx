@@ -44,11 +44,15 @@ export const SMReport: SFC = ({ className }) => {
   ): Promise<boolean> => {
     try {
       const ControlNoQuery = ControlNumberQuery({ Terminal, Dates: SelectedDate })
-      const ControlNoResponse = await window.electron.sql.get(SqlChannel.getAmount, ControlNoQuery)
+      const ControlNoResponse = await globalThis.electron.sql.get(
+        SqlChannel.getAmount,
+        ControlNoQuery
+      )
       const ControlNumber = ControlNoResponse?.Data?.ControlNumber ?? 0
       if (typeof ControlNumber !== 'number' || ControlNumber === 0) return false
       else return true
     } catch (error: unknown) {
+      console.log('ERROR: ', (error as Error)?.message)
       return false
     }
   }
@@ -56,10 +60,11 @@ export const SMReport: SFC = ({ className }) => {
   const checkFields = async (): Promise<boolean> => {
     try {
       if (!path) return false
-      const response = await window.electron.sql.get(SqlChannel.checkFields, path)
+      const response = await globalThis.electron.sql.get(SqlChannel.checkFields, path)
       if (!response.IsSomething) return false
       return true
     } catch (error: unknown) {
+      console.log('ERROR: ', (error as Error)?.message)
       return false
     }
   }
@@ -122,6 +127,7 @@ export const SMReport: SFC = ({ className }) => {
     }
   }
 
+  // SONARQUBE ISSUE: Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.
   const handleGenerate = async () => {
     if (!tenant) {
       dispatch(setSnackbar({ display: true, message: err.e00x46, type: ToastType.error }))

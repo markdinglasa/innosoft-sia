@@ -6,14 +6,9 @@ import { formatDates } from '@shared/utils'
 import { useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useMWReports } from '../../../hooks'
-import {
-  getDateRanges,
-  getPath,
-  getSelectedDate,
-  getTenant
-} from '../../../selectors'
+import { getDateRanges, getPath, getSelectedDate, getTenant } from '../../../selectors'
 import { AccessControl } from '../../AccessControl'
-import { AllianceTenant } from "../../AllicanceTenant"
+import { AllianceTenant } from '../../AllicanceTenant'
 import { DateRange } from '../../DateRange'
 import { LoadingScreen } from '../../LoadingScreen'
 import { SingleDate } from '../../SingleDate'
@@ -34,7 +29,6 @@ export const MegaworldReport: SFC = ({ className }) => {
   const pointerRef = useRef<HTMLDivElement>(null)
 
   const { createReport, BatchNo } = useMWReports()
-
 
   const loadData = async (activeDates: string) => {
     try {
@@ -66,8 +60,8 @@ export const MegaworldReport: SFC = ({ className }) => {
         if (settings.IsDateRange) {
           const startDate = formatDates(new Date(dateRanges.DateStart))
           const endDate = formatDates(new Date(dateRanges.DateEnd))
-          
-          await window.electron.sql.get(
+
+          await globalThis.electron.sql.get(
             SqlChannel.generateMegaworldRange,
             startDate,
             endDate,
@@ -93,14 +87,14 @@ export const MegaworldReport: SFC = ({ className }) => {
     }, 9000)
   }
 
-  const handleSingleGenerate = () => {
+  const handleSingleGenerate = async () => {
     if (!tenant) {
       dispatch(setSnackbar({ display: true, message: err.e00x46, type: ToastType.error }))
       return
     }
     setLoading(true)
     try {
-      loadData(formattedSelectedDate)
+      await loadData(formattedSelectedDate)
     } catch (error: unknown) {
       dispatch(
         setSnackbar({

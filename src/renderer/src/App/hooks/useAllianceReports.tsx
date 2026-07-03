@@ -9,7 +9,13 @@ export const useAllianceReports = () => {
   const dispatch = useDispatch<AppDispatch>()
 
   const createReport = useCallback(
-    async (path: string, tenant: Tenant, Dates: string, Category: string, ReportType: string) => {
+    async (
+      path: string,
+      tenant: Tenant,
+      Dates: string | { DateStart: string; DateEnd: string },
+      Category: string,
+      ReportType: string
+    ) => {
       try {
         if (ReportType === 'salesEOD') {
           await globalThis.electron.sql.get(
