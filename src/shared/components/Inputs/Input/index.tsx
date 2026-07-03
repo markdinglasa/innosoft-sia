@@ -24,7 +24,7 @@ export const Input: SFC<InputProps> = ({
   onChange
 }) => {
   return (
-    <>
+    <div>
       <S.Label theme={theme}> {label}</S.Label>
       <S.Field
         $error={errors[name] && touched[name]}
@@ -35,9 +35,11 @@ export const Input: SFC<InputProps> = ({
         onChange={onChange}
         theme={theme}
       />
-      <S.SecondaryContainer>
-        {errors[name] && touched[name] ? <S.ErrorMessage>{errors[name]}</S.ErrorMessage> : null}
-      </S.SecondaryContainer>
-    </>
+      {!!errors[name] && !!touched[name] && (
+        <S.SecondaryContainer>
+          {<S.ErrorMessage>{errors[name]}</S.ErrorMessage>}
+        </S.SecondaryContainer>
+      )}
+    </div>
   )
 }

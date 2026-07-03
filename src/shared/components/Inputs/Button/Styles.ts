@@ -36,12 +36,13 @@ const greenMixin = css`
   }
 `
 const disabledMixin = css`
-  background: ${colors.palette.black['500']};
+  background: ${colors.palette.black['200']};
   color: #fff;
   cursor: not-allowed;
   opacity: 0.65;
+  transition: 0.3s ease-in-out;
   &:hover {
-    background: ${colors.palette.black['400']};
+    background: ${colors.palette.black['100']};
   }
 `
 
@@ -61,6 +62,7 @@ export const Button = styled.button<{ $color?: ButtonColor; hasIcon: boolean }>`
   display: block;
   height: ${`${BUTTON_HEIGHT}rem`};
   padding: 0 1.2rem;
+  transition: 0.3s ease-in-out;
 
   &:hover {
     background: ${colors.palette.blue['300']};
@@ -71,7 +73,7 @@ export const Button = styled.button<{ $color?: ButtonColor; hasIcon: boolean }>`
     if ($color === ButtonColor.gray) return grayMixin
     if ($color === ButtonColor.red) return redMixin
     if ($color === ButtonColor.green) return greenMixin
-    return
+    return ''
   }}
 
   ${({ disabled }) => disabled && disabledMixin}

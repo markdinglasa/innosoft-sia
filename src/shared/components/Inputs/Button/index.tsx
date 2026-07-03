@@ -30,11 +30,10 @@ export const Button: SFC<ButtonProps> = ({
   type = ButtonType.button
 }) => {
   const buttonIsDisabled = useMemo(() => {
-    switch (type) {
-      case ButtonType.submit:
-        return !dirty || disabled || isSubmitting || !isValid
-      default:
-        return disabled || isSubmitting
+    if (ButtonType.submit) {
+      return !dirty || disabled || isSubmitting || !isValid
+    } else {
+      return disabled || isSubmitting
     }
   }, [dirty, disabled, isSubmitting, isValid, type])
 

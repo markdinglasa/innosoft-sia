@@ -20,7 +20,7 @@ export const SelectPathButton: SFC<SelectPathButtonProps> = ({ className, onSele
   const initialized = useSelector(getInitialize)
   const handleSelectPath = async () => {
     try {
-      const result = await window.electron.dialog.showOpenDialog({
+      const result = await globalThis.electron.dialog.showOpenDialog({
         properties: ['openFile', 'openDirectory']
       })
 
@@ -30,7 +30,7 @@ export const SelectPathButton: SFC<SelectPathButtonProps> = ({ className, onSele
         onSelect(selectedPath)
         setPaths(selectedPath)
       }
-    } catch (error: any) {
+    } catch {
       dispatch(setSnackbar({ display: true, message: Error.e00x01, type: ToastType.error }))
     }
   }
@@ -43,10 +43,6 @@ export const SelectPathButton: SFC<SelectPathButtonProps> = ({ className, onSele
 
   return (
     <S.Container className={className}>
-      {/*<S.Text>
-        <S.Icon path={mdiInformation} size="30px" />
-        <S.Span> Select a location where to save the reports</S.Span>
-      </S.Text>*/}
       <S.UButton
         iconLeft={mdiFolder}
         onClick={handleSelectPath}
@@ -55,7 +51,6 @@ export const SelectPathButton: SFC<SelectPathButtonProps> = ({ className, onSele
         type={ButtonType.button}
         disabled={initialized}
       />
-      {/*path && <S.PathDisplay>{truncate(path, 40)}</S.PathDisplay>*/}
     </S.Container>
   )
 }

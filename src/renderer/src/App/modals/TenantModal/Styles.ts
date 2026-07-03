@@ -10,9 +10,14 @@ export const UModal = styled(Modal)`
 `
 export const Button = styled(UButton)`
   width: 100%;
+  margin-top: 8px;
 `
 export const Form = styled(F)`
-  height: 500px;
+  height: 100%;
   overflow: auto;
-  padding-right: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 500px;
+  overflow: y-auto;
 `

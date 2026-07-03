@@ -7,9 +7,9 @@ import {
   ButtonType,
   SFC,
   Snackbar,
+  SqlChannel,
   Theme,
-  ToastType,
-  SqlChannel
+  ToastType
 } from '@shared/types'
 import yup from '@shared/utils/yup'
 import { Formik } from 'formik'
@@ -35,7 +35,7 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme }) 
     if (terminals.length === 0) {
       const fetchTerminals = async () => {
         try {
-          const response = await window.electron.sql.get(SqlChannel.getTerminals)
+          const response = await globalThis.electron.sql.get(SqlChannel.getTerminals)
           if (response?.Data) {
             const list = response.Data.map((item: any) => ({
               id: item.id ?? item.Id,
@@ -85,7 +85,8 @@ export const TenantModal: SFC<TenantModalProps> = ({ className, close, theme }) 
         SMSalesType: activeTenant === Tenants.SM ? values.SMSalesType : '',
         POSMachineNumber: activeTenant === Tenants.SM ? values.POSMachineNumber : '',
         POSSerialNumber: activeTenant === Tenants.SM ? values.POSSerialNumber : '',
-        POSKey: (activeTenant === Tenants.SM || activeTenant === Tenants.ALLIANCE) ? values.POSKey : '',
+        POSKey:
+          activeTenant === Tenants.SM || activeTenant === Tenants.ALLIANCE ? values.POSKey : '',
         Terminal: String(values.Terminal)
       }
       dispatch(setTenant(data))
