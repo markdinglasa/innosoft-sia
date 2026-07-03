@@ -1,4 +1,4 @@
-import { License } from '@renderer/License'
+import { AppMain } from '@renderer/registry'
 import { Splash } from '@shared/components'
 import { Error } from '@shared/messages'
 import { getActiveLicense } from '@shared/selectors'
@@ -6,7 +6,6 @@ import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, Response, SFC, Snackbar, SqlChannel, ToastType } from '@shared/types'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { AppMain } from '../registry'
 import * as S from './Styles'
 export const MainArea: SFC = ({ className }) => {
   const dispatch = useDispatch<AppDispatch>()
@@ -54,7 +53,8 @@ export const MainArea: SFC = ({ className }) => {
     if (showSplash || isLicenseValid === null) {
       return <Splash message="Please wait..." />
     }
-    return isLicenseValid ? <AppMain /> : <License />
+    // disabled return isLicenseValid ? <AppMain /> : <License />
+    return <AppMain />
   }
 
   return (
