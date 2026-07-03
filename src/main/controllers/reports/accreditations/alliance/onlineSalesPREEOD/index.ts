@@ -16,8 +16,8 @@ import {
   SqlChannel
 } from '@shared/types'
 import { ipcMain } from 'electron'
-import fs from 'fs'
-import paths from 'path'
+import fs from 'node:fs'
+import paths from 'node:path'
 import {
   formatDateDash,
   formatDateYYYYMMDD,

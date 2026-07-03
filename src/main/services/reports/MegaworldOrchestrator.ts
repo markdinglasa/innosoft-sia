@@ -1,23 +1,21 @@
 import { MWFileType, Tenant } from '@shared/types'
-import fs from 'fs'
-import paths from 'path'
+import fs from 'node:fs'
+import paths from 'node:path'
 import { generateMWFilename } from '../../functions'
+import { formatDateMMDDYYYY } from '../../functions/utility'
 import { MegaworldReportService } from './MegaworldReportService'
 import { MegaworldZReadingService } from './MegaworldZReadingService'
-import { formatDateMMDDYYYY } from '../../functions/utility'
 
 export class MegaworldOrchestrator {
-  static async generateRange(
-    params: {
-      startDate: string;
-      endDate: string;
-      tenant: Tenant;
-      path: string;
-      batchNo: number;
-      isZReading: boolean;
-      settings: any;
-    }
-  ) {
+  static async generateRange(params: {
+    startDate: string
+    endDate: string
+    tenant: Tenant
+    path: string
+    batchNo: number
+    isZReading: boolean
+    settings: any
+  }) {
     const { startDate, endDate, tenant, path, batchNo, isZReading, settings } = params
     const start = new Date(startDate)
     const end = new Date(endDate)
@@ -31,9 +29,15 @@ export class MegaworldOrchestrator {
       console.log(`Processing date: ${activeDate.toISOString()} for terminal: ${terminalId}`)
 
       // 1. Get Sales Data and Control Number (Cumulative days with locked collections)
-      const controlNumberResult = await MegaworldReportService.getDailySalesData(terminalId, tenantCode, activeDate)
+      const controlNumberResult = await MegaworldReportService.getDailySalesData(
+        terminalId,
+        tenantCode,
+        activeDate
+      )
 
-      console.log(`Generating reports for ${activeDate.toDateString()} (Control Number: ${controlNumberResult.ControlNumber})...`)
+      console.log(
+        `Generating reports for ${activeDate.toDateString()} (Control Number: ${controlNumberResult.ControlNumber})...`
+      )
 
       // 2. Generate Daily Sales (S)
       await this.generateDailySales(tenant, path, batchNo, activeDate, controlNumberResult)
@@ -47,7 +51,11 @@ export class MegaworldOrchestrator {
       // 5. Generate Z-Reading PDF (Z)
       if (isZReading) {
         try {
-          const pdfBuffer = await MegaworldZReadingService.generatePDFBuffer(terminalId, activeDate, settings)
+          const pdfBuffer = await MegaworldZReadingService.generatePDFBuffer(
+            terminalId,
+            activeDate,
+            settings
+          )
           const fileName = generateMWFilename(
             MWFileType.ZReading,
             tenant.TenantCode,
@@ -72,7 +80,13 @@ export class MegaworldOrchestrator {
     return results
   }
 
-  private static async generateDailySales(tenant: any, path: string, BatchNo: number, dates: Date, mainItem: any) {
+  private static async generateDailySales(
+    tenant: any,
+    path: string,
+    BatchNo: number,
+    dates: Date,
+    mainItem: any
+  ) {
     const terminalId = Number(tenant.Terminal)
     const salestypeResult = await MegaworldReportService.getSalesTypeData(terminalId, dates)
 
@@ -84,12 +98,14 @@ export class MegaworldOrchestrator {
       dates
     )
     const filePath = paths.join(path, `${fileName}`)
-    
+
     const salestypeD = (salestypeResult || []).map(
       (item: { SalesType: string; NetSalesAmount: number }) => {
         return [
           `21${item?.SalesType ?? 'NA'}`,
-          `22${Number(item?.NetSalesAmount).toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`
+          `22${Number(item?.NetSalesAmount)
+            .toFixed(2)
+            .replace(/[^a-zA-Z0-9]/g, '')}`
         ].join('\r\n')
       }
     )
@@ -121,8 +137,16 @@ export class MegaworldOrchestrator {
     fs.writeFileSync(filePath, dailySalesData, 'utf8')
   }
 
-  private static async generateDailyDiscounts(tenant: any, path: string, BatchNo: number, dates: Date) {
-    const rawData = await MegaworldReportService.getDailyDiscountsData(Number(tenant.Terminal), dates)
+  private static async generateDailyDiscounts(
+    tenant: any,
+    path: string,
+    BatchNo: number,
+    dates: Date
+  ) {
+    const rawData = await MegaworldReportService.getDailyDiscountsData(
+      Number(tenant.Terminal),
+      dates
+    )
     const fileName = generateMWFilename(
       MWFileType.DailyDiscount,
       tenant.TenantCode,
@@ -131,7 +155,7 @@ export class MegaworldOrchestrator {
       dates
     )
     const filePath = paths.join(path, `${fileName}`)
-    
+
     let dailyDiscountData = (rawData as any[])
       .map(
         (item: any) =>
@@ -143,9 +167,18 @@ export class MegaworldOrchestrator {
     fs.writeFileSync(filePath, dailyDiscountData, 'utf8')
   }
 
-  private static async generateHourlySales(tenant: any, path: string, BatchNo: number, dates: Date) {
+  private static async generateHourlySales(
+    tenant: any,
+    path: string,
+    BatchNo: number,
+    dates: Date
+  ) {
     const { day: dayResponse, hourly: hourlyResponse } =
-      await MegaworldReportService.getHourlySalesData(Number(tenant.Terminal), tenant.TenantCode, dates)
+      await MegaworldReportService.getHourlySalesData(
+        Number(tenant.Terminal),
+        tenant.TenantCode,
+        dates
+      )
 
     const fileName = generateMWFilename(
       MWFileType.DailyHourlySales,
@@ -162,7 +195,9 @@ export class MegaworldOrchestrator {
         ?.map((item: any) => {
           return [
             `04${item.HourCode}`,
-            `05${Number(item.NetSalesAmountHour).toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`,
+            `05${Number(item.NetSalesAmountHour)
+              .toFixed(2)
+              .replace(/[^a-zA-Z0-9]/g, '')}`,
             `06${item.NoSalesTransactionHour}`,
             `07${item.CustomerCountHour}`
           ].join('\r\n')
@@ -177,7 +212,9 @@ export class MegaworldOrchestrator {
             `02${item.Terminal}`,
             `03${String(formatDateMMDDYYYY(new Date(item.Date))).replace(/[^a-zA-Z0-9]/g, '')}`,
             hourlySalesData,
-            `08${Number(item.NetSalesAmountDay).toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`,
+            `08${Number(item.NetSalesAmountDay)
+              .toFixed(2)
+              .replace(/[^a-zA-Z0-9]/g, '')}`,
             `09${item.NoSalesTransactionDay}`,
             `10${item.CustomerCountDay}`
           ].join('\r\n')

@@ -1,4 +1,4 @@
-import { DailyDiscount, DailyHourlySale, DailySale } from '@shared/types'
+import { DailyHourlySale } from '@shared/types'
 import { format } from 'date-fns'
 import { MstDiscountEntity } from '../../entities/masterfiles/MstDiscount.entity'
 import { TrnCollectionEntity } from '../../entities/transactions/TrnCollection.entity'
@@ -23,7 +23,9 @@ export class MegaworldReportService {
       .getRawMany()
 
     const controlNumber = controlNumberResult.length
-    console.log(`getDailySalesData: Cumulative ControlNumber up to ${formattedDate} = ${controlNumber}`)
+    console.log(
+      `getDailySalesData: Cumulative ControlNumber up to ${formattedDate} = ${controlNumber}`
+    )
 
     // 2. Old Accumulated Total (Previous Reading)
     const previousReadingResult = await AppDataSource.getRepository(TrnCollectionEntity)
@@ -141,9 +143,11 @@ export class MegaworldReportService {
       .getRawOne()
 
     const netSalesAmount = Math.round(Number(dayAggResult?.NetSales || 0) * 100) / 100
-    const govMandatedDiscount = Math.round(Number(discCountResult?.GovMandatedDiscount || 0) * 100) / 100
+    const govMandatedDiscount =
+      Math.round(Number(discCountResult?.GovMandatedDiscount || 0) * 100) / 100
     const otherDiscount = Math.round(Number(discCountResult?.OtherDiscount || 0) * 100) / 100
-    const grossSalesAmount = Math.round((netSalesAmount + govMandatedDiscount + otherDiscount) * 100) / 100
+    const grossSalesAmount =
+      Math.round((netSalesAmount + govMandatedDiscount + otherDiscount) * 100) / 100
 
     return {
       MallPartnerCodeId: tenantCode || 'NA',
@@ -168,7 +172,7 @@ export class MegaworldReportService {
       NoSalesTransaction: Number(countResult?.NoSalesTransaction || 0),
       SalesType: 0 as any,
       NetSalesAmountPerSalesType: 0
-    } as DailySale
+    }
   }
 
   /**
@@ -208,7 +212,7 @@ export class MegaworldReportService {
         'DiscountDescription'
       )
       .addSelect(
-        "SUM(CASE WHEN salesLine.discountAmount > 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)",
+        'SUM(CASE WHEN salesLine.discountAmount > 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)',
         'DiscountAmount'
       )
       .where('sales.isLocked = :isLocked', { isLocked: true })
@@ -218,7 +222,7 @@ export class MegaworldReportService {
       .andWhere('CAST(collection.collectionDate AS DATE) = :dates', { dates: formattedDate })
       .groupBy('collection.terminalId')
       .addGroupBy('discount.discount')
-      .getRawMany() as DailyDiscount[]
+      .getRawMany()
   }
 
   /**
@@ -317,7 +321,9 @@ export class MegaworldReportService {
       .andWhere('CAST(collection.collectionDate AS DATE) <= :dates', { dates: formattedDate })
       .getRawMany()
     const controlNumber = controlNumberResult.length
-    console.log(`getZReadingData: Cumulative ControlNumber up to ${formattedDate} = ${controlNumber}`)
+    console.log(
+      `getZReadingData: Cumulative ControlNumber up to ${formattedDate} = ${controlNumber}`
+    )
 
     // 3. Discounts
     const mandatedDiscounts = MstDiscountEntity.mandatedDiscounts
@@ -357,7 +363,10 @@ export class MegaworldReportService {
       .createQueryBuilder('collection')
       .leftJoin('collection.sales', 'sales')
       .leftJoin('sales.salesLines', 'salesLine')
-      .select('SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.amount ELSE 0 END)', 'PreviousReading')
+      .select(
+        'SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.amount ELSE 0 END)',
+        'PreviousReading'
+      )
       .where('collection.terminalId = :terminalId', { terminalId })
       .andWhere('CAST(collection.collectionDate AS DATE) < :dates', { dates: formattedDate })
       .getRawOne()
@@ -366,7 +375,10 @@ export class MegaworldReportService {
     const trxAndGross = await AppDataSource.getRepository(TrnSalesLineEntity)
       .createQueryBuilder('salesLine')
       .leftJoin(TrnCollectionEntity, 'collection', 'collection.salesId = salesLine.salesId')
-      .select('SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.amount ELSE 0 END)', 'NetSales')
+      .select(
+        'SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.amount ELSE 0 END)',
+        'NetSales'
+      )
       .addSelect('COUNT(DISTINCT collection.id)', 'TotalTrx')
       .addSelect('COUNT(DISTINCT salesLine.id)', 'TotalSKU')
       .addSelect('SUM(salesLine.quantity)', 'TotalQuantity')

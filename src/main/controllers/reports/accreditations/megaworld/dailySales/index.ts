@@ -1,8 +1,8 @@
 import { Error as ErrorMessage, Success } from '@shared/messages'
 import { MWFileType, Response, SqlChannel } from '@shared/types'
 import { ipcMain } from 'electron'
-import fs from 'fs'
-import paths from 'path'
+import fs from 'node:fs'
+import paths from 'node:path'
 import { formatDateMMDDYYYY, generateMWFilename } from '../../../../../functions'
 import { MegaworldReportService } from '../../../../../services/reports/MegaworldReportService'
 
@@ -54,77 +54,73 @@ ipcMain.handle(
       // console.log(salestypeR)
       // Format the sales data
       // console.log(response?.List)
-      let dailySalesData = (response?.List || [])
-        .map((item: DailySale) => {
-          return [
-            `01${item?.MallPartnerCodeId ?? 'NA'}`,
-            `02${item?.Terminal ?? 'NA'}`,
-            `03${String(formatDateMMDDYYYY(new Date(item.Date))).replace(/[^a-zA-Z0-9]/g, '') ?? 'NA'}`,
-            `04${Number(item?.OldAccumulatedTotal ?? 'NA')
-              .toFixed(2)
-              .toString()
-              .replace(/[^a-zA-Z0-9]/g, '')}`,
-            `05${Number(item?.NewAccumulatedTotal ?? 'NA')
-              .toFixed(2)
-              .toString()
-              .replace(/[^a-zA-Z0-9]/g, '')}`,
-            `06${Number(item?.GrossSalesAmount ?? 'NA')
-              .toFixed(2)
-              .toString()
-              .replace(/[^a-zA-Z0-9]/g, '')}`,
-            `07${Number(item?.NonTaxSalesAmount ?? 'NA')
-              .toFixed(2)
-              .toString()
-              .replace(/[^a-zA-Z0-9]/g, '')}`,
-            `08${Number(item?.GovMandatedDiscount)
-              .toFixed(2)
-              .toString()
-              .replace(/[^a-zA-Z0-9]/g, '')}`,
-            `09${Number(item?.OtherDiscount ?? 'NA')
-              .toFixed(2)
-              .toString()
-              .replace(/[^a-zA-Z0-9]/g, '')}`,
-            `10${Number(item?.RefundAmount ?? 'NA')
-              .toFixed(2)
-              .toString()
-              .replace(/[^a-zA-Z0-9]/g, '')}`,
-            `11${Number(item?.TaxAmount ?? 'NA')
-              .toFixed(2)
-              .toString()
-              .replace(/[^a-zA-Z0-9]/g, '')}`,
-            `12${Number(item?.ServiceChargeAmount ?? 'NA')
-              .toFixed(2)
-              .toString()
-              .replace(/[^a-zA-Z0-9]/g, '')}`,
-            `13${Number(item?.NetSalesAmount ?? 'NA')
-              .toFixed(2)
-              .toString()
-              .replace(/[^a-zA-Z0-9]/g, '')}`,
-            `14${Number(item?.CashSales ?? 'NA')
-              .toFixed(2)
-              .toString()
-              .replace(/[^a-zA-Z0-9]/g, '')}`,
-            `15${Number(item?.CreditDebitsales ?? 'NA')
-              .toFixed(2)
-              .toString()
-              .replace(/[^a-zA-Z0-9]/g, '')}`,
-            `16${Number(item?.OtherPaymentSales ?? 'NA')
-              .toFixed(2)
-              .toString()
-              .replace(/[^a-zA-Z0-9]/g, '')}`,
-            `17${Number(item?.VoidAmount ?? 'NA')
-              .toFixed(2)
-              .toString()
-              .replace(/[^a-zA-Z0-9]/g, '')}`,
-            `18${item?.CustomerCount ?? 'NA'}`,
-            `19${item?.ControlNumber ?? 'NA'}`,
-            `20${item?.NoSalesTransaction ?? 'NA'}`,
-            salestypeD.join('\n')
-          ].join('\n')
-        })
-        .join('\n')
+      let dailySalesData: string = [
+        `01${mainItem?.MallPartnerCodeId ?? 'NA'}`,
+        `02${mainItem?.Terminal ?? 'NA'}`,
+        `03${String(formatDateMMDDYYYY(new Date(mainItem.Date))).replace(/[^a-zA-Z0-9]/g, '') ?? 'NA'}`,
+        `04${Number(mainItem?.OldAccumulatedTotal ?? 'NA')
+          .toFixed(2)
+          .toString()
+          .replace(/[^a-zA-Z0-9]/g, '')}`,
+        `05${Number(mainItem?.NewAccumulatedTotal ?? 'NA')
+          .toFixed(2)
+          .toString()
+          .replace(/[^a-zA-Z0-9]/g, '')}`,
+        `06${Number(mainItem?.GrossSalesAmount ?? 'NA')
+          .toFixed(2)
+          .toString()
+          .replace(/[^a-zA-Z0-9]/g, '')}`,
+        `07${Number(mainItem?.NonTaxSalesAmount ?? 'NA')
+          .toFixed(2)
+          .toString()
+          .replace(/[^a-zA-Z0-9]/g, '')}`,
+        `08${Number(mainItem?.GovMandatedDiscount)
+          .toFixed(2)
+          .toString()
+          .replace(/[^a-zA-Z0-9]/g, '')}`,
+        `09${Number(mainItem?.OtherDiscount ?? 'NA')
+          .toFixed(2)
+          .toString()
+          .replace(/[^a-zA-Z0-9]/g, '')}`,
+        `10${Number(mainItem?.RefundAmount ?? 'NA')
+          .toFixed(2)
+          .toString()
+          .replace(/[^a-zA-Z0-9]/g, '')}`,
+        `11${Number(mainItem?.TaxAmount ?? 'NA')
+          .toFixed(2)
+          .toString()
+          .replace(/[^a-zA-Z0-9]/g, '')}`,
+        `12${Number(mainItem?.ServiceChargeAmount ?? 'NA')
+          .toFixed(2)
+          .toString()
+          .replace(/[^a-zA-Z0-9]/g, '')}`,
+        `13${Number(mainItem?.NetSalesAmount ?? 'NA')
+          .toFixed(2)
+          .toString()
+          .replace(/[^a-zA-Z0-9]/g, '')}`,
+        `14${Number(mainItem?.CashSales ?? 'NA')
+          .toFixed(2)
+          .toString()
+          .replace(/[^a-zA-Z0-9]/g, '')}`,
+        `15${Number(mainItem?.CreditDebitsales ?? 'NA')
+          .toFixed(2)
+          .toString()
+          .replace(/[^a-zA-Z0-9]/g, '')}`,
+        `16${Number(mainItem?.OtherPaymentSales ?? 'NA')
+          .toFixed(2)
+          .toString()
+          .replace(/[^a-zA-Z0-9]/g, '')}`,
+        `17${Number(mainItem?.VoidAmount ?? 'NA')
+          .toFixed(2)
+          .toString()
+          .replace(/[^a-zA-Z0-9]/g, '')}`,
+        `18${mainItem?.CustomerCount ?? 'NA'}`,
+        `19${mainItem?.ControlNumber ?? 'NA'}`,
+        `20${mainItem?.NoSalesTransaction ?? 'NA'}`,
+        salestypeD.join('\n')
+      ].join('\n')
 
-      if (!dailySalesData || dailySalesData.length === 0)
+      if (!dailySalesData)
         dailySalesData = [
           `01${data.TenantCode ?? 'NA'}`,
           `02${data?.Terminal ?? '00'}`,

@@ -1,12 +1,12 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm'
 import { POSEntity } from '../entity-names'
 import { BaseEntity } from '../generic/base.entity'
+import { MstCustomerEntity } from '../masterfiles/MstCustomer.entity'
 import { MstPeriodEntity } from '../masterfiles/MstPeriod.entity'
 import { MstTerminalEntity } from '../masterfiles/MstTerminal.entity'
-import { MstCustomerEntity } from '../masterfiles/MstCustomer.entity'
-import { TrnSalesEntity } from './TrnSales.entity'
 import { MstUserEntity } from '../masterfiles/MstUser.entity'
 import { TrnCollectionLineEntity } from './TrnCollectionLine.entity'
+import { TrnSalesEntity } from './TrnSales.entity'
 
 @Entity(POSEntity.TRN_COLLECTION)
 export class TrnCollectionEntity extends BaseEntity {
@@ -35,6 +35,9 @@ export class TrnCollectionEntity extends BaseEntity {
   @Column({ name: 'PeriodId', type: 'int', nullable: false })
   periodId: number
 
+  @Column({ name: 'SalesId', type: 'int', nullable: true })
+  salesId: number | null
+
   @Column({ name: 'CollectionDate', type: 'datetime', nullable: false })
   collectionDate: Date
 
@@ -52,9 +55,6 @@ export class TrnCollectionEntity extends BaseEntity {
 
   @Column({ name: 'Remarks', type: 'nvarchar', nullable: true })
   remarks: string | null
-
-  @Column({ name: 'SalesId', type: 'int', nullable: true })
-  salesId: number | null
 
   @Column({ name: 'SalesBalanceAmount', type: 'decimal', precision: 18, scale: 5, nullable: false })
   salesBalanceAmount: number

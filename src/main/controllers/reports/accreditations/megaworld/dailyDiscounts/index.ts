@@ -1,8 +1,8 @@
 import { Error as ErrorMessage, Success } from '@shared/messages'
 import { DailyDiscount, MWFileType, Response, SqlChannel } from '@shared/types'
 import { ipcMain } from 'electron'
-import fs from 'fs'
-import paths from 'path'
+import fs from 'node:fs'
+import paths from 'node:path'
 import { generateMWFilename } from '../../../../../functions'
 import { MegaworldReportService } from '../../../../../services/reports/MegaworldReportService'
 
@@ -29,10 +29,12 @@ ipcMain.handle(
 
       const filePath = paths.join(path, `${fileName}`)
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
-      let dailyDiscountData = response.List.map(
-        (item: DailyDiscount) =>
-          `${item.DiscountCode}, ${item.DiscountDescription}, ${Number(item.DiscountAmount).toFixed(2)}`
-      ).join('\r\n')
+      let dailyDiscountData = rawData
+        .map(
+          (item: DailyDiscount) =>
+            `${item.DiscountCode}, ${item.DiscountDescription}, ${Number(item.DiscountAmount).toFixed(2)}`
+        )
+        .join('\r\n')
 
       // zero discounts as fallback
       if (!dailyDiscountData || dailyDiscountData.length === 0) dailyDiscountData = `NA, NA, 0.00`

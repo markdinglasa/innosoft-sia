@@ -7,14 +7,14 @@ export const AppDataSource = new DataSource({
   host: 'localhost', // default settings
   port: 1433, // default settings
   username: 'sa', // default settings
-  password: '', // default settings
-  database: '', // default settings
+  password: 'YourStrongPassw0rd123', // default settings
+  database: 'ipos', // default settings
   synchronize: true,
   logging: false,
   entities: Object.values(Entities).filter((entity) => typeof entity === 'function'),
   subscribers: [],
   migrations: [],
-  extra: {    
+  extra: {
     trustServerCertificate: true,
     encrypt: true
   }
@@ -32,7 +32,7 @@ export const initializeDatabase = async () => {
 
     Object.assign(AppDataSource.options, {
       host: server,
-      port: parseInt(port || '1433', 10),
+      port: Number.parseInt(port || '1433', 10),
       username: user,
       password: password,
       database: name
