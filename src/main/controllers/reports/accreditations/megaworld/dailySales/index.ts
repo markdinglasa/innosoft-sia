@@ -1,11 +1,11 @@
-import { Error, Success } from '@shared/messages'
-import { mwSalesType } from '@shared/query'
-import { DailySale, MWFileType, Response, SqlChannel } from '@shared/types'
+import { Error as ErrorMessage, Success } from '@shared/messages'
+import { MWFileType, Response, SqlChannel } from '@shared/types'
 import { ipcMain } from 'electron'
 import fs from 'fs'
 import paths from 'path'
 import { formatDateMMDDYYYY, generateMWFilename } from '../../../../../functions'
-import { recordByQuery } from '../../../../../model'
+import { MegaworldReportService } from '../../../../../services/reports/MegaworldReportService'
+
 ipcMain.handle(
   SqlChannel.getDailySales,
   async (
@@ -13,32 +13,32 @@ ipcMain.handle(
     data: any,
     path: string,
     BatchNo: number,
-    query: string,
-    dates: Date,
-    oldAccumulatedTotal: number
+    dates: Date | string
   ): Promise<Response> => {
     try {
-      // Fetch records based on the provided query
-      const response = await recordByQuery(query)
-      //console.log(query)
-      // console.log('daily-sales:', response)
-      // Generate the file name and path
+      const activeDate = new Date(dates)
+      const terminalId = data.Terminal
+      const tenantCode = data.TenantCode
+
+      // Fetch data using Service
+      const mainItem = await MegaworldReportService.getDailySalesData(
+        terminalId,
+        tenantCode,
+        activeDate
+      )
+      const salestypeResult = await MegaworldReportService.getSalesTypeData(terminalId, activeDate)
+
       const fileName = generateMWFilename(
         MWFileType.DailySales,
         data.TenantCode,
         data.Terminal,
         BatchNo ?? 0,
-        dates
+        activeDate
       )
       const filePath = paths.join(path, `${fileName}`)
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
 
-      // Remove existing file if it exists
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath)
-      }
-      const salestypesQ = mwSalesType({ Dates: dates, Terminal: data.Terminal })
-      const salestypeR = await recordByQuery(salestypesQ)
-      const salestypeD = (salestypeR?.List || []).map(
+      const salestypeD = (salestypeResult || []).map(
         (item: { SalesType: string; NetSalesAmount: number }) => {
           return [
             `21${item?.SalesType ?? 'NA'}`,
@@ -119,20 +119,17 @@ ipcMain.handle(
             `18${item?.CustomerCount ?? 'NA'}`,
             `19${item?.ControlNumber ?? 'NA'}`,
             `20${item?.NoSalesTransaction ?? 'NA'}`,
-            salestypeD.join('\r\n')
-          ].join('\r\n')
+            salestypeD.join('\n')
+          ].join('\n')
         })
-        .join('\r\n')
+        .join('\n')
 
       if (!dailySalesData || dailySalesData.length === 0)
         dailySalesData = [
           `01${data.TenantCode ?? 'NA'}`,
           `02${data?.Terminal ?? '00'}`,
           `03${String(formatDateMMDDYYYY(new Date(dates))).replace(/[^a-zA-Z0-9]/g, '') ?? '00000000'}`,
-          `04${Number(oldAccumulatedTotal ?? '0')
-            .toFixed(2)
-            .toString()
-            .replace(/[^a-zA-Z0-9]/g, '')}`,
+          `04${(0).toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`,
           `05000`,
           `06000`,
           `07000`,
@@ -153,14 +150,11 @@ ipcMain.handle(
           `22000`
         ].join('\r\n')
 
-      // Write the data to the file
       fs.writeFileSync(filePath, dailySalesData, 'utf8')
-
-      // Return a success response
       return { IsSomething: true, Message: Success.s00x00 }
     } catch (error: any) {
-      console.error('Error writing file:', error)
-      return { IsSomething: false, Message: Error.e00x02 }
+      console.error('Error writing file:', error.message || error)
+      return { IsSomething: false, Message: ErrorMessage.e00x02 }
     }
   }
 )

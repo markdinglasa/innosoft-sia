@@ -8,6 +8,7 @@ import yup from '@shared/utils/yup'
 import { Form, Formik } from 'formik'
 import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { UpdateChecker } from '../../components'
 import { setSettings } from '../../store/settings'
 import { settingsInitial, SettingsTable } from '../../types'
 import * as S from './Styles'
@@ -81,6 +82,7 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
       <S.UModal className={className} close={close} header="Settings" theme={theme}>
         <S.Container className={className}>
           <S.CardBody>
+            <UpdateChecker />
             <Formik
               initialValues={initialValues}
               onSubmit={handleSubmit}
@@ -146,6 +148,7 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
                   {values.IsZReading && (
                     <>
                       <S.ZReadingCon>
+                        <S.Title>Z Reading Headers</S.Title>
                         <div>
                           <Input
                             theme={theme}
@@ -182,7 +185,7 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
                           theme={theme}
                           errors={errors}
                           type="text"
-                          label="PermitNumber"
+                          label="Permit Number"
                           name="PermitNumber"
                           value={values?.PermitNumber || ''}
                           onChange={handleChange}

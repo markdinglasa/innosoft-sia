@@ -50,7 +50,7 @@ export const SelectPathButton: SFC<SelectPathButtonProps> = ({ className, onSele
       <S.UButton
         iconLeft={mdiFolder}
         onClick={handleSelectPath}
-        text={pathSelector ? `Selected path: ${truncate(pathSelector, 30)}` : 'Select Path'}
+        text={pathSelector ? `Path: ${truncate(pathSelector, 10)}` : 'Select Path'}
         color={ButtonColor.blue}
         type={ButtonType.button}
         disabled={initialized}

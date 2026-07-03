@@ -1,4 +1,4 @@
-export * from './alliance'
-export * from './megaworld'
-export * from './rlc'
-export * from './sm'
+import './alliance'
+import './megaworld'
+import './rlc'
+import './sm'

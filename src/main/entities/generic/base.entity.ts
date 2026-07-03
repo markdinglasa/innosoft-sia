@@ -1,30 +1,37 @@
-// import { Column, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 
-// export interface IBaseEntity {
-//   id: number
-//   isLocked: boolean
-//   entryUserId: number
-//   entryDateTime: Date
-//   updateUserId?: number | null
-//   updateDateTime?: Date | null
-// }
+export interface IBaseEntity {
+  id: number
+  isLocked: boolean
+  entryUserId: number
+  entryDateTime: Date
+  updateUserId?: number | null
+  updateDateTime?: Date | null
+}
 
-// export class BaseEntity implements IBaseEntity {
-//   @PrimaryGeneratedColumn({ name: 'Id' })
-//   id!: number
+export class BaseEntity implements IBaseEntity {
+  constructor() {
+    this.id = 0
+    this.isLocked = false
+    this.entryUserId = 0
+    this.entryDateTime = new Date()
+  }
 
-//   @Column({ name: 'IsLocked', type: 'bit' })
-//   isLocked!: boolean
+  @PrimaryGeneratedColumn({ name: 'Id' })
+  id: number
 
-//   @Column({ name: 'EntryUserId', type: 'int' })
-//   entryUserId!: number
+  @Column({ name: 'IsLocked', type: 'bit' })
+  isLocked: boolean
 
-//   @Column({ name: 'EntryDateTime', type: 'datetime' })
-//   entryDateTime!: Date
+  @Column({ name: 'EntryUserId', type: 'int' })
+  entryUserId: number
 
-//   @Column({ name: 'UpdateUserId', type: 'int', nullable: true })
-//   updateUserId?: number | null
+  @CreateDateColumn({ name: 'EntryDateTime', type: 'datetime' })
+  entryDateTime: Date
 
-//   @Column({ name: 'UpdateDateTime', type: 'datetime', nullable: true })
-//   updateDateTime?: Date
-// }
+  @Column({ name: 'UpdateUserId', type: 'int', nullable: true })
+  updateUserId?: number | null
+
+  @UpdateDateColumn({ name: 'UpdateDateTime', type: 'datetime', nullable: true })
+  updateDateTime?: Date | null
+}

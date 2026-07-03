@@ -26,6 +26,8 @@
   ],
   "compilerOptions": {
     "composite": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "jsx": "react-jsx",
     "noUnusedLocals": false,
     "baseUrl": ".",

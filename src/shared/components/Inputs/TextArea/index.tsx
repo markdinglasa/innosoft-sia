@@ -17,14 +17,14 @@ interface TextAreaProps {
 
 export const STextArea = styled.textarea`
   display: block;
-  padding: 10px 14px;
-  margin-top:4px;
+  padding: 1rem 1.4rem;
+  margin-top: 0.4rem;
   width: 100%;
-  height:13rem;
-  resize:none;
-  border-radius:4px;
-  outline:none;
-  transition: all 0.3s
+  height: 13rem;
+  resize: none;
+  border-radius: 0.4rem;
+  outline: none;
+  transition: all 0.3s;
   ::-webkit-inner-spin-button,
   ::-webkit-outer-spin-button {
     -webkit-appearance: none;
@@ -32,7 +32,7 @@ export const STextArea = styled.textarea`
   }
 
   &:focus {
-    border-bottom:1.5px solid ${colors.primary};
+    border-bottom: 0.15rem solid ${colors.primary};
   }
 `
 
@@ -53,7 +53,7 @@ export const TextArea: SFC<TextAreaProps> = ({
   return (
     <>
       <div className={className}>
-        {label && <label style={{ paddingBottom: '8px', fontSize: '11px' }}>{label}</label>}
+        {label && <label style={{ paddingBottom: '0.8rem', fontSize: '1.1rem' }}>{label}</label>}
         <STextArea
           className={style}
           placeholder={placeholder}
@@ -66,7 +66,7 @@ export const TextArea: SFC<TextAreaProps> = ({
 
         {errors && touched && errors[name] && touched[name] ? (
           <div className="px-2">
-            <span className="text-[12px] text-red-500">{errors[name]}</span>
+            <span className="text-[1.2rem] text-red-500">{errors[name]}</span>
           </div>
         ) : null}
       </div>

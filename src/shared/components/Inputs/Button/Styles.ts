@@ -4,7 +4,7 @@ import styled, { css } from 'styled-components'
 import { colors } from '@shared/styles'
 import { ButtonColor } from '@shared/types'
 
-const BUTTON_HEIGHT = 36
+const BUTTON_HEIGHT = 3.6
 
 const blueMixin = css`
   background-color: ${colors.secondary};
@@ -47,20 +47,20 @@ const disabledMixin = css`
 
 const hasIconMixin = css`
   align-items: center;
-  border-radius: 6px;
+  border-radius: 0.6rem;
   display: flex;
   width: auto;
 `
 
 export const Button = styled.button<{ $color?: ButtonColor; hasIcon: boolean }>`
   background: ${colors.palette.blue['200']};
-  border-radius: ${`${BUTTON_HEIGHT / 2}px`};
-  border: 1px solid transparent;
+  border-radius: ${`${BUTTON_HEIGHT / 2}rem`};
+  border: 0.1rem solid transparent;
   color: ${colors.primary};
   cursor: pointer;
   display: block;
-  height: ${`${BUTTON_HEIGHT}px`};
-  padding: 0 12px;
+  height: ${`${BUTTON_HEIGHT}rem`};
+  padding: 0 1.2rem;
 
   &:hover {
     background: ${colors.palette.blue['300']};
@@ -80,9 +80,9 @@ export const Button = styled.button<{ $color?: ButtonColor; hasIcon: boolean }>`
 `
 
 export const IconLeft = styled(UIcon)`
-  margin-right: 6px;
+  margin-right: 0.6rem;
 `
 
 export const IconRight = styled(UIcon)`
-  margin-left: 6px;
+  margin-left: 0.6rem;
 `

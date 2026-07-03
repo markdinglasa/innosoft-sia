@@ -41,7 +41,7 @@ export const SwitchButton: SFC<SwitchButtonProps> = ({
         label={Label}
         sx={{
           '& .MuiFormControlLabel-label': {
-            fontSize: '12px',
+            fontSize: '1.2rem',
             color: colors.white,
             alignItems: 'center',
             display: 'flex'

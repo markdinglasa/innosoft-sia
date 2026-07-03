@@ -18,7 +18,8 @@ export enum Tenants {
   //RLC = 'Robinsons',
   //AYALA = 'Ayala',
   ALLIANCE = 'Alliance',
-  MW = 'MegaWorld'
+  MW = 'MegaWorld',
+  E_JOURNAL = 'e-journal'
 }
 
 export interface Tenant {

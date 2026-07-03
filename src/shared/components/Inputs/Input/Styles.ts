@@ -6,8 +6,8 @@ import { Theme } from '@shared/types'
 
 export const ErrorMessage = styled.div`
   color: ${colors.palette.red['500']};
-  font-size: 10px;
-  margin-top: 6px;
+  font-size: 1rem;
+  margin-top: 0.6rem;
 `
 
 export const Field = styled(UField)`
@@ -17,11 +17,11 @@ export const Field = styled(UField)`
     }
     return colors.palette.neutral[75]
   }};
-  border-radius: 3px;
-  border: 1px solid ${({ $error }) => ($error ? colors.palette.red['500'] : 'transparent')};
+  border-radius: 0.3rem;
+  border: 0.1rem solid ${({ $error }) => ($error ? colors.palette.red['500'] : 'transparent')};
   display: block;
-  height: 40px;
-  padding: 10px 14px;
+  height: 4rem;
+  padding: 1rem 1.4rem;
   width: 100%;
 
   ::-webkit-inner-spin-button,
@@ -32,8 +32,8 @@ export const Field = styled(UField)`
 `
 
 export const Label = styled.div<{ theme: Theme }>`
-  font-size: 10px;
-  margin-bottom: 8px;
+  font-size: 1rem;
+  margin-bottom: 0.8rem;
   color: ${({ theme }) => {
     if (theme === Theme.dark) {
       return colors.palette.neutral['100']
@@ -43,5 +43,5 @@ export const Label = styled.div<{ theme: Theme }>`
 `
 
 export const SecondaryContainer = styled.div`
-  margin-bottom: 32px;
+  margin-bottom: 3.2rem;
 `

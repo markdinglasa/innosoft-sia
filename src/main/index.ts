@@ -21,6 +21,8 @@ import 'reflect-metadata'
 import { NODE_ENV } from './constants'
 import './controllers'
 import './ipcMain'
+import { initializeDatabase } from './typeORM/configurations'
+import './updater'
 
 electronStore.initRenderer()
 require('electron-debug')()
@@ -36,7 +38,7 @@ const createWindow = (url: string): BrowserWindow => {
 
   mainWindow = new BrowserWindow({
     width: isDev ? width : 410,
-    height: isDev ? height - 100 : 600,
+    height: isDev ? height - 100 : 700,
     icon: path.join(__dirname, '../shared/assets/favicon.ico'),
     show: isDev ? true : false,
     autoHideMenuBar: isDev ? false : true,
@@ -117,6 +119,13 @@ if (!gotTheLock) {
     app.on('browser-window-created', (_, window) => {
       optimizer.watchWindowShortcuts(window)
     })
+
+    try {
+      await initializeDatabase()
+    } catch (error) {
+      console.error('Failed to initialize database:', error)
+      // Optionally handle initialization failure (e.g. show a dialog)
+    }
 
     try {
       if (isDev) await installer(REDUX_DEVTOOLS)

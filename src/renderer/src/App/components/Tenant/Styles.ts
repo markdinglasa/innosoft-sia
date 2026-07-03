@@ -4,9 +4,9 @@ import { colors } from '@shared/styles'
 import styled from 'styled-components'
 import { TenantIdentification as UTenantIdentification } from '../TenantIdentification'
 export const Container = styled.div`
-  width: 100%:
-  height: 200px;
-  display:flex;
+  width: 100%;
+  height: 100%;
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -14,9 +14,9 @@ export const Container = styled.div`
 export const Button = styled(UButton)`
   background: ${colors.secondary};
   border: none;
-  border-radius: 8px;
+  border-radius: 0.8rem;
   color: ${colors.primary};
-  padding: 8px 12px;
+  padding: 0.8rem 1.2rem;
   transition: all 0.15s;
   width: 100%;
 
@@ -26,14 +26,14 @@ export const Button = styled(UButton)`
   }
 `
 export const TenantIdentification = styled(UTenantIdentification)`
-  margin-right: 10px;
+  margin-right: 1rem;
 `
 export const Text = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: start;
-  margin-bottom: 10px;
+  margin-bottom: 1rem;
 `
 export const Icon = styled(UIcon)`
   color: ${colors.palette.neutral[200]};
@@ -44,11 +44,11 @@ export const Span = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 10px;
+  margin-left: 1rem;
 `
 export const Div = styled.div`
   width: 100%;
-  padding-bottom: 10px;
+  padding-bottom: 1rem;
 `
 export const Col = styled.div`
   width: 100%;
@@ -56,5 +56,5 @@ export const Col = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 0.8rem;
 `
