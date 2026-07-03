@@ -1,6 +1,7 @@
 import { SIATransactionHeaders as headers } from '@shared/data'
 import { Error, Success } from '@shared/messages'
 import { Response, SIATransaction, SqlChannel } from '@shared/types'
+import { SIATransactions } from '@shared/query'
 import { createArrayCsvWriter } from 'csv-writer'
 import { ipcMain } from 'electron'
 import fs from 'fs'
@@ -11,8 +12,15 @@ import { recordByQuery } from '../../../../../model'
 const csvHeaders = headers.map((header) => header.title)
 ipcMain.handle(
   SqlChannel.getSIATransactions,
-  async (_event: any, path: string, query: string, date: string): Promise<Response> => {
+  async (_event: any, path: string, tenant: any, date: string): Promise<Response> => {
     try {
+      const { Terminal = 1, POSSerialNumber = '000000', SMSalesType = 'NA' } = tenant
+      const query = SIATransactions({
+        Terminal,
+        POSSerialNumber,
+        SalesType: SMSalesType,
+        Dates: date
+      })
       const response = await recordByQuery(query)
       if (!response.List) return { IsSomething: false, Message: response.Message }
 

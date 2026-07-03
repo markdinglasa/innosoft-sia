@@ -23,22 +23,28 @@ export const useMWReports = () => {
         }
 
         // Generate Daily Discount Report
-        await window.electron.sql.get(SqlChannel.getDailyDiscount, tenant, path, BatchNo, Dates)
+        await globalThis.electron.sql.get(SqlChannel.getDailyDiscount, tenant, path, BatchNo, Dates)
 
         // Generate Hourly Sales Report
-        await window.electron.sql.get(SqlChannel.getDailyHourlySales, tenant, path, BatchNo, Dates)
+        await globalThis.electron.sql.get(
+          SqlChannel.getDailyHourlySales,
+          tenant,
+          path,
+          BatchNo,
+          Dates
+        )
 
         // Generate Daily Sales Report
-        await window.electron.sql.get(SqlChannel.getDailySales, tenant, path, BatchNo, Dates)
+        await globalThis.electron.sql.get(SqlChannel.getDailySales, tenant, path, BatchNo, Dates)
 
         if (IsZReading && element) {
           const options = {
             margin: 0.1,
-            jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' as 'portrait' }
+            jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' as const }
           }
           const pdfBlob = await html2pdf().from(element).set(options).outputPdf('blob')
           const arrayBuffer = await pdfBlob.arrayBuffer()
-          await window.electron.sql.post(SqlChannel.getZReading, tenant, Dates, BatchNo, {
+          await globalThis.electron.sql.post(SqlChannel.getZReading, tenant, Dates, BatchNo, {
             buffer: Buffer.from(arrayBuffer),
             targetDir: path
           })

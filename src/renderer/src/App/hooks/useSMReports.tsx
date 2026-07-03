@@ -1,5 +1,4 @@
 import { Error } from '@shared/messages'
-import { SIATransactionDetailQuery, SIATransactions } from '@shared/query'
 import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, SqlChannel, Tenant, ToastType } from '@shared/types'
 import { windowNotification } from '@shared/utils'
@@ -11,31 +10,20 @@ export const useSMReports = () => {
 
   const createReport = useCallback(
     async (path: string, tenant: Tenant, Dates: string) => {
-      const { Terminal = 1, POSSerialNumber = '000000', SMSalesType = 'NA' } = tenant
-
       try {
         // Generate SIATransactions report
-        const transactionsQuery = SIATransactions({
-          Terminal,
-          POSSerialNumber,
-          SalesType: SMSalesType,
-          Dates
-        })
-
-        const trnResult = await window.electron.sql.get(
+        const trnResult = await globalThis.electron.sql.get(
           SqlChannel.getSIATransactions,
           String(`${path}/SIA`).replace('\\', '/'),
-          transactionsQuery,
+          tenant,
           Dates
         )
         //console.log(trnResult)
         // Generate SIATransactionDetails report
-        const transactionsDetailsQuery = SIATransactionDetailQuery({ Terminal, Dates })
-
-        const trnDetailResult = await window.electron.sql.get(
+        const trnDetailResult = await globalThis.electron.sql.get(
           SqlChannel.getSIATransactionDetails,
           String(`${path}/SIA`).replace('\\', '/'),
-          transactionsDetailsQuery,
+          tenant,
           Dates
         )
         if (trnResult.IsSomething && trnDetailResult.IsSomething)

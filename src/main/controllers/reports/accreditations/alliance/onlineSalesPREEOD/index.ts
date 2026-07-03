@@ -5,7 +5,12 @@ import {
   AllianceTransactionDiscountsQuery,
   AllianceTransactionOtherQuery,
   AllianceTransactionVATQuery,
-  ZControlNumber
+  ZControlNumber,
+  AllianceSalesEODQuery,
+  AllianceTenderTotalQuery,
+  ControlNumberQuery,
+  PreviousAmountsQuery,
+  ServiceChargeQuery
 } from '@shared/query'
 import {
   AllianceSalesProduct,
@@ -31,19 +36,84 @@ ipcMain.handle(
     _event: any,
     data: any,
     path: string,
-    salesQ: string,
     dates: string,
     category: string
   ): Promise<Response> => {
     try {
+      const Terminal = data?.Terminal ?? 0
+      const Dates = formatDateDash(new Date(dates ?? ''))
+
+      // 1. Fetch Tender totals
+      const TenderQ = AllianceTenderTotalQuery({ Terminal, Dates })
+      const TenderResponse = await recordByQuery(TenderQ)
+      const TenderData = TenderResponse?.List?.[0] ?? {}
+
+      // 2. Fetch Service Charge
+      const ServiceChargeQ: string = ServiceChargeQuery({ Dates, Terminal })
+      const ServiceChargeResponse = await recordByQuery(ServiceChargeQ)
+      const ServiceChargeData = ServiceChargeResponse?.List?.[0] ?? {}
+
+      // 3. Fetch Control Number
+      const ControlNoQuery = ControlNumberQuery({ Terminal, Dates })
+      const ControlNoResponse = await recordByQuery(ControlNoQuery)
+      const ControlNoData = ControlNoResponse?.List?.[0] ?? {}
+
+      // 4. Fetch Previous Amounts
+      const PreviousAmountsQ = PreviousAmountsQuery({ Terminal, Dates })
+      const PreviousAmountR = await recordByQuery(PreviousAmountsQ)
+      const PreviousAmountData = PreviousAmountR?.List?.[0] ?? {}
+
+      // Extract variables for salesQ
+      const CashSales = TenderData.CashSales ?? 0
+      const CashSalesCount = TenderData.CashSalesCount ?? 0
+      const CreditSales = TenderData.CreditSales ?? 0
+      const CreditSalesCount = TenderData.CreditSalesCount ?? 0
+      const ChargeSales = TenderData.ChargeSales ?? 0
+      const ChargeSalesCount = TenderData.ChargeSalesCount ?? 0
+      const GiftCertificateSales = TenderData.GiftCertificateSales ?? 0
+      const GiftCertificateSalesCount = TenderData.GiftCertificateSalesCount ?? 0
+      const OtherTenderSales = TenderData.OtherTenderSales ?? 0
+      const OtherTenderSalesCount = TenderData.OtherTenderSalesCount ?? 0
+      const EWT = 0
+      const ZeroRated = 0
+      const ServiceCharge = ServiceChargeData.ServiceCharge ?? 0
+      const ServiceChargeCount = ServiceChargeData.ServiceChargeCount ?? 0
+      const ControlNumber = ControlNoData.ControlNumber ?? 0
+      
+      const PreviousTax = PreviousAmountData.previoustax ?? 0
+      const PreviousReading = PreviousAmountData.PreviousReading ?? 0
+      const PreviousTaxSales = PreviousAmountData.previoustaxsale ?? 0
+      const PreviousNonTaxSales = PreviousAmountData.previousnotaxsale ?? 0
+
+      const salesQ = AllianceSalesEODQuery({
+        Terminal,
+        Dates,
+        PreviousReading,
+        PreviousTax,
+        PreviousTaxSales,
+        PreviousNonTaxSales,
+        ControlNumber,
+        ServiceCharge,
+        ServiceChargeCount,
+        CashSales,
+        CashSalesCount,
+        CreditSales,
+        CreditSalesCount,
+        ChargeSales,
+        ChargeSalesCount,
+        GiftCertificateSales,
+        GiftCertificateSalesCount,
+        OtherTenderSales,
+        OtherTenderSalesCount,
+        EWT,
+        ZeroRated
+      })
+
       // Fetch records based on the provided query
       const salesResponse = await recordByQuery(salesQ)
-      const Terminal = data?.Terminal ?? 0
-      //console.log('Terminal:', Terminal)
-      const Dates = formatDateDash(new Date(dates ?? ''))
-      //console.log('Dates:', Dates)
-      const ControlNumber = await recordByQuery(ZControlNumber({ Dates, Terminal }))
-      const controlNumber = ControlNumber?.List?.[0]?.ControlNumber ?? 0
+      
+      const ControlNumberZ = await recordByQuery(ZControlNumber({ Dates, Terminal }))
+      const controlNumber = ControlNumberZ?.List?.[0]?.ControlNumber ?? 0
       //const trxQuery = AllianceTransactionQuery({ Terminal, Dates })
       //const trnResponse = await recordByQuery(trxQuery)
       const trxDiscQ = AllianceTransactionDiscountsQuery({ Terminal, Dates })
