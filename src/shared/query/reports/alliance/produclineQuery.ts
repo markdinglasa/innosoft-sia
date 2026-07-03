@@ -5,14 +5,16 @@ export const AllianceProductLineQuery: Function = ({ Terminal, Dates, ReceiptNum
       REPLACE(ISNULL([MstItem].[BarCode],'NA'), '&', ' ') AS [sku],
       CAST(ROUND(ISNULL([TrnSalesLine].[Quantity], 0), 2) AS DECIMAL(10, 2)) AS [qty],
       CAST(ROUND(ISNULL([TrnSalesLine].[Price], 0), 2) AS DECIMAL(10, 2))  AS [unitprice],
-      0 AS [disc],
-      0 AS [senior],
-      0 AS [pwd],
-      0 AS [diplomat],
+      CAST(ROUND(ISNULL([TrnSalesLine].[DiscountAmount] * [TrnSalesLine].[Quantity], 0), 2) AS DECIMAL(10,2)) AS [disc],
+      CAST(ROUND(CASE WHEN [MstDiscount].[Discount] = 'Senior Citizen Discount' THEN ISNULL([TrnSalesLine].[DiscountAmount] * [TrnSalesLine].[Quantity], 0) ELSE 0 END, 2) AS DECIMAL(10,2)) AS [senior],
+      CAST(ROUND(CASE WHEN [MstDiscount].[Discount] = 'PWD' THEN ISNULL([TrnSalesLine].[DiscountAmount] * [TrnSalesLine].[Quantity], 0) ELSE 0 END, 2) AS DECIMAL(10,2)) AS [pwd],
+      CAST(ROUND(CASE WHEN [MstDiscount].[Discount] = 'Diplomat Discount' THEN ISNULL([TrnSalesLine].[DiscountAmount] * [TrnSalesLine].[Quantity], 0) ELSE 0 END, 2) AS DECIMAL(10,2)) AS [diplomat],
+      CAST(ROUND(CASE WHEN [MstDiscount].[Discount] LIKE '%National Athlete%' OR [MstDiscount].[Discount] LIKE '%Coach%' THEN ISNULL([TrnSalesLine].[DiscountAmount] * [TrnSalesLine].[Quantity], 0) ELSE 0 END, 2) AS DECIMAL(10,2)) AS [nac],
+      CAST(ROUND(CASE WHEN [MstDiscount].[Discount] LIKE '%Solo Parent%' THEN ISNULL([TrnSalesLine].[DiscountAmount] * [TrnSalesLine].[Quantity], 0) ELSE 0 END, 2) AS DECIMAL(10,2)) AS [spd],
       0 AS [taxtype],
       CAST(ROUND(ISNULL([TrnSalesLine].[TaxAmount], 0), 2) AS DECIMAL(10, 2)) AS [tax],
       [TrnSales].[Remarks] AS [memo], 
-      ([TrnSalesLine].[Quantity] * [TrnSalesLine].[Price] )  AS [total]
+      CAST(ROUND(([TrnSalesLine].[Quantity] * [TrnSalesLine].[Price]) - (ISNULL([TrnSalesLine].[DiscountAmount], 0) * [TrnSalesLine].[Quantity]), 2) AS DECIMAL(10,2)) AS [total]
       FROM [TrnSales]
       LEFT JOIN [TrnSalesLine] ON [TrnSalesLine].[SalesId] = [TrnSales].[Id]
       LEFT JOIN [TrnCollection] ON [TrnCollection].[SalesId] = [TrnSales].[Id]
@@ -34,6 +36,8 @@ export const AllianceProductLineQuery: Function = ({ Terminal, Dates, ReceiptNum
       [TrnSalesLine].[Quantity],
       [TrnSalesLine].[Price],
       [TrnSalesLine].[TaxAmount],
-      [TrnSales].[Remarks]
+      [TrnSales].[Remarks],
+      [TrnSalesLine].[DiscountAmount],
+      [MstDiscount].[Discount]
     `
 }

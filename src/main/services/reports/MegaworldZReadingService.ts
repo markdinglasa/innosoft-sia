@@ -158,7 +158,7 @@ export class MegaworldZReadingService {
 
           <div class="border-top">
             <div class="row">
-              <span>Service Charge:</span>
+              <span>Non-VAT Sales:</span>
               <span class="text-end">${formatNum(VATAnalysis?.NONVat)}</span>
             </div>
             <div class="row">

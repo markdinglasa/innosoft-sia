@@ -54,7 +54,9 @@ export const AllianceTransactionDiscountsQuery: Function = ({ Terminal, Dates })
               SUM(CASE WHEN d.Discount <> 'Senior Citizen Discount' AND d.Discount <> 'PWD' THEN d.DiscTotal ELSE 0 END) AS disc,
               SUM(CASE WHEN d.Discount = 'Senior Citizen Discount' THEN d.DiscTotal ELSE 0 END) AS linesenior,
               SUM(CASE WHEN d.Discount = 'PWD' THEN d.DiscTotal ELSE 0 END) AS linepwd,
-              SUM(CASE WHEN d.Discount = 'Diplomat Discount' THEN d.DiscTotal ELSE 0 END) AS linediplomat
+              SUM(CASE WHEN d.Discount = 'Diplomat Discount' THEN d.DiscTotal ELSE 0 END) AS linediplomat,
+              SUM(CASE WHEN d.Discount LIKE '%National Athlete%' OR d.Discount LIKE '%Coach%' THEN d.DiscTotal ELSE 0 END) AS linenac,
+              SUM(CASE WHEN d.Discount LIKE '%Solo Parent%' THEN d.DiscTotal ELSE 0 END) AS linespd
           FROM (
               SELECT DISTINCT
                   sl.SalesId,
@@ -69,14 +71,16 @@ export const AllianceTransactionDiscountsQuery: Function = ({ Terminal, Dates })
       )
       SELECT
           REPLACE(c.CollectionNumber, '-', '') AS receiptno,
-          0 AS linedisc,
+          ISNULL(da.disc, 0) AS linedisc,
           0 AS linesenior,
           0 AS linepwd,
           0 AS linediplomat,
           da.disc AS disc,
           da.linesenior AS senior,
           da.linepwd AS pwd,
-          da.linediplomat AS diplomat
+          da.linediplomat AS diplomat,
+          da.linenac AS nac,
+          da.linespd AS spd
       FROM FilteredSales s
       LEFT JOIN SalesLines sl ON s.Id = sl.SalesId
       LEFT JOIN Collections c ON s.Id = c.SalesId
@@ -86,6 +90,8 @@ export const AllianceTransactionDiscountsQuery: Function = ({ Terminal, Dates })
           da.disc,
           da.linesenior,
           da.linepwd,
-          da.linediplomat
+          da.linediplomat,
+          da.linenac,
+          da.linespd
     `
 }

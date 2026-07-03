@@ -39,6 +39,10 @@ export interface AllianceSalesEOD {
   pwdcnt: number // COUNT(pwd)
   diplomat: number // total diplomat discount amount
   diplomatcnt: number // COUNT(diplomat)
+  nac: number      // total NAC discount amount
+  naccnt: number   // count of NAC transactions
+  spd: number      // total SPD discount amount
+  spdcnt: number   // count of SPD transactions
   service: number // total service charge amount
   servicecnt: number // COUNT(service)
   receiptstart: number // receipt's starting number
@@ -63,6 +67,8 @@ export interface AllianceSalesTrxline {
   senior: number
   pwd: number
   diplomat: number
+  nac: number    // National Athletes/Coaches discount amount
+  spd: number    // Solo Parent discount amount
   taxtype: string
   tax: number
   memo: string // MstItem.Remarks
@@ -86,6 +92,8 @@ export interface AllianceSalesTrx {
   senior: number
   pwd: number
   diplomat: number
+  nac: number    // transaction-level NAC total discount
+  spd: number    // transaction-level SPD total discount
   vat: number
   exvat: number
   incvat: number

@@ -2,9 +2,7 @@ import { Error, Success } from '@shared/messages'
 import {
   AllianceProductLineQuery,
   AllianceProductsQuery,
-  AllianceTransactionDiscountsQuery,
   AllianceTransactionOtherQuery,
-  AllianceTransactionVATQuery,
   PreviousAmountsQuery,
   ZControlNumber
 } from '@shared/query'
@@ -57,24 +55,9 @@ ipcMain.handle(
       const PreviousTaxSale = PrevAmount?.List?.[0]?.previoustaxsale ?? 0
       const PreviousNoTaxSale = PrevAmount?.List?.[0]?.previousnotaxsale ?? 0
 
-      const trxDiscQ = AllianceTransactionDiscountsQuery({ Terminal, Dates })
-      const trxVATQ = AllianceTransactionVATQuery({ Terminal, Dates })
-      const trxOthrQ = AllianceTransactionOtherQuery({ Terminal, Dates })
-
-      const trxDiscR = await recordByQuery(trxDiscQ)
-      const trxVATR = await recordByQuery(trxVATQ)
-      const trxOthrR = await recordByQuery(trxOthrQ)
-
-      // join all trx by receiptno
-      // eslint-disabled-next-line @typescript-eslint/no-explicit-any
-      const merge1 = (trxDiscR.List || []).map((disc) => {
-        const vats = (trxVATR.List ?? []).find((vat) => vat.receiptno === disc.receiptno) || {}
-        return { ...disc, ...vats }
-      })
-      const merge2 = merge1.map((item) => {
-        const other = (trxOthrR.List ?? []).find((oth) => oth.receiptno === item.receiptno) || {}
-        return { ...item, ...other }
-      })
+      const trxQ = AllianceTransactionOtherQuery({ Terminal, Dates })
+      const trxR = await recordByQuery(trxQ)
+      const merge2 = trxR.List || []
 
       const fileName = generateAllianceFilename(
         AllianceType.salesEOD,
@@ -134,7 +117,7 @@ ipcMain.handle(
             `<taxsale>${formatNumber(item.taxsale)}</taxsale>`,
             `<notaxsale>${formatNumber(item.notaxsale)}</notaxsale>`,
             `<zerosale>${formatNumber(item.zerosale)}</zerosale>`,
-            `<vatexempt>${formatNumber(item.vatexempt)}</vatexempt>`,
+
             `<void>${formatNumber(item.void)}</void>`,
             `<voidcnt>${formatNumber(item.voidcnt)}</voidcnt>`,
             `<disc>${formatNumber(item.disc)}</disc>`,
@@ -147,6 +130,10 @@ ipcMain.handle(
             `<pwdcnt>${formatNumber(item.pwdcnt)}</pwdcnt>`,
             `<diplomat>${formatNumber(item.diplomat)}</diplomat>`,
             `<diplomatcnt>${formatNumber(item.diplomatcnt)}</diplomatcnt>`,
+            `<nac>${formatNumber(item.nac ?? 0)}</nac>`,
+            `<naccnt>${Number(item.naccnt ?? 0)}</naccnt>`,
+            `<spd>${formatNumber(item.spd ?? 0)}</spd>`,
+            `<spdcnt>${Number(item.spdcnt ?? 0)}</spdcnt>`,
             `<service>${formatNumber(item.service)}</service>`,
             `<servicecnt>${Number(item.servicecnt)}</servicecnt>`,
             `<receiptstart>${item.receiptstart ?? 'NA'}</receiptstart>`,
@@ -183,11 +170,13 @@ ipcMain.handle(
                 <senior>${formatNumber(lineItem?.senior)}</senior>
                 <pwd>${formatNumber(lineItem?.pwd)}</pwd>
                 <diplomat>${formatNumber(lineItem?.diplomat)}</diplomat>
+                <nac>${formatNumber(lineItem?.nac ?? 0)}</nac>
+                <spd>${formatNumber(lineItem?.spd ?? 0)}</spd>
                 <taxtype>${lineItem?.taxtype ?? 'NA'}</taxtype>
                 <tax>${formatNumber(lineItem?.tax)}</tax>
                 <memo>${lineItem?.memo ?? 'NA'}</memo>
                 <total>${formatNumber(lineItem?.total)}</total>
-                <choicetype>${' '}</choicetype>
+                <choicetype></choicetype>
               </line>`
             })
             .join('\n')
@@ -206,6 +195,8 @@ ipcMain.handle(
               <evat>${formatNumber(item?.evat)}</evat>
               <linepwd>${formatNumber(item?.linepwd)}</linepwd>
               <linediplomat>${formatNumber(item?.linediplomat)}</linediplomat>
+              <nac>${formatNumber(item?.nac ?? 0)}</nac>
+              <spd>${formatNumber(item?.spd ?? 0)}</spd>
               <subtotal>${formatNumber(item?.subtotal)}</subtotal>
               <disc>${formatNumber(item?.disc)}</disc>
               <senior>${formatNumber(item?.senior)}</senior>
@@ -213,22 +204,23 @@ ipcMain.handle(
               <diplomat>${formatNumber(item?.diplomat)}</diplomat>
               <vat>${formatNumber(item?.vat)}</vat>
               <exvat>${formatNumber(item?.exvat)}</exvat>
-              <incvat>${formatNumber(item?.vat)}</incvat>
+              <incvat>${formatNumber(item?.incvat)}</incvat>
               <localtax>${formatNumber(item?.localtax)}</localtax>
               <amusement>${formatNumber(item?.amusement)}</amusement>
               <service>${formatNumber(item?.service)}</service>
               <taxsale>${formatNumber(item?.taxsale)}</taxsale>
-              <notaxsale>${formatNumber(item?.vatexempt)}</notaxsale>
+              <notaxsale>${formatNumber(item?.notaxsale)}</notaxsale>
               <taxexsale>${formatNumber(item?.taxexsale)}</taxexsale>
               <taxincsale>${formatNumber(item.taxsale)}</taxincsale>
               <zerosale>${formatNumber(item?.zerosale)}</zerosale>
-              <vatexempt>${formatNumber(item?.vatexempt)}</vatexempt>
               <customercount>${item?.customercnt ?? 1}</customercount>
               <gross>${formatNumber(item?.gross)}</gross>
               <refund>${formatNumber(item?.refund)}</refund>
               <taxrate>${formatNumber(item?.taxrate)}</taxrate>
               <posted>${item?.posted ?? 'NA'}</posted>
-              <memo>NA</memo>
+              <qty>${item?.qty ?? 0}</qty>
+              <created>${formatNumber(item?.created ?? 0)}</created>
+              <memo>${(item?.memo && item.memo !== 'NA') ? item.memo : ''}</memo>
               ${SalesLine}
             </trx>`
           ].join('\n')
@@ -258,34 +250,37 @@ ipcMain.handle(
           `<taxsale>${Number(0).toFixed(2) ?? '0.00'}</taxsale>`,
           `<notaxsale>${Number(0).toFixed(2) ?? '0.00'}</notaxsale>`,
           `<zerosale>${Number(0).toFixed(2) ?? '0.00'}</zerosale>`,
-          `<vatexempt>${Number(0).toFixed(2) ?? '0.00'}</vatexempt>`,
           `<void>${Number(0).toFixed(2) ?? '0.00'}</void>`,
-          `<voidcnt>${Number(0).toFixed(2) ?? '0.00'}</voidcnt>`,
+          `<voidcnt>${Number(0)}</voidcnt>`,
           `<disc>${Number(0).toFixed(2) ?? '0.00'}</disc>`,
-          `<disccnt>${Number(0).toFixed(2) ?? '0.00'}</disccnt>`,
+          `<disccnt>${Number(0)}</disccnt>`,
           `<refund>${Number(0).toFixed(2) ?? '0.00'}</refund>`,
-          `<refundcnt>${Number(0).toFixed(2) ?? '0.00'}</refundcnt>`,
+          `<refundcnt>${Number(0)}</refundcnt>`,
           `<senior>${Number(0).toFixed(2) ?? '0.00'}</senior>`,
-          `<seniorcnt>${Number(0).toFixed(2) ?? '0.00'}</seniorcnt>`,
+          `<seniorcnt>${Number(0)}</seniorcnt>`,
           `<pwd>${Number(0).toFixed(2) ?? '0.00'}</pwd>`,
-          `<pwdcnt>${Number(0).toFixed(2) ?? '0.00'}</pwdcnt>`,
+          `<pwdcnt>${Number(0)}</pwdcnt>`,
           `<diplomat>${Number(0).toFixed(2) ?? '0.00'}</diplomat>`,
-          `<diplomatcnt>${Number(0).toFixed(2) ?? '0.00'}</diplomatcnt>`,
+          `<diplomatcnt>${Number(0)}</diplomatcnt>`,
+          `<nac>${Number(0).toFixed(2)}</nac>`,
+          `<naccnt>${Number(0)}</naccnt>`,
+          `<spd>${Number(0).toFixed(2)}</spd>`,
+          `<spdcnt>${Number(0)}</spdcnt>`,
           `<service>${Number(0).toFixed(2) ?? '0.00'}</service>`,
-          `<servicecnt>${Number(0).toFixed(2) ?? '0.00'}</servicecnt>`,
+          `<servicecnt>${Number(0)}</servicecnt>`,
           `<receiptstart>${'0'}</receiptstart>`,
           `<receiptend>${'0'}</receiptend>`,
-          `<trxcnt>${Number(0).toFixed(2) ?? '0.00'}</trxcnt>`,
+          `<trxcnt>${Number(0)}</trxcnt>`,
           `<cash>${Number(0).toFixed(2) ?? '0.00'}</cash>`,
-          `<cashcnt>${Number(0).toFixed(2) ?? '0.00'}</cashcnt>`,
+          `<cashcnt>${Number(0)}</cashcnt>`,
           `<credit>${Number(0).toFixed(2) ?? '0.00'}</credit>`,
-          `<creditcnt>${Number(0).toFixed(2) ?? '0.00'}</creditcnt>`,
+          `<creditcnt>${Number(0)}</creditcnt>`,
           `<charge>${Number(0).toFixed(2) ?? '0.00'}</charge>`,
-          `<chargecnt>${Number(0).toFixed(2) ?? '0.00'}</chargecnt>`,
+          `<chargecnt>${Number(0)}</chargecnt>`,
           `<giftcheck>${Number(0).toFixed(2) ?? '0.00'}</giftcheck>`,
-          `<giftcheckcnt>${Number(0).toFixed(2) ?? '0.00'}</giftcheckcnt>`,
+          `<giftcheckcnt>${Number(0)}</giftcheckcnt>`,
           `<othertender>${Number(0).toFixed(2) ?? '0.00'}</othertender>`,
-          `<othertendercnt>${Number(0).toFixed(2) ?? '0.00'}</othertendercnt>`
+          `<othertendercnt>${Number(0)}</othertendercnt>`
         ].join('\n')
       }
 

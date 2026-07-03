@@ -95,7 +95,9 @@ export const AllianceTransactionOtherQuery = ({ Terminal, Dates }) => {
             SUM(d.DiscTotal) AS TotalDiscountAmount,
             SUM(CASE WHEN d.Discount = 'Senior Citizen Discount' THEN d.DiscTotal ELSE 0 END) AS linesenior,
             SUM(CASE WHEN d.Discount = 'PWD' THEN d.DiscTotal ELSE 0 END) AS linepwd,
-            SUM(CASE WHEN d.Discount = 'Diplomat Discount' THEN d.DiscTotal ELSE 0 END) AS linediplomat
+            SUM(CASE WHEN d.Discount = 'Diplomat Discount' THEN d.DiscTotal ELSE 0 END) AS linediplomat,
+            SUM(CASE WHEN d.Discount LIKE '%National Athlete%' OR d.Discount LIKE '%Coach%' THEN d.DiscTotal ELSE 0 END) AS linenac,
+            SUM(CASE WHEN d.Discount LIKE '%Solo Parent%' THEN d.DiscTotal ELSE 0 END) AS linespd
         FROM (
             SELECT DISTINCT
                 sl.SalesId,
@@ -181,6 +183,8 @@ export const AllianceTransactionOtherQuery = ({ Terminal, Dates }) => {
         vc.vat AS incvat,
         vc.localtax,
         vc.amusement,
+        ISNULL(da.linenac, 0) AS nac,
+        ISNULL(da.linespd, 0) AS spd,
         0 AS ewt,
         sc.ServiceCharge AS service,
         SUM(DISTINCT CASE
@@ -192,7 +196,7 @@ export const AllianceTransactionOtherQuery = ({ Terminal, Dates }) => {
         SUM(DISTINCT CASE
             WHEN c.CollectionIsCancelled = 0 AND c.CollectionIsReturn = 0 
                 AND sl.TaxAmount <= 0
-                THEN c.CollectionAmount
+                THEN sl.Amount
             ELSE 0
         END) AS notaxsale,
         0 AS taxexsale,
@@ -247,6 +251,8 @@ export const AllianceTransactionOtherQuery = ({ Terminal, Dates }) => {
         da.linesenior,
         da.linepwd,
         da.linediplomat,
+        da.linenac,
+        da.linespd,
         vc.vat,
         vc.localtax,
         vc.amusement,
