@@ -1,5 +1,5 @@
-import { Details, Sale, VATAnalysis } from '.'
-import { calculateAge, formatDateFD, formatDateSlash, formatNumber } from '../../../functions'
+import { calculateAge, formatDateFD, formatDateSlash, formatNumber } from '../../../../functions'
+import { Details, Sale, VATAnalysis } from './types'
 
 interface SalesInvoiceProps {
   title: string
@@ -38,7 +38,6 @@ Zero-Rated Sales                      ${formatNumber(VATAnalysis?.ZeroRated) ?? 
       va = `           EXEMPT`
       break
     case 'ZERO RATED':
-      va = ''
       break
     default:
       va = `VAT ANALYSIS
@@ -50,6 +49,12 @@ Zero-Rated Sales                      ${formatNumber(VATAnalysis?.ZeroRated) ?? 
       break
   }
 
+  const childAge = details?.SeniorCitizenChildBirthdate
+    ? calculateAge(details?.SeniorCitizenChildBirthdate ?? '')
+    : 'NA'
+  const childBirthDate = details?.SeniorCitizenChildBirthdate
+    ? formatDateSlash(new Date(details?.SeniorCitizenChildBirthdate ?? ''))
+    : 'NA'
   const items: string = saleItems
     .map(
       (item) =>
@@ -81,19 +86,19 @@ CHANGE                                ${formatNumber(VATAnalysis?.ChangeAmount ?
 --------------------------------------------
 ${va}
 ${
-  details?.SeniorCitizenId !== 'NA'
-    ? `--------------------------------------------
+  details?.SeniorCitizenId === 'NA'
+    ? ''
+    : `--------------------------------------------
 SENIOR / PWD / NAAC / SP INFORMATION
 --------------------------------------------
 TIN NO.                         ${details?.SeniorCitizenTINNumber ?? ''}
 ID NO.                          ${details?.SeniorCitizenId ?? ''}
 NAME                            ${details?.SeniorCitizenName ?? ''}
 CHILD NAME                      ${details?.SeniorCitizenChildName ?? 'NA'}
-CHILD AGE                       ${details?.SeniorCitizenChildBirthdate ? calculateAge(details?.SeniorCitizenChildBirthdate ?? '') : 'NA'}
-BIRTHDATE                       ${details?.SeniorCitizenChildBirthdate ? formatDateSlash(new Date(details?.SeniorCitizenChildBirthdate ?? '')) : 'NA'}
+CHILD AGE                       ${childAge}
+BIRTHDATE                       ${childBirthDate}
 SIGNATURE                       ${'________________________'}
 `
-    : ''
 }
 --------------------------------------------
 TRN. NO.                       ${details?.TransactionNumber ?? ''}

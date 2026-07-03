@@ -1,9 +1,10 @@
 import { Error, Success } from '@shared/messages'
-import { MWFileType, Response, SqlChannel } from '@shared/types'
+import { Response, SqlChannel } from '@shared/types'
+import { format } from 'date-fns'
 import { ipcMain } from 'electron'
-import fs from 'fs/promises'
-import paths from 'path'
-import { generateMWFilename } from '../../../functions'
+import fs from 'node:fs/promises'
+import paths from 'node:path'
+import './getZReadingData'
 
 ipcMain.handle(
   SqlChannel.getZReading,
@@ -15,13 +16,9 @@ ipcMain.handle(
     { buffer, targetDir }
   ): Promise<Response> => {
     try {
-      const fileName = generateMWFilename(
-        MWFileType.ZReading,
-        data.TenantCode,
-        data.Terminal,
-        BatchNo ?? 0,
-        dates
-      )
+      const activeDate = new Date(dates)
+      const formattedDate = format(activeDate, 'yyyy-MM-dd')
+      const fileName = `ZReading_${data.TenantCode}_${data.Terminal}_Batch${BatchNo ?? 0}_${formattedDate}`
       if (!targetDir) {
         return { IsSomething: false, Message: Error.e00x03 }
       }

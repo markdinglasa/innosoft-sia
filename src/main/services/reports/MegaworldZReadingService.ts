@@ -1,5 +1,5 @@
 import { BrowserWindow } from 'electron'
-import { MegaworldReportService } from './MegaworldReportService'
+import { ZReadingReportService } from './ZReadingReportService'
 import { format } from 'date-fns'
 
 export class MegaworldZReadingService {
@@ -7,7 +7,7 @@ export class MegaworldZReadingService {
    * Generate Z-Reading PDF Buffer
    */
   static async generatePDFBuffer(terminalId: number, dates: Date, settings: any): Promise<Buffer> {
-    const data = await MegaworldReportService.getZReadingData(terminalId, dates)
+    const data = await ZReadingReportService.getZReadingData(terminalId, dates)
     const html = this.generateHTML(data, settings, dates)
 
     return new Promise((resolve, reject) => {

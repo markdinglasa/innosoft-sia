@@ -6,7 +6,6 @@ import { AppDispatch, ButtonColor, SFC, SqlChannel, ToastType } from '@shared/ty
 import { formatDates, windowNotification } from '@shared/utils'
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { InvoiceFooter } from '../../modals/SettingsForm'
 import { getPath } from '../../selectors'
 import { LoadingScreen } from '../LoadingScreen'
 import { UnderMaintenance } from '../UnderMaintenance'
@@ -65,24 +64,12 @@ export const EJournal: SFC = ({ className }) => {
         )
         return
       }
-
-      const header = `
-      ${settings?.Name ?? ''}
---------------------------------------------
-${settings?.Name ?? ''}
-${settings?.Address ?? ''}
-Operated By: ${settings?.Operator ?? ''}
-TIN: ${settings?.TIN ?? ''}
-S/N : ${settings?.SerialNumber ?? ''}
-MIN : ${settings?.MachineNumber ?? ''}`
-
       // this will call the main process to generate the E-Journal report
       const response = await window.electron.sql.get(SqlChannel.E_JOURNAL, {
         dateStart: startDate,
         dateEnd: endDate,
         targetDir: path,
-        header: header,
-        footer: settings?.InvoiceFooter ?? InvoiceFooter
+        settings: settings
       })
       if (!response.IsSomething) {
         setIsLoading(false)

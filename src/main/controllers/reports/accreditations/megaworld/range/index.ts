@@ -14,8 +14,8 @@ ipcMain.handle(
     batchNo: number,
     isZReading: boolean,
     settings: any
+    // SONARQUBE ISSUE: Async arrow function has too many parameters (8). Maximum allowed is 7
   ): Promise<Response> => {
-    console.log('Generating Megaworld Range:', { startDate, endDate, tenant: tenant.TenantCode, path, batchNo, isZReading })
     try {
       const results = await MegaworldOrchestrator.generateRange({
         startDate,

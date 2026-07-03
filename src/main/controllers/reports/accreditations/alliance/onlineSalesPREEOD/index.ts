@@ -40,7 +40,12 @@ ipcMain.handle(
         for (const date of dateArray) {
           const controlNumber = await AllianceReportService.getControlNumber(data.Terminal, date)
           if (controlNumber > 0) {
-            const res = await AllianceReportService.generateOnlineSalesPREEOD(path, date, category, data)
+            const res = await AllianceReportService.generateOnlineSalesPREEOD(
+              path,
+              date,
+              category,
+              data
+            )
             if (res.IsSomething) {
               successCount++
             }

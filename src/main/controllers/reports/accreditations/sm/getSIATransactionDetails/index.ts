@@ -1,11 +1,11 @@
 import { SIATransactionDetailsHeaders as headers } from '@shared/data'
 import { Error, Success } from '@shared/messages'
-import { Response, SIATransactionDetail, SqlChannel } from '@shared/types'
 import { SIATransactionDetailQuery } from '@shared/query'
+import { Response, SIATransactionDetail, SqlChannel } from '@shared/types'
 import { createArrayCsvWriter } from 'csv-writer'
 import { ipcMain } from 'electron'
-import fs from 'fs'
-import paths from 'path'
+import fs from 'node:fs'
+import paths from 'node:path'
 import { generateSMFileName } from '../../../../../functions'
 import { recordByQuery } from '../../../../../model'
 
@@ -24,8 +24,8 @@ ipcMain.handle(
 
       const csvData: any = response.List.map((item: SIATransactionDetail) => {
         return Object.values(item).map((val: string | number) =>
-          typeof val === 'string' && !isNaN(Number(val)) && val.trim() !== ''
-            ? parseFloat(val ?? 0)
+          typeof val === 'string' && !Number.isNaN(Number(val)) && val.trim() !== ''
+            ? Number.parseFloat(val ?? 0)
             : val
         )
       })

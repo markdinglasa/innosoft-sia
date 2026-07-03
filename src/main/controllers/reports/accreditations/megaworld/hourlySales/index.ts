@@ -1,8 +1,8 @@
 import { Error as ErrorMessage, Success } from '@shared/messages'
 import { DailyHourlySale, MWFileType, Response, SqlChannel } from '@shared/types'
 import { ipcMain } from 'electron'
-import fs from 'fs'
-import paths from 'path'
+import fs from 'node:fs'
+import paths from 'node:path'
 import { formatDateMMDDYYYY, generateMWFilename } from '../../../../../functions'
 import { MegaworldReportService } from '../../../../../services/reports/MegaworldReportService'
 

@@ -3,7 +3,7 @@ import { getSettings } from '@shared/selectors'
 import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, SFC, ToastType } from '@shared/types'
 import { formatDates } from '@shared/utils'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAllianceReports } from '../../../hooks'
 import {
@@ -19,6 +19,7 @@ import { AllianceTenant } from '../../AllicanceTenant'
 import { DateRange } from '../../DateRange'
 import { LoadingScreen } from '../../LoadingScreen'
 import { SingleDate } from '../../SingleDate'
+import { ZReading } from '../../ZReading'
 import * as S from '../Styles'
 
 export const AllianceReport: SFC = ({ className }) => {
@@ -33,6 +34,7 @@ export const AllianceReport: SFC = ({ className }) => {
   const dateRanges = useSelector(getDateRanges)
   const allianceCategory = useSelector(getAllianceCategory)
   const reportType = useSelector(getAllianceReportType)
+  const pointerRef = useRef<HTMLDivElement>(null)
 
   const AllianceReportHook = useAllianceReports()
 
@@ -55,7 +57,9 @@ export const AllianceReport: SFC = ({ className }) => {
           tenant,
           { DateStart: dateRanges.DateStart, DateEnd: dateRanges.DateEnd },
           allianceCategory,
-          reportType
+          reportType,
+          settings.IsZReading,
+          pointerRef.current
         )
       }
     } catch (error: unknown) {
@@ -79,7 +83,7 @@ export const AllianceReport: SFC = ({ className }) => {
     }
     setLoading(true)
     try {
-      await AllianceReportHook(path, tenant, Dates, allianceCategory, reportType)
+      await AllianceReportHook(path, tenant, Dates, allianceCategory, reportType, settings.IsZReading, pointerRef.current)
     } catch (error: unknown) {
       console.log('ERROR: ', (error as Error)?.message)
       dispatch(
@@ -109,6 +113,11 @@ export const AllianceReport: SFC = ({ className }) => {
         </AccessControl>
       </S.Container>
       {loading && <LoadingScreen />}
+      <div style={{ display: 'none' }}>
+        <div ref={pointerRef}>
+          <ZReading CurrentDate={Dates} />
+        </div>
+      </div>
     </>
   )
 }

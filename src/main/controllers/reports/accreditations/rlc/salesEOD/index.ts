@@ -1,8 +1,8 @@
 import { Error, Success } from '@shared/messages'
 import { Response, RLCSalesEOD, SqlChannel } from '@shared/types'
 import { ipcMain } from 'electron'
-import fs from 'fs'
-import paths from 'path'
+import fs from 'node:fs'
+import paths from 'node:path'
 import { formatDateSlash, generateRLCFilename } from '../../../../../functions'
 import { recordByQuery } from '../../../../../model'
 

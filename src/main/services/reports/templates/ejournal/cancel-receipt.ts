@@ -1,5 +1,5 @@
-import { Details, Sale, VATAnalysis } from '.'
-import { formatDateFD, formatNumber } from '../../../functions'
+import { formatDateFD, formatNumber } from '../../../../functions'
+import { Details, Sale, VATAnalysis } from './types'
 
 interface CancelReceiptProps {
   title: string

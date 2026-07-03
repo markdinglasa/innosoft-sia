@@ -1,5 +1,5 @@
-import { Details, Sale } from '.'
-import { formatDateFD, formatNumber } from '../../../functions'
+import { formatDateFD, formatNumber } from '../../../../functions'
+import { Details, Sale } from './types'
 
 interface ReturnSlipProps {
   title: string

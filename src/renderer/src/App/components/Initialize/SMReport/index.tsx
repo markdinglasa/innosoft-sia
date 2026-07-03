@@ -4,7 +4,7 @@ import { getSettings } from '@shared/selectors'
 import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, SFC, SqlChannel, ToastType } from '@shared/types'
 import { formatDates } from '@shared/utils'
-import { useEffect, useState } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSMReports } from '../../../hooks'
 import {
@@ -21,6 +21,7 @@ import { DateRange } from '../../DateRange'
 import { LoadingScreen } from '../../LoadingScreen'
 import { SingleDate } from '../../SingleDate'
 import { SMTenant } from '../../SMTenant'
+import { ZReading } from '../../ZReading'
 import * as S from '../Styles'
 
 export const SMReport: SFC = ({ className }) => {
@@ -35,6 +36,7 @@ export const SMReport: SFC = ({ className }) => {
   const tenant = useSelector(getTenant)
   const dateRanges = useSelector(getDateRanges)
   const initialized = useSelector(getInitialize)
+  const pointerRef = useRef<HTMLDivElement>(null)
 
   const SMReports = useSMReports()
 
@@ -115,7 +117,7 @@ export const SMReport: SFC = ({ className }) => {
 
   const loadData = async (activeDates: string) => {
     try {
-      await SMReports(path, tenant, activeDates)
+      await SMReports(path, tenant, activeDates, settings.IsZReading, pointerRef.current)
     } catch (error: unknown) {
       dispatch(
         setSnackbar({
@@ -203,6 +205,11 @@ export const SMReport: SFC = ({ className }) => {
         </AccessControl>
       </S.Container>
       {loading && <LoadingScreen />}
+      <div style={{ display: 'none' }}>
+        <div ref={pointerRef}>
+          <ZReading CurrentDate={Dates} />
+        </div>
+      </div>
     </>
   )
 }
