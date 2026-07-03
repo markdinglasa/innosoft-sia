@@ -36,10 +36,13 @@ ipcMain.handle(
         hourlyResponse
           ?.map((item: DailyHourlySale) => {
             return [
-              `04${item.HourCode}`,
-              `05${Number(item.NetSalesAmountHour).toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`,
-              `06${item.NoSalesTransactionHour}`,
-              `07${item.CustomerCountHour}`
+              `04${item.HourCode}`, // HourCode
+              `05${Number(item.NetSalesAmountHour)
+                .toFixed(2)
+                .toString()
+                .replace(/[^a-zA-Z0-9]/g, '')}`, // Net Sales Amount for the Hour (formatted)
+              `06${item.NoSalesTransactionHour}`, // Number of Sales Transactions for the Hour
+              `07${item.CustomerCountHour}` // Customer Count for the Hour
             ].join('\r\n')
           })
           .join('\r\n') ?? ''
@@ -48,17 +51,19 @@ ipcMain.handle(
         dayResponse
           ?.map((item: DailyHourlySale) => {
             return [
-              `01${item.MallPartnerCodeId}`,
-              `02${item.Terminal}`,
-              `03${String(formatDateMMDDYYYY(new Date(item.Date))).replace(/[^a-zA-Z0-9]/g, '')}`,
-              hourlySalesData,
-              `08${Number(item.NetSalesAmountDay).toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`,
-              `09${item.NoSalesTransactionDay}`,
-              `10${item.CustomerCountDay}`
-            ].join('\r\n')
+              `01${item.MallPartnerCodeId}`, // Mall Partner Code ID
+              `02${item.Terminal}`, // Terminal
+              `03${String(formatDateMMDDYYYY(new Date(item.Date))).replace(/[^a-zA-Z0-9]/g, '')}`, // Date (formatted)
+              hourlySalesData, // Include hourly sales data here
+              `08${Number(item.NetSalesAmountDay)
+                .toFixed(2)
+                .toString()
+                .replace(/[^a-zA-Z0-9]/g, '')}`, // Net Sales Amount for the Day (formatted)
+              `09${item.NoSalesTransactionDay}`, // Number of Sales Transactions for the Day
+              `10${item.CustomerCountDay}` // Customer Count for the Day
+            ].join('\n')
           })
-          .join('\r\n') ?? ''
-
+          .join('\n') ?? ''
       if (!daySalesData || daySalesData.length === 0)
         daySalesData = [
           `01${data.TenantCode ?? 'NA'}`,

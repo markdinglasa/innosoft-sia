@@ -42,34 +42,87 @@ ipcMain.handle(
         (item: { SalesType: string; NetSalesAmount: number }) => {
           return [
             `21${item?.SalesType ?? 'NA'}`,
-            `22${Number(item?.NetSalesAmount).toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`
+            `22${
+              Number(item?.NetSalesAmount)
+                .toFixed(2)
+                .toString()
+                .replace(/[^a-zA-Z0-9]/g, '') ?? 'NA'
+            }`
           ].join('\r\n')
         }
       )
-
-      let dailySalesData = [
-        `01${mainItem.MallPartnerCodeId}`,
-        `02${mainItem.Terminal}`,
-        `03${String(formatDateMMDDYYYY(new Date(mainItem.Date))).replace(/[^a-zA-Z0-9]/g, '')}`,
-        `04${mainItem.OldAccumulatedTotal.toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`,
-        `05${mainItem.NewAccumulatedTotal.toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`,
-        `06${mainItem.GrossSalesAmount.toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`,
-        `07${mainItem.NonTaxSalesAmount.toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`,
-        `08${mainItem.GovMandatedDiscount.toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`,
-        `09${mainItem.OtherDiscount.toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`,
-        `10${mainItem.RefundAmount.toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`,
-        `11${mainItem.TaxAmount.toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`,
-        `12${mainItem.ServiceChargeAmount.toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`,
-        `13${mainItem.NetSalesAmount.toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`,
-        `14${mainItem.CashSales.toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`,
-        `15${mainItem.CreditDebitsales.toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`,
-        `16${mainItem.OtherPaymentSales.toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`,
-        `17${mainItem.VoidAmount.toFixed(2).replace(/[^a-zA-Z0-9]/g, '')}`,
-        `18${mainItem.CustomerCount}`,
-        `19${mainItem.ControlNumber}`,
-        `20${mainItem.NoSalesTransaction}`,
-        salestypeD.join('\r\n')
-      ].join('\r\n')
+      // console.log(salestypeR)
+      // Format the sales data
+      // console.log(response?.List)
+      let dailySalesData = (response?.List || [])
+        .map((item: DailySale) => {
+          return [
+            `01${item?.MallPartnerCodeId ?? 'NA'}`,
+            `02${item?.Terminal ?? 'NA'}`,
+            `03${String(formatDateMMDDYYYY(new Date(item.Date))).replace(/[^a-zA-Z0-9]/g, '') ?? 'NA'}`,
+            `04${Number(item?.OldAccumulatedTotal ?? 'NA')
+              .toFixed(2)
+              .toString()
+              .replace(/[^a-zA-Z0-9]/g, '')}`,
+            `05${Number(item?.NewAccumulatedTotal ?? 'NA')
+              .toFixed(2)
+              .toString()
+              .replace(/[^a-zA-Z0-9]/g, '')}`,
+            `06${Number(item?.GrossSalesAmount ?? 'NA')
+              .toFixed(2)
+              .toString()
+              .replace(/[^a-zA-Z0-9]/g, '')}`,
+            `07${Number(item?.NonTaxSalesAmount ?? 'NA')
+              .toFixed(2)
+              .toString()
+              .replace(/[^a-zA-Z0-9]/g, '')}`,
+            `08${Number(item?.GovMandatedDiscount)
+              .toFixed(2)
+              .toString()
+              .replace(/[^a-zA-Z0-9]/g, '')}`,
+            `09${Number(item?.OtherDiscount ?? 'NA')
+              .toFixed(2)
+              .toString()
+              .replace(/[^a-zA-Z0-9]/g, '')}`,
+            `10${Number(item?.RefundAmount ?? 'NA')
+              .toFixed(2)
+              .toString()
+              .replace(/[^a-zA-Z0-9]/g, '')}`,
+            `11${Number(item?.TaxAmount ?? 'NA')
+              .toFixed(2)
+              .toString()
+              .replace(/[^a-zA-Z0-9]/g, '')}`,
+            `12${Number(item?.ServiceChargeAmount ?? 'NA')
+              .toFixed(2)
+              .toString()
+              .replace(/[^a-zA-Z0-9]/g, '')}`,
+            `13${Number(item?.NetSalesAmount ?? 'NA')
+              .toFixed(2)
+              .toString()
+              .replace(/[^a-zA-Z0-9]/g, '')}`,
+            `14${Number(item?.CashSales ?? 'NA')
+              .toFixed(2)
+              .toString()
+              .replace(/[^a-zA-Z0-9]/g, '')}`,
+            `15${Number(item?.CreditDebitsales ?? 'NA')
+              .toFixed(2)
+              .toString()
+              .replace(/[^a-zA-Z0-9]/g, '')}`,
+            `16${Number(item?.OtherPaymentSales ?? 'NA')
+              .toFixed(2)
+              .toString()
+              .replace(/[^a-zA-Z0-9]/g, '')}`,
+            `17${Number(item?.VoidAmount ?? 'NA')
+              .toFixed(2)
+              .toString()
+              .replace(/[^a-zA-Z0-9]/g, '')}`,
+            `18${item?.CustomerCount ?? 'NA'}`,
+            `19${item?.ControlNumber ?? 'NA'}`,
+            `20${item?.NoSalesTransaction ?? 'NA'}`,
+            salestypeD.join('\n')
+          ].join('\n')
+        })
+        .join('\n')
 
       if (!dailySalesData || dailySalesData.length === 0)
         dailySalesData = [

@@ -29,13 +29,10 @@ ipcMain.handle(
 
       const filePath = paths.join(path, `${fileName}`)
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
-
-      let dailyDiscountData = (rawData as DailyDiscount[])
-        .map(
-          (item: DailyDiscount) =>
-            `${item.DiscountCode}, ${item.DiscountDescription}, ${Number(item.DiscountAmount).toFixed(2)}`
-        )
-        .join('\r\n')
+      let dailyDiscountData = response.List.map(
+        (item: DailyDiscount) =>
+          `${item.DiscountCode}, ${item.DiscountDescription}, ${Number(item.DiscountAmount).toFixed(2)}`
+      ).join('\r\n')
 
       // zero discounts as fallback
       if (!dailyDiscountData || dailyDiscountData.length === 0) dailyDiscountData = `NA, NA, 0.00`
