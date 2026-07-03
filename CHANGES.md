@@ -1,4 +1,18 @@
-## LATEST: 1.1.9
+## LATEST: v1.2.2
+
+```
+    Software: Innsoft Sales Insight & Analytics
+    Version: v1.2.2
+    Author: Mark Dinglasa
+    DatePublished: 2026-07-04 | 01:58 AM
+
+    Note:
+       Updated Alliance Report to make it into db -> service -> controller -> bridge -> interface
+       Refactored into utilizing typeORM and not putting the whole query.
+
+       Refactored the EJournal same workflow as Alliance Report & Megaworld Reports. to be uniform, and standardize implementation.
+
+```
 
 ```
     Software: Innsoft Sales Insight & Analytics
