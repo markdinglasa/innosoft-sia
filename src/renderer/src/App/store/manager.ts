@@ -15,7 +15,8 @@ export const initialState: Manager = {
   batchNo: 0,
   allianceCategory: 'Food',
   allianceReportType: 'salesEOD',
-  dates: new Date().toString()
+  dates: new Date().toString(),
+  terminals: []
 }
 
 const manager = createSlice({
@@ -95,6 +96,12 @@ const manager = createSlice({
         state: current(state)
       })
     },
+    setTerminals: (
+      state: Manager,
+      { payload: terminals }: PayloadAction<{ id: number; terminal: string }[]>
+    ) => {
+      state.terminals = terminals
+    },
     setManager: setLocalAndStateReducer<Manager>(SIA_MANAGER)
   }
 })
@@ -110,6 +117,7 @@ export const {
   setAllianceReportType,
   setInitialize,
   setDates,
+  setTerminals,
   setManager
 } = manager.actions
 

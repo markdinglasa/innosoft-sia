@@ -43,7 +43,7 @@ export const Tenant: SFC = ({ className }) => {
     return (
       <SpacedItems
         leftContent={
-          <S.TenantIdentification tenantCode={tenantCode!} salesType={`${tenant?.SMSalesType}`} />
+          <S.TenantIdentification tenantCode={tenantCode} salesType={`${tenant?.SMSalesType}`} />
         }
         rightContent={!initialized && <EditButton onClick={toggleModal} />}
       />
@@ -68,30 +68,28 @@ export const Tenant: SFC = ({ className }) => {
           />
         </S.Div>
         {activeTenant === Tenants.ALLIANCE && (
-          <>
-            <S.Col className="w-full">
-              <S.Div className="w-full border border-red-400">
-                <SelectOption
-                  value={String(allianceCategory ?? '')}
-                  label="Select Category"
-                  name="Category"
-                  options={AllianceCategory}
-                  onChange={(e: any) => dispatch(setAllianceCategory(e.target.value))}
-                  disabled={initialized}
-                />
-              </S.Div>
-              <S.Div className="w-full">
-                <SelectOption
-                  value={String(allianceReportType ?? '')}
-                  label="Select Report"
-                  name="ReportType"
-                  options={AllianceReportTypeOptions}
-                  onChange={(e: any) => dispatch(setAllianceReportType(e.target.value))}
-                  disabled={initialized}
-                />
-              </S.Div>
-            </S.Col>
-          </>
+          <S.Col className="w-full">
+            <S.Div className="w-full border border-red-400">
+              <SelectOption
+                value={String(allianceCategory ?? '')}
+                label="Select Category"
+                name="Category"
+                options={AllianceCategory}
+                onChange={(e: any) => dispatch(setAllianceCategory(e.target.value))}
+                disabled={initialized}
+              />
+            </S.Div>
+            <S.Div className="w-full">
+              <SelectOption
+                value={String(allianceReportType ?? '')}
+                label="Select Report"
+                name="ReportType"
+                options={AllianceReportTypeOptions}
+                onChange={(e: any) => dispatch(setAllianceReportType(e.target.value))}
+                disabled={initialized}
+              />
+            </S.Div>
+          </S.Col>
         )}
         {activeTenant && activeTenant !== GenericReportType.E_JOURNAL && (
           <Card heading={`${activeTenant} Tenant`}>{renderContent()}</Card>

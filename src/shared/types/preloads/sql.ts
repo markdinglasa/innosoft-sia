@@ -7,6 +7,7 @@ import {
   MEGAWORLD,
   MstAccount,
   MstUser,
+  MstTerminal,
   RLC,
   SIA
 } from './sqlChannels'
@@ -25,6 +26,7 @@ export const SqlChannel = {
   ...SIA,
   ...MstAccount,
   ...MstUser,
+  ...MstTerminal,
   ...MEGAWORLD,
   ...Alliance,
   ...RLC,

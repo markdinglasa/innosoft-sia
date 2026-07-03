@@ -10,6 +10,7 @@ export interface Manager {
   allianceCategory: string
   allianceReportType: string
   dates: string | null
+  terminals: { id: number; terminal: string }[]
 }
 
 export enum Tenants {
