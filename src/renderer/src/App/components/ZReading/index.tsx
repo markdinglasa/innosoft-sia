@@ -96,26 +96,23 @@ export const ZReading: SFC<ZReadingProps> = ({ className, CurrentDate }) => {
             <S.TextNormal> {formatNumber(Number(regularDiscounts))}</S.TextNormal>
           </S.DivBetween>
           {discounts.length > 0 &&
-            discounts.map(
-              (discount, index) =>
-                discount.IsGovernmentMandated && (
-                  <S.Div key={index}>
-                    <S.DivBetween>
-                      <S.TextNormal style={{ textAlign: 'end', padding: '2px' }}>
-                        {discount?.Discount ?? 'NA'}:
-                      </S.TextNormal>
-                      <S.TextNormal>
-                        {formatNumber(Number(discount?.GovDiscountAmount ?? 0))}
-                      </S.TextNormal>
-                    </S.DivBetween>
-                    <S.DivBetween>
-                      <S.TextNormal style={{ textAlign: 'end', padding: '2px' }}>
-                        Less:
-                      </S.TextNormal>
-                      <S.TextNormal>{formatNumber(Number(discount?.VATExempt ?? 0))}</S.TextNormal>
-                    </S.DivBetween>
-                  </S.Div>
-                )
+            discounts.map((discount, index) =>
+              discount.IsGovernmentMandated ? (
+                <S.Div key={index}>
+                  <S.DivBetween>
+                    <S.TextNormal style={{ textAlign: 'end', padding: '2px' }}>
+                      {discount?.Discount ?? 'NA'}:
+                    </S.TextNormal>
+                    <S.TextNormal>
+                      {formatNumber(Number(discount?.GovDiscountAmount ?? 0))}
+                    </S.TextNormal>
+                  </S.DivBetween>
+                  <S.DivBetween>
+                    <S.TextNormal style={{ textAlign: 'end', padding: '2px' }}>Less:</S.TextNormal>
+                    <S.TextNormal>{formatNumber(Number(discount?.VATExempt ?? 0))}</S.TextNormal>
+                  </S.DivBetween>
+                </S.Div>
+              ) : null
             )}
           <S.DivBetween>
             <S.TextNormal style={{ textAlign: 'end', padding: '2px' }}>Net Sales:</S.TextNormal>

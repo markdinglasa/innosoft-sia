@@ -5,7 +5,7 @@ import { getSettings } from '@shared/selectors'
 import { setSnackbar } from '@shared/store/manager'
 import { AppDispatch, ButtonColor, ButtonType, SFC, Theme, ToastType } from '@shared/types'
 import yup from '@shared/utils/yup'
-import { Form, Formik } from 'formik'
+import { Formik } from 'formik'
 import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { UpdateChecker } from '../../components'
@@ -100,7 +100,7 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
               handleBlur,
               setFieldValue
             }) => (
-              <Form>
+              <S.Form>
                 <S.Div>
                   <SwitchButton
                     Name="IsDateRange"
@@ -243,7 +243,7 @@ export const SettingsModal: SFC<DatabaseModalProps> = ({ className, close, theme
                     type={ButtonType.submit}
                   />
                 </S.ButtonContainer>
-              </Form>
+              </S.Form>
             )}
           </Formik>
         </S.CardBody>

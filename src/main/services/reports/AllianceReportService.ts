@@ -22,6 +22,7 @@ import {
   generateAllianceFilename
 } from '../../functions'
 import { AppDataSource } from '../../typeORM/configurations'
+import { DbCapabilities, isReturnedExpr } from '../../typeORM/db-capabilities'
 import { formatNumber } from '../../utils/format'
 
 export class AllianceReportService {
@@ -30,17 +31,21 @@ export class AllianceReportService {
    */
   static async getControlNumber(terminalId: number, dates: string): Promise<number> {
     const formattedDate = format(new Date(dates), 'yyyy-MM-dd')
-    const collections = await AppDataSource.getRepository(TrnCollectionEntity)
+    const qb = AppDataSource.getRepository(TrnCollectionEntity)
       .createQueryBuilder('collection')
       .select('CAST(collection.collectionDate AS DATE)', 'SalesDate')
       .where('collection.terminalId = :terminalId', { terminalId })
       .andWhere('CAST(collection.collectionDate AS DATE) <= :dates', { dates: formattedDate })
       .andWhere('collection.isLocked = :isLocked', { isLocked: true })
       .andWhere('collection.isCancelled = :isCancelled', { isCancelled: false })
-      .andWhere('(collection.isReturned IS NULL OR collection.isReturned = 0)')
       .andWhere('collection.amount > 0')
       .groupBy('CAST(collection.collectionDate AS DATE)')
-      .getRawMany()
+
+    if (DbCapabilities.hasIsReturned) {
+      qb.andWhere('(collection.isReturned IS NULL OR collection.isReturned = 0)')
+    }
+
+    const collections = await qb.getRawMany()
 
     return collections.length
   }
@@ -50,31 +55,29 @@ export class AllianceReportService {
    */
   static async getPreviousAmounts(terminalId: number, dates: string) {
     const formattedDate = format(new Date(dates), 'yyyy-MM-dd')
-    const result = await AppDataSource.getRepository(TrnSalesEntity)
-      .createQueryBuilder('sales')
+    const result = await AppDataSource.getRepository(TrnCollectionEntity)
+      .createQueryBuilder('collection')
+      .leftJoin('collection.sales', 'sales')
       .leftJoin('sales.salesLines', 'salesLine')
-      .leftJoin('sales.collections', 'collection')
       .leftJoin('salesLine.discount', 'discount')
       .select(
-        'SUM(ROUND(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.amount ELSE 0 END, 2))',
+        `SUM(ROUND(CASE WHEN collection.isCancelled = 0 AND COALESCE(${isReturnedExpr()}, 0) = 0 THEN salesLine.amount ELSE 0 END, 2))`,
         'PreviousReading'
       )
       .addSelect(
-        'SUM(ROUND(CASE WHEN salesLine.taxRate > 0 AND COALESCE(collection.isReturned, 0) = 0 AND sales.isCancelled = 0 THEN salesLine.taxAmount ELSE 0 END, 2))',
+        `SUM(ROUND(CASE WHEN salesLine.taxRate > 0 AND COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 AND collection.isCancelled = 0 THEN salesLine.taxAmount ELSE 0 END, 2))`,
         'previoustax'
       )
       .addSelect(
-        'SUM(ROUND(CASE WHEN COALESCE(collection.isReturned, 0) = 0 AND sales.isCancelled = 0 AND salesLine.taxAmount > 0 THEN salesLine.amount - salesLine.taxAmount ELSE 0 END, 2))',
+        `SUM(ROUND(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 AND collection.isCancelled = 0 AND salesLine.taxAmount > 0 THEN salesLine.amount - salesLine.taxAmount ELSE 0 END, 2))`,
         'previoustaxsale'
       )
       .addSelect(
-        'SUM(ROUND(CASE WHEN COALESCE(collection.isReturned, 0) = 0 AND sales.isCancelled = 0 AND salesLine.taxAmount < 1 AND discount.id <> 4 AND discount.id <> 3 THEN salesLine.amount ELSE 0 END, 2))',
+        `SUM(ROUND(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 AND collection.isCancelled = 0 AND salesLine.taxAmount < 1 AND discount.id <> 4 AND discount.id <> 3 THEN salesLine.amount ELSE 0 END, 2))`,
         'previousnotaxsale'
       )
-      .where('sales.isLocked = :isLocked', { isLocked: true })
-      .andWhere('sales.terminalId = :terminalId', { terminalId })
-      .andWhere('CAST(sales.salesDate AS DATE) < :dates', { dates: formattedDate })
-      .groupBy('sales.terminalId')
+      .where('collection.terminalId = :terminalId', { terminalId })
+      .andWhere('CAST(collection.collectionDate AS DATE) < :dates', { dates: formattedDate })
       .getRawOne()
 
     return {
@@ -146,31 +149,31 @@ export class AllianceReportService {
         'date'
       )
       .addSelect(
-        'SUM(ROUND(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.amount ELSE 0 END, 2))',
+        `SUM(ROUND(CASE WHEN collection.isCancelled = 0 AND COALESCE(${isReturnedExpr()}, 0) = 0 THEN salesLine.amount ELSE 0 END, 2))`,
         'gross'
       )
       .addSelect(
-        'SUM(ROUND(CASE WHEN salesLine.taxRate > 0 AND COALESCE(collection.isReturned, 0) = 0 AND sales.isCancelled = 0 THEN salesLine.taxAmount ELSE 0 END, 2))',
+        `SUM(ROUND(CASE WHEN salesLine.taxRate > 0 AND COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 THEN salesLine.taxAmount ELSE 0 END, 2))`,
         'vat'
       )
       .addSelect(
-        "SUM(ROUND(CASE WHEN salesLine.taxRate > 0 AND COALESCE(collection.isReturned, 0) = 0 AND sales.isCancelled = 0 AND tax.tax = 'LOCAL TAX' THEN salesLine.taxAmount ELSE 0 END, 2))",
+        `SUM(ROUND(CASE WHEN salesLine.taxRate > 0 AND COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 AND tax.tax = 'LOCAL TAX' THEN salesLine.taxAmount ELSE 0 END, 2))`,
         'localtax'
       )
       .addSelect(
-        "SUM(ROUND(CASE WHEN salesLine.taxRate > 0 AND COALESCE(collection.isReturned, 0) = 0 AND sales.isCancelled = 0 AND tax.tax = 'AMUSEMENT TAX' THEN salesLine.taxAmount ELSE 0 END, 2))",
+        `SUM(ROUND(CASE WHEN salesLine.taxRate > 0 AND COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 AND tax.tax = 'AMUSEMENT TAX' THEN salesLine.taxAmount ELSE 0 END, 2))`,
         'amusement'
       )
       .addSelect(
-        "SUM(ROUND(CASE WHEN COALESCE(collection.isReturned, 0) = 0 AND sales.isCancelled = 0 AND discount.discount <> 'Senior Citizen Discount' AND discount.discount <> 'PWD' AND COALESCE(salesLine.taxAmount, 0) > 0 THEN salesLine.amount - salesLine.taxAmount ELSE 0 END, 2))",
+        `SUM(ROUND(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 AND discount.discount <> 'Senior Citizen Discount' AND discount.discount <> 'PWD' AND COALESCE(salesLine.taxAmount, 0) > 0 THEN salesLine.amount ELSE 0 END, 2))`,
         'taxsale'
       )
       .addSelect(
-        'SUM(ROUND(CASE WHEN COALESCE(collection.isReturned, 0) = 0 AND sales.isCancelled = 0 AND COALESCE(salesLine.taxAmount, 0) < 1 THEN salesLine.amount ELSE 0 END, 2))',
+        `SUM(ROUND(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 AND COALESCE(salesLine.taxAmount, 0) < 1 AND salesLine.itemId <> 1 THEN salesLine.amount ELSE 0 END, 2))`,
         'notaxsale'
       )
       .addSelect(
-        'SUM(ROUND(CASE WHEN salesLine.price2 > 0 AND COALESCE(collection.isReturned, 0) = 0 AND sales.isCancelled = 0 THEN salesLine.quantity * (salesLine.price2LessTax - (salesLine.price2LessTax * (salesLine.discountRate / 100))) ELSE CASE WHEN salesLine.taxId = 5 THEN salesLine.amount ELSE 0 END END, 2))',
+        `SUM(ROUND(CASE WHEN salesLine.price2 > 0 AND COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 THEN salesLine.quantity * (salesLine.price2LessTax - (salesLine.price2LessTax * (salesLine.discountRate / 100))) ELSE CASE WHEN salesLine.taxId = 5 THEN salesLine.amount ELSE 0 END END, 2))`,
         'vatexempt'
       )
       .addSelect(
@@ -182,64 +185,66 @@ export class AllianceReportService {
         'voidcnt'
       )
       .addSelect(
-        "SUM(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = 1) AND COALESCE(salesLine.discountAmount, 0) > 0 AND discount.discount NOT IN ('Senior Citizen Discount', 'PWD') THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)",
+        `SUM(CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND COALESCE(salesLine.discountAmount, 0) > 0 AND discount.discount NOT IN ('Senior Citizen Discount', 'PWD') THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)`,
         'disc'
       )
       .addSelect(
-        "COUNT(DISTINCT CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = 1) AND salesLine.discountAmount > 0 AND discount.discount NOT IN ('Senior Citizen Discount', 'PWD') THEN sales.id ELSE null END)",
+        `COUNT(DISTINCT CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND salesLine.discountAmount > 0 AND discount.discount NOT IN ('Senior Citizen Discount', 'PWD') THEN sales.id ELSE null END)`,
         'disccnt'
       )
       .addSelect(
-        'SUM(ROUND(CASE WHEN sales.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 2 THEN salesLine.amount ELSE 0 END, 2))',
+        `SUM(ROUND(CASE WHEN sales.isCancelled = 0 AND COALESCE(${isReturnedExpr()}, 0) = 2 THEN salesLine.amount ELSE 0 END, 2))`,
         'refund'
       )
       .addSelect(
-        'COUNT(CASE WHEN sales.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 2 THEN salesLine.amount ELSE null END)',
+        `COUNT(CASE WHEN sales.isCancelled = 0 AND COALESCE(${isReturnedExpr()}, 0) = 2 THEN salesLine.amount ELSE null END)`,
         'refundcnt'
       )
       .addSelect(
-        "SUM(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = 1) AND discount.discount = 'Senior Citizen Discount' THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)",
+        `SUM(CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND discount.discount = 'Senior Citizen Discount' THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)`,
         'senior'
       )
       .addSelect(
-        "COUNT(DISTINCT CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = 1) AND discount.discount = 'Senior Citizen Discount' THEN sales.id ELSE null END)",
+        `COUNT(DISTINCT CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND discount.discount = 'Senior Citizen Discount' THEN sales.id ELSE null END)`,
         'seniorcnt'
       )
       .addSelect(
-        "SUM(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = 1) AND discount.discount = 'PWD' THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)",
+        `SUM(CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND discount.discount = 'PWD' THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)`,
         'pwd'
       )
       .addSelect(
-        "COUNT(DISTINCT CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = 1) AND discount.discount = 'PWD' THEN sales.id ELSE null END)",
+        `COUNT(DISTINCT CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND discount.discount = 'PWD' THEN sales.id ELSE null END)`,
         'pwdcnt'
       )
       .addSelect(
-        "SUM(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = 1) AND discount.discount = 'Diplomat Discount' THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)",
+        `SUM(CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND discount.discount = 'Diplomat Discount' THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)`,
         'diplomat'
       )
       .addSelect(
-        "COUNT(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = 1) AND discount.discount = 'Diplomat Discount' THEN sales.id ELSE null END)",
+        `COUNT(CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND discount.discount = 'Diplomat Discount' THEN sales.id ELSE null END)`,
         'diplomatcnt'
       )
       .addSelect(
-        "SUM(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = 1) AND (discount.discount LIKE '%National Athlete%' OR discount.discount LIKE '%Coach%') THEN ROUND(salesLine.discountAmount * salesLine.quantity, 2) ELSE 0 END)",
+        `SUM(CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND (discount.discount LIKE '%National Athlete%' OR discount.discount LIKE '%Coach%') THEN ROUND(salesLine.discountAmount * salesLine.quantity, 2) ELSE 0 END)`,
         'nac'
       )
       .addSelect(
-        "COUNT(DISTINCT CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = 1) AND (discount.discount LIKE '%National Athlete%' OR discount.discount LIKE '%Coach%') THEN sales.id ELSE null END)",
+        `COUNT(DISTINCT CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND (discount.discount LIKE '%National Athlete%' OR discount.discount LIKE '%Coach%') THEN sales.id ELSE null END)`,
         'naccnt'
       )
       .addSelect(
-        "SUM(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = 1) AND discount.discount LIKE '%Solo Parent%' THEN ROUND(salesLine.discountAmount * salesLine.quantity, 2) ELSE 0 END)",
+        `SUM(CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND discount.discount LIKE '%Solo Parent%' THEN ROUND(salesLine.discountAmount * salesLine.quantity, 2) ELSE 0 END)`,
         'spd'
       )
       .addSelect(
-        "COUNT(DISTINCT CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = 1) AND discount.discount LIKE '%Solo Parent%' THEN sales.id ELSE null END)",
+        `COUNT(DISTINCT CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND discount.discount LIKE '%Solo Parent%' THEN sales.id ELSE null END)`,
         'spdcnt'
       )
       .addSelect("MIN(REPLACE(collection.collectionNumber, '-', ''))", 'receiptstart')
       .addSelect("MAX(REPLACE(collection.collectionNumber, '-', ''))", 'receiptend')
       .addSelect('COUNT(DISTINCT sales.id)', 'trxcnt')
+      .addSelect('MIN(collection.collectionDate)', 'opentime')
+      .addSelect('MAX(collection.collectionDate)', 'closetime')
       .where('sales.isLocked = :isLocked', { isLocked: true })
       .andWhere('collection.isLocked = :isLocked', { isLocked: true })
       .andWhere('collection.terminalId = :terminalId', { terminalId })
@@ -443,7 +448,7 @@ export class AllianceReportService {
 
         // Sum lines details
         let voidAmt = s.isCancelled ? Number(s.amount || 0) : 0
-        let subtotal = cash + credit + charge + giftcheck + othertender
+        let subtotal = 0
 
         // Sum VAT details
         let vat = 0
@@ -484,11 +489,11 @@ export class AllianceReportService {
             }
 
             if (sl.taxAmount > 0) {
-              taxsale += Number(sl.amount || 0) - Number(sl.taxAmount || 0)
-              if (!s.isCancelled) {
-                taxincsale += Number(sl.amount || 0) - Number(sl.taxAmount || 0)
+              taxsale += Number(sl.amount || 0)
+              if (!c.isCancelled) {
+                taxincsale += Number(sl.amount || 0)
               }
-            } else {
+            } else if (sl.itemId !== 1) {
               // no tax
               notaxsale += Number(sl.amount || 0)
             }
@@ -520,6 +525,11 @@ export class AllianceReportService {
               if (discName !== 'Senior Citizen Discount' && discName !== 'PWD') {
                 totalDiscount += discAmt
               }
+            }
+            
+            // Add to subtotal (excluding service charge which is itemId === 1)
+            if (sl.itemId !== 1) {
+              subtotal += Number(sl.amount || 0)
             }
           }
         }
@@ -668,7 +678,7 @@ export class AllianceReportService {
       }
 
       const tax = Number(sl.taxAmount || 0)
-      const total = Math.round((qty * unitprice - discAmt) * 100) / 100
+      const total = Number(sl.amount || 0)
 
       list.push({
         sku,
@@ -680,7 +690,7 @@ export class AllianceReportService {
         diplomat,
         nac,
         spd,
-        taxtype: '0',
+        taxtype: tax > 0 ? '0' : '2',
         tax,
         memo: collection.sales.remarks || 'NA',
         total
@@ -765,8 +775,8 @@ export class AllianceReportService {
           `<newtaxsale>${formatNumber(summary.newtaxsale)}</newtaxsale>`,
           `<previousnotaxsale>${formatNumber(summary.previousnotaxsale)}</previousnotaxsale>`,
           `<newnotaxsale>${formatNumber(summary.newnotaxsale)}</newnotaxsale>`,
-          `<opentime>${formatDateYYYYMMDDHHMMSS(new Date(summary.opentime)) ?? 'NA'}</opentime>`,
-          `<closetime>${formatDateYYYYMMDDHHMMSS(new Date(summary.closetime)) ?? 'NA'}</closetime>`,
+          `<opentime>${formatDateYYYYMMDDHHMMSS(new Date(summary.opentime))}</opentime>`,
+          `<closetime>${formatDateYYYYMMDDHHMMSS(new Date(summary.closetime))}</closetime>`,
           `<gross>${formatNumber(summary.gross)}</gross>`,
           `<vat>${formatNumber(summary.vat)}</vat>`,
           `<localtax>${formatNumber(summary.localtax)}</localtax>`,
@@ -820,8 +830,8 @@ export class AllianceReportService {
           `<newtaxsale>${Number(prevReading.previoustaxsale).toFixed(2) ?? '0.00'}</newtaxsale>`,
           `<previousnotaxsale>${Number(prevReading.previousnotaxsale).toFixed(2) ?? '0.00'}</previousnotaxsale>`,
           `<newnotaxsale>${Number(prevReading.previousnotaxsale).toFixed(2) ?? '0.00'}</newnotaxsale>`,
-          `<opentime>${formatDateYYYYMMDDHHMMSS(new Date(Dates)) ?? 'NA'}</opentime>`,
-          `<closetime>${formatDateYYYYMMDDHHMMSS(new Date(Dates)) ?? 'NA'}</closetime>`,
+          `<opentime>${formatDateYYYYMMDDHHMMSS(new Date(Dates))}</opentime>`,
+          `<closetime>${formatDateYYYYMMDDHHMMSS(new Date(Dates))}</closetime>`,
           `<gross>${Number(0).toFixed(2) ?? '0.00'}</gross>`,
           `<vat>${Number(0).toFixed(2) ?? '0.00'}</vat>`,
           `<localtax>${Number(0).toFixed(2) ?? '0.00'}</localtax>`,
@@ -865,12 +875,13 @@ export class AllianceReportService {
       }
 
       // Format transaction items
-      const trxListXml = await Promise.all(
-        transactions.map(async (item) => {
-          const lines = await this.getProductLines(Terminal, Dates, String(item.receiptno))
-          const salesLineXml = lines
-            .map((lineItem) => {
-              return `
+      // Format transaction items
+      const trxListXml: string[] = []
+      for (const item of transactions) {
+        const lines = await this.getProductLines(Terminal, Dates, String(item.receiptno))
+        const salesLineXml = lines
+          .map((lineItem) => {
+            return `
               <line>
                 <sku>${lineItem.sku ?? 'NA'}</sku>
                 <qty>${lineItem.qty ?? 0}</qty>
@@ -887,10 +898,10 @@ export class AllianceReportService {
                 <total>${formatNumber(lineItem.total)}</total>
                 <choicetype></choicetype>
               </line>`
-            })
-            .join('\n')
+          })
+          .join('\n')
 
-          return `
+        trxListXml.push(`
           <trx>
             <receiptno>${item.receiptno}</receiptno>
             <void>${formatNumber(item.void)}</void>
@@ -931,9 +942,8 @@ export class AllianceReportService {
             <created>${formatNumber(item.created ?? 0)}</created>
             <memo>${item.memo && item.memo !== 'NA' ? item.memo : ''}</memo>
             ${salesLineXml}
-          </trx>`
-        })
-      )
+          </trx>`)
+      }
 
       const content = `
       <root>
@@ -1017,12 +1027,12 @@ export class AllianceReportService {
         .join('\n')
 
       // Format transaction items
-      const trxListXml = await Promise.all(
-        transactions.map(async (item) => {
-          const lines = await this.getProductLines(Terminal, Dates, String(item.receiptno))
-          const salesLineXml = lines
-            .map((lineItem) => {
-              return `
+      const trxListXml: string[] = []
+      for (const item of transactions) {
+        const lines = await this.getProductLines(Terminal, Dates, String(item.receiptno))
+        const salesLineXml = lines
+          .map((lineItem) => {
+            return `
               <line>
                 <sku>${lineItem.sku ?? 'NA'}</sku>
                 <qty>${lineItem.qty ?? 0}</qty>
@@ -1036,10 +1046,10 @@ export class AllianceReportService {
                 <memo>NA</memo>
                 <total>${formatNumber(lineItem.total)}</total>
               </line>`
-            })
-            .join('\n')
+          })
+          .join('\n')
 
-          return `
+        trxListXml.push(`
           <trx>
             <receiptno>${item.receiptno}</receiptno>
             <void>${formatNumber(item.void)}</void>
@@ -1077,9 +1087,8 @@ export class AllianceReportService {
             <posted>${item.posted ?? 'NA'}</posted>
             <memo>NA</memo>
             ${salesLineXml}
-          </trx>`
-        })
-      )
+          </trx>`)
+      }
 
       const content = `
       <root>

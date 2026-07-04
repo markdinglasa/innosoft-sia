@@ -5,6 +5,7 @@ import { TrnCollectionEntity } from '../../entities/transactions/TrnCollection.e
 import { TrnSalesEntity } from '../../entities/transactions/TrnSales.entity'
 import { TrnSalesLineEntity } from '../../entities/transactions/TrnSalesLine.entity'
 import { AppDataSource } from '../../typeORM/configurations'
+import { isReturnedExpr } from '../../typeORM/db-capabilities'
 
 export class MegaworldReportService {
   /**
@@ -33,7 +34,7 @@ export class MegaworldReportService {
       .leftJoin('collection.sales', 'sales')
       .leftJoin('sales.salesLines', 'salesLine')
       .select(
-        'SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.amount ELSE 0 END)',
+        `SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(${isReturnedExpr()}, 0) = 0 THEN salesLine.amount ELSE 0 END)`,
         'PreviousReading'
       )
       .where('collection.terminalId = :terminalId', { terminalId })
@@ -49,7 +50,7 @@ export class MegaworldReportService {
       .innerJoin('salesLine.sales', 'sales')
       .leftJoin(TrnCollectionEntity, 'collection', 'collection.salesId = salesLine.salesId')
       .select(
-        'SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.amount ELSE 0 END)',
+        `SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(${isReturnedExpr()}, 0) = 0 THEN salesLine.amount ELSE 0 END)`,
         'NetSales'
       )
       .addSelect(
@@ -57,17 +58,17 @@ export class MegaworldReportService {
         'VoidAmount'
       )
       .addSelect(
-        'SUM(CASE WHEN sales.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 2 THEN salesLine.amount ELSE 0 END)',
+        `SUM(CASE WHEN sales.isCancelled = 0 AND COALESCE(${isReturnedExpr()}, 0) = 2 THEN salesLine.amount ELSE 0 END)`,
         'RefundAmount'
       )
       .addSelect(
-        `SUM(CASE WHEN salesLine.price2 > 0 AND collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 
+        `SUM(CASE WHEN salesLine.price2 > 0 AND collection.isCancelled = 0 AND COALESCE(${isReturnedExpr()}, 0) = 0 
           THEN (salesLine.quantity * (salesLine.price2LessTax - (salesLine.price2LessTax * (salesLine.discountRate / 100)))) 
           ELSE CASE WHEN salesLine.taxId = 5 THEN salesLine.amount ELSE 0 END END)`,
         'VATExempt'
       )
       .addSelect(
-        'SUM(CASE WHEN salesLine.taxRate > 0 AND collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.taxAmount ELSE 0 END)',
+        `SUM(CASE WHEN salesLine.taxRate > 0 AND collection.isCancelled = 0 AND COALESCE(${isReturnedExpr()}, 0) = 0 THEN salesLine.taxAmount ELSE 0 END)`,
         'VATAmount'
       )
       .where('sales.isLocked = :isLocked', { isLocked: true })
@@ -107,13 +108,13 @@ export class MegaworldReportService {
       .leftJoin(TrnCollectionEntity, 'collection', 'collection.salesId = salesLine.salesId')
       .innerJoin('salesLine.discount', 'discount')
       .select(
-        `SUM(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = 1) 
+        `SUM(CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) 
           AND discount.discount IN (:...mandated)
           THEN COALESCE(salesLine.discountAmount * salesLine.quantity, 0) ELSE 0 END)`,
         'GovMandatedDiscount'
       )
       .addSelect(
-        `SUM(CASE WHEN (COALESCE(collection.isReturned, 0) = 0 OR sales.isCancelled = 1) 
+        `SUM(CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) 
           AND discount.discount NOT IN (:...mandated)
           THEN COALESCE(salesLine.discountAmount * salesLine.quantity, 0) ELSE 0 END)`,
         'OtherDiscount'
@@ -212,7 +213,7 @@ export class MegaworldReportService {
         'DiscountDescription'
       )
       .addSelect(
-        'SUM(CASE WHEN salesLine.discountAmount > 0 AND COALESCE(collection.isReturned, 0) = 0 THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)',
+        `SUM(CASE WHEN salesLine.discountAmount > 0 AND COALESCE(${isReturnedExpr()}, 0) = 0 THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)`,
         'DiscountAmount'
       )
       .where('sales.isLocked = :isLocked', { isLocked: true })
@@ -238,7 +239,7 @@ export class MegaworldReportService {
       .addSelect('collection.terminalId', 'Terminal')
       .addSelect(':dates', 'Date')
       .addSelect(
-        'SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 THEN collection.amount ELSE 0 END)',
+        `SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(${isReturnedExpr()}, 0) = 0 THEN collection.amount ELSE 0 END)`,
         'NetSalesAmountDay'
       )
       .addSelect('COUNT(DISTINCT collection.id)', 'NoSalesTransactionDay')
@@ -267,7 +268,7 @@ export class MegaworldReportService {
         'HourCode'
       )
       .addSelect(
-        'SUM(CASE WHEN COALESCE(collection.isReturned, 0) = 2 THEN 0 ELSE COALESCE(salesLine.amount, 0) END)',
+        `SUM(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 2 THEN 0 ELSE COALESCE(salesLine.amount, 0) END)`,
         'NetSalesAmountHour'
       )
       .addSelect('COUNT(DISTINCT collection.id)', 'NoSalesTransactionHour')

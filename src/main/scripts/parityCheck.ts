@@ -1,5 +1,7 @@
-import { AppDataSource } from '../typeORM/configurations'
-import { AllianceReportService } from '../services/reports/AllianceReportService'
+import ElectronStore from 'electron-store'
+import fs from 'fs'
+import os from 'os'
+import path from 'path'
 import {
   AllianceProductLineQuery,
   AllianceProductsQuery,
@@ -7,19 +9,17 @@ import {
   PreviousAmountsQuery,
   ZControlNumber
 } from '../../shared/query'
-import { recordByQuery } from '../model'
+import { AllianceSalesEOD, AllianceSalesProduct, AllianceSalesTrx, AllianceSalesTrxline, AllianceType } from '../../shared/types'
 import {
   formatDateDash,
   formatDateYYYYMMDD,
   formatDateYYYYMMDDHHMMSS,
   generateAllianceFilename
 } from '../functions'
+import { recordByQuery } from '../model'
+import { AllianceReportService } from '../services/reports/AllianceReportService'
+import { AppDataSource } from '../typeORM/configurations'
 import { formatNumber } from '../utils/format'
-import { AllianceSalesEOD, AllianceSalesProduct, AllianceSalesTrx, AllianceSalesTrxline, AllianceType } from '../../shared/types'
-import ElectronStore from 'electron-store'
-import path from 'path'
-import os from 'os'
-import fs from 'fs'
 
 async function setupDb() {
   const store = new ElectronStore({
@@ -211,8 +211,8 @@ async function generateOldXml(
         `<newtaxsale>${formatNumber(item.newtaxsale)}</newtaxsale>`,
         `<previousnotaxsale>${formatNumber(item.previousnotaxsale)}</previousnotaxsale>`,
         `<newnotaxsale>${formatNumber(item.newnotaxsale)}</newnotaxsale>`,
-        `<opentime>${formatDateYYYYMMDDHHMMSS(new Date(item.opentime)) ?? 'NA'}</opentime>`,
-        `<closetime>${formatDateYYYYMMDDHHMMSS(new Date(item.closetime)) ?? 'NA'}</closetime>`,
+        `<opentime>${formatDateYYYYMMDDHHMMSS(new Date(item.opentime))}</opentime>`,
+        `<closetime>${formatDateYYYYMMDDHHMMSS(new Date(item.closetime))}</closetime>`,
         `<gross>${formatNumber(item.gross)}</gross>`,
         `<vat>${formatNumber(item.vat)}</vat>`,
         `<localtax>${formatNumber(item.localtax)}</localtax>`,

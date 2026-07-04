@@ -1,6 +1,6 @@
 import { Loader } from '@shared/components'
 import { ButtonColor, ButtonType, SFC } from '@shared/types'
-import React, { useMemo } from 'react'
+import React from 'react'
 import * as S from './Styles'
 
 export interface ButtonProps {
@@ -19,23 +19,13 @@ export interface ButtonProps {
 export const Button: SFC<ButtonProps> = ({
   color,
   className,
-  dirty = true,
-  disabled = false,
   iconLeft,
   iconRight,
   isSubmitting = false,
-  isValid = false,
   onClick,
   text,
   type = ButtonType.button
 }) => {
-  const buttonIsDisabled = useMemo(() => {
-    if (ButtonType.submit) {
-      return !dirty || disabled || isSubmitting || !isValid
-    } else {
-      return disabled || isSubmitting
-    }
-  }, [dirty, disabled, isSubmitting, isValid, type])
 
   const renderButtonContent = () => (
     <>
@@ -49,7 +39,7 @@ export const Button: SFC<ButtonProps> = ({
     <S.Button
       $color={color}
       className={className}
-      disabled={buttonIsDisabled}
+      //disabled={buttonIsDisabled}
       hasIcon={!!iconLeft || !!iconRight}
       onClick={onClick}
       type={type}

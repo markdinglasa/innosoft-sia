@@ -1,0 +1,30 @@
+{
+  "r1": [
+    {
+      "Id": 106512,
+      "PeriodId": 1,
+      "CollectionDate": "2024-11-20T00:00:00.000Z",
+      "CollectionNumber": "001-0001-000015",
+      "TerminalId": 1,
+      "ManualORNumber": "001-0001-000015",
+      "CustomerId": 5451,
+      "Remarks": null,
+      "SalesId": 38588,
+      "SalesBalanceAmount": 0,
+      "Amount": 1408,
+      "TenderAmount": 2000,
+      "ChangeAmount": 592,
+      "PreparedBy": 126,
+      "CheckedBy": 126,
+      "ApprovedBy": 126,
+      "IsReturn": null,
+      "IsCancelled": false,
+      "IsLocked": true,
+      "EntryUserId": 126,
+      "EntryDateTime": "2024-11-20T12:26:52.000Z",
+      "UpdateUserId": 126,
+      "UpdateDateTime": "2024-11-20T12:26:52.000Z",
+      "PostCode": null
+    }
+  ]
+}

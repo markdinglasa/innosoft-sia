@@ -1,5 +1,6 @@
 import { Button as UButton } from '@shared/components'
 import { colors } from '@shared/styles'
+import { Form as UForm } from 'formik'
 import styled from 'styled-components'
 import { Modal } from '../../components'
 
@@ -41,6 +42,7 @@ export const ZReadingCon = styled.div`
   display: flex;
   flex-direction: column;
   padding: 1rem 0.5rem 0;
+  gap: 2rem;
 `
 export const TextAreaContainer = styled.div`
   padding: 0 0 1rem 0;
@@ -52,4 +54,9 @@ export const ButtonContainer = styled.div`
   padding: 1rem;
   width: 100%;
   height: 5rem;
+`
+export const Form = styled(UForm)`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 `
