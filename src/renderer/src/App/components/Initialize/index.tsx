@@ -2,7 +2,7 @@ import { SFC } from '@shared/types'
 import { useSelector } from 'react-redux'
 import { getActiveTenant } from '../../selectors'
 import { Tenants } from '../../types'
-import { EJournal } from "../EJournal"
+import { EJournal } from '../EJournal'
 import { AllianceReport } from './AllianceReport'
 import { MegaworldReport } from './MegaworldReport'
 import { SMReport } from './SMReport'

@@ -17,6 +17,7 @@ Look up up-to-date documentation for a library, framework, or API and return a s
 Use quotes for multi-word arguments so they are parsed as a single token. Example: `/docs "Next.js" "How do I configure middleware?"`
 
 If library or question is omitted, prompt the user for:
+
 1. The library or product name (e.g. Next.js, Prisma, Supabase).
 2. The specific question or task (e.g. "How do I set up middleware?", "Auth methods").
 

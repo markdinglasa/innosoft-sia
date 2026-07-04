@@ -20,11 +20,11 @@ npm run claw
 
 ## Environment Variables
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `CLAW_SESSION` | `default` | Session name (alphanumeric + hyphens) |
-| `CLAW_SKILLS` | *(empty)* | Comma-separated skills loaded at startup |
-| `CLAW_MODEL` | `sonnet` | Default model for the session |
+| Variable       | Default   | Description                              |
+| -------------- | --------- | ---------------------------------------- |
+| `CLAW_SESSION` | `default` | Session name (alphanumeric + hyphens)    |
+| `CLAW_SKILLS`  | _(empty)_ | Comma-separated skills loaded at startup |
+| `CLAW_MODEL`   | `sonnet`  | Default model for the session            |
 
 ## REPL Commands
 

@@ -83,7 +83,15 @@ export const AllianceReport: SFC = ({ className }) => {
     }
     setLoading(true)
     try {
-      await AllianceReportHook(path, tenant, Dates, allianceCategory, reportType, settings.IsZReading, pointerRef.current)
+      await AllianceReportHook(
+        path,
+        tenant,
+        Dates,
+        allianceCategory,
+        reportType,
+        settings.IsZReading,
+        pointerRef.current
+      )
     } catch (error: unknown) {
       console.log('ERROR: ', (error as Error)?.message)
       dispatch(

@@ -44,7 +44,7 @@ export const Card = styled.div`
     margin-bottom: 0rem;
   }
 `
-export const TwoColumnCard= styled.div`
+export const TwoColumnCard = styled.div`
   width: 100%;
   display: flex;
   flex-direction: row;

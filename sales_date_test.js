@@ -1,5 +1,5 @@
-const sql = require('mssql');
-const fs = require('fs');
+const sql = require('mssql')
+const fs = require('fs')
 
 async function run() {
   const config = {
@@ -15,19 +15,20 @@ async function run() {
         minVersion: 'TLSv1'
       }
     }
-  };
+  }
 
   try {
-    const pool = await sql.connect(config);
-    
-    const r1 = await pool.request().query("SELECT SalesDate, IsLocked, IsCancelled, IsReturn FROM TrnSales WHERE Id = 38588");
-    fs.writeFileSync('sales_date_debug.txt', JSON.stringify({ r1: r1.recordset }, null, 2));
-    
+    const pool = await sql.connect(config)
+
+    const r1 = await pool
+      .request()
+      .query('SELECT SalesDate, IsLocked, IsCancelled, IsReturn FROM TrnSales WHERE Id = 38588')
+    fs.writeFileSync('sales_date_debug.txt', JSON.stringify({ r1: r1.recordset }, null, 2))
   } catch (err) {
-    fs.writeFileSync('sales_date_debug.txt', String(err));
+    fs.writeFileSync('sales_date_debug.txt', String(err))
   } finally {
-    sql.close();
+    sql.close()
   }
 }
 
-run();
+run()

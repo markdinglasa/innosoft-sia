@@ -67,5 +67,6 @@ Top 3 Actions:
 ## Arguments
 
 $ARGUMENTS:
+
 - `repo|hooks|skills|commands|agents` (optional scope)
 - `--format text|json` (optional output format)

@@ -30,6 +30,7 @@ mcp__devfleet__plan_project(prompt="<user's description>")
 ```
 
 This returns a project with chained missions. Show the user:
+
 - Project name and ID
 - Each mission: title, type, dependencies
 - The dependency DAG (which missions block which)
@@ -68,19 +69,19 @@ Call this for every mission that reached a terminal state. Reports contain: file
 
 ## All Available Tools
 
-| Tool | Purpose |
-|------|---------|
-| `plan_project(prompt)` | AI breaks description into chained missions with `auto_dispatch=true` |
-| `create_project(name, path?, description?)` | Create a project manually, returns `project_id` |
-| `create_mission(project_id, title, prompt, depends_on?, auto_dispatch?)` | Add a mission. `depends_on` is a list of mission ID strings. |
-| `dispatch_mission(mission_id, model?, max_turns?)` | Start an agent |
-| `cancel_mission(mission_id)` | Stop a running agent |
-| `wait_for_mission(mission_id, timeout_seconds?)` | Block until done (prefer polling for long tasks) |
-| `get_mission_status(mission_id)` | Check progress without blocking |
-| `get_report(mission_id)` | Read structured report |
-| `get_dashboard()` | System overview |
-| `list_projects()` | Browse projects |
-| `list_missions(project_id, status?)` | List missions |
+| Tool                                                                     | Purpose                                                               |
+| ------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| `plan_project(prompt)`                                                   | AI breaks description into chained missions with `auto_dispatch=true` |
+| `create_project(name, path?, description?)`                              | Create a project manually, returns `project_id`                       |
+| `create_mission(project_id, title, prompt, depends_on?, auto_dispatch?)` | Add a mission. `depends_on` is a list of mission ID strings.          |
+| `dispatch_mission(mission_id, model?, max_turns?)`                       | Start an agent                                                        |
+| `cancel_mission(mission_id)`                                             | Stop a running agent                                                  |
+| `wait_for_mission(mission_id, timeout_seconds?)`                         | Block until done (prefer polling for long tasks)                      |
+| `get_mission_status(mission_id)`                                         | Check progress without blocking                                       |
+| `get_report(mission_id)`                                                 | Read structured report                                                |
+| `get_dashboard()`                                                        | System overview                                                       |
+| `list_projects()`                                                        | Browse projects                                                       |
+| `list_missions(project_id, status?)`                                     | List missions                                                         |
 
 ## Guidelines
 

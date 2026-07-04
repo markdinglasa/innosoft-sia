@@ -1,6 +1,6 @@
 import { mdiKey } from '@mdi/js'
 import { Input, Key } from '@shared/components'
-import { APP_VERSION } from "@shared/constants"
+import { APP_VERSION } from '@shared/constants'
 import { Error, Success } from '@shared/messages'
 import { setActiveLicense, setSnackbar } from '@shared/store/manager'
 import {
@@ -97,7 +97,7 @@ export const License: SFC = ({ className }) => {
             </Formik>
           </S.CardBody>
           <S.CardFooter>
-            <S.Span> { new Date().getFullYear() } @ Cebu Innosoft Solution Services Inc.</S.Span>
+            <S.Span> {new Date().getFullYear()} @ Cebu Innosoft Solution Services Inc.</S.Span>
             <S.Span> iSIA {APP_VERSION}</S.Span>
           </S.CardFooter>
         </S.CardContainer>

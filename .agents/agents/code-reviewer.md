@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: Expert code review specialist. Proactively reviews code for quality, security, and maintainability. Use immediately after writing or modifying code. MUST BE USED for all code changes.
-tools: ["Read", "Grep", "Glob", "Bash"]
+tools: ['Read', 'Grep', 'Glob', 'Bash']
 model: sonnet
 ---
 
@@ -44,11 +44,11 @@ These MUST be flagged — they can cause real damage:
 
 ```typescript
 // BAD: SQL injection via string concatenation
-const query = `SELECT * FROM users WHERE id = ${userId}`;
+const query = `SELECT * FROM users WHERE id = ${userId}`
 
 // GOOD: Parameterized query
-const query = `SELECT * FROM users WHERE id = $1`;
-const result = await db.query(query, [userId]);
+const query = `SELECT * FROM users WHERE id = $1`
+const result = await db.query(query, [userId])
 ```
 
 ```typescript
@@ -77,21 +77,21 @@ function processUsers(users) {
     for (const user of users) {
       if (user.active) {
         if (user.email) {
-          user.verified = true;  // mutation!
-          results.push(user);
+          user.verified = true // mutation!
+          results.push(user)
         }
       }
     }
   }
-  return results;
+  return results
 }
 
 // GOOD: Early returns + immutability + flat
 function processUsers(users) {
-  if (!users) return [];
+  if (!users) return []
   return users
-    .filter(user => user.active && user.email)
-    .map(user => ({ ...user, verified: true }));
+    .filter((user) => user.active && user.email)
+    .map((user) => ({ ...user, verified: true }))
 }
 ```
 
@@ -111,21 +111,25 @@ When reviewing React/Next.js code, also check:
 ```tsx
 // BAD: Missing dependency, stale closure
 useEffect(() => {
-  fetchData(userId);
-}, []); // userId missing from deps
+  fetchData(userId)
+}, []) // userId missing from deps
 
 // GOOD: Complete dependencies
 useEffect(() => {
-  fetchData(userId);
-}, [userId]);
+  fetchData(userId)
+}, [userId])
 ```
 
 ```tsx
 // BAD: Using index as key with reorderable list
-{items.map((item, i) => <ListItem key={i} item={item} />)}
+{
+  items.map((item, i) => <ListItem key={i} item={item} />)
+}
 
 // GOOD: Stable unique key
-{items.map(item => <ListItem key={item.id} item={item} />)}
+{
+  items.map((item) => <ListItem key={item.id} item={item} />)
+}
 ```
 
 ### Node.js/Backend Patterns (HIGH)
@@ -142,9 +146,9 @@ When reviewing backend code:
 
 ```typescript
 // BAD: N+1 query pattern
-const users = await db.query('SELECT * FROM users');
+const users = await db.query('SELECT * FROM users')
 for (const user of users) {
-  user.posts = await db.query('SELECT * FROM posts WHERE user_id = $1', [user.id]);
+  user.posts = await db.query('SELECT * FROM posts WHERE user_id = $1', [user.id])
 }
 
 // GOOD: Single query with JOIN or batch
@@ -153,7 +157,7 @@ const usersWithPosts = await db.query(`
   FROM users u
   LEFT JOIN posts p ON p.user_id = u.id
   GROUP BY u.id
-`);
+`)
 ```
 
 ### Performance (MEDIUM)
@@ -233,5 +237,6 @@ When reviewing AI-generated changes, prioritize:
 4. Unnecessary model-cost-inducing complexity
 
 Cost-awareness check:
+
 - Flag workflows that escalate to higher-cost models without clear reasoning need.
 - Recommend defaulting to lower-cost tiers for deterministic refactors.

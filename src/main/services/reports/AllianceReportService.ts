@@ -60,6 +60,7 @@ export class AllianceReportService {
       .leftJoin('collection.sales', 'sales')
       .leftJoin('sales.salesLines', 'salesLine')
       .leftJoin('salesLine.discount', 'discount')
+      .leftJoin('salesLine.item', 'item')
       .select(
         `SUM(ROUND(CASE WHEN collection.isCancelled = 0 AND COALESCE(${isReturnedExpr()}, 0) = 0 THEN salesLine.amount ELSE 0 END, 2))`,
         'PreviousReading'
@@ -69,11 +70,11 @@ export class AllianceReportService {
         'previoustax'
       )
       .addSelect(
-        `SUM(ROUND(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 AND collection.isCancelled = 0 AND salesLine.taxAmount > 0 THEN salesLine.amount - salesLine.taxAmount ELSE 0 END, 2))`,
+        `SUM(ROUND(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 AND collection.isCancelled = 0 AND COALESCE(discount.discount, '') NOT IN ('Senior Citizen Discount', 'PWD') AND COALESCE(salesLine.taxAmount, 0) > 0 AND item.itemDescription != 'SERVICE CHARGE' THEN salesLine.amount ELSE 0 END, 2))`,
         'previoustaxsale'
       )
       .addSelect(
-        `SUM(ROUND(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 AND collection.isCancelled = 0 AND salesLine.taxAmount < 1 AND discount.id <> 4 AND discount.id <> 3 THEN salesLine.amount ELSE 0 END, 2))`,
+        `SUM(ROUND(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 AND collection.isCancelled = 0 AND COALESCE(salesLine.taxAmount, 0) < 1 AND item.itemDescription != 'SERVICE CHARGE' AND COALESCE(discount.discount, '') NOT IN ('Senior Citizen Discount', 'PWD') THEN salesLine.amount ELSE 0 END, 2))`,
         'previousnotaxsale'
       )
       .where('collection.terminalId = :terminalId', { terminalId })
@@ -99,7 +100,11 @@ export class AllianceReportService {
     const result = await AppDataSource.getRepository(TrnSalesEntity)
       .createQueryBuilder('sales')
       .leftJoin('sales.salesLines', 'salesLine')
-      .innerJoin(MstItemEntity, 'item', 'item.id = salesLine.itemId AND salesLine.itemId <> 1')
+      .innerJoin(
+        MstItemEntity,
+        'item',
+        "item.id = salesLine.itemId AND item.itemDescription != 'SERVICE CHARGE'"
+      )
       .select("COALESCE(item.barCode, 'NA')", 'sku')
       .addSelect("COALESCE(item.alias, 'NA')", 'name')
       .addSelect('CASE WHEN COALESCE(item.isInventory, 0) = 0 THEN 0 ELSE 1 END', 'inventory')
@@ -144,6 +149,7 @@ export class AllianceReportService {
       .leftJoin('sales.collections', 'collection')
       .leftJoin('salesLine.discount', 'discount')
       .leftJoin('salesLine.tax', 'tax')
+      .leftJoin('salesLine.item', 'item')
       .select(
         "MIN(REPLACE(CONVERT(varchar, sales.salesDate, 23), '-', '') + REPLACE(CONVERT(varchar, salesLine.salesLineTimeStamp, 8), ':', ''))",
         'date'
@@ -165,11 +171,11 @@ export class AllianceReportService {
         'amusement'
       )
       .addSelect(
-        `SUM(ROUND(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 AND discount.discount <> 'Senior Citizen Discount' AND discount.discount <> 'PWD' AND COALESCE(salesLine.taxAmount, 0) > 0 THEN salesLine.amount ELSE 0 END, 2))`,
+        `SUM(ROUND(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 AND COALESCE(discount.discount, '') NOT IN ('Senior Citizen Discount', 'PWD') AND COALESCE(salesLine.taxAmount, 0) > 0 AND item.itemDescription != 'SERVICE CHARGE' THEN salesLine.amount ELSE 0 END, 2))`,
         'taxsale'
       )
       .addSelect(
-        `SUM(ROUND(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 AND COALESCE(salesLine.taxAmount, 0) < 1 AND salesLine.itemId <> 1 THEN salesLine.amount ELSE 0 END, 2))`,
+        `SUM(ROUND(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 AND COALESCE(salesLine.taxAmount, 0) < 1 AND item.itemDescription != 'SERVICE CHARGE' AND COALESCE(discount.discount, '') NOT IN ('Senior Citizen Discount', 'PWD') THEN salesLine.amount ELSE 0 END, 2))`,
         'notaxsale'
       )
       .addSelect(
@@ -308,9 +314,10 @@ export class AllianceReportService {
       .createQueryBuilder('salesLine')
       .leftJoin('salesLine.sales', 'sales')
       .leftJoin('sales.collections', 'collection')
+      .leftJoin('salesLine.item', 'item')
       .select('SUM(salesLine.amount)', 'ServiceCharge')
       .addSelect('COUNT(salesLine.amount)', 'ServiceChargeCount')
-      .where('salesLine.itemId = 1')
+      .where("item.itemDescription = 'SERVICE CHARGE'")
       .andWhere('collection.isLocked = :isLocked', { isLocked: true })
       .andWhere('collection.terminalId = :terminalId', { terminalId })
       .andWhere('CAST(collection.collectionDate AS DATE) = :dates', { dates: formattedDate })
@@ -478,7 +485,7 @@ export class AllianceReportService {
         for (const sl of s.salesLines || []) {
           totalQty += Number(sl.quantity || 0)
 
-          if (sl.itemId === 1) {
+          if (sl.item?.itemDescription === 'SERVICE CHARGE') {
             service += Number(sl.amount || 0)
             continue
           }
@@ -495,14 +502,21 @@ export class AllianceReportService {
               }
             }
 
-            if (lineTaxAmount > 0) {
-              taxsale += Number(sl.amount || 0)
-              if (!c.isCancelled) {
-                taxincsale += Number(sl.amount || 0)
+            const isVatExempt =
+              sl.discount?.discount === 'Senior Citizen Discount' ||
+              sl.discount?.discount === 'PWD' ||
+              sl.taxId === 5
+
+            if (!isVatExempt) {
+              if (lineTaxAmount > 0) {
+                taxsale += Number(sl.amount || 0)
+                if (!c.isCancelled) {
+                  taxincsale += Number(sl.amount || 0)
+                }
+              } else if (sl.item?.itemDescription !== 'SERVICE CHARGE') {
+                // no tax
+                notaxsale += Number(sl.amount || 0)
               }
-            } else if (sl.itemId !== 1) {
-              // no tax
-              notaxsale += Number(sl.amount || 0)
             }
 
             if (sl.price2 > 0 && !s.isCancelled) {
@@ -533,9 +547,9 @@ export class AllianceReportService {
                 totalDiscount += discAmt
               }
             }
-            
-            // Add to subtotal (excluding service charge which is itemId === 1)
-            if (sl.itemId !== 1) {
+
+            // Add to subtotal (excluding service charge)
+            if (sl.item?.itemDescription !== 'SERVICE CHARGE') {
               subtotal += Number(sl.amount || 0)
             }
           }
@@ -543,7 +557,7 @@ export class AllianceReportService {
           // Generate lines for XML
           const qty = Number(sl.quantity || 0)
           const discAmt = Number(sl.discountAmount || 0) * qty
-          
+
           let senior = 0
           let pwd = 0
           let diplomat = 0
@@ -622,6 +636,9 @@ export class AllianceReportService {
           posted += '000000'
         }
 
+        const computedIncVat =
+          taxrate > 0 ? (taxincsale / (1 + taxrate / 100)) * (taxrate / 100) : 0
+
         list.push({
           receiptno,
           void: voidAmt,
@@ -632,9 +649,9 @@ export class AllianceReportService {
           othertender,
           evat: 0,
           subtotal,
-          vat,
+          vat: computedIncVat, // Matches TMS expected formula
           exvat: 0,
-          incvat: vat,
+          incvat: computedIncVat, // Matches TMS expected formula
           localtax,
           amusement,
           nac: linenac,
@@ -698,7 +715,7 @@ export class AllianceReportService {
     const list: AllianceSalesTrxline[] = []
 
     for (const sl of collection.sales.salesLines) {
-      if (sl.itemId === 1) continue // Skip service charge line item
+      if (sl.item?.itemDescription === 'SERVICE CHARGE') continue // Skip service charge line item
 
       const sku = (sl.item?.barCode || 'NA').replaceAll('&', ' ')
       const qty = Number(sl.quantity || 0)
@@ -813,6 +830,15 @@ export class AllianceReportService {
 
       let salesXml = ''
       if (summary) {
+        // Recalculate summary vat mathematically from taxsale to satisfy strict TMS formula validation
+        // avoiding fractional penny differences caused by line-by-line rounding
+        const eodTaxRate = Math.max(...transactions.map((t: any) => t.taxrate || 0), 0)
+        if (eodTaxRate > 0) {
+          const computedEodVat = (summary.taxsale / (1 + eodTaxRate / 100)) * (eodTaxRate / 100)
+          summary.vat = computedEodVat
+          summary.newtax = summary.previoustax + computedEodVat
+        }
+
         salesXml = [
           `<date>${formatDateYYYYMMDD(new Date(dates)) ?? ''}</date>`,
           `<zcounter>${summary.zcounter ?? '0'}</zcounter>`,

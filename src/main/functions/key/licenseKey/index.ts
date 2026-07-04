@@ -7,6 +7,6 @@ export const licenseKey = async (): Promise<string> => {
     const strg: string = await getStorageSerialNumber()
     return await XOREncryption(CODE_KEY, alphanumeric(`${bios}${strg}`))
   } catch (error: unknown) {
-    return (error as Error).message||'internal server error'
+    return (error as Error).message || 'internal server error'
   }
 }

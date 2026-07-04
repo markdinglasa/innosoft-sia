@@ -47,10 +47,16 @@ export const useAllianceReports = () => {
           const pdfBlob = await html2pdf().from(element).set(options).outputPdf('blob')
           const arrayBuffer = await pdfBlob.arrayBuffer()
           // For Alliance, we don't have a BatchNo explicitly, so we pass 0 or a similar batch identifier
-          await globalThis.electron.sql.post(SqlChannel.getZReading, tenant, typeof Dates === 'string' ? Dates : Dates.DateStart, 0, {
-            buffer: Buffer.from(arrayBuffer),
-            targetDir: path
-          })
+          await globalThis.electron.sql.post(
+            SqlChannel.getZReading,
+            tenant,
+            typeof Dates === 'string' ? Dates : Dates.DateStart,
+            0,
+            {
+              buffer: Buffer.from(arrayBuffer),
+              targetDir: path
+            }
+          )
         }
         // Success notification
         windowNotification('Alliance Reports', 'New reports have been created.', path)

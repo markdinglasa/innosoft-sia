@@ -26,7 +26,6 @@ export const Button: SFC<ButtonProps> = ({
   text,
   type = ButtonType.button
 }) => {
-
   const renderButtonContent = () => (
     <>
       {iconLeft ? <S.IconLeft path={iconLeft} size="20px" /> : null}

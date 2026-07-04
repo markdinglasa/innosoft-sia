@@ -1,5 +1,5 @@
-const sql = require('mssql');
-const fs = require('fs');
+const sql = require('mssql')
+const fs = require('fs')
 
 async function run() {
   const config = {
@@ -15,10 +15,10 @@ async function run() {
         minVersion: 'TLSv1'
       }
     }
-  };
+  }
 
   try {
-    const pool = await sql.connect(config);
+    const pool = await sql.connect(config)
     const r1 = await pool.request().query(`
       SELECT 
         c.TerminalId,
@@ -39,14 +39,14 @@ async function run() {
         AND c.IsCancelled = 0
         AND COALESCE(c.IsReturned, 0) = 0
       GROUP BY c.TerminalId
-    `);
-    
-    fs.writeFileSync('nov20_terminals.txt', JSON.stringify({ raw: r1.recordset }, null, 2));
+    `)
+
+    fs.writeFileSync('nov20_terminals.txt', JSON.stringify({ raw: r1.recordset }, null, 2))
   } catch (err) {
-    fs.writeFileSync('nov20_terminals.txt', String(err));
+    fs.writeFileSync('nov20_terminals.txt', String(err))
   } finally {
-    sql.close();
+    sql.close()
   }
 }
 
-run();
+run()

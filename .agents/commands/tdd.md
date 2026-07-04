@@ -17,6 +17,7 @@ This command invokes the **tdd-guide** agent to enforce test-driven development 
 ## When to Use
 
 Use `/tdd` when:
+
 - Implementing new features
 - Adding new functions/components
 - Fixing bugs (write test that reproduces bug first)
@@ -48,7 +49,7 @@ REPEAT:   Next feature/scenario
 
 ## Example Usage
 
-```
+````
 User: /tdd I need a function to calculate market liquidity score
 
 Agent (tdd-guide):
@@ -69,7 +70,7 @@ export function calculateLiquidityScore(market: MarketData): number {
   // TODO: Implementation
   throw new Error('Not implemented')
 }
-```
+````
 
 ## Step 2: Write Failing Test (RED)
 
@@ -147,20 +148,15 @@ export function calculateLiquidityScore(market: MarketData): number {
 
   // Calculate component scores (0-100 scale)
   const volumeScore = Math.min(market.totalVolume / 1000, 100)
-  const spreadScore = Math.max(100 - (market.bidAskSpread * 1000), 0)
+  const spreadScore = Math.max(100 - market.bidAskSpread * 1000, 0)
   const traderScore = Math.min(market.activeTraders / 10, 100)
 
   // Recent activity bonus
   const hoursSinceLastTrade = (Date.now() - market.lastTradeTime.getTime()) / (1000 * 60 * 60)
-  const recencyScore = Math.max(100 - (hoursSinceLastTrade * 10), 0)
+  const recencyScore = Math.max(100 - hoursSinceLastTrade * 10, 0)
 
   // Weighted average
-  const score = (
-    volumeScore * 0.4 +
-    spreadScore * 0.3 +
-    traderScore * 0.2 +
-    recencyScore * 0.1
-  )
+  const score = volumeScore * 0.4 + spreadScore * 0.3 + traderScore * 0.2 + recencyScore * 0.1
 
   return Math.min(Math.max(score, 0), 100) // Clamp to 0-100
 }
@@ -189,14 +185,14 @@ const WEIGHTS = {
   VOLUME: 0.4,
   SPREAD: 0.3,
   TRADERS: 0.2,
-  RECENCY: 0.1,
+  RECENCY: 0.1
 } as const
 
 const SCALE_FACTORS = {
   VOLUME: 1000,
   SPREAD: 1000,
   TRADERS: 10,
-  RECENCY_PENALTY: 10,
+  RECENCY_PENALTY: 10
 } as const
 
 function clamp(value: number, min: number, max: number): number {
@@ -207,11 +203,11 @@ export function calculateLiquidityScore(market: MarketData): number {
   if (market.totalVolume === 0) return 0
 
   const volumeScore = Math.min(market.totalVolume / SCALE_FACTORS.VOLUME, 100)
-  const spreadScore = clamp(100 - (market.bidAskSpread * SCALE_FACTORS.SPREAD), 0, 100)
+  const spreadScore = clamp(100 - market.bidAskSpread * SCALE_FACTORS.SPREAD, 0, 100)
   const traderScore = Math.min(market.activeTraders / SCALE_FACTORS.TRADERS, 100)
 
   const hoursSinceLastTrade = (Date.now() - market.lastTradeTime.getTime()) / (1000 * 60 * 60)
-  const recencyScore = clamp(100 - (hoursSinceLastTrade * SCALE_FACTORS.RECENCY_PENALTY), 0, 100)
+  const recencyScore = clamp(100 - hoursSinceLastTrade * SCALE_FACTORS.RECENCY_PENALTY, 0, 100)
 
   const weightedScore =
     volumeScore * WEIGHTS.VOLUME +
@@ -251,6 +247,7 @@ Coverage: 100% ✅ (Target: 80%)
 ```
 
 ✅ TDD session complete!
+
 ```
 
 ## TDD Best Practices
@@ -326,3 +323,4 @@ The related `tdd-workflow` skill is also bundled with ECC.
 For manual installs, the source files live at:
 - `agents/tdd-guide.md`
 - `skills/tdd-workflow/SKILL.md`
+```

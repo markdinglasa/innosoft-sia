@@ -55,21 +55,41 @@ export class MegaworldZReadingService {
       collectionNumber = {}
     } = data
 
-    const regularDiscounts = discounts.reduce((total: number, d: any) => total + (d.NonGovDiscountAmount ?? 0), 0)
-    const GovDiscountAmount = discounts.reduce((total: number, d: any) => total + (d.GovDiscountAmount ?? 0), 0)
+    const regularDiscounts = discounts.reduce(
+      (total: number, d: any) => total + (d.NonGovDiscountAmount ?? 0),
+      0
+    )
+    const GovDiscountAmount = discounts.reduce(
+      (total: number, d: any) => total + (d.GovDiscountAmount ?? 0),
+      0
+    )
     const GrossSalesAmount = Number(gross?.NetSales ?? 0) + regularDiscounts + GovDiscountAmount
-    const totalCollection = paytypes.reduce((total: number, p: any) => total + (p.TotalAmount ?? 0), 0)
+    const totalCollection = paytypes.reduce(
+      (total: number, p: any) => total + (p.TotalAmount ?? 0),
+      0
+    )
 
-    const formatNum = (num: number) => Number(num || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    const formatNum = (num: number) =>
+      Number(num || 0).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      })
 
-    let pytypesHtml = paytypes.map((p: any) => `
+    let pytypesHtml = paytypes
+      .map(
+        (p: any) => `
       <div class="row">
         <span>${p.PayType}:</span>
         <span class="text-end">${formatNum(p.TotalAmount)}</span>
       </div>
-    `).join('')
+    `
+      )
+      .join('')
 
-    let discountsHtml = discounts.filter((d: any) => d.IsGovernmentMandated).map((d: any) => `
+    let discountsHtml = discounts
+      .filter((d: any) => d.IsGovernmentMandated)
+      .map(
+        (d: any) => `
       <div class="discount-block">
         <div class="row">
           <span>${d.Discount}:</span>
@@ -80,7 +100,9 @@ export class MegaworldZReadingService {
           <span class="text-end">${formatNum(d.VATExempt)}</span>
         </div>
       </div>
-    `).join('')
+    `
+      )
+      .join('')
 
     return `
       <!DOCTYPE html>

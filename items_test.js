@@ -1,5 +1,5 @@
-const sql = require('mssql');
-const fs = require('fs');
+const sql = require('mssql')
+const fs = require('fs')
 
 async function run() {
   const config = {
@@ -15,26 +15,25 @@ async function run() {
         minVersion: 'TLSv1'
       }
     }
-  };
+  }
 
   try {
-    const pool = await sql.connect(config);
-    
+    const pool = await sql.connect(config)
+
     // Fetch Items for 38588 (Trx 15) and 38587 (Trx 16)
     const items = await pool.request().query(`
       SELECT sl.SalesId, sl.Amount, sl.ItemId, i.BarCode, i.IsInventory, i.ItemDescription, sl.TaxAmount
       FROM TrnSalesLine sl
       LEFT JOIN MstItem i ON sl.ItemId = i.Id
       WHERE sl.SalesId IN (38588, 38587)
-    `);
-    
-    fs.writeFileSync('items_debug.txt', JSON.stringify({ items: items.recordset }, null, 2));
-    
+    `)
+
+    fs.writeFileSync('items_debug.txt', JSON.stringify({ items: items.recordset }, null, 2))
   } catch (err) {
-    fs.writeFileSync('items_debug.txt', String(err));
+    fs.writeFileSync('items_debug.txt', String(err))
   } finally {
-    sql.close();
+    sql.close()
   }
 }
 
-run();
+run()

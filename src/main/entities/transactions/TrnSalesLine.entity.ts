@@ -110,7 +110,13 @@ export class TrnSalesLineEntity {
   @Column({ name: 'Price2LessTax', type: 'decimal', precision: 18, scale: 5, nullable: false })
   price2LessTax: number
 
-  @Column({ name: 'PriceSplitPercentage', type: 'decimal', precision: 18, scale: 5, nullable: false })
+  @Column({
+    name: 'PriceSplitPercentage',
+    type: 'decimal',
+    precision: 18,
+    scale: 5,
+    nullable: false
+  })
   priceSplitPercentage: number
 
   // FK Relationships

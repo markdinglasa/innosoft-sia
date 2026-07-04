@@ -311,16 +311,7 @@ MIN : ${settings?.MachineNumber ?? ''}`
     header: string
     footer: string
   }): Promise<boolean> {
-    const {
-      stream,
-      batch,
-      salesMap,
-      paymentsMap,
-      vaMap,
-      detailsMap,
-      header,
-      footer
-    } = params
+    const { stream, batch, salesMap, paymentsMap, vaMap, detailsMap, header, footer } = params
     let hasRecords = false
     for (const cn of batch) {
       const saleItems = salesMap.get(cn) || []
@@ -331,8 +322,7 @@ MIN : ${settings?.MachineNumber ?? ''}`
 
       const paymentsContent: string = paymentMethods
         .map(
-          (pm) =>
-            `${pm?.PayType ?? ''}                              ${formatNumber(pm?.Amount)}`
+          (pm) => `${pm?.PayType ?? ''}                              ${formatNumber(pm?.Amount)}`
         )
         .join('\n')
 

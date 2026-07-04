@@ -9,7 +9,13 @@ import {
   PreviousAmountsQuery,
   ZControlNumber
 } from '../../shared/query'
-import { AllianceSalesEOD, AllianceSalesProduct, AllianceSalesTrx, AllianceSalesTrxline, AllianceType } from '../../shared/types'
+import {
+  AllianceSalesEOD,
+  AllianceSalesProduct,
+  AllianceSalesTrx,
+  AllianceSalesTrxline,
+  AllianceType
+} from '../../shared/types'
 import {
   formatDateDash,
   formatDateYYYYMMDD,
@@ -27,7 +33,9 @@ async function setupDb() {
   })
   const config: any = store.get('database-configuration')
   if (!config) {
-    throw new Error('Database config not found in electron-store. Please run the iSIA app first to configure connection.')
+    throw new Error(
+      'Database config not found in electron-store. Please run the iSIA app first to configure connection.'
+    )
   }
 
   Object.assign(AppDataSource.options, {
@@ -51,11 +59,11 @@ async function generateOldXml(
 ): Promise<string> {
   const Terminal = data.Terminal
   const Dates = formatDateDash(new Date(dates))
-  
+
   // Re-run old controller queries
   const ControlNumber = await recordByQuery(ZControlNumber({ Dates, Terminal }))
   const controlNumber = ControlNumber?.List?.[0]?.ControlNumber ?? 0
-  
+
   // Re-fetch salesQ (this is AllianceSalesEODQuery)
   // We need to fetch details to feed into AllianceSalesEODQuery
   const prevAmount = await recordByQuery(PreviousAmountsQuery({ Dates, Terminal }))
@@ -432,7 +440,7 @@ async function runParityCheck() {
       dates
     )
     const newFilePath = path.join(tempDir, newFileName)
-    
+
     // Call the service class to write the new XML
     await AllianceReportService.generateSalesEOD(tempDir, dates, category, data)
     console.log(`Saved New XML to: ${newFilePath}`)

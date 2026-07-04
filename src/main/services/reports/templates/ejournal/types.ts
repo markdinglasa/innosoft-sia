@@ -22,14 +22,14 @@ export interface VATAnalysis {
   ServiceCharge: number
   VATExempt: number
   NetSales: number
-  ZeroRated: number 
+  ZeroRated: number
   Tax: string
   Discount: string
 }
 
 export interface Details {
   CollectionNumber: string
-  TransactionNumber: string 
+  TransactionNumber: string
   ReturnNumber?: string
   SeniorCitizenId: string
   SeniorCitizenName: string

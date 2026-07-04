@@ -14,18 +14,18 @@ async function debugLines() {
       .getOne()
 
     if (!collection) {
-        console.log(`Receipt ${receiptNo} not found!`)
-        continue
+      console.log(`Receipt ${receiptNo} not found!`)
+      continue
     }
 
     console.log(`--- Receipt: ${receiptNo} ---`)
     console.log(`Collection Amount: ${collection.amount}`)
     console.log(`Sales Amount: ${collection.sales.amount}`)
-    
-    let sum = 0;
+
+    let sum = 0
     for (const line of collection.sales.salesLines) {
-        console.log(`  Line: ${line.id} - Qty: ${line.quantity} - Amount: ${line.amount}`)
-        sum += Number(line.amount)
+      console.log(`  Line: ${line.id} - Qty: ${line.quantity} - Amount: ${line.amount}`)
+      sum += Number(line.amount)
     }
     console.log(`  Sum of lines: ${sum}`)
   }

@@ -16,4 +16,3 @@ export * from './TrnStockIn.entity'
 export * from './TrnStockInLine.entity'
 export * from './TrnStockOut.entity'
 export * from './TrnStockOutLine.entity'
-

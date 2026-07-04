@@ -12,12 +12,12 @@ async function run() {
     FROM TrnCollection
     WHERE REPLACE(CollectionNumber, '-', '') = '0010001000015'
   `)
-  
+
   if (!colls.length) {
     fs.writeFileSync('trx15_debug.txt', 'No collection found')
     process.exit(0)
   }
-  
+
   const salesId = colls[0].SalesId
 
   const lines = await AppDataSource.query(`
@@ -25,13 +25,13 @@ async function run() {
     FROM TrnSalesLine
     WHERE SalesId = ${salesId}
   `)
-  
+
   fs.writeFileSync('trx15_debug.txt', JSON.stringify({ collection: colls[0], lines }, null, 2))
-  
+
   process.exit(0)
 }
 
-run().catch(e => {
+run().catch((e) => {
   fs.writeFileSync('trx15_debug.txt', String(e))
   process.exit(1)
 })

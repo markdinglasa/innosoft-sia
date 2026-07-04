@@ -13,25 +13,33 @@ Sequential agent workflow for complex tasks.
 ## Workflow Types
 
 ### feature
+
 Full feature implementation workflow:
+
 ```
 planner -> tdd-guide -> code-reviewer -> security-reviewer
 ```
 
 ### bugfix
+
 Bug investigation and fix workflow:
+
 ```
 planner -> tdd-guide -> code-reviewer
 ```
 
 ### refactor
+
 Safe refactoring workflow:
+
 ```
 architect -> code-reviewer -> tdd-guide
 ```
 
 ### security
+
 Security-focused review:
+
 ```
 security-reviewer -> code-reviewer -> architect
 ```
@@ -53,18 +61,23 @@ Between agents, create handoff document:
 ## HANDOFF: [previous-agent] -> [next-agent]
 
 ### Context
+
 [Summary of what was done]
 
 ### Findings
+
 [Key discoveries or decisions]
 
 ### Files Modified
+
 [List of files touched]
 
 ### Open Questions
+
 [Unresolved items for next agent]
 
 ### Recommendations
+
 [Suggested next steps]
 ```
 
@@ -143,12 +156,15 @@ For independent checks, run agents in parallel:
 
 ```markdown
 ### Parallel Phase
+
 Run simultaneously:
+
 - code-reviewer (quality)
 - security-reviewer (security)
 - architect (design)
 
 ### Merge Results
+
 Combine outputs into single report
 ```
 
@@ -164,9 +180,7 @@ When workers need to see dirty or untracked local files from the main checkout, 
     "scripts/lib/tmux-worktree-orchestrator.js",
     ".claude/plan/workflow-e2e-test.json"
   ],
-  "workers": [
-    { "name": "docs", "task": "Update orchestration docs." }
-  ]
+  "workers": [{ "name": "docs", "task": "Update orchestration docs." }]
 }
 ```
 
@@ -183,23 +197,27 @@ The snapshot includes session activity, tmux pane metadata, worker states, objec
 When the workflow spans multiple sessions, worktrees, or tmux panes, append a control-plane block to the final handoff:
 
 ```markdown
-CONTROL PLANE
--------------
+## CONTROL PLANE
+
 Sessions:
+
 - active session ID or alias
 - branch + worktree path for each active worker
 - tmux pane or detached session name when applicable
 
 Diffs:
+
 - git status summary
 - git diff --stat for touched files
 - merge/conflict risk notes
 
 Approvals:
+
 - pending user approvals
 - blocked steps awaiting confirmation
 
 Telemetry:
+
 - last activity timestamp or idle signal
 - estimated token or cost drift
 - policy events raised by hooks or reviewers
@@ -210,6 +228,7 @@ This keeps planner, implementer, reviewer, and loop workers legible from the ope
 ## Arguments
 
 $ARGUMENTS:
+
 - `feature <description>` - Full feature workflow
 - `bugfix <description>` - Bug fix workflow
 - `refactor <description>` - Refactoring workflow

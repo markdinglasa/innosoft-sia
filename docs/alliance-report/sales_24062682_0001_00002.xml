@@ -104,6 +104,40 @@
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
+                <unitprice>830.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>88.93</tax>
+                <memo>NA</memo>
+                <total>830.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>200.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>21.43</tax>
+                <memo>NA</memo>
+                <total>200.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
                 <unitprice>250.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
@@ -115,23 +149,6 @@
                 <tax>26.79</tax>
                 <memo>NA</memo>
                 <total>250.00</total>
-                <choicetype></choicetype>
-              </line>
-
-              <line>
-                <sku>NA</sku>
-                <qty>1</qty>
-                <unitprice>280.00</unitprice>
-                <disc>0.00</disc>
-                <senior>0.00</senior>
-                <pwd>0.00</pwd>
-                <diplomat>0.00</diplomat>
-                <nac>0.00</nac>
-                <spd>0.00</spd>
-                <taxtype>0</taxtype>
-                <tax>30.00</tax>
-                <memo>NA</memo>
-                <total>280.00</total>
                 <choicetype></choicetype>
               </line>
           </trx>
@@ -179,23 +196,6 @@
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
-                <unitprice>250.00</unitprice>
-                <disc>0.00</disc>
-                <senior>0.00</senior>
-                <pwd>0.00</pwd>
-                <diplomat>0.00</diplomat>
-                <nac>0.00</nac>
-                <spd>0.00</spd>
-                <taxtype>0</taxtype>
-                <tax>26.79</tax>
-                <memo>NA</memo>
-                <total>250.00</total>
-                <choicetype></choicetype>
-              </line>
-
-              <line>
-                <sku>NA</sku>
-                <qty>1</qty>
                 <unitprice>280.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
@@ -207,6 +207,40 @@
                 <tax>30.00</tax>
                 <memo>NA</memo>
                 <total>280.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>200.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>21.43</tax>
+                <memo>NA</memo>
+                <total>200.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>250.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>26.79</tax>
+                <memo>NA</memo>
+                <total>250.00</total>
                 <choicetype></choicetype>
               </line>
           </trx>
@@ -271,7 +305,7 @@
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
-                <unitprice>280.00</unitprice>
+                <unitprice>830.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -279,9 +313,9 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>30.00</tax>
+                <tax>88.93</tax>
                 <memo>NA</memo>
-                <total>280.00</total>
+                <total>830.00</total>
                 <choicetype></choicetype>
               </line>
           </trx>
@@ -346,7 +380,7 @@
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
-                <unitprice>280.00</unitprice>
+                <unitprice>200.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -354,9 +388,111 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>30.00</tax>
+                <tax>21.43</tax>
                 <memo>NA</memo>
-                <total>280.00</total>
+                <total>200.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>80.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>8.57</tax>
+                <memo>NA</memo>
+                <total>80.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>350.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>37.50</tax>
+                <memo>NA</memo>
+                <total>350.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>90.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>9.64</tax>
+                <memo>NA</memo>
+                <total>90.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>680.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>72.86</tax>
+                <memo>NA</memo>
+                <total>680.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>830.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>88.93</tax>
+                <memo>NA</memo>
+                <total>830.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>350.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>37.50</tax>
+                <memo>NA</memo>
+                <total>350.00</total>
                 <choicetype></choicetype>
               </line>
           </trx>
@@ -404,7 +540,7 @@
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
-                <unitprice>250.00</unitprice>
+                <unitprice>800.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -412,26 +548,9 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>26.79</tax>
+                <tax>85.71</tax>
                 <memo>NA</memo>
-                <total>250.00</total>
-                <choicetype></choicetype>
-              </line>
-
-              <line>
-                <sku>NA</sku>
-                <qty>1</qty>
-                <unitprice>280.00</unitprice>
-                <disc>0.00</disc>
-                <senior>0.00</senior>
-                <pwd>0.00</pwd>
-                <diplomat>0.00</diplomat>
-                <nac>0.00</nac>
-                <spd>0.00</spd>
-                <taxtype>0</taxtype>
-                <tax>30.00</tax>
-                <memo>NA</memo>
-                <total>280.00</total>
+                <total>800.00</total>
                 <choicetype></choicetype>
               </line>
           </trx>
@@ -479,7 +598,7 @@
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
-                <unitprice>250.00</unitprice>
+                <unitprice>580.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -487,16 +606,16 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>26.79</tax>
+                <tax>62.14</tax>
                 <memo>NA</memo>
-                <total>250.00</total>
+                <total>580.00</total>
                 <choicetype></choicetype>
               </line>
 
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
-                <unitprice>280.00</unitprice>
+                <unitprice>380.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -504,9 +623,43 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>30.00</tax>
+                <tax>40.71</tax>
                 <memo>NA</memo>
-                <total>280.00</total>
+                <total>380.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>380.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>40.71</tax>
+                <memo>NA</memo>
+                <total>380.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>100.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>10.71</tax>
+                <memo>NA</memo>
+                <total>100.00</total>
                 <choicetype></choicetype>
               </line>
           </trx>
@@ -553,7 +706,7 @@
             
               <line>
                 <sku>NA</sku>
-                <qty>1</qty>
+                <qty>2</qty>
                 <unitprice>250.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
@@ -562,26 +715,9 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>26.79</tax>
+                <tax>53.57</tax>
                 <memo>NA</memo>
-                <total>250.00</total>
-                <choicetype></choicetype>
-              </line>
-
-              <line>
-                <sku>NA</sku>
-                <qty>1</qty>
-                <unitprice>280.00</unitprice>
-                <disc>0.00</disc>
-                <senior>0.00</senior>
-                <pwd>0.00</pwd>
-                <diplomat>0.00</diplomat>
-                <nac>0.00</nac>
-                <spd>0.00</spd>
-                <taxtype>0</taxtype>
-                <tax>30.00</tax>
-                <memo>NA</memo>
-                <total>280.00</total>
+                <total>500.00</total>
                 <choicetype></choicetype>
               </line>
           </trx>
@@ -629,6 +765,40 @@
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
+                <unitprice>150.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>16.07</tax>
+                <memo>NA</memo>
+                <total>150.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>150.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>16.07</tax>
+                <memo>NA</memo>
+                <total>150.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
                 <unitprice>250.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
@@ -646,7 +816,7 @@
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
-                <unitprice>280.00</unitprice>
+                <unitprice>349.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -654,9 +824,9 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>30.00</tax>
+                <tax>37.39</tax>
                 <memo>NA</memo>
-                <total>280.00</total>
+                <total>349.00</total>
                 <choicetype></choicetype>
               </line>
           </trx>
@@ -703,7 +873,7 @@
             
               <line>
                 <sku>NA</sku>
-                <qty>1</qty>
+                <qty>2</qty>
                 <unitprice>250.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
@@ -712,26 +882,9 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>26.79</tax>
+                <tax>53.57</tax>
                 <memo>NA</memo>
-                <total>250.00</total>
-                <choicetype></choicetype>
-              </line>
-
-              <line>
-                <sku>NA</sku>
-                <qty>1</qty>
-                <unitprice>280.00</unitprice>
-                <disc>0.00</disc>
-                <senior>0.00</senior>
-                <pwd>0.00</pwd>
-                <diplomat>0.00</diplomat>
-                <nac>0.00</nac>
-                <spd>0.00</spd>
-                <taxtype>0</taxtype>
-                <tax>30.00</tax>
-                <memo>NA</memo>
-                <total>280.00</total>
+                <total>500.00</total>
                 <choicetype></choicetype>
               </line>
           </trx>
@@ -792,23 +945,6 @@
                 <total>250.00</total>
                 <choicetype></choicetype>
               </line>
-
-              <line>
-                <sku>NA</sku>
-                <qty>1</qty>
-                <unitprice>280.00</unitprice>
-                <disc>0.00</disc>
-                <senior>0.00</senior>
-                <pwd>0.00</pwd>
-                <diplomat>0.00</diplomat>
-                <nac>0.00</nac>
-                <spd>0.00</spd>
-                <taxtype>0</taxtype>
-                <tax>30.00</tax>
-                <memo>NA</memo>
-                <total>280.00</total>
-                <choicetype></choicetype>
-              </line>
           </trx>
 
           <trx>
@@ -854,7 +990,7 @@
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
-                <unitprice>250.00</unitprice>
+                <unitprice>150.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -862,16 +998,16 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>26.79</tax>
+                <tax>16.07</tax>
                 <memo>NA</memo>
-                <total>250.00</total>
+                <total>150.00</total>
                 <choicetype></choicetype>
               </line>
 
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
-                <unitprice>280.00</unitprice>
+                <unitprice>150.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -879,9 +1015,43 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>30.00</tax>
+                <tax>16.07</tax>
                 <memo>NA</memo>
-                <total>280.00</total>
+                <total>150.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>200.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>21.43</tax>
+                <memo>NA</memo>
+                <total>200.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>399.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>42.75</tax>
+                <memo>NA</memo>
+                <total>399.00</total>
                 <choicetype></choicetype>
               </line>
           </trx>
@@ -929,7 +1099,7 @@
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
-                <unitprice>250.00</unitprice>
+                <unitprice>150.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -937,16 +1107,16 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>26.79</tax>
+                <tax>16.07</tax>
                 <memo>NA</memo>
-                <total>250.00</total>
+                <total>150.00</total>
                 <choicetype></choicetype>
               </line>
 
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
-                <unitprice>280.00</unitprice>
+                <unitprice>150.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -954,9 +1124,60 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>30.00</tax>
+                <tax>16.07</tax>
                 <memo>NA</memo>
-                <total>280.00</total>
+                <total>150.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>200.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>21.43</tax>
+                <memo>NA</memo>
+                <total>200.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>150.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>16.07</tax>
+                <memo>NA</memo>
+                <total>150.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>150.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>16.07</tax>
+                <memo>NA</memo>
+                <total>150.00</total>
                 <choicetype></choicetype>
               </line>
           </trx>
@@ -1017,23 +1238,6 @@
                 <total>250.00</total>
                 <choicetype></choicetype>
               </line>
-
-              <line>
-                <sku>NA</sku>
-                <qty>1</qty>
-                <unitprice>280.00</unitprice>
-                <disc>0.00</disc>
-                <senior>0.00</senior>
-                <pwd>0.00</pwd>
-                <diplomat>0.00</diplomat>
-                <nac>0.00</nac>
-                <spd>0.00</spd>
-                <taxtype>0</taxtype>
-                <tax>30.00</tax>
-                <memo>NA</memo>
-                <total>280.00</total>
-                <choicetype></choicetype>
-              </line>
           </trx>
 
           <trx>
@@ -1078,8 +1282,8 @@
             
               <line>
                 <sku>NA</sku>
-                <qty>1</qty>
-                <unitprice>250.00</unitprice>
+                <qty>3</qty>
+                <unitprice>150.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -1087,16 +1291,16 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>26.79</tax>
+                <tax>48.21</tax>
                 <memo>NA</memo>
-                <total>250.00</total>
+                <total>450.00</total>
                 <choicetype></choicetype>
               </line>
 
               <line>
                 <sku>NA</sku>
-                <qty>1</qty>
-                <unitprice>280.00</unitprice>
+                <qty>2</qty>
+                <unitprice>150.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -1104,9 +1308,9 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>30.00</tax>
+                <tax>32.14</tax>
                 <memo>NA</memo>
-                <total>280.00</total>
+                <total>300.00</total>
                 <choicetype></choicetype>
               </line>
           </trx>
@@ -1154,7 +1358,7 @@
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
-                <unitprice>250.00</unitprice>
+                <unitprice>700.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -1162,16 +1366,16 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>26.79</tax>
+                <tax>75.00</tax>
                 <memo>NA</memo>
-                <total>250.00</total>
+                <total>700.00</total>
                 <choicetype></choicetype>
               </line>
 
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
-                <unitprice>280.00</unitprice>
+                <unitprice>200.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -1179,9 +1383,26 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>30.00</tax>
+                <tax>21.43</tax>
                 <memo>NA</memo>
-                <total>280.00</total>
+                <total>200.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>200.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>21.43</tax>
+                <memo>NA</memo>
+                <total>200.00</total>
                 <choicetype></choicetype>
               </line>
           </trx>
@@ -1229,23 +1450,6 @@
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
-                <unitprice>250.00</unitprice>
-                <disc>0.00</disc>
-                <senior>0.00</senior>
-                <pwd>0.00</pwd>
-                <diplomat>0.00</diplomat>
-                <nac>0.00</nac>
-                <spd>0.00</spd>
-                <taxtype>0</taxtype>
-                <tax>26.79</tax>
-                <memo>NA</memo>
-                <total>250.00</total>
-                <choicetype></choicetype>
-              </line>
-
-              <line>
-                <sku>NA</sku>
-                <qty>1</qty>
                 <unitprice>280.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
@@ -1257,6 +1461,23 @@
                 <tax>30.00</tax>
                 <memo>NA</memo>
                 <total>280.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>450.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>48.21</tax>
+                <memo>NA</memo>
+                <total>450.00</total>
                 <choicetype></choicetype>
               </line>
           </trx>
@@ -1304,6 +1525,23 @@
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
+                <unitprice>830.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>88.93</tax>
+                <memo>NA</memo>
+                <total>830.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
                 <unitprice>150.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
@@ -1321,7 +1559,7 @@
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
-                <unitprice>350.00</unitprice>
+                <unitprice>150.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -1329,43 +1567,9 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>37.50</tax>
+                <tax>16.07</tax>
                 <memo>NA</memo>
-                <total>350.00</total>
-                <choicetype></choicetype>
-              </line>
-
-              <line>
-                <sku>NA</sku>
-                <qty>1</qty>
-                <unitprice>350.00</unitprice>
-                <disc>0.00</disc>
-                <senior>0.00</senior>
-                <pwd>0.00</pwd>
-                <diplomat>0.00</diplomat>
-                <nac>0.00</nac>
-                <spd>0.00</spd>
-                <taxtype>0</taxtype>
-                <tax>37.50</tax>
-                <memo>NA</memo>
-                <total>350.00</total>
-                <choicetype></choicetype>
-              </line>
-
-              <line>
-                <sku>NA</sku>
-                <qty>1</qty>
-                <unitprice>380.00</unitprice>
-                <disc>0.00</disc>
-                <senior>0.00</senior>
-                <pwd>0.00</pwd>
-                <diplomat>0.00</diplomat>
-                <nac>0.00</nac>
-                <spd>0.00</spd>
-                <taxtype>0</taxtype>
-                <tax>40.71</tax>
-                <memo>NA</memo>
-                <total>380.00</total>
+                <total>150.00</total>
                 <choicetype></choicetype>
               </line>
           </trx>
@@ -1412,8 +1616,42 @@
             
               <line>
                 <sku>NA</sku>
-                <qty>2</qty>
+                <qty>3</qty>
                 <unitprice>350.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>112.50</tax>
+                <memo>NA</memo>
+                <total>1050.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>2</qty>
+                <unitprice>90.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>19.29</tax>
+                <memo>NA</memo>
+                <total>180.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>700.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -1430,7 +1668,7 @@
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
-                <unitprice>450.00</unitprice>
+                <unitprice>180.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -1438,60 +1676,9 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>48.21</tax>
+                <tax>19.29</tax>
                 <memo>NA</memo>
-                <total>450.00</total>
-                <choicetype></choicetype>
-              </line>
-
-              <line>
-                <sku>NA</sku>
-                <qty>1</qty>
-                <unitprice>680.00</unitprice>
-                <disc>0.00</disc>
-                <senior>0.00</senior>
-                <pwd>0.00</pwd>
-                <diplomat>0.00</diplomat>
-                <nac>0.00</nac>
-                <spd>0.00</spd>
-                <taxtype>0</taxtype>
-                <tax>72.86</tax>
-                <memo>NA</memo>
-                <total>680.00</total>
-                <choicetype></choicetype>
-              </line>
-
-              <line>
-                <sku>NA</sku>
-                <qty>1</qty>
-                <unitprice>480.00</unitprice>
-                <disc>0.00</disc>
-                <senior>0.00</senior>
-                <pwd>0.00</pwd>
-                <diplomat>0.00</diplomat>
-                <nac>0.00</nac>
-                <spd>0.00</spd>
-                <taxtype>0</taxtype>
-                <tax>51.43</tax>
-                <memo>NA</memo>
-                <total>480.00</total>
-                <choicetype></choicetype>
-              </line>
-
-              <line>
-                <sku>NA</sku>
-                <qty>1</qty>
-                <unitprice>380.00</unitprice>
-                <disc>0.00</disc>
-                <senior>0.00</senior>
-                <pwd>0.00</pwd>
-                <diplomat>0.00</diplomat>
-                <nac>0.00</nac>
-                <spd>0.00</spd>
-                <taxtype>0</taxtype>
-                <tax>40.71</tax>
-                <memo>NA</memo>
-                <total>380.00</total>
+                <total>180.00</total>
                 <choicetype></choicetype>
               </line>
           </trx>

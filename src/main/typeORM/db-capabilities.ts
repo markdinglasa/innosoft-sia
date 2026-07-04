@@ -17,7 +17,7 @@ export const detectDbCapabilities = async () => {
     for (const row of dbColumns) {
       const tableName = String(row.TABLE_NAME).toLowerCase()
       const columnName = String(row.COLUMN_NAME).toLowerCase()
-      
+
       if (!validColumnsMap.has(tableName)) {
         validColumnsMap.set(tableName, new Set<string>())
       }
@@ -35,12 +35,12 @@ export const detectDbCapabilities = async () => {
         const isColumnValid = (column: any) => validColumns.has(column.databaseName.toLowerCase())
 
         const originalCount = metadata.columns.length
-        
+
         metadata.columns = metadata.columns.filter(isColumnValid)
         metadata.nonVirtualColumns = metadata.nonVirtualColumns.filter(isColumnValid)
         metadata.ownColumns = metadata.ownColumns.filter(isColumnValid)
 
-        prunedCount += (originalCount - metadata.columns.length)
+        prunedCount += originalCount - metadata.columns.length
       }
     }
 
@@ -48,7 +48,9 @@ export const detectDbCapabilities = async () => {
     const trnCollectionCols = validColumnsMap.get('trncollection')
     DbCapabilities.hasIsReturned = trnCollectionCols ? trnCollectionCols.has('isreturned') : false
 
-    console.log(`DbCapabilities detected: ${prunedCount} missing columns pruned. hasIsReturned = ${DbCapabilities.hasIsReturned}`)
+    console.log(
+      `DbCapabilities detected: ${prunedCount} missing columns pruned. hasIsReturned = ${DbCapabilities.hasIsReturned}`
+    )
   } catch (err) {
     console.warn('Failed to detect DB capabilities and prune metadata, using safe defaults:', err)
   }
