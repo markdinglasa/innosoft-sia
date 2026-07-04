@@ -33,11 +33,11 @@ async function run() {
       LEFT JOIN MstTax t ON sl.TaxId = t.Id
       LEFT JOIN MstDiscount d ON sl.DiscountId = d.Id
       LEFT JOIN MstItem i ON sl.ItemId = i.Id
-      WHERE CAST(c.CollectionDate AS DATE) = '2024-11-19'
+      WHERE CAST(c.CollectionDate AS DATE) = '2024-11-20'
         AND s.IsLocked = 1
         AND c.IsLocked = 1
         AND c.IsCancelled = 0
-        
+        AND COALESCE(c.IsReturned, 0) = 0
       GROUP BY c.TerminalId
     `);
     

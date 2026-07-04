@@ -403,6 +403,7 @@ export class AllianceReportService {
     const sales = await AppDataSource.getRepository(TrnSalesEntity)
       .createQueryBuilder('sales')
       .leftJoinAndSelect('sales.salesLines', 'salesLine')
+      .leftJoinAndSelect('salesLine.item', 'item')
       .leftJoinAndSelect('salesLine.discount', 'discount')
       .leftJoinAndSelect('salesLine.tax', 'tax')
       .leftJoinAndSelect('sales.collections', 'collection')
@@ -471,24 +472,30 @@ export class AllianceReportService {
         // Service charge
         let service = 0
 
+        // Map items for XML output inside this loop to guarantee they match the exact calculations
+        const trxLines: any[] = []
+
         for (const sl of s.salesLines || []) {
           totalQty += Number(sl.quantity || 0)
 
           if (sl.itemId === 1) {
             service += Number(sl.amount || 0)
+            continue
           }
+
+          let lineTaxAmount = Number(sl.taxAmount || 0)
 
           if (!c.isCancelled && (c.isReturned ?? 0) === 0) {
             if (sl.taxRate > 0) {
-              vat += Number(sl.taxAmount || 0)
+              vat += lineTaxAmount
               if (sl.tax?.tax === 'LOCAL TAX') {
-                localtax += Number(sl.taxAmount || 0)
+                localtax += lineTaxAmount
               } else if (sl.tax?.tax === 'AMUSEMENT TAX') {
-                amusement += Number(sl.taxAmount || 0)
+                amusement += lineTaxAmount
               }
             }
 
-            if (sl.taxAmount > 0) {
+            if (lineTaxAmount > 0) {
               taxsale += Number(sl.amount || 0)
               if (!c.isCancelled) {
                 taxincsale += Number(sl.amount || 0)
@@ -532,6 +539,47 @@ export class AllianceReportService {
               subtotal += Number(sl.amount || 0)
             }
           }
+
+          // Generate lines for XML
+          const qty = Number(sl.quantity || 0)
+          const discAmt = Number(sl.discountAmount || 0) * qty
+          
+          let senior = 0
+          let pwd = 0
+          let diplomat = 0
+          let nac = 0
+          let spd = 0
+
+          const discName = sl.discount?.discount || ''
+          if (discAmt > 0) {
+            if (discName === 'Senior Citizen Discount') {
+              senior = discAmt
+            } else if (discName === 'PWD') {
+              pwd = discAmt
+            } else if (discName === 'Diplomat Discount') {
+              diplomat = discAmt
+            } else if (discName.includes('National Athlete') || discName.includes('Coach')) {
+              nac = discAmt
+            } else if (discName.includes('Solo Parent')) {
+              spd = discAmt
+            }
+          }
+
+          trxLines.push({
+            sku: (sl.item?.barCode || 'NA').replaceAll('&', ' '),
+            qty,
+            unitprice: Number(sl.price || 0),
+            disc: discAmt,
+            senior,
+            pwd,
+            diplomat,
+            nac,
+            spd,
+            taxtype: lineTaxAmount > 0 ? '0' : '2',
+            tax: lineTaxAmount,
+            memo: s.remarks || 'NA',
+            total: Number(sl.amount || 0)
+          })
         }
 
         // Get total pax
@@ -610,7 +658,8 @@ export class AllianceReportService {
           linedisc: totalDiscount,
           linesenior,
           linepwd,
-          linediplomat
+          linediplomat,
+          lines: trxLines
         } as any)
       }
     }
@@ -878,9 +927,9 @@ export class AllianceReportService {
       // Format transaction items
       const trxListXml: string[] = []
       for (const item of transactions) {
-        const lines = await this.getProductLines(Terminal, Dates, String(item.receiptno))
+        const lines = item.lines || []
         const salesLineXml = lines
-          .map((lineItem) => {
+          .map((lineItem: any) => {
             return `
               <line>
                 <sku>${lineItem.sku ?? 'NA'}</sku>
@@ -1029,9 +1078,9 @@ export class AllianceReportService {
       // Format transaction items
       const trxListXml: string[] = []
       for (const item of transactions) {
-        const lines = await this.getProductLines(Terminal, Dates, String(item.receiptno))
+        const lines = item.lines || []
         const salesLineXml = lines
-          .map((lineItem) => {
+          .map((lineItem: any) => {
             return `
               <line>
                 <sku>${lineItem.sku ?? 'NA'}</sku>

@@ -19,12 +19,10 @@ async function run() {
 
   try {
     const pool = await sql.connect(config);
-    const r1 = await pool.request().query("SELECT Id, CollectionNumber, SalesId, CollectionDate FROM TrnCollection WHERE REPLACE(CollectionNumber, '-', '') = '0010001000015'");
-    
-    fs.writeFileSync('colls_debug.txt', JSON.stringify({ r1: r1.recordset }, null, 2));
-    
+    const r1 = await pool.request().query("SELECT TaxId, COUNT(*) as Count, SUM(Amount) as TotalAmount, SUM(TaxAmount) as TotalTaxAmount FROM TrnSalesLine GROUP BY TaxId");
+    fs.writeFileSync('taxid_debug.txt', JSON.stringify({ r1: r1.recordset }, null, 2));
   } catch (err) {
-    fs.writeFileSync('colls_debug.txt', String(err));
+    fs.writeFileSync('taxid_debug.txt', String(err));
   } finally {
     sql.close();
   }

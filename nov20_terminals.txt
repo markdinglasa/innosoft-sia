@@ -1,0 +1,12 @@
+{
+  "raw": [
+    {
+      "TerminalId": 1,
+      "NetSales": 10353.2,
+      "NonVatService": 941.2,
+      "VatSales": 8403.58,
+      "VatAmount": 1008.42,
+      "VatExempt": 0
+    }
+  ]
+}

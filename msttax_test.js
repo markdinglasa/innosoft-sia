@@ -19,12 +19,10 @@ async function run() {
 
   try {
     const pool = await sql.connect(config);
-    const r1 = await pool.request().query("SELECT Id, CollectionNumber, SalesId, CollectionDate FROM TrnCollection WHERE REPLACE(CollectionNumber, '-', '') = '0010001000015'");
-    
-    fs.writeFileSync('colls_debug.txt', JSON.stringify({ r1: r1.recordset }, null, 2));
-    
+    const r1 = await pool.request().query("SELECT * FROM MstTax");
+    fs.writeFileSync('msttax_debug.txt', JSON.stringify({ r1: r1.recordset }, null, 2));
   } catch (err) {
-    fs.writeFileSync('colls_debug.txt', String(err));
+    fs.writeFileSync('msttax_debug.txt', String(err));
   } finally {
     sql.close();
   }

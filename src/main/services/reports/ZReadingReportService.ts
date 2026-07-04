@@ -115,13 +115,32 @@ export class ZReadingReportService {
       .createQueryBuilder('salesLine')
       .innerJoin('salesLine.sales', 'sales')
       .leftJoin(TrnCollectionEntity, 'collection', 'collection.salesId = salesLine.salesId')
-      .select('SUM(CASE WHEN salesLine.taxId = 4 THEN salesLine.amount ELSE 0 END)', 'NONVat')
-      .addSelect('SUM(CASE WHEN salesLine.taxId = 1 THEN salesLine.amount ELSE 0 END)', 'VATSales')
-      .addSelect('SUM(CASE WHEN salesLine.taxId = 5 THEN salesLine.amount ELSE 0 END)', 'VATExempt')
-      .addSelect('SUM(CASE WHEN salesLine.taxId = 3 THEN salesLine.amount ELSE 0 END)', 'zerosale')
-      .addSelect('SUM(salesLine.taxAmount)', 'VATAmount')
+      .leftJoin('salesLine.tax', 'tax')
+      .leftJoin('salesLine.discount', 'discount')
+      .leftJoin('salesLine.item', 'item')
+      .select(
+        `SUM(CASE WHEN (tax.tax = 'NON-VAT' OR item.itemDescription = 'SERVICE CHARGE') AND COALESCE(discount.discount, '') NOT IN ('PWD', 'Senior Citizen Discount') THEN salesLine.amount ELSE 0 END)`,
+        'NONVat'
+      )
+      .addSelect(
+        `SUM(CASE WHEN tax.tax = 'VAT' AND item.itemDescription != 'SERVICE CHARGE' AND COALESCE(discount.discount, '') NOT IN ('PWD', 'Senior Citizen Discount') THEN (salesLine.amount - salesLine.taxAmount) ELSE 0 END)`,
+        'VATSales'
+      )
+      .addSelect(
+        `SUM(CASE WHEN tax.tax IN ('VAT EXEMPT', 'VAT EXEMPT SALES') OR discount.discount IN ('PWD', 'Senior Citizen Discount') THEN salesLine.amount ELSE 0 END)`,
+        'VATExempt'
+      )
+      .addSelect(
+        `SUM(CASE WHEN tax.tax = 'ZERO RATED' AND item.itemDescription != 'SERVICE CHARGE' AND COALESCE(discount.discount, '') NOT IN ('PWD', 'Senior Citizen Discount') THEN salesLine.amount ELSE 0 END)`,
+        'zerosale'
+      )
+      .addSelect(
+        `SUM(CASE WHEN tax.tax = 'VAT' AND item.itemDescription != 'SERVICE CHARGE' AND COALESCE(discount.discount, '') NOT IN ('PWD', 'Senior Citizen Discount') THEN salesLine.taxAmount ELSE 0 END)`,
+        'VATAmount'
+      )
       .where('sales.isLocked = :isLocked', { isLocked: true })
       .andWhere('collection.isLocked = :isLocked', { isLocked: true })
+      .andWhere('collection.isCancelled = :isCancelled', { isCancelled: false })
       .andWhere('collection.terminalId = :terminalId', { terminalId })
       .andWhere('CAST(collection.collectionDate AS DATE) = :dates', { dates: formattedDate })
       .getRawOne()

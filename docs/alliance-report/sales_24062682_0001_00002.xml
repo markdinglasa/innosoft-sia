@@ -16,18 +16,18 @@
 <previoustax>1008.42</previoustax>
 <newtax>3366.19</newtax>
 <previoustaxsale>8403.58</previoustaxsale>
-<newtaxsale>28051.81</newtaxsale>
+<newtaxsale>30409.58</newtaxsale>
 <previousnotaxsale>941.20</previousnotaxsale>
-<newnotaxsale>3141.80</newnotaxsale>
-<opentime>20241119224528</opentime>
-<closetime>20241120233500</closetime>
+<newnotaxsale>941.20</newnotaxsale>
+<opentime>20241120000000</opentime>
+<closetime>20241120000000</closetime>
 <gross>24206.60</gross>
 <vat>2357.77</vat>
 <localtax>0.00</localtax>
 <amusement>0.00</amusement>
 <ewt>0.00</ewt>
-<taxsale>19648.23</taxsale>
-<notaxsale>2200.60</notaxsale>
+<taxsale>22006.00</taxsale>
+<notaxsale>0.00</notaxsale>
 <zerosale>0.00</zerosale>
 <void>0.00</void>
 <voidcnt>0</voidcnt>
@@ -76,7 +76,7 @@
             <linediplomat>0.00</linediplomat>
             <nac>0.00</nac>
             <spd>0.00</spd>
-            <subtotal>1408.00</subtotal>
+            <subtotal>1280.00</subtotal>
             <disc>0.00</disc>
             <senior>0.00</senior>
             <pwd>0.00</pwd>
@@ -87,10 +87,10 @@
             <localtax>0.00</localtax>
             <amusement>0.00</amusement>
             <service>128.00</service>
-            <taxsale>1142.85</taxsale>
-            <notaxsale>128.00</notaxsale>
+            <taxsale>1280.00</taxsale>
+            <notaxsale>0.00</notaxsale>
             <taxexsale>0.00</taxexsale>
-            <taxincsale>1142.85</taxincsale>
+            <taxincsale>1280.00</taxincsale>
             <zerosale>0.00</zerosale>
             <customercount>1</customercount>
             <gross>1408.00</gross>
@@ -151,7 +151,7 @@
             <linediplomat>0.00</linediplomat>
             <nac>0.00</nac>
             <spd>0.00</spd>
-            <subtotal>803.00</subtotal>
+            <subtotal>730.00</subtotal>
             <disc>0.00</disc>
             <senior>0.00</senior>
             <pwd>0.00</pwd>
@@ -162,10 +162,10 @@
             <localtax>0.00</localtax>
             <amusement>0.00</amusement>
             <service>73.00</service>
-            <taxsale>651.78</taxsale>
-            <notaxsale>73.00</notaxsale>
+            <taxsale>730.00</taxsale>
+            <notaxsale>0.00</notaxsale>
             <taxexsale>0.00</taxexsale>
-            <taxincsale>651.78</taxincsale>
+            <taxincsale>730.00</taxincsale>
             <zerosale>0.00</zerosale>
             <customercount>1</customercount>
             <gross>803.00</gross>
@@ -226,7 +226,7 @@
             <linediplomat>0.00</linediplomat>
             <nac>0.00</nac>
             <spd>0.00</spd>
-            <subtotal>1188.00</subtotal>
+            <subtotal>1080.00</subtotal>
             <disc>0.00</disc>
             <senior>0.00</senior>
             <pwd>0.00</pwd>
@@ -237,10 +237,10 @@
             <localtax>0.00</localtax>
             <amusement>0.00</amusement>
             <service>108.00</service>
-            <taxsale>964.28</taxsale>
-            <notaxsale>108.00</notaxsale>
+            <taxsale>1080.00</taxsale>
+            <notaxsale>0.00</notaxsale>
             <taxexsale>0.00</taxexsale>
-            <taxincsale>964.28</taxincsale>
+            <taxincsale>1080.00</taxincsale>
             <zerosale>0.00</zerosale>
             <customercount>1</customercount>
             <gross>1188.00</gross>
@@ -301,7 +301,7 @@
             <linediplomat>0.00</linediplomat>
             <nac>0.00</nac>
             <spd>0.00</spd>
-            <subtotal>3113.00</subtotal>
+            <subtotal>2830.00</subtotal>
             <disc>0.00</disc>
             <senior>0.00</senior>
             <pwd>0.00</pwd>
@@ -312,10 +312,10 @@
             <localtax>0.00</localtax>
             <amusement>0.00</amusement>
             <service>283.00</service>
-            <taxsale>2526.78</taxsale>
-            <notaxsale>283.00</notaxsale>
+            <taxsale>2830.00</taxsale>
+            <notaxsale>0.00</notaxsale>
             <taxexsale>0.00</taxexsale>
-            <taxincsale>2526.78</taxincsale>
+            <taxincsale>2830.00</taxincsale>
             <zerosale>0.00</zerosale>
             <customercount>1</customercount>
             <gross>3113.00</gross>
@@ -376,7 +376,7 @@
             <linediplomat>0.00</linediplomat>
             <nac>0.00</nac>
             <spd>0.00</spd>
-            <subtotal>880.00</subtotal>
+            <subtotal>800.00</subtotal>
             <disc>0.00</disc>
             <senior>0.00</senior>
             <pwd>0.00</pwd>
@@ -387,10 +387,10 @@
             <localtax>0.00</localtax>
             <amusement>0.00</amusement>
             <service>80.00</service>
-            <taxsale>714.29</taxsale>
-            <notaxsale>80.00</notaxsale>
+            <taxsale>800.00</taxsale>
+            <notaxsale>0.00</notaxsale>
             <taxexsale>0.00</taxexsale>
-            <taxincsale>714.29</taxincsale>
+            <taxincsale>800.00</taxincsale>
             <zerosale>0.00</zerosale>
             <customercount>1</customercount>
             <gross>880.00</gross>
@@ -451,7 +451,7 @@
             <linediplomat>0.00</linediplomat>
             <nac>0.00</nac>
             <spd>0.00</spd>
-            <subtotal>1584.00</subtotal>
+            <subtotal>1440.00</subtotal>
             <disc>0.00</disc>
             <senior>0.00</senior>
             <pwd>0.00</pwd>
@@ -462,10 +462,10 @@
             <localtax>0.00</localtax>
             <amusement>0.00</amusement>
             <service>144.00</service>
-            <taxsale>1285.73</taxsale>
-            <notaxsale>144.00</notaxsale>
+            <taxsale>1440.00</taxsale>
+            <notaxsale>0.00</notaxsale>
             <taxexsale>0.00</taxexsale>
-            <taxincsale>1285.73</taxincsale>
+            <taxincsale>1440.00</taxincsale>
             <zerosale>0.00</zerosale>
             <customercount>1</customercount>
             <gross>1584.00</gross>
@@ -526,7 +526,7 @@
             <linediplomat>0.00</linediplomat>
             <nac>0.00</nac>
             <spd>0.00</spd>
-            <subtotal>550.00</subtotal>
+            <subtotal>500.00</subtotal>
             <disc>0.00</disc>
             <senior>0.00</senior>
             <pwd>0.00</pwd>
@@ -537,10 +537,10 @@
             <localtax>0.00</localtax>
             <amusement>0.00</amusement>
             <service>50.00</service>
-            <taxsale>446.43</taxsale>
-            <notaxsale>50.00</notaxsale>
+            <taxsale>500.00</taxsale>
+            <notaxsale>0.00</notaxsale>
             <taxexsale>0.00</taxexsale>
-            <taxincsale>446.43</taxincsale>
+            <taxincsale>500.00</taxincsale>
             <zerosale>0.00</zerosale>
             <customercount>1</customercount>
             <gross>550.00</gross>
@@ -601,7 +601,7 @@
             <linediplomat>0.00</linediplomat>
             <nac>0.00</nac>
             <spd>0.00</spd>
-            <subtotal>988.90</subtotal>
+            <subtotal>899.00</subtotal>
             <disc>0.00</disc>
             <senior>0.00</senior>
             <pwd>0.00</pwd>
@@ -612,10 +612,10 @@
             <localtax>0.00</localtax>
             <amusement>0.00</amusement>
             <service>89.90</service>
-            <taxsale>802.68</taxsale>
-            <notaxsale>89.90</notaxsale>
+            <taxsale>899.00</taxsale>
+            <notaxsale>0.00</notaxsale>
             <taxexsale>0.00</taxexsale>
-            <taxincsale>802.68</taxincsale>
+            <taxincsale>899.00</taxincsale>
             <zerosale>0.00</zerosale>
             <customercount>1</customercount>
             <gross>988.90</gross>
@@ -676,7 +676,7 @@
             <linediplomat>0.00</linediplomat>
             <nac>0.00</nac>
             <spd>0.00</spd>
-            <subtotal>550.00</subtotal>
+            <subtotal>500.00</subtotal>
             <disc>0.00</disc>
             <senior>0.00</senior>
             <pwd>0.00</pwd>
@@ -687,10 +687,10 @@
             <localtax>0.00</localtax>
             <amusement>0.00</amusement>
             <service>50.00</service>
-            <taxsale>446.43</taxsale>
-            <notaxsale>50.00</notaxsale>
+            <taxsale>500.00</taxsale>
+            <notaxsale>0.00</notaxsale>
             <taxexsale>0.00</taxexsale>
-            <taxincsale>446.43</taxincsale>
+            <taxincsale>500.00</taxincsale>
             <zerosale>0.00</zerosale>
             <customercount>1</customercount>
             <gross>550.00</gross>
@@ -751,7 +751,7 @@
             <linediplomat>0.00</linediplomat>
             <nac>0.00</nac>
             <spd>0.00</spd>
-            <subtotal>275.00</subtotal>
+            <subtotal>250.00</subtotal>
             <disc>0.00</disc>
             <senior>0.00</senior>
             <pwd>0.00</pwd>
@@ -762,10 +762,10 @@
             <localtax>0.00</localtax>
             <amusement>0.00</amusement>
             <service>25.00</service>
-            <taxsale>223.21</taxsale>
-            <notaxsale>25.00</notaxsale>
+            <taxsale>250.00</taxsale>
+            <notaxsale>0.00</notaxsale>
             <taxexsale>0.00</taxexsale>
-            <taxincsale>223.21</taxincsale>
+            <taxincsale>250.00</taxincsale>
             <zerosale>0.00</zerosale>
             <customercount>1</customercount>
             <gross>275.00</gross>
@@ -826,7 +826,7 @@
             <linediplomat>0.00</linediplomat>
             <nac>0.00</nac>
             <spd>0.00</spd>
-            <subtotal>988.90</subtotal>
+            <subtotal>899.00</subtotal>
             <disc>0.00</disc>
             <senior>0.00</senior>
             <pwd>0.00</pwd>
@@ -837,10 +837,10 @@
             <localtax>0.00</localtax>
             <amusement>0.00</amusement>
             <service>89.90</service>
-            <taxsale>802.68</taxsale>
-            <notaxsale>89.90</notaxsale>
+            <taxsale>899.00</taxsale>
+            <notaxsale>0.00</notaxsale>
             <taxexsale>0.00</taxexsale>
-            <taxincsale>802.68</taxincsale>
+            <taxincsale>899.00</taxincsale>
             <zerosale>0.00</zerosale>
             <customercount>1</customercount>
             <gross>988.90</gross>
@@ -901,7 +901,7 @@
             <linediplomat>0.00</linediplomat>
             <nac>0.00</nac>
             <spd>0.00</spd>
-            <subtotal>880.00</subtotal>
+            <subtotal>800.00</subtotal>
             <disc>0.00</disc>
             <senior>0.00</senior>
             <pwd>0.00</pwd>
@@ -912,10 +912,10 @@
             <localtax>0.00</localtax>
             <amusement>0.00</amusement>
             <service>80.00</service>
-            <taxsale>714.29</taxsale>
-            <notaxsale>80.00</notaxsale>
+            <taxsale>800.00</taxsale>
+            <notaxsale>0.00</notaxsale>
             <taxexsale>0.00</taxexsale>
-            <taxincsale>714.29</taxincsale>
+            <taxincsale>800.00</taxincsale>
             <zerosale>0.00</zerosale>
             <customercount>1</customercount>
             <gross>880.00</gross>
@@ -976,7 +976,7 @@
             <linediplomat>0.00</linediplomat>
             <nac>0.00</nac>
             <spd>0.00</spd>
-            <subtotal>275.00</subtotal>
+            <subtotal>250.00</subtotal>
             <disc>0.00</disc>
             <senior>0.00</senior>
             <pwd>0.00</pwd>
@@ -987,10 +987,10 @@
             <localtax>0.00</localtax>
             <amusement>0.00</amusement>
             <service>25.00</service>
-            <taxsale>223.21</taxsale>
-            <notaxsale>25.00</notaxsale>
+            <taxsale>250.00</taxsale>
+            <notaxsale>0.00</notaxsale>
             <taxexsale>0.00</taxexsale>
-            <taxincsale>223.21</taxincsale>
+            <taxincsale>250.00</taxincsale>
             <zerosale>0.00</zerosale>
             <customercount>1</customercount>
             <gross>275.00</gross>
@@ -1051,7 +1051,7 @@
             <linediplomat>0.00</linediplomat>
             <nac>0.00</nac>
             <spd>0.00</spd>
-            <subtotal>825.00</subtotal>
+            <subtotal>750.00</subtotal>
             <disc>0.00</disc>
             <senior>0.00</senior>
             <pwd>0.00</pwd>
@@ -1062,10 +1062,10 @@
             <localtax>0.00</localtax>
             <amusement>0.00</amusement>
             <service>75.00</service>
-            <taxsale>669.65</taxsale>
-            <notaxsale>75.00</notaxsale>
+            <taxsale>750.00</taxsale>
+            <notaxsale>0.00</notaxsale>
             <taxexsale>0.00</taxexsale>
-            <taxincsale>669.65</taxincsale>
+            <taxincsale>750.00</taxincsale>
             <zerosale>0.00</zerosale>
             <customercount>1</customercount>
             <gross>825.00</gross>
@@ -1126,7 +1126,7 @@
             <linediplomat>0.00</linediplomat>
             <nac>0.00</nac>
             <spd>0.00</spd>
-            <subtotal>1210.00</subtotal>
+            <subtotal>1100.00</subtotal>
             <disc>0.00</disc>
             <senior>0.00</senior>
             <pwd>0.00</pwd>
@@ -1137,10 +1137,10 @@
             <localtax>0.00</localtax>
             <amusement>0.00</amusement>
             <service>110.00</service>
-            <taxsale>982.14</taxsale>
-            <notaxsale>110.00</notaxsale>
+            <taxsale>1100.00</taxsale>
+            <notaxsale>0.00</notaxsale>
             <taxexsale>0.00</taxexsale>
-            <taxincsale>982.14</taxincsale>
+            <taxincsale>1100.00</taxincsale>
             <zerosale>0.00</zerosale>
             <customercount>1</customercount>
             <gross>1210.00</gross>
@@ -1201,7 +1201,7 @@
             <linediplomat>0.00</linediplomat>
             <nac>0.00</nac>
             <spd>0.00</spd>
-            <subtotal>803.00</subtotal>
+            <subtotal>730.00</subtotal>
             <disc>0.00</disc>
             <senior>0.00</senior>
             <pwd>0.00</pwd>
@@ -1212,10 +1212,10 @@
             <localtax>0.00</localtax>
             <amusement>0.00</amusement>
             <service>73.00</service>
-            <taxsale>651.79</taxsale>
-            <notaxsale>73.00</notaxsale>
+            <taxsale>730.00</taxsale>
+            <notaxsale>0.00</notaxsale>
             <taxexsale>0.00</taxexsale>
-            <taxincsale>651.79</taxincsale>
+            <taxincsale>730.00</taxincsale>
             <zerosale>0.00</zerosale>
             <customercount>1</customercount>
             <gross>803.00</gross>
@@ -1276,7 +1276,7 @@
             <linediplomat>0.00</linediplomat>
             <nac>0.00</nac>
             <spd>0.00</spd>
-            <subtotal>1243.00</subtotal>
+            <subtotal>1130.00</subtotal>
             <disc>0.00</disc>
             <senior>0.00</senior>
             <pwd>0.00</pwd>
@@ -1287,10 +1287,10 @@
             <localtax>0.00</localtax>
             <amusement>0.00</amusement>
             <service>113.00</service>
-            <taxsale>1008.93</taxsale>
-            <notaxsale>113.00</notaxsale>
+            <taxsale>1130.00</taxsale>
+            <notaxsale>0.00</notaxsale>
             <taxexsale>0.00</taxexsale>
-            <taxincsale>1008.93</taxincsale>
+            <taxincsale>1130.00</taxincsale>
             <zerosale>0.00</zerosale>
             <customercount>1</customercount>
             <gross>1243.00</gross>
@@ -1304,7 +1304,7 @@
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
-                <unitprice>250.00</unitprice>
+                <unitprice>150.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -1312,16 +1312,16 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>26.79</tax>
+                <tax>16.07</tax>
                 <memo>NA</memo>
-                <total>250.00</total>
+                <total>150.00</total>
                 <choicetype></choicetype>
               </line>
 
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
-                <unitprice>280.00</unitprice>
+                <unitprice>350.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -1329,9 +1329,43 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>30.00</tax>
+                <tax>37.50</tax>
                 <memo>NA</memo>
-                <total>280.00</total>
+                <total>350.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>350.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>37.50</tax>
+                <memo>NA</memo>
+                <total>350.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>380.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>40.71</tax>
+                <memo>NA</memo>
+                <total>380.00</total>
                 <choicetype></choicetype>
               </line>
           </trx>
@@ -1351,7 +1385,7 @@
             <linediplomat>0.00</linediplomat>
             <nac>0.00</nac>
             <spd>0.00</spd>
-            <subtotal>2321.00</subtotal>
+            <subtotal>2110.00</subtotal>
             <disc>0.00</disc>
             <senior>0.00</senior>
             <pwd>0.00</pwd>
@@ -1362,10 +1396,10 @@
             <localtax>0.00</localtax>
             <amusement>0.00</amusement>
             <service>211.00</service>
-            <taxsale>1883.92</taxsale>
-            <notaxsale>211.00</notaxsale>
+            <taxsale>2110.00</taxsale>
+            <notaxsale>0.00</notaxsale>
             <taxexsale>0.00</taxexsale>
-            <taxincsale>1883.92</taxincsale>
+            <taxincsale>2110.00</taxincsale>
             <zerosale>0.00</zerosale>
             <customercount>1</customercount>
             <gross>2321.00</gross>
@@ -1378,8 +1412,8 @@
             
               <line>
                 <sku>NA</sku>
-                <qty>1</qty>
-                <unitprice>250.00</unitprice>
+                <qty>2</qty>
+                <unitprice>350.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -1387,16 +1421,16 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>26.79</tax>
+                <tax>75.00</tax>
                 <memo>NA</memo>
-                <total>250.00</total>
+                <total>700.00</total>
                 <choicetype></choicetype>
               </line>
 
               <line>
                 <sku>NA</sku>
                 <qty>1</qty>
-                <unitprice>280.00</unitprice>
+                <unitprice>450.00</unitprice>
                 <disc>0.00</disc>
                 <senior>0.00</senior>
                 <pwd>0.00</pwd>
@@ -1404,9 +1438,60 @@
                 <nac>0.00</nac>
                 <spd>0.00</spd>
                 <taxtype>0</taxtype>
-                <tax>30.00</tax>
+                <tax>48.21</tax>
                 <memo>NA</memo>
-                <total>280.00</total>
+                <total>450.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>680.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>72.86</tax>
+                <memo>NA</memo>
+                <total>680.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>480.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>51.43</tax>
+                <memo>NA</memo>
+                <total>480.00</total>
+                <choicetype></choicetype>
+              </line>
+
+              <line>
+                <sku>NA</sku>
+                <qty>1</qty>
+                <unitprice>380.00</unitprice>
+                <disc>0.00</disc>
+                <senior>0.00</senior>
+                <pwd>0.00</pwd>
+                <diplomat>0.00</diplomat>
+                <nac>0.00</nac>
+                <spd>0.00</spd>
+                <taxtype>0</taxtype>
+                <tax>40.71</tax>
+                <memo>NA</memo>
+                <total>380.00</total>
                 <choicetype></choicetype>
               </line>
           </trx>

@@ -116,6 +116,7 @@ export interface AllianceSalesTrx {
   created: number // default = 1
   memo: string // set as remarks ON TrnSales.Remarks
   line: AllianceSalesTrxline
+  lines: AllianceSalesTrxline[]
   choicetype: string // leave as blank
 }
 export interface AllianceSalesProduct {

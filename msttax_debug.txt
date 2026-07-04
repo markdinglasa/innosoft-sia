@@ -1,0 +1,46 @@
+{
+  "r1": [
+    {
+      "Id": 4,
+      "Code": "INCLUSIVE",
+      "Tax": "VAT",
+      "Rate": 12,
+      "AccountId": 87
+    },
+    {
+      "Id": 9,
+      "Code": "INCLUSIVE",
+      "Tax": "NON-VAT",
+      "Rate": 0,
+      "AccountId": 87
+    },
+    {
+      "Id": 15,
+      "Code": "EXCLUSIVE",
+      "Tax": "LOCAL TAX",
+      "Rate": 5,
+      "AccountId": 252
+    },
+    {
+      "Id": 16,
+      "Code": "EXCLUSIVE",
+      "Tax": "VAT-EXCLUSIVE",
+      "Rate": 0,
+      "AccountId": 87
+    },
+    {
+      "Id": 18,
+      "Code": "INCLUSIVE",
+      "Tax": "VAT EXEMPT",
+      "Rate": 0,
+      "AccountId": 87
+    },
+    {
+      "Id": 19,
+      "Code": "INCLUSIVE",
+      "Tax": "ZERO RATED",
+      "Rate": 0,
+      "AccountId": 87
+    }
+  ]
+}
