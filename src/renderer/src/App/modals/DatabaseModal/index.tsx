@@ -14,7 +14,7 @@ import {
   ToastType
 } from '@shared/types'
 import yup from '@shared/utils/yup'
-import { Form, Formik } from 'formik'
+import { Formik } from 'formik'
 import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import * as S from './Styles'
@@ -90,7 +90,7 @@ export const DatabaseModal: SFC<DatabaseModalProps> = ({ className, close, theme
               enableReinitialize={true} // Add this line
             >
               {({ dirty, errors, isSubmitting, touched, isValid, values, handleChange }) => (
-                <Form>
+                <S.Form>
                   <Input
                     theme={theme}
                     errors={errors}
@@ -151,7 +151,7 @@ export const DatabaseModal: SFC<DatabaseModalProps> = ({ className, close, theme
                     color={ButtonColor.blue}
                     type={ButtonType.submit}
                   />
-                </Form>
+                </S.Form>
               )}
             </Formik>
           </S.CardBody>

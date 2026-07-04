@@ -1,5 +1,6 @@
 import { Button as UButton } from '@shared/components'
 import { colors } from '@shared/styles'
+import { Form as UForm } from 'formik'
 import styled from 'styled-components'
 import { Modal } from '../../components'
 export const UModal = styled(Modal)`
@@ -19,4 +20,11 @@ export const CardBody = styled.div`
 `
 export const Button = styled(UButton)`
   width: 100%;
+`
+export const Form = styled(UForm)`
+  max-height: 500px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 `
