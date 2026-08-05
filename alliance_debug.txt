@@ -1,8 +1,0 @@
-{
-  "raw": [
-    {
-      "notaxsale": 0,
-      "taxsale": 9412
-    }
-  ]
-}

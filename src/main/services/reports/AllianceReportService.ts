@@ -74,7 +74,7 @@ export class AllianceReportService {
         'previoustaxsale'
       )
       .addSelect(
-        `SUM(ROUND(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 AND collection.isCancelled = 0 AND COALESCE(salesLine.taxAmount, 0) < 1 AND item.itemDescription != 'SERVICE CHARGE' AND COALESCE(discount.discount, '') NOT IN ('Senior Citizen Discount', 'PWD') THEN salesLine.amount ELSE 0 END, 2))`,
+        `SUM(ROUND(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 AND collection.isCancelled = 0 AND COALESCE(salesLine.taxAmount, 0) <= 0 AND item.itemDescription != 'SERVICE CHARGE' AND COALESCE(discount.discount, '') NOT IN ('Senior Citizen Discount', 'PWD') THEN salesLine.amount ELSE 0 END, 2))`,
         'previousnotaxsale'
       )
       .where('collection.terminalId = :terminalId', { terminalId })
@@ -175,7 +175,7 @@ export class AllianceReportService {
         'taxsale'
       )
       .addSelect(
-        `SUM(ROUND(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 AND COALESCE(salesLine.taxAmount, 0) < 1 AND item.itemDescription != 'SERVICE CHARGE' AND COALESCE(discount.discount, '') NOT IN ('Senior Citizen Discount', 'PWD') THEN salesLine.amount ELSE 0 END, 2))`,
+        `SUM(ROUND(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND sales.isCancelled = 0 AND COALESCE(salesLine.taxAmount, 0) <= 0 AND item.itemDescription != 'SERVICE CHARGE' AND COALESCE(discount.discount, '') NOT IN ('Senior Citizen Discount', 'PWD') THEN salesLine.amount ELSE 0 END, 2))`,
         'notaxsale'
       )
       .addSelect(
