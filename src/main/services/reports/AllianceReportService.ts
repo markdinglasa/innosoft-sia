@@ -183,19 +183,19 @@ export class AllianceReportService {
         'vatexempt'
       )
       .addSelect(
-        'SUM(ROUND(CASE WHEN sales.isCancelled = 1 THEN salesLine.amount ELSE 0 END, 3))',
+        'SUM(ROUND(CASE WHEN ISNULL(sales.isCancelled,0) = 1 THEN salesLine.amount ELSE 0 END, 3))',
         'void'
       )
       .addSelect(
-        'COUNT(DISTINCT CASE WHEN sales.isCancelled = 1 THEN salesLine.amount ELSE null END)',
+        'COUNT(DISTINCT CASE WHEN sales.isCancelled = 1 THEN sales.id ELSE null END)',
         'voidcnt'
       )
       .addSelect(
-        `SUM(CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND COALESCE(salesLine.discountAmount, 0) > 0 AND discount.discount NOT IN ('Senior Citizen Discount', 'PWD') THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)`,
+        `SUM(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND COALESCE(sales.isCancelled, 0) = 0 AND COALESCE(salesLine.discountAmount, 0) > 0 AND discount.discount NOT IN ('Senior Citizen Discount', 'PWD') THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)`,
         'disc'
       )
       .addSelect(
-        `COUNT(DISTINCT CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND salesLine.discountAmount > 0 AND discount.discount NOT IN ('Senior Citizen Discount', 'PWD') THEN sales.id ELSE null END)`,
+        `COUNT(DISTINCT CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND COALESCE(sales.isCancelled, 0) = 0 AND salesLine.discountAmount > 0 AND discount.discount NOT IN ('Senior Citizen Discount', 'PWD') THEN sales.id ELSE null END)`,
         'disccnt'
       )
       .addSelect(
@@ -207,43 +207,43 @@ export class AllianceReportService {
         'refundcnt'
       )
       .addSelect(
-        `SUM(CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND discount.discount = 'Senior Citizen Discount' THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)`,
+        `SUM(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND COALESCE(sales.isCancelled, 0) = 0 AND discount.discount = 'Senior Citizen Discount' THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)`,
         'senior'
       )
       .addSelect(
-        `COUNT(DISTINCT CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND discount.discount = 'Senior Citizen Discount' THEN sales.id ELSE null END)`,
+        `COUNT(DISTINCT CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND COALESCE(sales.isCancelled, 0) = 0 AND discount.discount = 'Senior Citizen Discount' THEN sales.id ELSE null END)`,
         'seniorcnt'
       )
       .addSelect(
-        `SUM(CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND discount.discount = 'PWD' THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)`,
+        `SUM(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND COALESCE(sales.isCancelled, 0) = 0 AND discount.discount = 'PWD' THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)`,
         'pwd'
       )
       .addSelect(
-        `COUNT(DISTINCT CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND discount.discount = 'PWD' THEN sales.id ELSE null END)`,
+        `COUNT(DISTINCT CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND COALESCE(sales.isCancelled, 0) = 0 AND discount.discount = 'PWD' THEN sales.id ELSE null END)`,
         'pwdcnt'
       )
       .addSelect(
-        `SUM(CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND discount.discount = 'Diplomat Discount' THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)`,
+        `SUM(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND COALESCE(sales.isCancelled, 0) = 0 AND discount.discount = 'Diplomat Discount' THEN salesLine.discountAmount * salesLine.quantity ELSE 0 END)`,
         'diplomat'
       )
       .addSelect(
-        `COUNT(CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND discount.discount = 'Diplomat Discount' THEN sales.id ELSE null END)`,
+        `COUNT(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND COALESCE(sales.isCancelled, 0) = 0 AND discount.discount = 'Diplomat Discount' THEN sales.id ELSE null END)`,
         'diplomatcnt'
       )
       .addSelect(
-        `SUM(CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND (discount.discount LIKE '%National Athlete%' OR discount.discount LIKE '%Coach%') THEN ROUND(salesLine.discountAmount * salesLine.quantity, 2) ELSE 0 END)`,
+        `SUM(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND COALESCE(sales.isCancelled, 0) = 0 AND (discount.discount LIKE '%National Athlete%' OR discount.discount LIKE '%Coach%') THEN ROUND(salesLine.discountAmount * salesLine.quantity, 2) ELSE 0 END)`,
         'nac'
       )
       .addSelect(
-        `COUNT(DISTINCT CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND (discount.discount LIKE '%National Athlete%' OR discount.discount LIKE '%Coach%') THEN sales.id ELSE null END)`,
+        `COUNT(DISTINCT CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND COALESCE(sales.isCancelled, 0) = 0 AND (discount.discount LIKE '%National Athlete%' OR discount.discount LIKE '%Coach%') THEN sales.id ELSE null END)`,
         'naccnt'
       )
       .addSelect(
-        `SUM(CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND discount.discount LIKE '%Solo Parent%' THEN ROUND(salesLine.discountAmount * salesLine.quantity, 2) ELSE 0 END)`,
+        `SUM(CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND COALESCE(sales.isCancelled, 0) = 0 AND discount.discount LIKE '%Solo Parent%' THEN ROUND(salesLine.discountAmount * salesLine.quantity, 2) ELSE 0 END)`,
         'spd'
       )
       .addSelect(
-        `COUNT(DISTINCT CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND discount.discount LIKE '%Solo Parent%' THEN sales.id ELSE null END)`,
+        `COUNT(DISTINCT CASE WHEN COALESCE(${isReturnedExpr()}, 0) = 0 AND COALESCE(sales.isCancelled, 0) = 0 AND discount.discount LIKE '%Solo Parent%' THEN sales.id ELSE null END)`,
         'spdcnt'
       )
       .addSelect("MIN(REPLACE(collection.collectionNumber, '-', ''))", 'receiptstart')
@@ -277,7 +277,7 @@ export class AllianceReportService {
         'credit'
       )
       .addSelect(
-        "COUNT(CASE WHEN collection.isCancelled = 0 AND (collectionLine.payTypeId = payType.id AND payType.payType = 'Credit Card') THEN collectionLine.amount ELSE null END)",
+        "COUNT(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 AND payType.payType = 'Credit Card' AND collectionLine.amount > 0 THEN 1 ELSE null END)",
         'creditcnt'
       )
       .addSelect(
@@ -285,7 +285,7 @@ export class AllianceReportService {
         'charge'
       )
       .addSelect(
-        "COUNT(CASE WHEN collection.isCancelled = 0 AND (collectionLine.payTypeId = payType.id AND payType.payType = 'Charge') THEN collectionLine.amount ELSE null END)",
+        "COUNT(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 AND payType.payType = 'Charge' AND collectionLine.amount > 0 THEN 1 ELSE null END)",
         'chargecnt'
       )
       .addSelect(
@@ -293,7 +293,7 @@ export class AllianceReportService {
         'giftcheck'
       )
       .addSelect(
-        "COUNT(CASE WHEN collection.isCancelled = 0 AND (collectionLine.payTypeId = payType.id AND payType.payType = 'Gift Certificate') THEN collectionLine.amount ELSE null END)",
+        "COUNT(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 AND payType.payType = 'Gift Certificate' AND collectionLine.amount > 0 THEN 1 ELSE null END)",
         'giftcheckcnt'
       )
       .addSelect(
@@ -301,7 +301,7 @@ export class AllianceReportService {
         'othertender'
       )
       .addSelect(
-        "COUNT(CASE WHEN collection.isCancelled = 0 AND (collectionLine.payTypeId = payType.id AND payType.payType NOT IN ('Credit Card', 'Cash', 'Gift Certificate', 'Charge')) THEN collectionLine.amount ELSE null END)",
+        "COUNT(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturned, 0) = 0 AND payType.payType NOT IN ('Credit Card', 'Cash', 'Gift Certificate', 'Charge') AND collectionLine.amount > 0 THEN 1 ELSE null END)",
         'othertendercnt'
       )
       .where('collection.isLocked = :isLocked', { isLocked: true })
@@ -404,7 +404,7 @@ export class AllianceReportService {
 
   // SONARQUBE ISSUE: Refactor this function to reduce its Cognitive Complexity from 113 to the 15 allowed.
   static async getTransactionList(terminalId: number, dates: string): Promise<AllianceSalesTrx[]> {
-    const formattedDate = format(new Date(dates), 'yyyy-MM-dd')
+    const formattedDate = format(new Date(dates), 'yyyy-MM-dd') //
 
     // Find locked sales on this terminal for date
     const sales = await AppDataSource.getRepository(TrnSalesEntity)
