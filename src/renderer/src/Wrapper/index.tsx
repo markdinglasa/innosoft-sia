@@ -56,7 +56,7 @@ export const Wrapper: FC = () => {
     )
   }
 
-  const renderSnackbar = () => {
+  const Snackbar = () => {
     if (snackbar?.display)
       return (
         <CSnackbar message={snackbar.message} type={snackbar.type} onClose={handleCloseSnackbar} />
@@ -67,7 +67,7 @@ export const Wrapper: FC = () => {
   return (
     <S.Wrapper>
       <MainArea />
-      {renderSnackbar()}
+      <Snackbar />
       <ToastContainer
         autoClose={3000}
         closeOnClick

@@ -269,7 +269,7 @@ export class AllianceReportService {
         'cash'
       )
       .addSelect(
-        "COUNT(CASE WHEN collection.isCancelled = 0 AND (collectionLine.payTypeId = payType.id AND payType.payType = 'Cash') THEN CASE WHEN collectionLine.amount > collection.amount THEN collection.amount ELSE collectionLine.amount END ELSE null END)",
+        "COUNT(CASE WHEN collection.isCancelled = 0 AND COALESCE(collection.isReturn, 0) = 0 AND payType.payType = 'Cash' AND collectionLine.amount > 0 THEN 1 ELSE null END)",
         'cashcnt'
       )
       .addSelect(
@@ -329,7 +329,7 @@ export class AllianceReportService {
     const amusementVal = Number(result?.amusement || 0)
     const taxsaleVal = Number(result?.taxsale || 0)
     const notaxsaleVal = Number(result?.notaxsale || 0)
-    const voidVal = Number(result?.void || 0)
+    // disabled const voidVal = Number(result?.void || 0)
     const refundVal = Number(result?.refund || 0)
     const seniorVal = Number(result?.senior || 0)
     const pwdVal = Number(result?.pwd || 0)
@@ -364,8 +364,8 @@ export class AllianceReportService {
       notaxsale: notaxsaleVal,
       zerosale: 0,
       vatexempt: vatexemptVal,
-      void: voidVal,
-      voidcnt: Number(result?.voidcnt || 0),
+      void: 0,
+      voidcnt: 0,
       disc: discVal,
       disccnt: Number(result?.disccnt || 0),
       refund: refundVal,

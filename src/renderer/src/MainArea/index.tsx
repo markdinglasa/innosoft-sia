@@ -1,3 +1,4 @@
+import { License } from '@renderer/License'
 import { AppMain } from '@renderer/registry'
 import { Splash } from '@shared/components'
 import { Error } from '@shared/messages'
@@ -49,18 +50,16 @@ export const MainArea: SFC = ({ className }) => {
     return () => clearTimeout(splashTimeout)
   }, [])
 
-  const renderContent = () => {
+  const Content = () => {
     if (showSplash || isLicenseValid === null) {
       return <Splash message="Please wait..." />
     }
-    // disabled return isLicenseValid ? <AppMain /> : <License />
-    return <AppMain />
+    return isLicenseValid ? <AppMain /> : <License />
   }
 
   return (
     <S.Container className={className}>
-      {/* <DraggableTopBar /> */}
-      {renderContent()}
+      <Content />
     </S.Container>
   )
 }
