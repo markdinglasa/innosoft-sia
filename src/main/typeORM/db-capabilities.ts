@@ -1,7 +1,7 @@
 import { AppDataSource } from './configurations'
 
 export const DbCapabilities = {
-  hasIsReturned: false
+  hasIsReturn: false
 }
 
 export const detectDbCapabilities = async () => {
@@ -44,18 +44,18 @@ export const detectDbCapabilities = async () => {
       }
     }
 
-    // 4. Update the specific hasIsReturned flag for raw SQL queries
+    // 4. Update the specific hasIsReturn flag for raw SQL queries
     const trnCollectionCols = validColumnsMap.get('trncollection')
-    DbCapabilities.hasIsReturned = trnCollectionCols ? trnCollectionCols.has('isreturned') : false
+    DbCapabilities.hasIsReturn = trnCollectionCols ? trnCollectionCols.has('isreturn') : false
 
     console.log(
-      `DbCapabilities detected: ${prunedCount} missing columns pruned. hasIsReturned = ${DbCapabilities.hasIsReturned}`
+      `DbCapabilities detected: ${prunedCount} missing columns pruned. hasIsReturn = ${DbCapabilities.hasIsReturn}`
     )
   } catch (err) {
     console.warn('Failed to detect DB capabilities and prune metadata, using safe defaults:', err)
   }
 }
 
-export const isReturnedExpr = () => {
-  return DbCapabilities.hasIsReturned ? 'collection.IsReturned' : '0'
+export const isReturnExpr = () => {
+  return DbCapabilities.hasIsReturn ? 'collection.IsReturn' : '0'
 }

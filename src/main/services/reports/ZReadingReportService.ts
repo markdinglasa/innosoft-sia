@@ -3,7 +3,7 @@ import { MstDiscountEntity } from '../../entities/masterfiles/MstDiscount.entity
 import { TrnCollectionEntity } from '../../entities/transactions/TrnCollection.entity'
 import { TrnSalesLineEntity } from '../../entities/transactions/TrnSalesLine.entity'
 import { AppDataSource } from '../../typeORM/configurations'
-import { DbCapabilities, isReturnedExpr } from '../../typeORM/db-capabilities'
+import { DbCapabilities, isReturnExpr } from '../../typeORM/db-capabilities'
 
 export class ZReadingReportService {
   /**
@@ -36,8 +36,8 @@ export class ZReadingReportService {
       .andWhere('collection.amount > 0')
       .groupBy('CAST(collection.collectionDate AS DATE)')
 
-    if (DbCapabilities.hasIsReturned) {
-      qb2.andWhere('(collection.isReturned IS NULL OR collection.isReturned = 0)')
+    if (DbCapabilities.hasIsReturn) {
+      qb2.andWhere('(collection.isReturn IS NULL OR collection.isReturn = 0)')
     }
 
     const controlNumberResult = await qb2.getRawMany()
@@ -60,11 +60,11 @@ export class ZReadingReportService {
         'IsGovernmentMandated'
       )
       .addSelect(
-        `SUM(CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND discount.discount IN (:...mandated) THEN COALESCE(salesLine.discountAmount * salesLine.quantity, 0) ELSE 0 END)`,
+        `SUM(CASE WHEN (COALESCE(${isReturnExpr()}, 0) = 0 OR sales.isCancelled = 1) AND discount.discount IN (:...mandated) THEN COALESCE(salesLine.discountAmount * salesLine.quantity, 0) ELSE 0 END)`,
         'GovDiscountAmount'
       )
       .addSelect(
-        `SUM(CASE WHEN (COALESCE(${isReturnedExpr()}, 0) = 0 OR sales.isCancelled = 1) AND discount.discount NOT IN (:...mandated) THEN COALESCE(salesLine.discountAmount * salesLine.quantity, 0) ELSE 0 END)`,
+        `SUM(CASE WHEN (COALESCE(${isReturnExpr()}, 0) = 0 OR sales.isCancelled = 1) AND discount.discount NOT IN (:...mandated) THEN COALESCE(salesLine.discountAmount * salesLine.quantity, 0) ELSE 0 END)`,
         'NonGovDiscountAmount'
       )
       .addSelect(
@@ -85,7 +85,7 @@ export class ZReadingReportService {
       .leftJoin('collection.sales', 'sales')
       .leftJoin('sales.salesLines', 'salesLine')
       .select(
-        `SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(${isReturnedExpr()}, 0) = 0 THEN salesLine.amount ELSE 0 END)`,
+        `SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(${isReturnExpr()}, 0) = 0 THEN salesLine.amount ELSE 0 END)`,
         'PreviousReading'
       )
       .where('collection.terminalId = :terminalId', { terminalId })
@@ -98,7 +98,7 @@ export class ZReadingReportService {
       .innerJoin('salesLine.sales', 'sales')
       .leftJoin(TrnCollectionEntity, 'collection', 'collection.salesId = salesLine.salesId')
       .select(
-        `SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(${isReturnedExpr()}, 0) = 0 THEN salesLine.amount ELSE 0 END)`,
+        `SUM(CASE WHEN collection.isCancelled = 0 AND COALESCE(${isReturnExpr()}, 0) = 0 THEN salesLine.amount ELSE 0 END)`,
         'NetSales'
       )
       .addSelect('COUNT(DISTINCT collection.id)', 'TotalTrx')

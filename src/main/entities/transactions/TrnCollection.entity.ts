@@ -27,7 +27,7 @@ export class TrnCollectionEntity extends BaseEntity {
     this.preparedBy = 0
     this.checkedBy = 0
     this.approvedBy = 0
-    this.isReturned = null
+    this.isReturn = null
     this.isCancelled = false
     this.postCode = null
   }
@@ -77,8 +77,8 @@ export class TrnCollectionEntity extends BaseEntity {
   @Column({ name: 'ApprovedBy', type: 'int', nullable: false })
   approvedBy: number
 
-  @Column({ name: 'IsReturned', type: 'int', nullable: true })
-  isReturned: number | null
+  @Column({ name: 'IsReturn', type: 'int', nullable: true })
+  isReturn: number | null
 
   @Column({ name: 'IsCancelled', type: 'bit', nullable: false })
   isCancelled: boolean
