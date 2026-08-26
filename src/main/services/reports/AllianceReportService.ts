@@ -958,7 +958,7 @@ export class AllianceReportService {
           .map((lineItem: any) => {
             return `
               <line>
-                <sku>${lineItem.sku ?? 'NA'}</sku>
+                <sku>${lineItem.sku ?? ''}</sku>
                 <qty>${lineItem.qty ?? 0}</qty>
                 <unitprice>${formatNumber(lineItem.unitprice)}</unitprice>
                 <disc>${formatNumber(lineItem.disc)}</disc>
@@ -967,9 +967,9 @@ export class AllianceReportService {
                 <diplomat>${formatNumber(lineItem.diplomat)}</diplomat>
                 <nac>${formatNumber(lineItem.nac ?? 0)}</nac>
                 <spd>${formatNumber(lineItem.spd ?? 0)}</spd>
-                <taxtype>${lineItem.taxtype ?? 'NA'}</taxtype>
+                <taxtype>${lineItem.taxtype ?? ''}</taxtype>
                 <tax>${formatNumber(lineItem.tax)}</tax>
-                <memo>${lineItem.memo ?? 'NA'}</memo>
+                <memo>${lineItem.memo ?? ''}</memo>
                 <total>${formatNumber(lineItem.total)}</total>
                 <choicetype></choicetype>
               </line>`
@@ -1015,7 +1015,7 @@ export class AllianceReportService {
             <posted>${item.posted ?? 'NA'}</posted>
             <qty>${item.qty ?? 0}</qty>
             <created>${formatNumber(item.created ?? 0)}</created>
-            <memo>${item.memo && item.memo !== 'NA' ? item.memo : ''}</memo>
+            <memo> ${item.memo ?? ''}</memo>
             ${salesLineXml}
           </trx>`)
       }

@@ -2,6 +2,7 @@ import {
   Alliance,
   Auth,
   Database,
+  Logs,
   GENERIC_REPORT,
   License,
   MEGAWORLD,
@@ -21,6 +22,7 @@ export interface SqlApi {
 
 export const SqlChannel = {
   ...License,
+  ...Logs,
   ...Auth,
   ...Database,
   ...SIA,

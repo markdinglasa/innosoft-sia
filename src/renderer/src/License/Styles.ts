@@ -28,6 +28,7 @@ export const CardBody = styled.div`
 
 export const Button = styled(UButton)`
   width: 100%;
+  margin-top: 20px;
 `
 
 export const CardHeader = styled.div`

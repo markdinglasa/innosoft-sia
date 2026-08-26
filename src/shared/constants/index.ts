@@ -4,4 +4,4 @@ export * from './sia'
 export * from './system'
 export * from './token'
 
-export const APP_VERSION = 'v1.2.5'
+export const APP_VERSION = 'v1.2.6'

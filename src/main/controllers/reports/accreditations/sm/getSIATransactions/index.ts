@@ -8,6 +8,7 @@ import fs from 'node:fs'
 import paths from 'node:path'
 import { generateSMFileName } from '../../../../../functions'
 import { recordByQuery } from '../../../../../model'
+import { logger } from '../../../../../services/LogService'
 
 const csvHeaders = headers.map((header) => header.title)
 ipcMain.handle(
@@ -47,6 +48,7 @@ ipcMain.handle(
       await csvWriter.writeRecords(csvData)
       return { IsSomething: true, Message: Success.s00x00 }
     } catch (error: any) {
+      logger.error('SM Report - getSIATransactions', error.message || 'Unknown error', { stack: error.stack })
       return { IsSomething: false, Message: error.message || Error.e00x02 }
     }
   }

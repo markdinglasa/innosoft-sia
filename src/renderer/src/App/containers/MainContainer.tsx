@@ -36,7 +36,16 @@ export const SIAManager: SFC<AppProps> = ({ className }) => {
           </AccessControl>
         </S.Body>
         <S.Footer>
-          <AppFooter />
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              width: '100%',
+              alignItems: 'center'
+            }}
+          >
+            <AppFooter />
+          </div>
         </S.Footer>
       </S.Container>
     </AppWindow>

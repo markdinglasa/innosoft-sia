@@ -1,5 +1,5 @@
 import { MainArea } from '@renderer/MainArea'
-import { Snackbar as CSnackbar } from '@shared/components/'
+import { ErrorBoundary, Snackbar as CSnackbar } from '@shared/components/'
 import { useReadIpc } from '@shared/hooks'
 import { loadSystemData, loadWindowData } from '@shared/internal'
 import { getSnackbar, getStoreLoaded } from '@shared/selectors/state'
@@ -66,20 +66,23 @@ export const Wrapper: FC = () => {
 
   return (
     <S.Wrapper>
-      <MainArea />
-      <Snackbar />
-      <ToastContainer
-        autoClose={3000}
-        closeOnClick
-        draggable
-        hideProgressBar
-        newestOnTop
-        pauseOnFocusLoss
-        pauseOnHover
-        position="bottom-left"
-        rtl={false}
-        transition={Bounce}
-      />
+      <ErrorBoundary>
+        <MainArea />
+        <Snackbar />
+        <ToastContainer
+          autoClose={3000}
+          closeOnClick
+          draggable
+          hideProgressBar
+          newestOnTop
+          pauseOnFocusLoss
+          pauseOnHover
+          position="bottom-left"
+          rtl={false}
+          transition={Bounce}
+        />
+      </ErrorBoundary>
     </S.Wrapper>
   )
 }
+

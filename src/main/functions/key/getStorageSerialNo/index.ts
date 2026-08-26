@@ -6,7 +6,7 @@ export const getStorageSerialNumber = async (): Promise<any> => {
     const command =
       platform() === 'darwin'
         ? "diskutil info / | awk '/Volume UUID/ {print $3}'"
-        : 'wmic diskdrive get serialnumber'
+        : 'powershell -NoProfile -Command "Get-CimInstance -ClassName Win32_DiskDrive | Select-Object -First 1 -ExpandProperty SerialNumber"'
 
     exec(command, (error, stdout) => {
       if (error) {
@@ -14,7 +14,7 @@ export const getStorageSerialNumber = async (): Promise<any> => {
         return
       }
       const lines = stdout.trim().split('\n')
-      const storageSerialNumber = platform() === 'darwin' ? lines[0].trim() : lines[1]?.trim()
+      const storageSerialNumber = lines[0].trim()
       resolve(storageSerialNumber)
     })
   })
