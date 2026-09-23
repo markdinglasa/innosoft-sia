@@ -75,7 +75,7 @@ export interface AllianceSalesTrxline {
   total: number // qty * unitprice
 }
 export interface AllianceSalesTrx {
-  receiptno: number
+  receiptno: string | number
   void: number // 1 voided 0 not-voided
   cash: number
   credit: number
@@ -87,6 +87,8 @@ export interface AllianceSalesTrx {
   evat: number // expanded value added tax
   linepwd: number //
   linediplomat: number
+  linenac?: number
+  linespd?: number
   subtotal: number // total of all line discounts
   disc: number
   senior: number
