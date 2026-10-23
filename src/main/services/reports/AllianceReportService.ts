@@ -254,9 +254,18 @@ export class AllianceReportService {
         "MAX(CASE WHEN collection.isCancelled = 0 AND collection.collectionNumber IS NOT NULL AND collection.collectionNumber != 'NA' AND collection.collectionNumber != '' THEN REPLACE(collection.collectionNumber, '-', '') END)",
         'receiptend'
       )
-      .addSelect('COUNT(DISTINCT CASE WHEN collection.isCancelled = 0 THEN sales.id ELSE NULL END)', 'trxcnt')
-      .addSelect('MIN(CASE WHEN collection.isCancelled = 0 THEN collection.collectionDate END)', 'opentime')
-      .addSelect('MAX(CASE WHEN collection.isCancelled = 0 THEN collection.collectionDate END)', 'closetime')
+      .addSelect(
+        'COUNT(DISTINCT CASE WHEN collection.isCancelled = 0 THEN sales.id ELSE NULL END)',
+        'trxcnt'
+      )
+      .addSelect(
+        'MIN(CASE WHEN collection.isCancelled = 0 THEN collection.collectionDate END)',
+        'opentime'
+      )
+      .addSelect(
+        'MAX(CASE WHEN collection.isCancelled = 0 THEN collection.collectionDate END)',
+        'closetime'
+      )
       .where('sales.isLocked = :isLocked', { isLocked: true })
       .andWhere('collection.isLocked = :isLocked', { isLocked: true })
       .andWhere('collection.terminalId = :terminalId', { terminalId })
@@ -433,9 +442,12 @@ export class AllianceReportService {
     for (const s of sales) {
       // Loop over collections since a receipt corresponds to a collection
       for (const c of s.collections || []) {
-        if (c.isCancelled) continue;
-        
-        const receiptno = (c.collectionNumber || '').replaceAll('-', '')
+        if (!c.collectionNumber || c.collectionNumber === 'NA' || c.collectionNumber === '')
+          continue
+
+        const receiptno = c.collectionNumber.replaceAll('-', '')
+        const isVoided = Boolean(c.isCancelled || s.isCancelled)
+        const originalAmount = isVoided ? Number(s.amount || c.amount || 0) : 0
 
         // Sum payment types
         let cash = 0
@@ -447,7 +459,7 @@ export class AllianceReportService {
         for (const cl of c.collectionLines || []) {
           const payType = cl.payType?.payType || ''
           const amt = Number(cl.amount || 0)
-          if (!c.isCancelled && (c.isReturn ?? 0) === 0) {
+          if (!isVoided && (c.isReturn ?? 0) === 0) {
             if (payType === 'Cash') {
               cash += Math.min(amt, Number(c.amount))
             } else if (payType === 'Credit Card') {
@@ -463,7 +475,7 @@ export class AllianceReportService {
         }
 
         // Sum lines details
-        let voidAmt = s.isCancelled ? Number(s.amount || 0) : 0
+        let voidFlag = isVoided ? 1 : 0
         let subtotal = 0
 
         // Sum VAT details
@@ -494,13 +506,15 @@ export class AllianceReportService {
           totalQty += Number(sl.quantity || 0)
 
           if (sl.item?.itemDescription === 'SERVICE CHARGE') {
-            service += Number(sl.amount || 0)
+            if (!isVoided) {
+              service += Number(sl.amount || 0)
+            }
             continue
           }
 
           let lineTaxAmount = Number(sl.taxAmount || 0)
 
-          if (!c.isCancelled && (c.isReturn ?? 0) === 0) {
+          if (!isVoided && (c.isReturn ?? 0) === 0) {
             if (sl.taxRate > 0) {
               vat += lineTaxAmount
               if (sl.tax?.tax === 'LOCAL TAX') {
@@ -563,8 +577,8 @@ export class AllianceReportService {
           }
 
           // Generate lines for XML
-          const qty = Number(sl.quantity || 0)
-          const discAmt = Number(sl.discountAmount || 0) * qty
+          const qty = isVoided ? 0 : Number(sl.quantity || 0)
+          const discAmt = isVoided ? 0 : Number(sl.discountAmount || 0) * qty
 
           let senior = 0
           let pwd = 0
@@ -590,17 +604,17 @@ export class AllianceReportService {
           trxLines.push({
             sku: (sl.item?.barCode || 'NA').replaceAll('&', ' '),
             qty,
-            unitprice: Number(sl.price || 0),
+            unitprice: isVoided ? 0 : Number(sl.price || 0),
             disc: discAmt,
             senior,
             pwd,
             diplomat,
             nac,
             spd,
-            taxtype: lineTaxAmount > 0 ? '0' : '2',
-            tax: lineTaxAmount,
+            taxtype: lineTaxAmount > 0 && !isVoided ? '0' : '2',
+            tax: isVoided ? 0 : lineTaxAmount,
             memo: s.remarks || 'NA',
-            total: Number(sl.amount || 0)
+            total: isVoided ? 0 : Number(sl.amount || 0)
           })
         }
 
@@ -614,7 +628,7 @@ export class AllianceReportService {
 
         // Gross calculation
         let gross = 0
-        if (!s.isCancelled && (s.isReturn === null || s.isReturn === 0)) {
+        if (!isVoided && (s.isReturn === null || s.isReturn === 0)) {
           gross = Number(c.amount || 0)
         }
 
@@ -625,7 +639,7 @@ export class AllianceReportService {
         let taxrate = 0
         for (const sl of s.salesLines || []) {
           if (
-            !c.isCancelled &&
+            !isVoided &&
             (c.isReturn ?? 0) === 0 &&
             sl.discount?.discount !== 'Senior Citizen Discount' &&
             sl.discount?.discount !== 'PWD'
@@ -649,7 +663,8 @@ export class AllianceReportService {
 
         list.push({
           receiptno,
-          void: voidAmt,
+          void: voidFlag,
+          originalAmount,
           cash,
           credit,
           charge,
@@ -857,6 +872,18 @@ export class AllianceReportService {
           summary.newtax = summary.previoustax + computedEodVat
         }
 
+        // Recalculate transaction counts to guarantee parity between header and body elements
+        summary.trxcnt = transactions.length
+        summary.voidcnt = transactions.filter((t: any) => t.void === 1).length
+        summary.void = transactions
+          .filter((t: any) => t.void === 1)
+          .reduce((sum: number, t: any) => sum + (t.originalAmount || 0), 0)
+
+        if (transactions.length > 0) {
+          summary.receiptstart = transactions[0].receiptno?.toString()
+          summary.receiptend = transactions[transactions.length - 1].receiptno?.toString()
+        }
+
         salesXml = [
           `<date>${formatDateYYYYMMDD(new Date(dates)) ?? ''}</date>`,
           `<zcounter>${summary.zcounter ?? '0'}</zcounter>`,
@@ -879,7 +906,7 @@ export class AllianceReportService {
           `<notaxsale>${formatNumber(summary.notaxsale)}</notaxsale>`,
           `<zerosale>${formatNumber(summary.zerosale)}</zerosale>`,
           `<vatexempt>${formatNumber(summary.vatexempt)}</vatexempt>`,
-          `<void>${formatNumber(summary.void)}</void>`,
+          `<void>${formatNumber(0)}</void>`,
           `<voidcnt>${Number(summary.voidcnt)}</voidcnt>`,
           `<disc>${formatNumber(summary.disc)}</disc>`,
           `<disccnt>${Number(summary.disccnt)}</disccnt>`,
@@ -999,7 +1026,7 @@ export class AllianceReportService {
         trxListXml.push(`
           <trx>
             <receiptno>${item.receiptno}</receiptno>
-            <void>${formatNumber(item.void)}</void>
+            <void>${item.void}</void>
             <cash>${formatNumber(item.cash)}</cash>
             <credit>${formatNumber(item.credit)}</credit>
             <charge>${formatNumber(item.charge)}</charge>
@@ -1153,7 +1180,7 @@ export class AllianceReportService {
         trxListXml.push(`
           <trx>
             <receiptno>${item.receiptno}</receiptno>
-            <void>${formatNumber(item.void)}</void>
+            <void>${item.void}</void>
             <cash>${formatNumber(item.cash)}</cash>
             <credit>${formatNumber(item.credit)}</credit>
             <charge>${formatNumber(item.charge)}</charge>

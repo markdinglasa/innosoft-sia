@@ -45,8 +45,8 @@ export interface AllianceSalesEOD {
   spdcnt: number // count of SPD transactions
   service: number // total service charge amount
   servicecnt: number // COUNT(service)
-  receiptstart: number // receipt's starting number
-  receiptend: number // receipt's ending number
+  receiptstart: string | number // receipt's starting number
+  receiptend: string | number // receipt's ending number
   trxcnt: number // COUNT(transactions)
   cash: number // total cash amount
   cashcnt: number // COUNT(cash)
@@ -77,6 +77,7 @@ export interface AllianceSalesTrxline {
 export interface AllianceSalesTrx {
   receiptno: string | number
   void: number // 1 voided 0 not-voided
+  originalAmount?: number // used to calculate summary void amount
   cash: number
   credit: number
   charge: number
